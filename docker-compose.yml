@@ -1,0 +1,17 @@
+services:
+  piggy-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: piggy-frontend:latest
+    container_name: piggy-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    # Uncomment the following lines for development with hot reload
+    # volumes:
+    #   - .:/app
+    #   - /app/node_modules
+    #   - /app/.next
