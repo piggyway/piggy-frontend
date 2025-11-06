@@ -1,64 +1,114 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-[#FFFBF5]">
+      <main className="container mx-auto px-4 py-16">
+        <div className="mb-12 text-center">
+          <h1 className="mb-4 text-6xl font-semibold text-primary-navy">
+            Piggy Way Crossing
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl text-slate-900">
+            Design System Configuration Complete
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+
+        {/* Color Palette Showcase */}
+        <section className="mb-16">
+          <h2 className="mb-8 text-4xl font-semibold text-primary-navy">
+            Color Palette
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* Primary Colors */}
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium text-slate-900">Primary</h3>
+              <div className="space-y-2">
+                <div className="flex h-16 items-center rounded-lg bg-primary-navy px-4 text-primary-gold">
+                  <span className="font-medium">Navy</span>
+                </div>
+                <div className="flex h-16 items-center rounded-lg bg-primary-purple px-4 text-slate-900">
+                  <span className="font-medium">Purple</span>
+                </div>
+                <div className="flex h-16 items-center rounded-lg bg-primary-gold px-4 text-primary-navy">
+                  <span className="font-medium">Gold</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Secondary Colors */}
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium text-slate-900">Secondary</h3>
+              <div className="space-y-2">
+                <div className="flex h-16 items-center rounded-lg bg-secondary-mint px-4 text-slate-900">
+                  <span className="font-medium">Mint</span>
+                </div>
+                <div className="flex h-16 items-center rounded-lg bg-secondary-pink px-4 text-slate-900">
+                  <span className="font-medium">Pink</span>
+                </div>
+                <div className="flex h-16 items-center rounded-lg bg-secondary-blue px-4 text-slate-900">
+                  <span className="font-medium">Blue</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Neutral Colors */}
+            <div className="space-y-2">
+              <h3 className="text-lg font-medium text-slate-900">Neutral</h3>
+              <div className="space-y-2">
+                <div className="flex h-16 items-center rounded-lg border border-neutral-stroke bg-neutral-background px-4 text-slate-900">
+                  <span className="font-medium">Background</span>
+                </div>
+                <div className="flex h-16 items-center rounded-lg border border-neutral-stroke bg-neutral-background-light px-4 text-slate-900">
+                  <span className="font-medium">Background Light</span>
+                </div>
+                <div className="flex h-16 items-center rounded-lg border border-neutral-stroke bg-neutral-white px-4 text-slate-900">
+                  <span className="font-medium">White</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Typography Showcase */}
+        <section className="mb-16">
+          <h2 className="mb-8 text-4xl font-semibold text-primary-navy">
+            Typography (Outfit)
+          </h2>
+          <div className="space-y-4">
+            <h1 className="text-6xl font-semibold text-slate-900">Heading 1</h1>
+            <h2 className="text-5xl font-semibold text-slate-900">Heading 2</h2>
+            <h4 className="text-4xl font-semibold text-slate-900">Heading 4</h4>
+            <p className="text-2xl font-semibold text-slate-900">Lead Text</p>
+            <p className="text-xl font-medium text-slate-900">UI Text</p>
+            <p className="text-base text-slate-900">
+              Body text - Regular weight for comfortable reading
+            </p>
+            <p className="text-sm text-slate-400">Subtle text - Small and muted</p>
+          </div>
+        </section>
+
+        {/* Shadcn UI Colors */}
+        <section>
+          <h2 className="mb-8 text-4xl font-semibold text-primary-navy">
+            Shadcn UI Colors (Mapped)
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-lg bg-primary p-6 text-primary-foreground">
+              <div className="font-medium">Primary</div>
+              <div className="text-sm opacity-90">Navy Blue</div>
+            </div>
+            <div className="rounded-lg bg-secondary p-6 text-secondary-foreground">
+              <div className="font-medium">Secondary</div>
+              <div className="text-sm opacity-90">Mint Green</div>
+            </div>
+            <div className="rounded-lg bg-accent p-6 text-accent-foreground">
+              <div className="font-medium">Accent</div>
+              <div className="text-sm opacity-90">Purple</div>
+            </div>
+            <div className="rounded-lg border bg-card p-6 text-card-foreground">
+              <div className="font-medium">Card</div>
+              <div className="text-sm opacity-90">Light Cream</div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   );
