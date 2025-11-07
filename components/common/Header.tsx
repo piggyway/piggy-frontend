@@ -62,7 +62,7 @@ export function Header() {
                           </NavigationMenuContent>
                         </>
                       ) : (
-                        <Link href={item.href} legacyBehavior passHref>
+                        <Link href={item.href} passHref>
                           <NavigationMenuLink
                             className={cn(
                               "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
