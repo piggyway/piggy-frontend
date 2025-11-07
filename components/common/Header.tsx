@@ -1,7 +1,18 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { ShoppingCart, User, ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu"
+import { NavigationMenuContent as CustomMenuContent } from "@/components/ui/navigation-menu-content"
 import { headerNavigation } from "@/lib/types/navigation"
 import { cn } from "@/lib/utils"
 
@@ -32,22 +43,40 @@ export function Header() {
           {/* Navigation Menu */}
           <nav className="flex flex-1 items-center gap-3">
             <div className="flex flex-1 items-center gap-5">
-              {headerNavigation.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                    "text-primary-navy hover:bg-primary-purple/20",
-                    item.hasDropdown && "text-[#1a327e]"
-                  )}
-                >
-                  {item.label}
-                  {item.hasDropdown && (
-                    <ChevronDown className="h-1.5 w-1.5" aria-hidden="true" />
-                  )}
-                </Link>
-              ))}
+              <NavigationMenu>
+                <NavigationMenuList className="gap-5">
+                  {headerNavigation.map((item) => (
+                    <NavigationMenuItem key={item.href}>
+                      {item.hasDropdown && item.dropdownItems ? (
+                        <>
+                          <NavigationMenuTrigger
+                            className={cn(
+                              "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors bg-transparent hover:bg-primary-purple/20",
+                              "text-[#1a327e] data-[state=open]:bg-primary-purple/20"
+                            )}
+                          >
+                            {item.label}
+                          </NavigationMenuTrigger>
+                          <NavigationMenuContent>
+                            <CustomMenuContent items={item.dropdownItems} />
+                          </NavigationMenuContent>
+                        </>
+                      ) : (
+                        <Link href={item.href} legacyBehavior passHref>
+                          <NavigationMenuLink
+                            className={cn(
+                              "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                              "text-primary-navy hover:bg-primary-purple/20"
+                            )}
+                          >
+                            {item.label}
+                          </NavigationMenuLink>
+                        </Link>
+                      )}
+                    </NavigationMenuItem>
+                  ))}
+                </NavigationMenuList>
+              </NavigationMenu>
             </div>
 
             {/* Search Bar */}
