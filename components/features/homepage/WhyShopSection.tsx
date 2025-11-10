@@ -5,7 +5,7 @@ import { AnimatedSection } from './AnimatedSection';
 
 export function WhyShopSection() {
   return (
-    <AnimatedSection className="w-full bg-neutral-background-light">
+    <AnimatedSection className="w-full">
       <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
         {/* Title and Description */}
         <div className="mb-8 sm:mb-10">
@@ -17,10 +17,11 @@ export function WhyShopSection() {
           </p>
         </div>
 
-        {/* 3 Column Card Layout - Desktop */}
-        <div className="hidden lg:flex gap-10 items-start">
-          {/* Column 1 - White card on top, Pink card on bottom */}
-          <div className="flex flex-col gap-0 w-[360px] shrink-0">
+        {/* 3 Column Card Layout - Desktop with Horizontal Scroll */}
+        <div className="hidden lg:block relative overflow-x-auto">
+          <div className="flex gap-10 items-start pb-4">
+            {/* Column 1 - White card on top, Pink card on bottom */}
+            <div className="flex flex-col gap-0 w-[360px] shrink-0">
             <div className="bg-white rounded-[32px] h-[230px] flex items-center justify-center">
               <Image
                 src="/shop-with-us/default.png"
@@ -71,6 +72,7 @@ export function WhyShopSection() {
                 Loved by Pet Parents
               </p>
             </div>
+          </div>
           </div>
         </div>
 

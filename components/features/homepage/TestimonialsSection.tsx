@@ -26,60 +26,57 @@ export function TestimonialsSection() {
   ];
 
   return (
-    <AnimatedSection className="w-full bg-neutral-background-light">
+    <AnimatedSection className="w-full">
       <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
-        {/* White Container */}
-        <div className="bg-white rounded-[32px] p-6 sm:p-8 md:p-10">
-          {/* Title with Icon */}
-          <div className="flex items-start justify-between gap-8 mb-8 sm:mb-10">
-            <div className="flex-1">
-              <p className="text-[20px] sm:text-[24px] font-normal text-primary-navy leading-[32px] mb-2">
-                Trusted by Parents
-              </p>
-              <h2 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy-light leading-[42px] tracking-[-0.21px]">
-                Loved by Piggies
-              </h2>
-            </div>
-            {/* Guinea Pig Icon */}
-            <div className="hidden sm:block relative w-[70px] h-[84px] shrink-0">
-              <Image
-                src="/pet-care-tips/default1-2.png"
-                alt=""
-                fill
-                className="object-contain"
-              />
-            </div>
+        {/* Title with Icon */}
+        <div className="flex items-start justify-between gap-8 mb-8 sm:mb-10">
+          <div className="flex-1">
+            <p className="text-[20px] sm:text-[24px] font-normal text-primary-navy leading-[32px] mb-2">
+              Trusted by Parents
+            </p>
+            <h2 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy-light leading-[42px] tracking-[-0.21px]">
+              Loved by Piggies
+            </h2>
           </div>
+          {/* Guinea Pig Icon */}
+          <div className="hidden sm:block relative w-[70px] h-[84px] shrink-0">
+            <Image
+              src="/pet-care-tips/default1-2.png"
+              alt=""
+              fill
+              className="object-contain"
+            />
+          </div>
+        </div>
 
-          {/* Testimonials Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {testimonials.map((testimonial) => (
-              <div
-                key={testimonial.id}
-                className={`${testimonial.bgColor} rounded-[28px] p-6 flex flex-col gap-5 h-[279px]`}
-              >
-                {/* Quote with decorative quotes */}
-                <div className="flex gap-0 items-start text-primary-navy">
-                  <span className="text-[42px] font-semibold leading-[42px] tracking-[-0.21px] w-[30px] shrink-0">
-                    "
-                  </span>
-                  <p className="flex-1 text-[20px] font-medium leading-[24px]">
-                    {testimonial.quote}
-                  </p>
-                  <span className="text-[42px] font-semibold leading-[0px] tracking-[-0.21px] w-[20px] shrink-0 self-end">
-                    "
-                  </span>
-                </div>
-
-                {/* Author */}
-                <div className="mt-auto">
-                  <p className="text-[24px] font-semibold text-primary-navy leading-[32px]">
-                    {testimonial.author}
-                  </p>
-                </div>
+        {/* Testimonials Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+          {testimonials.map((testimonial) => (
+            <div
+              key={testimonial.id}
+              className={`${testimonial.bgColor} rounded-[28px] p-6 flex flex-col gap-5 h-[279px]`}
+            >
+              {/* Quote with decorative quotes */}
+              <div className="flex gap-0 items-start text-primary-navy">
+                <span className="text-[42px] font-semibold leading-[42px] tracking-[-0.21px] w-[30px] shrink-0">
+                  "
+                </span>
+                <p className="flex-1 text-[20px] font-medium leading-[24px]">
+                  {testimonial.quote}
+                </p>
+                <span className="text-[42px] font-semibold leading-[0px] tracking-[-0.21px] w-[20px] shrink-0 self-end">
+                  "
+                </span>
               </div>
-            ))}
-          </div>
+
+              {/* Author */}
+              <div className="mt-auto">
+                <p className="text-[24px] font-semibold text-primary-navy leading-[32px]">
+                  {testimonial.author}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </AnimatedSection>
