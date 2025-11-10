@@ -4,19 +4,19 @@ import { PetCareTipsSection } from '@/components/features/homepage/PetCareTipsSe
 import { StarterKitsSection } from '@/components/features/homepage/StarterKitsSection';
 import { TestimonialsSection } from '@/components/features/homepage/TestimonialsSection';
 import { WhyShopSection } from '@/components/features/homepage/WhyShopSection';
-import { CTASection } from '@/components/features/homepage/CTASection';
 import { OurStorySection } from '@/components/features/homepage/OurStorySection';
+import { BackgroundBlobs } from '@/components/ui/background-blobs';
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-neutral-background-light">
+    <div className="min-h-screen bg-neutral-background-light relative">
+      <BackgroundBlobs variant={1} />
       <HeroSection />
       <ShopByCategorySection />
       <PetCareTipsSection />
       <StarterKitsSection />
       <TestimonialsSection />
       <WhyShopSection />
-      {/* <CTASection /> */}
       <OurStorySection />
     </div>
   );

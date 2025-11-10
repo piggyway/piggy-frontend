@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { AnimatedSection } from './AnimatedSection';
+import { AnimatedSection } from '../homepage/AnimatedSection';
 
 export function TestimonialsSection() {
   const testimonials = [
@@ -15,7 +15,7 @@ export function TestimonialsSection() {
       id: 2,
       quote: "Finally a liner that doesn't hold onto fur. Looks neat, feels comfy, and saves me heaps of cleaning time.",
       author: "Daniel W., Sydney",
-      bgColor: 'bg-secondary-light-gold'
+      bgColor: 'bg-[#fffcef]' // Light gold/beige
     },
     {
       id: 3,
@@ -31,30 +31,33 @@ export function TestimonialsSection() {
         {/* Title with Icon */}
         <div className="flex items-start justify-between gap-8 mb-8 sm:mb-10">
           <div className="flex-1">
-            <p className="text-[20px] sm:text-[24px] font-normal text-primary-navy leading-[32px] mb-2">
+            <p className="text-lg sm:text-xl text-primary-navy leading-relaxed mb-2">
               Trusted by Parents
             </p>
-            <h2 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy-light leading-[42px] tracking-[-0.21px]">
+            <h2 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy-light leading-tight">
               Loved by Piggies
             </h2>
           </div>
-          {/* Guinea Pig Icon */}
-          <div className="hidden sm:block relative w-[70px] h-[84px] shrink-0">
-            <Image
-              src="/pet-care-tips/default1-2.png"
-              alt=""
-              fill
-              className="object-contain"
-            />
+          {/* Decorative Piggy Icon */}
+          <div className="hidden lg:block ml-8">
+            <div className="w-20 h-20 relative">
+              <Image
+                src="/pet-care-tips/default1-2.png"
+                alt="Piggy mascot"
+                width={80}
+                height={80}
+                className="object-contain"
+              />
+            </div>
           </div>
         </div>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className={`${testimonial.bgColor} rounded-[28px] p-6 flex flex-col gap-5 h-[279px]`}
+              className={`${testimonial.bgColor} rounded-[28px] p-6 flex flex-col gap-5 min-h-[280px]`}
             >
               {/* Quote with decorative quotes */}
               <div className="flex gap-0 items-start text-primary-navy">
