@@ -6,7 +6,7 @@ import { AnimatedSection } from './AnimatedSection';
 
 export function PetCareTipsSection() {
   return (
-    <AnimatedSection className="w-full bg-neutral-background-light">
+    <AnimatedSection className="w-full">
       <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
         {/* Title */}
         <div className="mb-8 sm:mb-10">
@@ -18,9 +18,9 @@ export function PetCareTipsSection() {
           </h2>
         </div>
 
-        {/* Cards Container - Desktop Only with Fixed Layout */}
-        <div className="hidden lg:block relative">
-          <div className="flex gap-10 items-center">
+        {/* Cards Container - Desktop Only with Horizontal Scroll */}
+        <div className="hidden lg:block relative overflow-x-auto">
+          <div className="flex gap-10 items-center pb-4">
             {/* Card 1 - Dark Blue with Illustration */}
             <div className="bg-primary-navy rounded-[28px] p-6 flex flex-col gap-5 h-[387px] w-[360px] shrink-0">
               <div className="flex-1 flex flex-col gap-[14px]">

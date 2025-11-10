@@ -57,21 +57,22 @@ export function Header() {
                           >
                             {item.label}
                           </NavigationMenuTrigger>
-                          <NavigationMenuContent>
+                          <NavigationMenuContent asChild>
                             <CustomMenuContent items={item.dropdownItems} />
                           </NavigationMenuContent>
                         </>
                       ) : (
-                        <Link href={item.href} passHref>
-                          <NavigationMenuLink
-                            className={cn(
-                              "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                              "text-primary-navy hover:bg-primary-purple/20"
-                            )}
-                          >
+                        <NavigationMenuLink
+                          asChild
+                          className={cn(
+                            "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                            "text-primary-navy hover:bg-primary-purple/20"
+                          )}
+                        >
+                          <Link href={item.href}>
                             {item.label}
-                          </NavigationMenuLink>
-                        </Link>
+                          </Link>
+                        </NavigationMenuLink>
                       )}
                     </NavigationMenuItem>
                   ))}
@@ -111,4 +112,3 @@ export function Header() {
     </header>
   )
 }
-

@@ -6,7 +6,7 @@ import { AnimatedSection } from './AnimatedSection';
 
 export function OurStorySection() {
   return (
-    <AnimatedSection className="w-full bg-neutral-background-light">
+    <AnimatedSection className="w-full">
       <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
         {/* White Container */}
         <div className="bg-white rounded-[32px] p-6 sm:p-8 md:p-10">
