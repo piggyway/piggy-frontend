@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { Collapsible, CollapsibleItem } from "./collapsible";
+import { Collapsible } from "./collapsible";
 import { getFigmaUrl } from "../../.storybook/figma.config";
 
 const meta = {
@@ -75,6 +75,10 @@ export const OpenByDefault: Story = {
 };
 
 export const MultipleSections: Story = {
+  args: {
+    title: "Product Features",
+    children: null,
+  },
   render: () => (
     <div className="flex flex-col gap-2 w-full max-w-md">
       <Collapsible title="Product Features" defaultOpen={true}>

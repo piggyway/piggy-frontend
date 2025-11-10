@@ -75,6 +75,9 @@ export const SelectedWithGhostIcon: Story = {
 };
 
 export const DifferentTypes: Story = {
+  args: {
+    label: "Mint",
+  },
   render: () => (
     <div className="flex gap-3">
       <ProductTypeItem label="Mint" selected={false} />
