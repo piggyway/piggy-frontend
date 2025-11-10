@@ -51,6 +51,9 @@ export const WithoutImage: Story = {
 };
 
 export const MultipleCards: Story = {
+  args: {
+    title: "Liners",
+  },
   render: () => (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
       <FeaturedCard title="Liners" image="/default-product-image.png" />
