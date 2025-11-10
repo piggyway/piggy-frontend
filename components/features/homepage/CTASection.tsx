@@ -5,7 +5,7 @@ import { AnimatedSection } from './AnimatedSection';
 
 export function CTASection() {
   return (
-    <AnimatedSection className="w-full bg-neutral-background-light">
+    <AnimatedSection className="w-full">
       <div className="container mx-auto px-4 py-8 sm:py-12 max-w-[1160px]">
         {/* Desktop Layout */}
         <div className="hidden lg:flex items-center justify-center gap-6">
