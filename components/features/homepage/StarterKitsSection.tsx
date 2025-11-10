@@ -28,7 +28,7 @@ export function StarterKitsSection() {
                 <div className="absolute left-0 top-0 w-[221px] h-[153px] bg-white rounded-[33px]" />
                 <div className="absolute right-0 top-0 w-[91px] h-[153px] bg-white rounded-[33px]" />
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                  <Image src="/starter-kits/default.png" alt="" width={65} height={65} className="object-contain" />
+                  <Image src="/shop-with-us/default.png" alt="" width={300} height={300} className="object-contain" />
                 </div>
               </div>
               <p className="text-[20px] font-medium text-primary-navy leading-[24px]">
