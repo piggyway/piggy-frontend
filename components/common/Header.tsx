@@ -2,6 +2,7 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { ShoppingCart, User, ChevronDown } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import {
@@ -17,11 +18,12 @@ import { headerNavigation } from "@/lib/types/navigation"
 import { cn } from "@/lib/utils"
 
 export function Header() {
+  const pathname = usePathname()
   return (
     <header className="w-full bg-[#FFFBF5]">
       {/* Top Banner */}
       <div className="bg-primary-purple py-3 text-center">
-        <p className="text-sm font-medium text-primary-navy">
+        <p className="text-primary-navy text-sm font-medium">
           Free shipping over $999 XXX area
         </p>
       </div>
@@ -45,37 +47,43 @@ export function Header() {
             <div className="flex flex-1 items-center gap-5">
               <NavigationMenu>
                 <NavigationMenuList className="gap-5">
-                  {headerNavigation.map((item) => (
-                    <NavigationMenuItem key={item.href}>
-                      {item.hasDropdown && item.dropdownItems ? (
-                        <>
-                          <NavigationMenuTrigger
+                  {headerNavigation.map((item) => {
+                    const isActive =
+                      pathname === item.href ||
+                      pathname.startsWith(item.href + "/")
+
+                    return (
+                      <NavigationMenuItem key={item.href}>
+                        {item.hasDropdown && item.dropdownItems ? (
+                          <>
+                            <NavigationMenuTrigger
+                              className={cn(
+                                "hover:bg-primary-purple/20 flex items-center gap-1 rounded-full bg-transparent px-4 py-2 text-sm font-medium transition-colors",
+                                "data-[state=open]:bg-primary-purple/20 text-[#1a327e]",
+                                isActive && "bg-primary-purple/30"
+                              )}
+                            >
+                              {item.label}
+                            </NavigationMenuTrigger>
+                            <NavigationMenuContent asChild>
+                              <CustomMenuContent items={item.dropdownItems} />
+                            </NavigationMenuContent>
+                          </>
+                        ) : (
+                          <NavigationMenuLink
+                            asChild
                             className={cn(
-                              "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors bg-transparent hover:bg-primary-purple/20",
-                              "text-[#1a327e] data-[state=open]:bg-primary-purple/20"
+                              "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                              "text-primary-navy hover:bg-primary-purple/20",
+                              isActive && "bg-primary-purple/30"
                             )}
                           >
-                            {item.label}
-                          </NavigationMenuTrigger>
-                          <NavigationMenuContent asChild>
-                            <CustomMenuContent items={item.dropdownItems} />
-                          </NavigationMenuContent>
-                        </>
-                      ) : (
-                        <NavigationMenuLink
-                          asChild
-                          className={cn(
-                            "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                            "text-primary-navy hover:bg-primary-purple/20"
-                          )}
-                        >
-                          <Link href={item.href}>
-                            {item.label}
-                          </Link>
-                        </NavigationMenuLink>
-                      )}
-                    </NavigationMenuItem>
-                  ))}
+                            <Link href={item.href}>{item.label}</Link>
+                          </NavigationMenuLink>
+                        )}
+                      </NavigationMenuItem>
+                    )
+                  })}
                 </NavigationMenuList>
               </NavigationMenu>
             </div>
@@ -85,7 +93,7 @@ export function Header() {
               <Input
                 type="search"
                 placeholder="Search"
-                className="h-9 w-full rounded-[20px] border-slate-300 bg-white pl-3 pr-14 py-2 text-sm placeholder:text-slate-400"
+                className="h-9 w-full rounded-[20px] border-slate-300 bg-white py-2 pr-14 pl-3 text-sm placeholder:text-slate-400"
               />
             </div>
 
@@ -93,14 +101,14 @@ export function Header() {
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-navy text-white transition-colors hover:bg-primary-navy-light"
+                className="bg-primary-navy hover:bg-primary-navy-light flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors"
                 aria-label="Shopping cart"
               >
                 <ShoppingCart className="h-5 w-5" />
               </button>
               <button
                 type="button"
-                className="flex h-12 w-12 items-center justify-center rounded-full bg-primary-navy text-white transition-colors hover:bg-primary-navy-light"
+                className="bg-primary-navy hover:bg-primary-navy-light flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors"
                 aria-label="User account"
               >
                 <User className="h-5 w-5" />
