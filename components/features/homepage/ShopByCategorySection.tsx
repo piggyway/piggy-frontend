@@ -1,79 +1,92 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
-import { AnimatedSection } from './AnimatedSection';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { AnimatedSection } from "./AnimatedSection";
+import { CategoryService } from "@/lib/services";
+import type { Category } from "@/lib/types/models";
 
 export function ShopByCategorySection() {
-  const categories = [
-    {
-      id: 1,
-      title: 'Liners',
-      image: '/homepage-essentials/liner-example.png',
-      bgColor: 'bg-neutral-pink-background',
-      textColor: 'text-primary-navy'
-    },
-    {
-      id: 2,
-      title: 'Hut',
-      image: '/homepage-essentials/hut-example.png',
-      bgColor: 'bg-secondary-mint',
-      textColor: 'text-primary-navy'
-    },
-    {
-      id: 3,
-      title: 'C&C Cage',
-      image: '/homepage-essentials/cage-example.png',
-      bgColor: 'bg-primary-navy-light',
-      textColor: 'text-white'
-    },
-    {
-      id: 4,
-      title: 'Snacks',
-      image: '/homepage-essentials/snack-example.png',
-      bgColor: 'bg-neutral-grey-background',
-      textColor: 'text-primary-navy'
-    },
-    {
-      id: 5,
-      title: 'Combos',
-      image: '/homepage-essentials/combo-example.png',
-      bgColor: 'bg-primary-gold',
-      textColor: 'text-primary-navy'
-    },
-    {
-      id: 6,
-      title: 'Merch',
-      image: '/homepage-essentials/merch-example.png',
-      bgColor: 'bg-secondary-blue',
-      textColor: 'text-primary-navy'
+  // state management
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadCategories() {
+      try {
+        setLoading(true);
+
+        const data = await CategoryService.getCategories({
+          features: true,
+          limit: 6,
+        });
+
+        setCategories(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to load categories"
+        );
+      } finally {
+        setLoading(false);
+      }
     }
-  ];
+
+    loadCategories();
+  }, []);
+
+  // handle loading
+  if (loading) {
+    return (
+      <div className="container mx-auto py-20">
+        <div className="text-center">Loading categories...</div>
+      </div>
+    );
+  }
+
+  // handle error
+  if (error) {
+    return (
+      <div className="container mx-auto py-20">
+        <div className="text-center">Error: {error}</div>
+      </div>
+    );
+  }
+
+  // handle empty data
+  if (categories.length === 0) {
+    return (
+      <div className="container mx-auto py-20">
+        <div className="text-center">No categories available</div>
+      </div>
+    );
+  }
 
   return (
     <AnimatedSection className="w-full">
-      <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
+      <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* Title */}
         <div className="mb-8 sm:mb-10">
-          <p className="text-[20px] sm:text-[24px] font-normal text-primary-navy leading-[32px] mb-2">
+          <p className="text-primary-navy mb-2 text-[20px] leading-[32px] font-normal sm:text-[24px]">
             Shop by Category
           </p>
-          <h2 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy-light leading-[42px] tracking-[-0.21px]">
+          <h2 className="text-primary-navy-light text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
             Guinea Pig & Rabbit Essentials
           </h2>
         </div>
 
         {/* Category Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
           {categories.map((category) => (
             <Link
               key={category.id}
-              href="/shop-all"
-              className={`${category.bgColor} rounded-[28px] p-6 flex flex-col gap-5 hover:opacity-90 transition-opacity cursor-pointer`}
+              href={`/shop/${category.slug}`}
+              className={`${category.bgColor} rounded-extra-large flex cursor-pointer flex-col gap-5 p-6 transition-opacity hover:opacity-90`}
             >
               {/* Image */}
-              <div className="relative w-full h-[200px] rounded-[24px] overflow-hidden">
+              <div className="relative h-[200px] w-full overflow-hidden rounded-[24px]">
                 <Image
                   src={category.image}
                   alt={category.title}
@@ -84,14 +97,19 @@ export function ShopByCategorySection() {
 
               {/* Title and Arrow Button */}
               <div className="flex items-center justify-between gap-4">
-                <h3 className={`text-[20px] sm:text-[24px] font-semibold leading-[32px] ${category.textColor}`}>
+                <h3
+                  className={`text-[20px] leading-[32px] font-semibold sm:text-[24px] ${category.textColor}`}
+                >
                   {category.title}
                 </h3>
                 <div
-                  className="bg-white border border-neutral-stroke rounded-full p-3 flex items-center justify-center shrink-0"
+                  className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label={`View ${category.title}`}
                 >
-                  <ArrowUpRight className="w-[11px] h-[11px] text-primary-navy" strokeWidth={2} />
+                  <ArrowUpRight
+                    className="text-primary-navy h-[11px] w-[11px]"
+                    strokeWidth={2}
+                  />
                 </div>
               </div>
             </Link>
