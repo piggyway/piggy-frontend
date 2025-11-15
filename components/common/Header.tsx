@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { ShoppingCart, User, ChevronDown } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ShoppingCart, User, ChevronDown } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -12,13 +12,13 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "@/components/ui/navigation-menu"
-import { NavigationMenuContent as CustomMenuContent } from "@/components/ui/navigation-menu-content"
-import { headerNavigation } from "@/lib/types/navigation"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/navigation-menu";
+import { NavigationMenuContent as CustomMenuContent } from "@/components/ui/navigation-menu-content";
+import { headerNavigation } from "@/lib/types/navigation";
+import { cn } from "@/lib/utils";
 
 export function Header() {
-  const pathname = usePathname()
+  const pathname = usePathname();
   return (
     <header className="w-full bg-[#FFFBF5]">
       {/* Top Banner */}
@@ -37,6 +37,7 @@ export function Header() {
               src="/header-logo.png"
               alt="Piggy Way Crossing"
               fill
+              sizes="159px"
               className="object-contain"
               priority
             />
@@ -50,7 +51,7 @@ export function Header() {
                   {headerNavigation.map((item) => {
                     const isActive =
                       pathname === item.href ||
-                      pathname.startsWith(item.href + "/")
+                      pathname.startsWith(item.href + "/");
 
                     return (
                       <NavigationMenuItem key={item.href}>
@@ -82,7 +83,7 @@ export function Header() {
                           </NavigationMenuLink>
                         )}
                       </NavigationMenuItem>
-                    )
+                    );
                   })}
                 </NavigationMenuList>
               </NavigationMenu>
@@ -118,5 +119,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }
