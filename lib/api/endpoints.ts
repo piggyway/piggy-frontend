@@ -8,6 +8,10 @@ export const API_ENDPOINTS = {
   PRODUCTS: "/api/products",
   PRODUCT_BY_ID: (id: string | number) => `/api/products/${id}`,
 
+  // Categories
+  CATEGORIES: "/api/categories",
+  CATEGORY_BY_ID: (id: string | number) => `/api/categories/${id}`,
+
   // Add more endpoints as needed
   // Users
   // USERS: "/api/users",
