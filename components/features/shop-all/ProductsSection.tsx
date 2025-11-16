@@ -1,93 +1,150 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { X } from 'lucide-react';
-import { ProductCard } from '@/components/ui/product-card';
-import { AnimatedSection } from '@/components/features/homepage/AnimatedSection';
-import { cn } from '@/lib/utils';
+import { useEffect, useState } from "react";
+import { X } from "lucide-react";
+import { ProductCard } from "@/components/ui/product-card";
+import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
+import { Pagination, PaginationInfo } from "@/components/ui/pagination";
+import { ProductGridSkeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import { ProductService } from "@/lib/services/products";
+import type {
+  ProductListItem,
+  SortOption,
+  ProductListParams,
+} from "@/lib/types/product";
+import { SORT_OPTIONS } from "@/lib/types/product";
 
-type SortOption = 'featured' | 'price-low' | 'price-high';
-
-const sortOptions: { value: SortOption; label: string }[] = [
-  { value: 'featured', label: 'Featured' },
-  { value: 'price-low', label: 'Price: Low to High' },
-  { value: 'price-high', label: 'Price: High to Low' },
-];
+interface ProductsSectionProps {
+  category?: string;
+  sort?: SortOption;
+  page?: number;
+  pageSize?: number;
+  q?: string;
+  onSortChange?: (sort: SortOption) => void;
+  onPageChange?: (page: number) => void;
+}
 
 const productBackgrounds = [
-  'bg-[#e8e8f7]', // light purple
-  'bg-[#ececec]', // light gray
-  'bg-secondary-mint', // mint green
-  'bg-neutral-pink-background', // pink
-  'bg-[#e8e8f7]', // light purple
-  'bg-neutral-pink-background', // pink
-  'bg-[#e8e8f7]', // light purple
-  'bg-secondary-mint', // mint green
-  'bg-[#e8eef7]', // light blue-gray
+  "bg-[#e8e8f7]", // light purple
+  "bg-[#ececec]", // light gray
+  "bg-secondary-mint", // mint green
+  "bg-neutral-pink-background", // pink
+  "bg-[#e8e8f7]", // light purple
+  "bg-neutral-pink-background", // pink
+  "bg-[#e8e8f7]", // light purple
+  "bg-secondary-mint", // mint green
+  "bg-[#e8eef7]", // light blue-gray
 ];
 
-export function ProductsSection() {
-  const [sortBy, setSortBy] = useState<SortOption>('featured');
+export function ProductsSection({
+  category,
+  sort = "-date_created",
+  page = 1,
+  pageSize = 9,
+  q,
+  onSortChange,
+  onPageChange,
+}: ProductsSectionProps) {
+  const [products, setProducts] = useState<ProductListItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const products = Array.from({ length: 9 }, (_, i) => ({
-    id: i + 1,
-    title: 'Product name',
-    subtitle: 'Product name',
-    price: '$99.99',
-    image: '/default-product-image.png',
-    bgColor: productBackgrounds[i],
-  }));
+  // Fetch products when filters change
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      const params: ProductListParams = {
+        page,
+        page_size: pageSize,
+        sort,
+      };
+
+      if (category) {
+        params.category = category;
+      }
+
+      if (q) {
+        params.q = q;
+      }
+
+      try {
+        const response = await ProductService.getProducts(params);
+        setProducts(response.data);
+        setTotalItems(response.pagination.total);
+        setTotalPages(response.pagination.totalPages);
+      } catch (err) {
+        setError("Failed to load products. Please try again.");
+        console.error("Error fetching products:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [category, sort, page, pageSize, q]);
+
+  const handleSortChange = (newSort: SortOption) => {
+    setShowDropdown(false);
+    onSortChange?.(newSort);
+  };
 
   const clearSort = () => {
-    setSortBy('featured');
     setShowDropdown(false);
+    onSortChange?.("-date_created");
   };
+
+  const currentSortLabel =
+    SORT_OPTIONS.find((opt) => opt.value === sort)?.label || "Newest";
 
   return (
     <AnimatedSection>
       {/* Filter Bar */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex items-center justify-between">
         {/* Item Count */}
-        <p className="text-sm text-primary-navy">
-          <span className="font-semibold">{products.length}</span> Items
-        </p>
+        <PaginationInfo
+          currentPage={page}
+          pageSize={pageSize}
+          total={totalItems}
+        />
 
         {/* Sort Dropdown */}
         <div className="relative">
-          <div className="flex items-center gap-2 px-4 py-2 bg-primary-purple rounded-full">
+          <div className="bg-primary-purple flex items-center gap-2 rounded-full px-4 py-2">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="text-sm text-primary-navy font-medium"
+              className="text-primary-navy text-sm font-medium"
             >
-              Sort by: {sortOptions.find(opt => opt.value === sortBy)?.label}
+              Sort by: {currentSortLabel}
             </button>
-            {sortBy !== 'featured' && (
+            {sort !== "-date_created" && (
               <button
                 onClick={clearSort}
-                className="p-0.5 hover:bg-white/50 rounded-full transition-colors"
+                className="rounded-full p-0.5 transition-colors hover:bg-white/50"
                 aria-label="Clear sort"
               >
-                <X className="w-3 h-3 text-primary-navy" />
+                <X className="text-primary-navy h-3 w-3" />
               </button>
             )}
           </div>
 
           {/* Dropdown Menu */}
           {showDropdown && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-neutral-stroke z-10">
-              {sortOptions.map((option) => (
+            <div className="border-neutral-stroke absolute right-0 z-10 mt-2 w-48 rounded-lg border bg-white shadow-lg">
+              {SORT_OPTIONS.map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => {
-                    setSortBy(option.value);
-                    setShowDropdown(false);
-                  }}
+                  onClick={() => handleSortChange(option.value)}
                   className={cn(
-                    'w-full px-4 py-2 text-left text-sm transition-colors first:rounded-t-lg last:rounded-b-lg',
-                    sortBy === option.value
-                      ? 'bg-primary-purple text-primary-navy font-medium'
-                      : 'text-primary-navy hover:bg-neutral-background'
+                    "w-full px-4 py-2 text-left text-sm transition-colors first:rounded-t-lg last:rounded-b-lg",
+                    sort === option.value
+                      ? "bg-primary-purple text-primary-navy font-medium"
+                      : "text-primary-navy hover:bg-neutral-background"
                   )}
                 >
                   {option.label}
@@ -99,31 +156,63 @@ export function ProductsSection() {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        {products.map((product) => (
-          <div key={product.id} className={cn('rounded-[28px] p-0', product.bgColor)}>
-            <ProductCard
-              title={product.title}
-              subtitle={product.subtitle}
-              price={product.price}
-              image={product.image}
-              href="/shop/liner/example-product"
-              onAddToCart={() => console.log(`Add ${product.title} to cart`)}
-              className="bg-transparent"
-            />
+      {isLoading ? (
+        <ProductGridSkeleton count={pageSize} className="mb-8" />
+      ) : error ? (
+        <div className="mb-8 flex min-h-[300px] items-center justify-center rounded-[28px] bg-white p-8">
+          <div className="text-center">
+            <p className="text-primary-navy mb-4 text-lg">{error}</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline transition-colors"
+            >
+              Try Again
+            </button>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : products.length === 0 ? (
+        <div className="mb-8 flex min-h-[300px] items-center justify-center rounded-[28px] bg-white p-8">
+          <div className="text-center">
+            <p className="text-primary-navy text-lg">No products found</p>
+            <p className="mt-2 text-sm text-slate-500">
+              Try adjusting your filters or search criteria
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {products.map((product, index) => (
+            <div
+              key={product.id}
+              className={cn(
+                "rounded-[28px] p-0",
+                productBackgrounds[index % productBackgrounds.length]
+              )}
+            >
+              <ProductCard
+                title={product.title}
+                subtitle={product.subtitle}
+                price={product.formattedPrice}
+                image={product.imageUrl}
+                href={`/shop/${product.brand?.slug || "product"}/${product.slug}`}
+                onAddToCart={() => console.log(`Add ${product.title} to cart`)}
+                className="bg-transparent"
+              />
+            </div>
+          ))}
+        </div>
+      )}
 
-      {/* Load More Button */}
-      <div className="flex justify-center">
-        <button
-          onClick={() => console.log('Load more products')}
-          className="text-primary-navy font-medium hover:text-primary-navy-light transition-colors underline"
-        >
-          Loadmore
-        </button>
-      </div>
+      {/* Pagination */}
+      {!isLoading && !error && totalPages > 1 && (
+        <div className="flex justify-center">
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={(newPage) => onPageChange?.(newPage)}
+          />
+        </div>
+      )}
     </AnimatedSection>
   );
 }

@@ -29,7 +29,7 @@ export const colors = {
     400: "#94A3B8",
     900: "#0F172A",
   },
-} as const
+} as const;
 
 // Helper function to convert hex to oklch (simplified - using approximate values)
 // For production, you might want to use a proper color conversion library
@@ -59,5 +59,4 @@ export const colorsOklch = {
     400: "oklch(0.65 0.02 250)",
     900: "oklch(0.20 0.02 250)",
   },
-} as const
-
+} as const;

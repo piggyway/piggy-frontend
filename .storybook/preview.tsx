@@ -1,5 +1,5 @@
-import type { Preview } from '@storybook/react-vite';
-import '../app/globals.css';
+import type { Preview } from "@storybook/react-vite";
+import "../app/globals.css";
 
 const preview: Preview = {
   parameters: {
@@ -10,29 +10,29 @@ const preview: Preview = {
       },
     },
     a11y: {
-      test: 'todo',
+      test: "todo",
     },
     viewport: {
       viewports: {
         mobile: {
-          name: 'Mobile',
+          name: "Mobile",
           styles: {
-            width: '375px',
-            height: '667px',
+            width: "375px",
+            height: "667px",
           },
         },
         tablet: {
-          name: 'Tablet',
+          name: "Tablet",
           styles: {
-            width: '768px',
-            height: '1024px',
+            width: "768px",
+            height: "1024px",
           },
         },
         desktop: {
-          name: 'Desktop',
+          name: "Desktop",
           styles: {
-            width: '1440px',
-            height: '900px',
+            width: "1440px",
+            height: "900px",
           },
         },
       },
@@ -41,15 +41,15 @@ const preview: Preview = {
   decorators: [
     (Story) => {
       // Mock Next.js modules
-      if (typeof window !== 'undefined') {
+      if (typeof window !== "undefined") {
         // @ts-ignore
         window.next = {
           router: {
             push: () => {},
             replace: () => {},
-            pathname: '/',
+            pathname: "/",
             query: {},
-            asPath: '/',
+            asPath: "/",
           },
         };
       }
@@ -59,4 +59,3 @@ const preview: Preview = {
 };
 
 export default preview;
-

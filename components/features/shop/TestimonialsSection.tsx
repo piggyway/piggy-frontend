@@ -1,46 +1,49 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { AnimatedSection } from '../homepage/AnimatedSection';
+import Image from "next/image";
+import { AnimatedSection } from "../homepage/AnimatedSection";
 
 export function TestimonialsSection() {
   const testimonials = [
     {
       id: 1,
-      quote: "Bought one for the buns – they stopped sliding around and I love how quick it dries after a wash.",
+      quote:
+        "Bought one for the buns – they stopped sliding around and I love how quick it dries after a wash.",
       author: "Sophie L., Melbourne",
-      bgColor: 'bg-secondary-mint'
+      bgColor: "bg-secondary-mint",
     },
     {
       id: 2,
-      quote: "Finally a liner that doesn't hold onto fur. Looks neat, feels comfy, and saves me heaps of cleaning time.",
+      quote:
+        "Finally a liner that doesn't hold onto fur. Looks neat, feels comfy, and saves me heaps of cleaning time.",
       author: "Daniel W., Sydney",
-      bgColor: 'bg-[#fffcef]' // Light gold/beige
+      bgColor: "bg-[#fffcef]", // Light gold/beige
     },
     {
       id: 3,
-      quote: "My piggies love it – super soft and easy to keep clean. One shake and the hay's gone, too easy!",
+      quote:
+        "My piggies love it – super soft and easy to keep clean. One shake and the hay's gone, too easy!",
       author: "Eve R., Brisbane",
-      bgColor: 'bg-neutral-pink-background'
-    }
+      bgColor: "bg-neutral-pink-background",
+    },
   ];
 
   return (
     <AnimatedSection className="w-full">
-      <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
+      <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* Title with Icon */}
-        <div className="flex items-start justify-between gap-8 mb-8 sm:mb-10">
+        <div className="mb-8 flex items-start justify-between gap-8 sm:mb-10">
           <div className="flex-1">
-            <p className="text-lg sm:text-xl text-primary-navy leading-relaxed mb-2">
+            <p className="text-primary-navy mb-2 text-lg leading-relaxed sm:text-xl">
               Trusted by Parents
             </p>
-            <h2 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy-light leading-tight">
+            <h2 className="text-primary-navy-light text-[32px] leading-tight font-semibold sm:text-[42px]">
               Loved by Piggies
             </h2>
           </div>
           {/* Decorative Piggy Icon */}
-          <div className="hidden lg:block ml-8">
-            <div className="w-20 h-20 relative">
+          <div className="ml-8 hidden lg:block">
+            <div className="relative h-20 w-20">
               <Image
                 src="/pet-care-tips/default1-2.png"
                 alt="Piggy mascot"
@@ -53,28 +56,28 @@ export function TestimonialsSection() {
         </div>
 
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {testimonials.map((testimonial) => (
             <div
               key={testimonial.id}
-              className={`${testimonial.bgColor} rounded-[28px] p-6 flex flex-col gap-5 min-h-[280px]`}
+              className={`${testimonial.bgColor} flex min-h-[280px] flex-col gap-5 rounded-[28px] p-6`}
             >
               {/* Quote with decorative quotes */}
-              <div className="flex gap-0 items-start text-primary-navy">
-                <span className="text-[42px] font-semibold leading-[42px] tracking-[-0.21px] w-[30px] shrink-0">
+              <div className="text-primary-navy flex items-start gap-0">
+                <span className="w-[30px] shrink-0 text-[42px] leading-[42px] font-semibold tracking-[-0.21px]">
                   "
                 </span>
-                <p className="flex-1 text-[20px] font-medium leading-[24px]">
+                <p className="flex-1 text-[20px] leading-[24px] font-medium">
                   {testimonial.quote}
                 </p>
-                <span className="text-[42px] font-semibold leading-[0px] tracking-[-0.21px] w-[20px] shrink-0 self-end">
+                <span className="w-[20px] shrink-0 self-end text-[42px] leading-[0px] font-semibold tracking-[-0.21px]">
                   "
                 </span>
               </div>
 
               {/* Author */}
               <div className="mt-auto">
-                <p className="text-[24px] font-semibold text-primary-navy leading-[32px]">
+                <p className="text-primary-navy text-[24px] leading-[32px] font-semibold">
                   {testimonial.author}
                 </p>
               </div>

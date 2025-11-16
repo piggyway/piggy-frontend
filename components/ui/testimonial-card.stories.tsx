@@ -68,11 +68,12 @@ export const ShortQuote: Story = {
 
 export const MultipleCards: Story = {
   args: {
-    quote: "My piggies love it – super soft and easy to keep clean. One shake and the hay's gone, too easy!",
+    quote:
+      "My piggies love it – super soft and easy to keep clean. One shake and the hay's gone, too easy!",
     author: "Eve R.",
   },
   render: () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+    <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       <TestimonialCard
         quote="My piggies love it – super soft and easy to keep clean. One shake and the hay's gone, too easy!"
         author="Eve R."
@@ -91,4 +92,3 @@ export const MultipleCards: Story = {
     </div>
   ),
 };
-

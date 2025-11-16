@@ -68,8 +68,8 @@ export const WithContentBelow: Story = {
     <div className="min-h-screen bg-gray-50">
       <Header />
       <div className="p-8">
-        <h1 className="text-2xl font-bold mb-4">Page Content</h1>
-        <p className="text-gray-600 mb-4">
+        <h1 className="mb-4 text-2xl font-bold">Page Content</h1>
+        <p className="mb-4 text-gray-600">
           This demonstrates how the header looks with content below it. The
           dropdown menu will appear above this content when opened.
         </p>

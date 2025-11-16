@@ -43,7 +43,7 @@ export const Default: Story = {
 export const Variants: Story = {
   render: () => (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         <Button variant="default">Default</Button>
         <Button variant="destructive">Destructive</Button>
         <Button variant="outline">Outline</Button>
@@ -57,7 +57,7 @@ export const Variants: Story = {
 
 export const Sizes: Story = {
   render: () => (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       <Button size="sm">Small</Button>
       <Button size="default">Default</Button>
       <Button size="lg">Large</Button>
@@ -67,7 +67,7 @@ export const Sizes: Story = {
 
 export const WithIcon: Story = {
   render: () => (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       <Button>
         <ShoppingCart className="size-4" />
         Add to Cart
@@ -86,7 +86,7 @@ export const WithIcon: Story = {
 
 export const IconOnly: Story = {
   render: () => (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       <Button size="icon">
         <ShoppingCart className="size-4" />
       </Button>
@@ -102,7 +102,7 @@ export const IconOnly: Story = {
 
 export const Disabled: Story = {
   render: () => (
-    <div className="flex gap-2 items-center">
+    <div className="flex items-center gap-2">
       <Button disabled>Disabled Default</Button>
       <Button variant="outline" disabled>
         Disabled Outline
@@ -113,4 +113,3 @@ export const Disabled: Story = {
     </div>
   ),
 };
-

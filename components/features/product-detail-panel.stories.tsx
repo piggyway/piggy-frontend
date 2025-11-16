@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite"
-import { ProductDetailPanel } from "./product-detail-panel"
-import { getFigmaUrl } from "../../.storybook/figma.config"
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ProductDetailPanel } from "./product-detail-panel";
+import { getFigmaUrl } from "../../.storybook/figma.config";
 
 const meta = {
   title: "Features/ProductDetailPanel",
@@ -51,36 +51,37 @@ const meta = {
       description: "Callback when add to cart is clicked",
     },
   },
-} satisfies Meta<typeof ProductDetailPanel>
+} satisfies Meta<typeof ProductDetailPanel>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 const defaultBreadcrumbs = [
   { label: "HOME", href: "/" },
   { label: "Liner", href: "/shop/liner" },
   { label: "Xie xie meow 5 gen Liner" },
-]
+];
 
 const defaultColors = [
   { value: "mint", label: "Mint", color: "#e1f2ef" },
   { value: "pink", label: "Piggy Party", color: "#fcb1c1" },
   { value: "blue", label: "Baby Blue", color: "#d4e7f3" },
   { value: "navy", label: "Navy", color: "#405aab" },
-]
+];
 
 const defaultSizes = [
-  { value: "small", label: "Small (24\" x 18\")" },
-  { value: "medium", label: "Medium (30\" x 24\")" },
-  { value: "large", label: "Large (36\" x 30\")" },
-  { value: "xlarge", label: "X-Large (48\" x 36\")" },
-]
+  { value: "small", label: 'Small (24" x 18")' },
+  { value: "medium", label: 'Medium (30" x 24")' },
+  { value: "large", label: 'Large (36" x 30")' },
+  { value: "xlarge", label: 'X-Large (48" x 36")' },
+];
 
 export const Default: Story = {
   args: {
     breadcrumbs: defaultBreadcrumbs,
     title: "Xie xie meow 5 gen Liner",
-    description: "Eco-friendly, washable liners designed for guinea pigs & rabbits! Perfect for happy piggies and bunnies every day.",
+    description:
+      "Eco-friendly, washable liners designed for guinea pigs & rabbits! Perfect for happy piggies and bunnies every day.",
     price: "From $99.99",
     colors: defaultColors,
     sizes: defaultSizes,
@@ -89,5 +90,4 @@ export const Default: Story = {
     quantity: 0,
     sizeGuideLink: "/size-guide",
   },
-}
-
+};

@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { ChevronDown, ChevronUp } from "lucide-react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export interface CollapsibleProps {
-  title: string
-  children: React.ReactNode
-  defaultOpen?: boolean
-  className?: string
+  title: string;
+  children: React.ReactNode;
+  defaultOpen?: boolean;
+  className?: string;
 }
 
 export function Collapsible({
@@ -17,52 +17,47 @@ export function Collapsible({
   defaultOpen = false,
   className,
 }: CollapsibleProps) {
-  const [isOpen, setIsOpen] = React.useState(defaultOpen)
+  const [isOpen, setIsOpen] = React.useState(defaultOpen);
 
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-2 items-center w-full",
-        className
-      )}
-    >
+    <div className={cn("flex w-full flex-col items-center gap-2", className)}>
       {/* Header */}
       <div
-        className="flex gap-2 items-center pl-4 pr-0 py-0 w-full cursor-pointer"
+        className="flex w-full cursor-pointer items-center gap-2 py-0 pr-0 pl-4"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="flex-1 min-w-0">
-          <p className="text-xl font-medium leading-6 text-primary-purple">
+        <div className="min-w-0 flex-1">
+          <p className="text-primary-purple text-xl leading-6 font-medium">
             {title}
           </p>
         </div>
         <button
           type="button"
-          className="bg-white flex items-center justify-center p-2 rounded-[20px] shrink-0"
+          className="flex shrink-0 items-center justify-center rounded-[20px] bg-white p-2"
           aria-label={isOpen ? "Collapse" : "Expand"}
         >
           {isOpen ? (
-            <ChevronUp className="size-2.5 text-primary-navy" />
+            <ChevronUp className="text-primary-navy size-2.5" />
           ) : (
-            <ChevronDown className="size-2.5 text-primary-navy" />
+            <ChevronDown className="text-primary-navy size-2.5" />
           )}
         </button>
       </div>
 
       {/* Content */}
       {isOpen && (
-        <div className="flex flex-col gap-1.5 items-start w-full">
+        <div className="flex w-full flex-col items-start gap-1.5">
           {children}
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export interface CollapsibleItemProps {
-  title: string
-  description: string
-  className?: string
+  title: string;
+  description: string;
+  className?: string;
 }
 
 export function CollapsibleItem({
@@ -71,27 +66,21 @@ export function CollapsibleItem({
   className,
 }: CollapsibleItemProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-1.5 items-start w-full",
-        className
-      )}
-    >
-      <p className="text-sm font-medium leading-5 text-slate-900">{title}</p>
-      <div className="flex gap-2 items-start w-full">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center px-3 py-2 rounded-md w-full">
-            <div className="flex-1 min-w-0 text-sm leading-5 text-white">
-              <p className="font-semibold mb-0">{title}</p>
+    <div className={cn("flex w-full flex-col items-start gap-1.5", className)}>
+      <p className="text-sm leading-5 font-medium text-slate-900">{title}</p>
+      <div className="flex w-full items-start gap-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex w-full items-center rounded-md px-3 py-2">
+            <div className="min-w-0 flex-1 text-sm leading-5 text-white">
+              <p className="mb-0 font-semibold">{title}</p>
               <p className="font-normal">{description}</p>
             </div>
           </div>
         </div>
       </div>
-      <p className="text-sm font-normal leading-5 text-slate-500">
+      <p className="text-sm leading-5 font-normal text-slate-500">
         {description}
       </p>
     </div>
-  )
+  );
 }
-

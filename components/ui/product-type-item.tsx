@@ -1,14 +1,14 @@
-import * as React from "react"
-import Image from "next/image"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export interface ProductTypeItemProps {
-  icon?: React.ReactNode
-  iconSrc?: string
-  label: string
-  selected?: boolean
-  onClick?: () => void
-  className?: string
+  icon?: React.ReactNode;
+  iconSrc?: string;
+  label: string;
+  selected?: boolean;
+  onClick?: () => void;
+  className?: string;
 }
 
 export function ProductTypeItem({
@@ -22,15 +22,15 @@ export function ProductTypeItem({
   return (
     <div
       className={cn(
-        "bg-white flex flex-col gap-1 items-start p-3 rounded-md cursor-pointer transition-colors",
-        selected && "ring-2 ring-primary-purple",
+        "flex cursor-pointer flex-col items-start gap-1 rounded-md bg-white p-3 transition-colors",
+        selected && "ring-primary-purple ring-2",
         className
       )}
       onClick={onClick}
     >
-      <div className="flex flex-col gap-1 items-start w-full">
+      <div className="flex w-full flex-col items-start gap-1">
         {(icon || iconSrc) && (
-          <div className="relative shrink-0 size-6 flex items-center justify-center">
+          <div className="relative flex size-6 shrink-0 items-center justify-center">
             {iconSrc ? (
               <Image
                 src={iconSrc}
@@ -44,11 +44,10 @@ export function ProductTypeItem({
             )}
           </div>
         )}
-        <p className="text-sm font-normal leading-6 text-primary-navy min-w-full text-center">
+        <p className="text-primary-navy min-w-full text-center text-sm leading-6 font-normal">
           {label}
         </p>
       </div>
     </div>
-  )
+  );
 }
-

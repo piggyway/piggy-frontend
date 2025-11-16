@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { ShoppingCart, User, ChevronDown } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
+import { ShoppingCart, User, ChevronDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
   NavigationMenu,
@@ -19,12 +20,49 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Read search query from URL if on shop-all page
+  useEffect(() => {
+    if (pathname === "/shop-all") {
+      const q = searchParams.get("q") || "";
+      setSearchQuery(q);
+    } else {
+      setSearchQuery("");
+    }
+  }, [pathname, searchParams]);
+
+  // Handle search form submission
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery) {
+      router.push(`/shop-all?q=${encodeURIComponent(trimmedQuery)}`);
+    } else {
+      router.push("/shop-all");
+    }
+  };
+
+  // Handle Enter key in search input
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const trimmedQuery = searchQuery.trim();
+      if (trimmedQuery) {
+        router.push(`/shop-all?q=${encodeURIComponent(trimmedQuery)}`);
+      } else {
+        router.push("/shop-all");
+      }
+    }
+  };
   return (
     <header className="w-full bg-[#FFFBF5]">
       {/* Top Banner */}
       <div className="bg-primary-purple py-3 text-center">
         <p className="text-primary-navy text-sm font-medium">
-          Free shipping over $999 XXX area
+          Free shipping over $99
         </p>
       </div>
 
@@ -90,13 +128,28 @@ export function Header() {
             </div>
 
             {/* Search Bar */}
-            <div className="ml-auto w-[184px] shrink-0">
-              <Input
-                type="search"
-                placeholder="Search"
-                className="h-9 w-full rounded-[20px] border-slate-300 bg-white py-2 pr-14 pl-3 text-sm placeholder:text-slate-400"
-              />
-            </div>
+            <form
+              onSubmit={handleSearchSubmit}
+              className="ml-auto w-[184px] shrink-0"
+            >
+              <div className="relative">
+                <Input
+                  type="search"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={handleSearchKeyDown}
+                  className="h-9 w-full rounded-[20px] border-slate-300 bg-white py-2 pr-10 pl-3 text-sm placeholder:text-slate-400"
+                />
+                <button
+                  type="submit"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary-navy transition-colors"
+                  aria-label="Search"
+                >
+                  <Search className="h-4 w-4" />
+                </button>
+              </div>
+            </form>
 
             {/* Action Buttons */}
             <div className="flex items-center gap-3">

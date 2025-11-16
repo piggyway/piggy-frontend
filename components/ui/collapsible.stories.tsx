@@ -33,15 +33,15 @@ export const Default: Story = {
     title: "Product Features",
     defaultOpen: false,
     children: (
-      <div className="flex flex-col gap-1.5 w-full">
-        <div className="text-sm text-slate-900 p-3 bg-slate-100 rounded-md">
-          <p className="font-semibold mb-1">Washable & reusable liner</p>
+      <div className="flex w-full flex-col gap-1.5">
+        <div className="rounded-md bg-slate-100 p-3 text-sm text-slate-900">
+          <p className="mb-1 font-semibold">Washable & reusable liner</p>
           <p className="font-normal text-slate-600">
             Easy to clean, eco-friendly, and cost-saving
           </p>
         </div>
-        <div className="text-sm text-slate-900 p-3 bg-slate-100 rounded-md">
-          <p className="font-semibold mb-1">Soft & comfy surface</p>
+        <div className="rounded-md bg-slate-100 p-3 text-sm text-slate-900">
+          <p className="mb-1 font-semibold">Soft & comfy surface</p>
           <p className="font-normal text-slate-600">
             Gentle on guinea pig & rabbit paws, adds daily comfort
           </p>
@@ -56,15 +56,15 @@ export const OpenByDefault: Story = {
     title: "Product Features",
     defaultOpen: true,
     children: (
-      <div className="flex flex-col gap-1.5 w-full">
-        <div className="text-sm text-slate-900 p-3 bg-slate-100 rounded-md">
-          <p className="font-semibold mb-1">Multi-layer absorbent</p>
+      <div className="flex w-full flex-col gap-1.5">
+        <div className="rounded-md bg-slate-100 p-3 text-sm text-slate-900">
+          <p className="mb-1 font-semibold">Multi-layer absorbent</p>
           <p className="font-normal text-slate-600">
             Keeps cages dry, reduces cleaning time
           </p>
         </div>
-        <div className="text-sm text-slate-900 p-3 bg-slate-100 rounded-md">
-          <p className="font-semibold mb-1">Perfect fit for C&C cages</p>
+        <div className="rounded-md bg-slate-100 p-3 text-sm text-slate-900">
+          <p className="mb-1 font-semibold">Perfect fit for C&C cages</p>
           <p className="font-normal text-slate-600">
             Designed for guinea pig & rabbit housing systems
           </p>
@@ -80,26 +80,26 @@ export const MultipleSections: Story = {
     children: null,
   },
   render: () => (
-    <div className="flex flex-col gap-2 w-full max-w-md">
+    <div className="flex w-full max-w-md flex-col gap-2">
       <Collapsible title="Product Features" defaultOpen={true}>
-        <div className="text-sm text-slate-900 p-3 bg-slate-100 rounded-md">
-          <p className="font-semibold mb-1">Washable & reusable liner</p>
+        <div className="rounded-md bg-slate-100 p-3 text-sm text-slate-900">
+          <p className="mb-1 font-semibold">Washable & reusable liner</p>
           <p className="font-normal text-slate-600">
             Easy to clean, eco-friendly, and cost-saving
           </p>
         </div>
       </Collapsible>
       <Collapsible title="Care Instructions" defaultOpen={false}>
-        <div className="text-sm text-slate-900 p-3 bg-slate-100 rounded-md">
-          <p className="font-semibold mb-1">Machine washable</p>
+        <div className="rounded-md bg-slate-100 p-3 text-sm text-slate-900">
+          <p className="mb-1 font-semibold">Machine washable</p>
           <p className="font-normal text-slate-600">
             Wash at 30°C, gentle cycle, air dry
           </p>
         </div>
       </Collapsible>
       <Collapsible title="Specifications" defaultOpen={false}>
-        <div className="text-sm text-slate-900 p-3 bg-slate-100 rounded-md">
-          <p className="font-semibold mb-1">Dimensions</p>
+        <div className="rounded-md bg-slate-100 p-3 text-sm text-slate-900">
+          <p className="mb-1 font-semibold">Dimensions</p>
           <p className="font-normal text-slate-600">
             60cm x 120cm, fits standard C&C cages
           </p>
@@ -108,4 +108,3 @@ export const MultipleSections: Story = {
     </div>
   ),
 };
-

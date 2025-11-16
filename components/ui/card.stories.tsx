@@ -44,7 +44,9 @@ export const WithAction: Story = {
     <Card className="w-[400px]">
       <CardHeader>
         <CardTitle>Card with Action</CardTitle>
-        <CardDescription>This card has an action button in the header</CardDescription>
+        <CardDescription>
+          This card has an action button in the header
+        </CardDescription>
         <CardAction>
           <Button variant="ghost" size="icon">
             ×
@@ -76,10 +78,10 @@ export const ProductCard: Story = {
         <CardDescription>Product description</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="aspect-video bg-primary-purple-light rounded-lg mb-4 flex items-center justify-center">
+        <div className="bg-primary-purple-light mb-4 flex aspect-video items-center justify-center rounded-lg">
           <span className="text-primary-navy">Product Image</span>
         </div>
-        <p className="text-2xl font-semibold text-primary-navy">$99.99</p>
+        <p className="text-primary-navy text-2xl font-semibold">$99.99</p>
       </CardContent>
       <CardFooter>
         <Button className="w-full">Add to Cart</Button>
@@ -87,4 +89,3 @@ export const ProductCard: Story = {
     </Card>
   ),
 };
-

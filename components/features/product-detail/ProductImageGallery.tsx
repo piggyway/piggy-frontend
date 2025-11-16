@@ -1,30 +1,33 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Image from 'next/image';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 interface ProductImageGalleryProps {
   images: string[];
   productName: string;
 }
 
-export function ProductImageGallery({ images, productName }: ProductImageGalleryProps) {
+export function ProductImageGallery({
+  images,
+  productName,
+}: ProductImageGalleryProps) {
   const [selectedImage, setSelectedImage] = useState(0);
 
   return (
     <div className="flex gap-4">
       {/* Thumbnail List */}
-      <div className="flex flex-col gap-4 w-24 shrink-0">
+      <div className="flex w-24 shrink-0 flex-col gap-4">
         {images.map((image, index) => (
           <button
             key={index}
             onClick={() => setSelectedImage(index)}
             className={cn(
-              'relative aspect-square rounded-[20px] overflow-hidden border-2 transition-all',
+              "relative aspect-square overflow-hidden rounded-[20px] border-2 transition-all",
               selectedImage === index
-                ? 'border-primary-navy'
-                : 'border-neutral-stroke hover:border-primary-navy/50'
+                ? "border-primary-navy"
+                : "border-neutral-stroke hover:border-primary-navy/50"
             )}
           >
             <Image
@@ -39,7 +42,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
       </div>
 
       {/* Main Image */}
-      <div className="flex-1 relative aspect-[4/3] rounded-[28px] overflow-hidden bg-neutral-stroke">
+      <div className="bg-neutral-stroke relative aspect-[4/3] flex-1 overflow-hidden rounded-[28px]">
         <Image
           src={images[selectedImage]}
           alt={productName}

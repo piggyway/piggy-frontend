@@ -1,16 +1,16 @@
-import React from "react"
-import Link from "next/link"
-import { NavigationMenuLink } from "@/components/ui/navigation-menu"
+import React from "react";
+import Link from "next/link";
+import { NavigationMenuLink } from "@/components/ui/navigation-menu";
 
 export interface NavigationMenuContentItemProps {
-  title: string
-  description?: string
-  href?: string
+  title: string;
+  description?: string;
+  href?: string;
 }
 
 export interface NavigationMenuContentProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  items: NavigationMenuContentItemProps[]
+  items: NavigationMenuContentItemProps[];
 }
 
 export const NavigationMenuContent = React.forwardRef<
@@ -39,8 +39,8 @@ export const NavigationMenuContent = React.forwardRef<
         />
       ))}
     </div>
-  )
-})
+  );
+});
 
 function NavigationMenuContentItem({
   title,

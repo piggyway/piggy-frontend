@@ -82,7 +82,7 @@ export function ShopByCategorySection() {
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/shop/${category.slug}`}
+              href={`/shop-all?category=${category.slug}`}
               className={`${category.bgColor} rounded-extra-large flex cursor-pointer flex-col gap-5 p-6 transition-opacity hover:opacity-90`}
             >
               {/* Image */}

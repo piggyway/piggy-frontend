@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import Image from "next/image"
-import { Collapsible } from "@/components/ui/collapsible"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import Image from "next/image";
+import { Collapsible } from "@/components/ui/collapsible";
+import { cn } from "@/lib/utils";
 
 export interface ProductFeature {
-  title: string
-  description: string
+  title: string;
+  description: string;
 }
 
 export interface ProductInformationSectionProps {
-  features?: ProductFeature[]
-  specifications?: ProductFeature[]
-  careInstructions?: ProductFeature[]
-  imageSrc?: string
-  className?: string
+  features?: ProductFeature[];
+  specifications?: ProductFeature[];
+  careInstructions?: ProductFeature[];
+  imageSrc?: string;
+  className?: string;
 }
 
 const defaultFeatures: ProductFeature[] = [
@@ -39,7 +39,7 @@ const defaultFeatures: ProductFeature[] = [
     title: "Eco-conscious alternative",
     description: "Reduces disposable bedding waste and saves money",
   },
-]
+];
 
 export function ProductInformationSection({
   features = defaultFeatures,
@@ -51,32 +51,34 @@ export function ProductInformationSection({
   return (
     <div
       className={cn(
-        "bg-primary-navy flex flex-col gap-10 p-10 rounded-[32px] w-full",
+        "bg-primary-navy flex w-full flex-col gap-10 rounded-[32px] p-10",
         className
       )}
     >
       {/* Title */}
-      <div className="flex gap-10 items-center w-full">
-        <div className="flex-1 min-w-0">
-          <h2 className="text-[32px] font-semibold leading-10 text-primary-gold">
+      <div className="flex w-full items-center gap-10">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-primary-gold text-[32px] leading-10 font-semibold">
             Product Information
           </h2>
         </div>
       </div>
 
       {/* Content */}
-      <div className="flex gap-10 items-start">
+      <div className="flex items-start gap-10">
         {/* Left Column - Collapsibles - FIXED WIDTH */}
-        <div className="flex flex-col gap-6 w-[520px] shrink-0">
+        <div className="flex w-[520px] shrink-0 flex-col gap-6">
           {/* Product Features */}
           {features.length > 0 && (
             <Collapsible title="Product Features" defaultOpen={true}>
-              <div className="flex flex-col gap-6 w-full">
+              <div className="flex w-full flex-col gap-6">
                 {features.map((feature, index) => (
                   <div key={index} className="w-full">
                     <div className="text-sm leading-5 text-white">
-                      <p className="font-semibold mb-0">{feature.title}</p>
-                      <p className="font-normal break-words whitespace-normal">{feature.description}</p>
+                      <p className="mb-0 font-semibold">{feature.title}</p>
+                      <p className="font-normal break-words whitespace-normal">
+                        {feature.description}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -85,14 +87,19 @@ export function ProductInformationSection({
           )}
 
           {/* Specifications */}
-          <Collapsible title="Specifications" defaultOpen={specifications.length > 0}>
+          <Collapsible
+            title="Specifications"
+            defaultOpen={specifications.length > 0}
+          >
             {specifications.length > 0 && (
-              <div className="flex flex-col gap-6 w-full">
+              <div className="flex w-full flex-col gap-6">
                 {specifications.map((spec, index) => (
                   <div key={index} className="w-full">
                     <div className="text-sm leading-5 text-white">
-                      <p className="font-semibold mb-0">{spec.title}</p>
-                      <p className="font-normal break-words whitespace-normal">{spec.description}</p>
+                      <p className="mb-0 font-semibold">{spec.title}</p>
+                      <p className="font-normal break-words whitespace-normal">
+                        {spec.description}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -101,14 +108,19 @@ export function ProductInformationSection({
           </Collapsible>
 
           {/* Care Instructions */}
-          <Collapsible title="How to Use / Care Instructions" defaultOpen={careInstructions.length > 0}>
+          <Collapsible
+            title="How to Use / Care Instructions"
+            defaultOpen={careInstructions.length > 0}
+          >
             {careInstructions.length > 0 && (
-              <div className="flex flex-col gap-6 w-full">
+              <div className="flex w-full flex-col gap-6">
                 {careInstructions.map((instruction, index) => (
                   <div key={index} className="w-full">
                     <div className="text-sm leading-5 text-white">
-                      <p className="font-semibold mb-0">{instruction.title}</p>
-                      <p className="font-normal break-words whitespace-normal">{instruction.description}</p>
+                      <p className="mb-0 font-semibold">{instruction.title}</p>
+                      <p className="font-normal break-words whitespace-normal">
+                        {instruction.description}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -118,8 +130,8 @@ export function ProductInformationSection({
         </div>
 
         {/* Right Column - Image */}
-        <div className="bg-secondary-mint flex items-center justify-center h-[528px] flex-1 rounded-[24px] p-10">
-          <div className="relative w-full h-full">
+        <div className="bg-secondary-mint flex h-[528px] flex-1 items-center justify-center rounded-[24px] p-10">
+          <div className="relative h-full w-full">
             <Image
               src={imageSrc}
               alt="Product"
@@ -130,6 +142,5 @@ export function ProductInformationSection({
         </div>
       </div>
     </div>
-  )
+  );
 }
-

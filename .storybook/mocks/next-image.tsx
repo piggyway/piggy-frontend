@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 // Mock Next.js Image component for Storybook
 const Image = ({ src, alt, fill, priority, className, ...props }: any) => {
@@ -8,7 +8,7 @@ const Image = ({ src, alt, fill, priority, className, ...props }: any) => {
         src={src}
         alt={alt}
         className={className}
-        style={{ position: 'absolute', inset: 0, objectFit: 'contain' }}
+        style={{ position: "absolute", inset: 0, objectFit: "contain" }}
         {...props}
       />
     );
@@ -17,4 +17,3 @@ const Image = ({ src, alt, fill, priority, className, ...props }: any) => {
 };
 
 export default Image;
-
