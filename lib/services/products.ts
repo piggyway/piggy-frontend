@@ -130,6 +130,7 @@ export class ProductService {
       formattedPrice: this.formatPrice(price, currencySlug),
       currency: product.currency,
       brand: product.brand,
+      category: product.category || null,
       imageUrl: product.image_url || DEFAULT_PRODUCT_IMAGE,
       variantsCount: product.variants_count,
       isFeatured: product.is_featured,

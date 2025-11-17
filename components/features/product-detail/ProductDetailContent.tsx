@@ -154,9 +154,9 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+    <article className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
       {/* Left: Image Gallery */}
-      <div className="flex gap-4">
+      <section aria-label="Product gallery" className="flex gap-4">
         {/* Thumbnail List */}
         <div className="flex w-24 shrink-0 flex-col gap-4">
           {product.images.map((image, index) => (
@@ -194,10 +194,10 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             priority
           />
         </div>
-      </div>
+      </section>
 
       {/* Right: Product Details */}
-      <div className="flex flex-col gap-6">
+      <section aria-label="Product details" className="flex flex-col gap-6">
         {/* Breadcrumbs */}
         <nav className="flex items-center gap-2 text-sm">
           <Link
@@ -220,7 +220,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         </nav>
 
         {/* Product Name and Description */}
-        <div>
+        <header>
           <h1 className="text-primary-navy-light mb-3 text-[28px] leading-tight font-semibold sm:text-[32px]">
             {product.title}{" "}
             {product.subtitle && (
@@ -230,7 +230,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
           <p className="text-primary-navy text-base leading-relaxed">
             {product.description}
           </p>
-        </div>
+        </header>
 
         {/* Price */}
         <div className="flex items-center gap-3">
@@ -256,9 +256,9 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         {product.options.map((option) => (
           <div key={option.id}>
             <div className="mb-4 flex items-center gap-3">
-              <h3 className="text-primary-navy-light text-lg font-semibold">
+              <h2 className="text-primary-navy-light text-lg font-semibold">
                 {option.name}
-              </h3>
+              </h2>
               <button className="text-primary-navy hover:text-primary-navy-light flex items-center gap-1 text-sm transition-colors">
                 <HelpCircle className="h-4 w-4" />
                 Size guide
@@ -379,7 +379,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             {isInStock ? "Add to cart" : "Out of Stock"}
           </Button>
         </div>
-      </div>
-    </div>
+      </section>
+    </article>
   );
 }

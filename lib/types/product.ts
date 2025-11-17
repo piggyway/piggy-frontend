@@ -74,6 +74,7 @@ export interface ProductListItemFromAPI {
   base_price: number | null;
   currency: CurrencyInfo | null;
   brand: BrandInfo | null;
+  category: CategoryInfo | null;
   image_url: string | null;
   variants_count: number;
   is_featured: boolean;
@@ -111,6 +112,7 @@ export interface ProductListItem {
   formattedPrice: string;
   currency: CurrencyInfo | null;
   brand: BrandInfo | null;
+  category: CategoryInfo | null;
   imageUrl: string;
   variantsCount: number;
   isFeatured: boolean;
