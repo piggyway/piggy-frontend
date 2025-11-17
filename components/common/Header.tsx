@@ -143,7 +143,7 @@ export function Header() {
                 />
                 <button
                   type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-primary-navy transition-colors"
+                  className="hover:text-primary-navy absolute top-1/2 right-2 -translate-y-1/2 text-slate-400 transition-colors"
                   aria-label="Search"
                 >
                   <Search className="h-4 w-4" />

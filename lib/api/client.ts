@@ -7,8 +7,6 @@ interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
 }
 
-
-
 /**
  * Get base URL for API requests
  * In server-side context, we need absolute URL

@@ -29,7 +29,9 @@ export default function ShopAllPage() {
       </div>
 
       {/* Starter Kits Section */}
-      <StarterKitsSection />
+      <Suspense fallback={<div className="h-[400px]" />}>
+        <StarterKitsSection />
+      </Suspense>
     </div>
   );
 }

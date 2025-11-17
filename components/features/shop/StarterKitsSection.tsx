@@ -1,32 +1,20 @@
-"use client";
-
-import { ProductCard } from "@/components/ui/product-card";
 import { AnimatedSection } from "../homepage/AnimatedSection";
+import { ProductService } from "@/lib/services/products";
+import { ProductCardClient } from "./ProductCardClient";
 
-export function StarterKitsSection() {
-  const products = [
-    {
-      id: 1,
-      title: "Product name",
-      subtitle: "Product name",
-      price: "$99.99",
-      image: "/default-product-image.png",
-    },
-    {
-      id: 2,
-      title: "Product name",
-      subtitle: "Product name",
-      price: "$99.99",
-      image: "/default-product-image.png",
-    },
-    {
-      id: 3,
-      title: "Product name",
-      subtitle: "Product name",
-      price: "$99.99",
-      image: "/default-product-image.png",
-    },
-  ];
+export async function StarterKitsSection() {
+  // Fetch 3 most recently updated products
+  const response = await ProductService.getProducts({
+    sort: "-date_created", // Sort by creation date descending (newest first)
+    page_size: 3,
+  });
+
+  const products = response.data;
+
+  // If no products, return null
+  if (products.length === 0) {
+    return null;
+  }
 
   return (
     <AnimatedSection className="w-full">
@@ -44,14 +32,7 @@ export function StarterKitsSection() {
         {/* Products Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
-            <ProductCard
-              key={product.id}
-              title={product.title}
-              subtitle={product.subtitle}
-              price={product.price}
-              image={product.image}
-              onAddToCart={() => console.log(`Add ${product.title} to cart`)}
-            />
+            <ProductCardClient key={product.id} product={product} />
           ))}
         </div>
       </div>
