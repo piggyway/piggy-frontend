@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 // Mock Next.js Link component for Storybook
 const Link = ({ children, href, className, ...props }: any) => {
@@ -10,4 +10,3 @@ const Link = ({ children, href, className, ...props }: any) => {
 };
 
 export default Link;
-

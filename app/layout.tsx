@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Outfit } from "next/font/google";
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
@@ -23,8 +24,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.variable} font-sans antialiased bg-[#FFFBF5]`}>
-        <Header />
+      <body className={`${outfit.variable} bg-[#FFFBF5] font-sans antialiased`}>
+        <Suspense fallback={<div className="h-[82px]" />}>
+          <Header />
+        </Suspense>
         <main className="bg-[#FFFBF5]">{children}</main>
         <Footer />
       </body>

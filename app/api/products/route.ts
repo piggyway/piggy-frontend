@@ -5,7 +5,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-const API_BASE_URL = process.env.API_BASE_URL;
+const API_BASE_URL =
+  process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
 
 /**
  * GET /api/products
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     // Build URL with query params
     const searchParams = request.nextUrl.searchParams;
-    const url = new URL(`${API_BASE_URL}/products`);
+    const url = new URL(`${API_BASE_URL}/api/v1/products`);
     searchParams.forEach((value, key) => {
       url.searchParams.append(key, value);
     });

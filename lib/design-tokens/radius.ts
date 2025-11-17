@@ -10,5 +10,4 @@ export const radius = {
   lg: "var(--radius)",
   xl: "calc(var(--radius) + 4px)",
   "extra-large": "28px", // From Figma: Corner/Extra-large
-} as const
-
+} as const;

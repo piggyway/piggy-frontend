@@ -7,10 +7,23 @@ interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
 }
 
-interface ApiResponse<T> {
-  data?: T;
-  error?: string;
-  message?: string;
+
+
+/**
+ * Get base URL for API requests
+ * In server-side context, we need absolute URL
+ */
+function getBaseUrl(): string {
+  // Server-side: use localhost or configured URL
+  if (typeof window === "undefined") {
+    // Use environment variable or default to localhost
+    return (
+      process.env.NEXT_PUBLIC_APP_URL ||
+      `http://localhost:${process.env.PORT || 3000}`
+    );
+  }
+  // Client-side: use relative URL
+  return "";
 }
 
 /**
@@ -23,7 +36,8 @@ async function apiFetch<T>(
   const { params, headers, ...fetchOptions } = options;
 
   // Build URL with query parameters
-  let url = endpoint;
+  const baseUrl = getBaseUrl();
+  let url = `${baseUrl}${endpoint}`;
   if (params) {
     const searchParams = new URLSearchParams(
       Object.entries(params).map(([key, value]) => [key, String(value)])

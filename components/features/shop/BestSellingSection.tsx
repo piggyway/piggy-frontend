@@ -1,47 +1,48 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { FeaturedCard } from '@/components/ui/featured-card';
-import { AnimatedSection } from '../homepage/AnimatedSection';
+import Image from "next/image";
+import { FeaturedCard } from "@/components/ui/featured-card";
+import { AnimatedSection } from "../homepage/AnimatedSection";
 
 export function BestSellingSection() {
   const categories = [
     {
       id: 1,
-      title: 'Liners',
-      image: '/homepage-essentials/liner-example.png',
-      bgColor: 'bg-neutral-pink-background',
+      title: "Liners",
+      image: "/homepage-essentials/liner-example.png",
+      bgColor: "bg-neutral-pink-background",
     },
     {
       id: 2,
-      title: 'Hut',
-      image: '/homepage-essentials/hut-example.png',
-      bgColor: 'bg-secondary-mint',
+      title: "Hut",
+      image: "/homepage-essentials/hut-example.png",
+      bgColor: "bg-secondary-mint",
     },
     {
       id: 3,
-      title: 'Combos',
-      image: '/homepage-essentials/combo-example.png',
-      bgColor: 'bg-primary-gold',
+      title: "Combos",
+      image: "/homepage-essentials/combo-example.png",
+      bgColor: "bg-primary-gold",
     },
   ];
 
   return (
     <AnimatedSection className="w-full">
-      <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
+      <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* Header with Piggy Icon */}
-        <div className="flex items-start justify-between mb-8 sm:mb-10">
+        <div className="mb-8 flex items-start justify-between sm:mb-10">
           <div>
-            <p className="text-[20px] sm:text-[24px] font-normal text-primary-navy leading-[32px] mb-2">
+            <p className="text-primary-navy mb-2 text-[20px] leading-[32px] font-normal sm:text-[24px]">
               Our best 😊
             </p>
-            <p className="text-lg text-primary-navy leading-relaxed max-w-2xl">
-              Happy piggies & bunnies start here – cozy huts, tasty snacks, and everyday care made with love for little paws.
+            <p className="text-primary-navy max-w-2xl text-lg leading-relaxed">
+              Happy piggies & bunnies start here – cozy huts, tasty snacks, and
+              everyday care made with love for little paws.
             </p>
           </div>
           {/* Decorative Piggy Icon */}
-          <div className="hidden lg:block ml-8">
-            <div className="w-20 h-20 relative">
+          <div className="ml-8 hidden lg:block">
+            <div className="relative h-20 w-20">
               <Image
                 src="/homepage-essentials/piggy-icon.png"
                 alt="Piggy mascot"
@@ -54,7 +55,7 @@ export function BestSellingSection() {
         </div>
 
         {/* Category Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => (
             <FeaturedCard
               key={category.id}

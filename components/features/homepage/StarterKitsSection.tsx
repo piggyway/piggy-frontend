@@ -1,96 +1,113 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { Plus } from 'lucide-react';
-import { AnimatedSection } from './AnimatedSection';
+import Image from "next/image";
+import { Plus } from "lucide-react";
+import { AnimatedSection } from "./AnimatedSection";
 
 export function StarterKitsSection() {
   return (
     <AnimatedSection className="w-full">
-      <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
+      <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* Title */}
         <div className="mb-8 sm:mb-10">
-          <p className="text-[20px] sm:text-[24px] font-normal text-primary-navy leading-[32px] mb-2">
+          <p className="text-primary-navy mb-2 text-[20px] leading-[32px] font-normal sm:text-[24px]">
             Everything You Need to Begin
           </p>
-          <h2 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy-light leading-[42px] tracking-[-0.21px]">
+          <h2 className="text-primary-navy-light text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
             Starter Kits & Bundles
           </h2>
         </div>
 
-        {/* Cards Container - Desktop with Horizontal Scroll */}
-        <div className="hidden lg:block relative overflow-x-auto">
-          <div className="flex gap-10 items-center pb-4">
+        {/* Cards Container - Desktop */}
+        <div className="relative hidden overflow-hidden lg:block">
+          <div className="flex items-center gap-6 pb-4">
             {/* Card 1 - Grey with Illustration */}
-            <div className="bg-neutral-stroke rounded-[28px] p-6 flex flex-col gap-5 h-[387px] w-[360px] shrink-0">
-              <div className="flex-1 flex flex-col gap-[14px]">
+            <div className="bg-neutral-stroke flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6">
+              <div className="flex flex-1 flex-col gap-[14px]">
                 {/* Illustration Area */}
-                <div className="relative w-full h-[153px]">
-                  <div className="absolute left-0 top-0 w-[221px] h-[153px] bg-white rounded-[33px]" />
-                  <div className="absolute right-0 top-0 w-[91px] h-[153px] bg-white rounded-[33px]" />
-                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <Image src="/shop-with-us/default.png" alt="" width={300} height={300} className="object-contain" />
+                <div className="relative h-[153px] w-full">
+                  <div className="absolute top-0 left-0 h-[153px] w-[221px] rounded-[33px] bg-white" />
+                  <div className="absolute top-0 right-0 h-[153px] w-[91px] rounded-[33px] bg-white" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <Image
+                      src="/shop-with-us/default.png"
+                      alt=""
+                      width={300}
+                      height={300}
+                      className="object-contain"
+                    />
                   </div>
                 </div>
-                <p className="text-[20px] font-medium text-primary-navy leading-[24px]">
+                <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
                   Topic XXX headline here, total text maximum within 2 lines
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="text-[24px] font-semibold text-primary-navy leading-[32px] flex-1">
+                <p className="text-primary-navy flex-1 text-[24px] leading-[32px] font-semibold">
                   Read more
                 </p>
                 <button
-                  className="bg-white border border-neutral-stroke rounded-full p-3 flex items-center justify-center shrink-0"
+                  className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Read more"
                 >
-                  <Plus className="w-[11px] h-[11px] text-primary-navy" strokeWidth={2} />
+                  <Plus
+                    className="text-primary-navy h-[11px] w-[11px]"
+                    strokeWidth={2}
+                  />
                 </button>
               </div>
             </div>
 
             {/* Card 2 - Navy Blue Text Card */}
-            <div className="bg-primary-navy-light rounded-[28px] p-6 flex flex-col gap-5 h-[387px] w-[360px] shrink-0">
-              <div className="flex-1 flex flex-col gap-[14px] text-white">
-                <p className="text-[32px] font-semibold leading-[40px]">
+            <div className="bg-primary-navy-light flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6">
+              <div className="flex flex-1 flex-col gap-[14px] text-white">
+                <p className="text-[32px] leading-[40px] font-semibold">
                   Placeholder headline to be here
                 </p>
-                <p className="text-[20px] font-medium leading-[24px]">
-                  We're guinea pig & rabbit lovers creating products that make life easier.
+                <p className="text-[20px] leading-[24px] font-medium">
+                  We're guinea pig & rabbit lovers creating products that make
+                  life easier.
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="text-[24px] font-semibold text-white leading-[32px] flex-1">
+                <p className="flex-1 text-[24px] leading-[32px] font-semibold text-white">
                   Read more
                 </p>
                 <button
-                  className="bg-white border border-neutral-stroke rounded-full p-3 flex items-center justify-center shrink-0"
+                  className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Read more"
                 >
-                  <Plus className="w-[11px] h-[11px] text-primary-navy" strokeWidth={2} />
+                  <Plus
+                    className="text-primary-navy h-[11px] w-[11px]"
+                    strokeWidth={2}
+                  />
                 </button>
               </div>
             </div>
 
             {/* Card 3 - Mint Text Card */}
-            <div className="bg-secondary-mint rounded-[28px] p-6 flex flex-col gap-5 h-[387px] w-[360px] shrink-0">
-              <div className="flex-1 flex flex-col gap-[14px]">
-                <p className="text-[32px] font-semibold text-primary-navy-light leading-[40px]">
+            <div className="bg-secondary-mint flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6">
+              <div className="flex flex-1 flex-col gap-[14px]">
+                <p className="text-primary-navy-light text-[32px] leading-[40px] font-semibold">
                   Placeholder headline to be here
                 </p>
-                <p className="text-[20px] font-medium text-primary-navy leading-[24px]">
-                  We're guinea pig & rabbit lovers creating products that make life easier.
+                <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
+                  We're guinea pig & rabbit lovers creating products that make
+                  life easier.
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="text-[24px] font-semibold text-primary-navy leading-[32px] flex-1">
+                <p className="text-primary-navy flex-1 text-[24px] leading-[32px] font-semibold">
                   Read more
                 </p>
                 <button
-                  className="bg-white border border-neutral-stroke rounded-full p-3 flex items-center justify-center shrink-0"
+                  className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Read more"
                 >
-                  <Plus className="w-[11px] h-[11px] text-primary-navy" strokeWidth={2} />
+                  <Plus
+                    className="text-primary-navy h-[11px] w-[11px]"
+                    strokeWidth={2}
+                  />
                 </button>
               </div>
             </div>
@@ -98,26 +115,40 @@ export function StarterKitsSection() {
         </div>
 
         {/* Mobile/Tablet Layout */}
-        <div className="lg:hidden flex flex-col gap-6">
-          <div className="bg-neutral-stroke rounded-[28px] p-6 flex flex-col gap-4 min-h-[280px]">
-            <h3 className="text-xl font-semibold text-primary-navy">Topic Headline</h3>
-            <p className="text-base text-primary-navy flex-1">Topic XXX headline here, total text maximum within 2 lines</p>
-            <button className="self-end bg-white border border-neutral-stroke rounded-full p-3">
-              <Plus className="w-4 h-4 text-primary-navy" />
+        <div className="flex flex-col gap-6 lg:hidden">
+          <div className="bg-neutral-stroke flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6">
+            <h3 className="text-primary-navy text-xl font-semibold">
+              Topic Headline
+            </h3>
+            <p className="text-primary-navy flex-1 text-base">
+              Topic XXX headline here, total text maximum within 2 lines
+            </p>
+            <button className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+              <Plus className="text-primary-navy h-4 w-4" />
             </button>
           </div>
-          <div className="bg-primary-navy-light rounded-[28px] p-6 flex flex-col gap-4 min-h-[280px]">
-            <h3 className="text-xl font-semibold text-white">Placeholder headline to be here</h3>
-            <p className="text-base text-white flex-1">We're guinea pig & rabbit lovers creating products that make life easier.</p>
-            <button className="self-end bg-white border border-neutral-stroke rounded-full p-3">
-              <Plus className="w-4 h-4 text-primary-navy" />
+          <div className="bg-primary-navy-light flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6">
+            <h3 className="text-xl font-semibold text-white">
+              Placeholder headline to be here
+            </h3>
+            <p className="flex-1 text-base text-white">
+              We're guinea pig & rabbit lovers creating products that make life
+              easier.
+            </p>
+            <button className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+              <Plus className="text-primary-navy h-4 w-4" />
             </button>
           </div>
-          <div className="bg-secondary-mint rounded-[28px] p-6 flex flex-col gap-4 min-h-[280px]">
-            <h3 className="text-xl font-semibold text-primary-navy-light">Placeholder headline to be here</h3>
-            <p className="text-base text-primary-navy flex-1">We're guinea pig & rabbit lovers creating products that make life easier.</p>
-            <button className="self-end bg-white border border-neutral-stroke rounded-full p-3">
-              <Plus className="w-4 h-4 text-primary-navy" />
+          <div className="bg-secondary-mint flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6">
+            <h3 className="text-primary-navy-light text-xl font-semibold">
+              Placeholder headline to be here
+            </h3>
+            <p className="text-primary-navy flex-1 text-base">
+              We're guinea pig & rabbit lovers creating products that make life
+              easier.
+            </p>
+            <button className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+              <Plus className="text-primary-navy h-4 w-4" />
             </button>
           </div>
         </div>

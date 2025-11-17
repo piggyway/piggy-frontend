@@ -1,27 +1,31 @@
-import { BreadcrumbsNav } from '@/components/features/shop-all/BreadcrumbsNav';
-import { CategoryFilterBar } from '@/components/features/shop-all/CategoryFilterBar';
-import { ProductsSection } from '@/components/features/shop-all/ProductsSection';
-import { StarterKitsSection } from '@/components/features/shop/StarterKitsSection';
-import { BackgroundBlobs } from '@/components/ui/background-blobs';
+import { Suspense } from "react";
+import { BreadcrumbsNav } from "@/components/features/shop-all/BreadcrumbsNav";
+import { ShopAllContent } from "@/components/features/shop-all/ShopAllContent";
+import { StarterKitsSection } from "@/components/features/shop/StarterKitsSection";
+import { BackgroundBlobs } from "@/components/ui/background-blobs";
+import { ProductGridSkeleton } from "@/components/ui/skeleton";
 
 export default function ShopAllPage() {
   return (
-    <div className="min-h-screen bg-neutral-background-light relative">
+    <div className="bg-neutral-background-light relative min-h-screen">
       <BackgroundBlobs variant={3} />
-      <div className="container mx-auto px-4 py-8 max-w-[1160px]">
+      <div className="container mx-auto max-w-[1160px] px-4 py-8">
         {/* Breadcrumbs */}
         <BreadcrumbsNav />
 
         {/* Page Title */}
-        <h1 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy-light leading-tight mt-6 mb-8">
-          Shop <span className="text-primary-navy">Guinea Pig & Rabbit Essentials</span> 🐹🐰
+        <h1 className="text-primary-navy-light mt-6 mb-8 text-[32px] leading-tight font-semibold sm:text-[42px]">
+          Shop{" "}
+          <span className="text-primary-navy">
+            Guinea Pig & Rabbit Essentials
+          </span>{" "}
+          🐹🐰
         </h1>
 
-        {/* Category Filter */}
-        <CategoryFilterBar />
-
-        {/* Products Section */}
-        <ProductsSection />
+        {/* Category Filter and Products Section with URL State */}
+        <Suspense fallback={<ProductGridSkeleton count={9} />}>
+          <ShopAllContent />
+        </Suspense>
       </div>
 
       {/* Starter Kits Section */}

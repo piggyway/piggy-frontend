@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { ChevronRight } from 'lucide-react';
+import Link from "next/link";
+import { ChevronRight } from "lucide-react";
 
 export function BreadcrumbsNav() {
   return (
@@ -12,7 +12,7 @@ export function BreadcrumbsNav() {
       >
         HOME
       </Link>
-      <ChevronRight className="w-4 h-4 text-primary-navy" />
+      <ChevronRight className="text-primary-navy h-4 w-4" />
       <span className="text-primary-navy font-medium">Shop all</span>
     </nav>
   );
