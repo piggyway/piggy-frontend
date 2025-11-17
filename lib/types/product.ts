@@ -56,6 +56,14 @@ export interface CategoryInfo {
 }
 
 /**
+ * Species info (nested in product detail response)
+ */
+export interface SpeciesInfo {
+  name: string | null;
+  slug: string | null;
+}
+
+/**
  * Product list item from API (snake_case)
  */
 export interface ProductListItemFromAPI {
@@ -190,6 +198,7 @@ export interface ProductDetailFromAPI {
   currency: CurrencyInfo | null;
   brand: BrandInfo | null;
   category: CategoryInfo | null;
+  species: SpeciesInfo[];
   images: string[];
   options: Array<{
     id: number;
@@ -243,6 +252,7 @@ export interface ProductDetail {
   currency: CurrencyInfo | null;
   brand: BrandInfo | null;
   category: CategoryInfo | null;
+  species: SpeciesInfo[];
   images: string[];
   options: ProductOption[];
   variants: ProductVariant[];

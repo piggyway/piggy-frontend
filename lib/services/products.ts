@@ -156,6 +156,7 @@ export class ProductService {
       currency: product.currency,
       brand: product.brand,
       category: product.category,
+      species: product.species || [],
       images:
         product.images.length > 0 ? product.images : [DEFAULT_PRODUCT_IMAGE],
       options: product.options.map((option) => this.transformOption(option)),
