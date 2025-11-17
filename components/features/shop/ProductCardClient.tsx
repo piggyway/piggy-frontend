@@ -18,7 +18,7 @@ export function ProductCardClient({ product }: ProductCardClientProps) {
       subtitle={product.subtitle}
       price={product.formattedPrice}
       image={product.imageUrl}
-      href={`/shop/${product.brand?.slug || "product"}/${product.slug}`}
+      href={`/shop/${product.category?.slug || "product"}/${product.slug}`}
       onAddToCart={handleAddToCart}
     />
   );
