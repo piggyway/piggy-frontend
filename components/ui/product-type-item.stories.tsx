@@ -51,7 +51,7 @@ export const WithIcon: Story = {
     label: "Bedding",
     selected: false,
     icon: (
-      <div className="size-6 bg-primary-purple rounded-full flex items-center justify-center">
+      <div className="bg-primary-purple flex size-6 items-center justify-center rounded-full">
         <span className="text-xs">🛏️</span>
       </div>
     ),
@@ -87,4 +87,3 @@ export const DifferentTypes: Story = {
     </div>
   ),
 };
-

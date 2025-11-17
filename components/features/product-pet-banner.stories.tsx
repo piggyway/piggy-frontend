@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite"
-import { ProductPetBanner } from "./product-pet-banner"
-import { getFigmaUrl } from "../../.storybook/figma.config"
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ProductPetBanner } from "./product-pet-banner";
+import { getFigmaUrl } from "../../.storybook/figma.config";
 
 const meta = {
   title: "Features/ProductPetBanner",
@@ -23,10 +23,10 @@ const meta = {
       description: "Array of pet types",
     },
   },
-} satisfies Meta<typeof ProductPetBanner>
+} satisfies Meta<typeof ProductPetBanner>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 const defaultPets = [
   {
@@ -49,14 +49,14 @@ const defaultPets = [
     icon: "/default-product-image.png",
     iconAlt: "Guinea pig icon",
   },
-]
+];
 
 export const Default: Story = {
   args: {
     title: "Suitable for",
     pets: defaultPets,
   },
-}
+};
 
 export const SinglePet: Story = {
   args: {
@@ -69,7 +69,7 @@ export const SinglePet: Story = {
       },
     ],
   },
-}
+};
 
 export const ManyPets: Story = {
   args: {
@@ -88,12 +88,11 @@ export const ManyPets: Story = {
       },
     ],
   },
-}
+};
 
 export const CustomTitle: Story = {
   args: {
     title: "Recommended for these pets",
     pets: defaultPets,
   },
-}
-
+};

@@ -1,14 +1,16 @@
-import React from "react"
+import React from "react";
+import Link from "next/link";
+import { NavigationMenuLink } from "@/components/ui/navigation-menu";
 
 export interface NavigationMenuContentItemProps {
-  title: string
-  description?: string
-  href?: string
+  title: string;
+  description?: string;
+  href?: string;
 }
 
 export interface NavigationMenuContentProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  items: NavigationMenuContentItemProps[]
+  items: NavigationMenuContentItemProps[];
 }
 
 export const NavigationMenuContent = React.forwardRef<
@@ -21,7 +23,7 @@ export const NavigationMenuContent = React.forwardRef<
   return (
     <div
       ref={ref}
-      className={`bg-white flex flex-col gap-3 p-[14px] rounded-md shadow-md${className ? ` ${className}` : ""}`}
+      className={`flex flex-col gap-3 rounded-md bg-white p-[14px] shadow-md${className ? ` ${className}` : ""}`}
       style={{
         boxShadow: "0px 4px 6px 0px rgba(0,0,0,0.09)",
         ...style,
@@ -37,23 +39,27 @@ export const NavigationMenuContent = React.forwardRef<
         />
       ))}
     </div>
-  )
-})
+  );
+});
 
-function NavigationMenuContentItem({ title, description, href }: NavigationMenuContentItemProps) {
+function NavigationMenuContentItem({
+  title,
+  description,
+  href,
+}: NavigationMenuContentItemProps) {
   const content = (
     <div className="flex flex-col gap-1 text-sm">
       {description ? (
         <>
-          <p className="font-light leading-[14px] text-[#405aab] whitespace-nowrap">
+          <p className="leading-[14px] font-light whitespace-nowrap text-[#405aab]">
             {title}
           </p>
-          <p className="font-normal leading-5 text-[#050451] w-[227px]">
+          <p className="w-[227px] leading-5 font-normal text-[#050451]">
             {description}
           </p>
         </>
       ) : (
-        <p className="font-normal leading-5 text-[#050451] w-[227px]">
+        <p className="w-[227px] leading-5 font-normal text-[#050451]">
           {title}
         </p>
       )}
@@ -62,9 +68,11 @@ function NavigationMenuContentItem({ title, description, href }: NavigationMenuC
 
   if (href) {
     return (
-      <a href={href} className="hover:opacity-80 transition-opacity">
-        {content}
-      </a>
+      <NavigationMenuLink asChild>
+        <Link href={href} className="p-0! transition-opacity hover:opacity-80">
+          {content}
+        </Link>
+      </NavigationMenuLink>
     );
   }
 

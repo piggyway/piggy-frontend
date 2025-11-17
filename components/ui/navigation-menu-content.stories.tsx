@@ -1,13 +1,13 @@
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { NavigationMenuContent } from './navigation-menu-content';
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { NavigationMenuContent } from "./navigation-menu-content";
 
 const meta = {
-  title: 'UI/NavigationMenuContent',
+  title: "UI/NavigationMenuContent",
   component: NavigationMenuContent,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
+  tags: ["autodocs"],
 } satisfies Meta<typeof NavigationMenuContent>;
 
 export default meta;
@@ -17,23 +17,23 @@ export const Default: Story = {
   args: {
     items: [
       {
-        title: 'Liners',
-        description: 'Soft paws, clean floors.',
-        href: '#',
+        title: "Liners",
+        description: "Soft paws, clean floors.",
+        href: "#",
       },
       {
-        title: 'Hut',
-        description: 'Every bunny needs a hidey.',
-        href: '#',
+        title: "Hut",
+        description: "Every bunny needs a hidey.",
+        href: "#",
       },
       {
-        title: 'Snack',
-        description: 'Nibble, crunch, repeat',
-        href: '#',
+        title: "Snack",
+        description: "Nibble, crunch, repeat",
+        href: "#",
       },
       {
-        title: 'View all',
-        href: '#',
+        title: "View all",
+        href: "#",
       },
     ],
   },
@@ -43,19 +43,19 @@ export const ThreeItems: Story = {
   args: {
     items: [
       {
-        title: 'Liners',
-        description: 'Soft paws, clean floors.',
-        href: '#',
+        title: "Liners",
+        description: "Soft paws, clean floors.",
+        href: "#",
       },
       {
-        title: 'Hut',
-        description: 'Every bunny needs a hidey.',
-        href: '#',
+        title: "Hut",
+        description: "Every bunny needs a hidey.",
+        href: "#",
       },
       {
-        title: 'Snack',
-        description: 'Nibble, crunch, repeat',
-        href: '#',
+        title: "Snack",
+        description: "Nibble, crunch, repeat",
+        href: "#",
       },
     ],
   },
@@ -65,19 +65,19 @@ export const WithoutLinks: Story = {
   args: {
     items: [
       {
-        title: 'Liners',
-        description: 'Soft paws, clean floors.',
+        title: "Liners",
+        description: "Soft paws, clean floors.",
       },
       {
-        title: 'Hut',
-        description: 'Every bunny needs a hidey.',
+        title: "Hut",
+        description: "Every bunny needs a hidey.",
       },
       {
-        title: 'Snack',
-        description: 'Nibble, crunch, repeat',
+        title: "Snack",
+        description: "Nibble, crunch, repeat",
       },
       {
-        title: 'View all',
+        title: "View all",
       },
     ],
   },
@@ -87,9 +87,9 @@ export const SingleItem: Story = {
   args: {
     items: [
       {
-        title: 'Liners',
-        description: 'Soft paws, clean floors.',
-        href: '#',
+        title: "Liners",
+        description: "Soft paws, clean floors.",
+        href: "#",
       },
     ],
   },
@@ -99,19 +99,22 @@ export const LongDescriptions: Story = {
   args: {
     items: [
       {
-        title: 'Premium Liners',
-        description: 'Ultra-soft, absorbent liners that keep your pet comfortable and your floors spotlessly clean.',
-        href: '#',
+        title: "Premium Liners",
+        description:
+          "Ultra-soft, absorbent liners that keep your pet comfortable and your floors spotlessly clean.",
+        href: "#",
       },
       {
-        title: 'Cozy Hut',
-        description: 'A warm, secure hideaway where every bunny can rest, play, and feel safe.',
-        href: '#',
+        title: "Cozy Hut",
+        description:
+          "A warm, secure hideaway where every bunny can rest, play, and feel safe.",
+        href: "#",
       },
       {
-        title: 'Healthy Snacks',
-        description: 'Nutritious treats that your pet will love. Perfect for training and bonding.',
-        href: '#',
+        title: "Healthy Snacks",
+        description:
+          "Nutritious treats that your pet will love. Perfect for training and bonding.",
+        href: "#",
       },
     ],
   },

@@ -55,11 +55,10 @@ export const MultipleCards: Story = {
     title: "Liners",
   },
   render: () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-6xl">
+    <div className="grid w-full max-w-6xl grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       <FeaturedCard title="Liners" image="/default-product-image.png" />
       <FeaturedCard title="Bedding" image="/default-product-image.png" />
       <FeaturedCard title="Food & Treats" image="/default-product-image.png" />
     </div>
   ),
 };
-

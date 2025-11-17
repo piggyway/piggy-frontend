@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Minus, Plus } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "./button"
+import * as React from "react";
+import { Minus, Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "./button";
 
 export interface QuantitySelectorProps {
-  value: number
-  min?: number
-  max?: number
-  onValueChange?: (value: number) => void
-  className?: string
+  value: number;
+  min?: number;
+  max?: number;
+  onValueChange?: (value: number) => void;
+  className?: string;
 }
 
 export function QuantitySelector({
@@ -22,22 +22,22 @@ export function QuantitySelector({
 }: QuantitySelectorProps) {
   const handleDecrease = () => {
     if (value > min) {
-      onValueChange?.(value - 1)
+      onValueChange?.(value - 1);
     }
-  }
+  };
 
   const handleIncrease = () => {
     if (value < max) {
-      onValueChange?.(value + 1)
+      onValueChange?.(value + 1);
     }
-  }
+  };
 
   return (
-    <div className={cn("flex gap-2 items-center", className)}>
-      <label className="text-base font-medium leading-6 text-primary-navy">
+    <div className={cn("flex items-center gap-2", className)}>
+      <label className="text-primary-navy text-base leading-6 font-medium">
         Quantity
       </label>
-      <div className="flex gap-2 items-center border border-neutral-stroke rounded-md bg-white">
+      <div className="border-neutral-stroke flex items-center gap-2 rounded-md border bg-white">
         <Button
           type="button"
           variant="ghost"
@@ -49,7 +49,7 @@ export function QuantitySelector({
         >
           <Minus className="size-4" />
         </Button>
-        <span className="min-w-[2rem] text-center text-base font-normal text-primary-navy px-2">
+        <span className="text-primary-navy min-w-[2rem] px-2 text-center text-base font-normal">
           {value}
         </span>
         <Button
@@ -65,6 +65,5 @@ export function QuantitySelector({
         </Button>
       </div>
     </div>
-  )
+  );
 }
-

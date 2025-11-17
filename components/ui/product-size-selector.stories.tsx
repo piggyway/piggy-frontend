@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite"
-import { ProductSizeSelector } from "./product-size-selector"
-import { getFigmaUrl } from "../../.storybook/figma.config"
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ProductSizeSelector } from "./product-size-selector";
+import { getFigmaUrl } from "../../.storybook/figma.config";
 
 const meta = {
   title: "UI/ProductSizeSelector",
@@ -35,10 +35,10 @@ const meta = {
       description: "Callback when size guide is clicked",
     },
   },
-} satisfies Meta<typeof ProductSizeSelector>
+} satisfies Meta<typeof ProductSizeSelector>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 const defaultSizes = [
   { value: "xs", label: "XS" },
@@ -46,7 +46,7 @@ const defaultSizes = [
   { value: "m", label: "M" },
   { value: "l", label: "L" },
   { value: "xl", label: "XL" },
-]
+];
 
 export const Default: Story = {
   args: {
@@ -54,7 +54,7 @@ export const Default: Story = {
     selectedSize: undefined,
     sizeGuideLink: "/size-guide",
   },
-}
+};
 
 export const WithSelection: Story = {
   args: {
@@ -62,14 +62,14 @@ export const WithSelection: Story = {
     selectedSize: "m",
     sizeGuideLink: "/size-guide",
   },
-}
+};
 
 export const WithoutSizeGuide: Story = {
   args: {
     sizes: defaultSizes,
     selectedSize: "l",
   },
-}
+};
 
 export const CustomSizes: Story = {
   args: {
@@ -82,5 +82,4 @@ export const CustomSizes: Story = {
     selectedSize: "medium",
     sizeGuideLink: "/size-guide",
   },
-}
-
+};

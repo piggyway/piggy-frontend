@@ -1,35 +1,119 @@
-'use client';
+"use client";
 
-import { Dog, Cat, Rabbit, Bird, Mouse } from 'lucide-react';
-import { AnimatedSection } from '../homepage/AnimatedSection';
+import { Dog, Cat, Rabbit, Bird, Mouse, Circle } from "lucide-react";
+import { AnimatedSection } from "../homepage/AnimatedSection";
+import type { SpeciesInfo } from "@/lib/types/product";
 
-const pets = [
-  { id: 'dog', name: 'Dog', icon: Dog, bgColor: 'bg-secondary-mint' },
-  { id: 'cat', name: 'Cat', icon: Cat, bgColor: 'bg-[#e8e8f7]' },
-  { id: 'rabbit', name: 'Rabbit', icon: Rabbit, bgColor: 'bg-neutral-grey-background' },
-  { id: 'bird', name: 'Bird', icon: Bird, bgColor: 'bg-neutral-pink-background' },
-  { id: 'mouse', name: 'Mouse', icon: Mouse, bgColor: 'bg-[#e8eef7]' },
-];
+// Map of species slugs to their icon and styling
+const speciesMap: Record<
+  string,
+  {
+    icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+    bgColor: string;
+    emoji: string;
+  }
+> = {
+  dog: {
+    icon: Dog,
+    bgColor: "bg-secondary-mint",
+    emoji: "🐕",
+  },
+  cat: {
+    icon: Cat,
+    bgColor: "bg-[#e8e8f7]",
+    emoji: "🐱",
+  },
+  rabbit: {
+    icon: Rabbit,
+    bgColor: "bg-neutral-grey-background",
+    emoji: "🐰",
+  },
+  guinea_pig: {
+    icon: Circle,
+    bgColor: "bg-neutral-pink-background",
+    emoji: "🐹",
+  },
+  guinea_pig_rabbit: {
+    icon: Rabbit,
+    bgColor: "bg-neutral-pink-background",
+    emoji: "🐹🐰",
+  },
+  bird: {
+    icon: Bird,
+    bgColor: "bg-[#e8eef7]",
+    emoji: "🐦",
+  },
+  mouse: {
+    icon: Mouse,
+    bgColor: "bg-[#e8eef7]",
+    emoji: "🐭",
+  },
+};
 
-export function PetIconsSection() {
+interface PetIconsSectionProps {
+  species?: SpeciesInfo[];
+}
+
+export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
+  // Filter pets based on species
+  const displayPets = species
+    .map((s) => {
+      // Normalize slug: handle both "guinea-pig" and "guinea_pig" formats
+      const slug = s.slug?.toLowerCase().replace(/-/g, "_") || "";
+      const config = speciesMap[slug];
+      if (!config) return null;
+
+      return {
+        id: slug,
+        name: s.name || slug,
+        icon: config.icon,
+        bgColor: config.bgColor,
+        emoji: config.emoji,
+      };
+    })
+    .filter((pet): pet is NonNullable<typeof pet> => pet !== null);
+
+  // If no species provided or no matching species found, show default message
+  if (displayPets.length === 0) {
+    return (
+      <AnimatedSection className="w-full py-12 sm:py-16">
+        <div className="container mx-auto max-w-[1160px] px-4">
+          <h2 className="text-primary-navy-light mb-8 text-center text-[28px] font-semibold sm:text-[32px]">
+            Suitable for small pets and more 🐰🐹
+          </h2>
+          <p className="text-primary-navy text-center text-base">
+            This product is suitable for various small pets
+          </p>
+        </div>
+      </AnimatedSection>
+    );
+  }
+
+  // Build emoji string from all species
+  const emojiString = displayPets.map((p) => p.emoji).join("");
+
   return (
     <AnimatedSection className="w-full py-12 sm:py-16">
-      <div className="container mx-auto px-4 max-w-[1160px]">
+      <div className="container mx-auto max-w-[1160px] px-4">
         {/* Title */}
-        <h2 className="text-[28px] sm:text-[32px] font-semibold text-primary-navy-light text-center mb-8">
-          Suitable for small pets and more 🐰🐹
+        <h2 className="text-primary-navy-light mb-8 text-center text-[28px] font-semibold sm:text-[32px]">
+          Suitable for {displayPets.map((p) => p.name).join(" & ")} {emojiString}
         </h2>
 
         {/* Pet Icons */}
         <div className="flex flex-wrap justify-center gap-6">
-          {pets.map((pet) => {
+          {displayPets.map((pet) => {
             const Icon = pet.icon;
             return (
               <div
                 key={pet.id}
-                className={`${pet.bgColor} w-20 h-20 sm:w-24 sm:h-24 rounded-full flex items-center justify-center`}
+                className={`${pet.bgColor} flex h-20 w-20 items-center justify-center rounded-full sm:h-24 sm:w-24`}
+                title={pet.name}
               >
-                <Icon className="w-10 h-10 sm:w-12 sm:h-12 text-primary-navy" strokeWidth={1.5} />
+                <Icon
+                  className="text-primary-navy h-10 w-10 sm:h-12 sm:w-12"
+                  strokeWidth={1.5}
+                />
               </div>
             );
           })}

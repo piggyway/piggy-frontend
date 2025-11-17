@@ -1,40 +1,41 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
-import { ArrowUpRight } from 'lucide-react';
-import { AnimatedSection } from './AnimatedSection';
+import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
+import { AnimatedSection } from "./AnimatedSection";
 
 export function OurStorySection() {
   return (
     <AnimatedSection className="w-full">
-      <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
+      <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* White Container */}
-        <div className="bg-white rounded-[32px] p-6 sm:p-8 md:p-10">
+        <div className="rounded-[32px] bg-white p-6 sm:p-8 md:p-10">
           {/* Desktop Layout */}
-          <div className="hidden lg:flex gap-10 items-center">
+          <div className="hidden items-center gap-10 lg:flex">
             {/* Left Side - Text Content with decorative characters */}
-            <div className="flex-1 flex flex-col justify-between relative min-h-[300px]">
+            <div className="relative flex min-h-[300px] flex-1 flex-col justify-between">
               {/* Title */}
-              <div className="flex gap-5 items-center mb-8">
-                <h2 className="text-[42px] font-semibold text-primary-navy leading-[42px] tracking-[-0.21px]">
+              <div className="mb-8 flex items-center gap-5">
+                <h2 className="text-primary-navy text-[42px] leading-[42px] font-semibold tracking-[-0.21px]">
                   Our Story
                 </h2>
               </div>
 
               {/* Description */}
               <div className="flex flex-col gap-2">
-                <p className="text-[24px] font-semibold text-primary-navy-light leading-[32px]">
+                <p className="text-primary-navy-light text-[24px] leading-[32px] font-semibold">
                   Our Story Designed by Pet Parents, for Pet Parents
                 </p>
-                <p className="text-[20px] font-medium text-primary-navy leading-[24px]">
-                  We're guinea pig & rabbit lovers creating products that make life easier, healthier, and happier for pets and their humans
+                <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
+                  We're guinea pig & rabbit lovers creating products that make
+                  life easier, healthier, and happier for pets and their humans
                 </p>
               </div>
 
               {/* Decorative Character Images */}
-              <div className="absolute left-[350px] top-0 pointer-events-none">
+              <div className="pointer-events-none absolute top-0 left-[350px]">
                 {/* Character 1 - smaller, positioned left and slightly down */}
-                <div className="absolute left-0 top-[16px] w-[66px] h-[75px]">
+                <div className="absolute top-[16px] left-0 h-[75px] w-[66px]">
                   <Image
                     src="/our-story/default1.png"
                     alt=""
@@ -43,7 +44,7 @@ export function OurStorySection() {
                   />
                 </div>
                 {/* Character 2 - larger, positioned right and at top */}
-                <div className="absolute left-[67px] top-0 w-[103px] h-[93px]">
+                <div className="absolute top-0 left-[67px] h-[93px] w-[103px]">
                   <Image
                     src="/our-story/default2.png"
                     alt=""
@@ -55,45 +56,49 @@ export function OurStorySection() {
             </div>
 
             {/* Right Side - Decorative Cards */}
-            <div className="relative w-[520px] h-[300px] shrink-0">
+            <div className="relative h-[300px] w-[520px] shrink-0">
               {/* Purple rounded square - bottom left */}
-              <div className="absolute left-0 top-[150px] w-[201px] h-[150px] bg-primary-purple rounded-[33px]" />
+              <div className="bg-primary-purple absolute top-[150px] left-0 h-[150px] w-[201px] rounded-[33px]" />
 
               {/* Mint rounded squares - top left */}
-              <div className="absolute left-0 top-0 w-[68px] h-[150px] bg-secondary-mint rounded-[33px]" />
-              <div className="absolute left-[68px] top-0 w-[133px] h-[150px] bg-secondary-mint rounded-[33px]" />
+              <div className="bg-secondary-mint absolute top-0 left-0 h-[150px] w-[68px] rounded-[33px]" />
+              <div className="bg-secondary-mint absolute top-0 left-[68px] h-[150px] w-[133px] rounded-[33px]" />
 
               {/* Navy card with button - right side */}
-              <div className="absolute left-[201px] top-0 w-[319px] h-[300px] bg-primary-navy rounded-[32px] p-8 flex items-end justify-end">
+              <div className="bg-primary-navy absolute top-0 left-[201px] flex h-[300px] w-[319px] items-end justify-end rounded-[32px] p-8">
                 <button
-                  className="bg-white border border-neutral-stroke rounded-full p-3 flex items-center justify-center shrink-0 size-[40px]"
+                  className="border-neutral-stroke flex size-[40px] shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Learn more"
                 >
-                  <ArrowUpRight className="w-[11px] h-[11px] text-primary-navy" strokeWidth={2} />
+                  <ArrowUpRight
+                    className="text-primary-navy h-[11px] w-[11px]"
+                    strokeWidth={2}
+                  />
                 </button>
               </div>
             </div>
           </div>
 
           {/* Mobile/Tablet Layout */}
-          <div className="lg:hidden flex flex-col gap-6">
-            <h2 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy leading-[42px] tracking-[-0.21px]">
+          <div className="flex flex-col gap-6 lg:hidden">
+            <h2 className="text-primary-navy text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
               Our Story
             </h2>
-            <p className="text-xl sm:text-[24px] font-semibold text-primary-navy-light leading-[32px]">
+            <p className="text-primary-navy-light text-xl leading-[32px] font-semibold sm:text-[24px]">
               Our Story Designed by Pet Parents, for Pet Parents
             </p>
-            <p className="text-base sm:text-[20px] font-medium text-primary-navy leading-[24px]">
-              We're guinea pig & rabbit lovers creating products that make life easier, healthier, and happier for pets and their humans
+            <p className="text-primary-navy text-base leading-[24px] font-medium sm:text-[20px]">
+              We're guinea pig & rabbit lovers creating products that make life
+              easier, healthier, and happier for pets and their humans
             </p>
 
             {/* Simplified card for mobile */}
-            <div className="bg-primary-navy rounded-[28px] p-6 min-h-[200px] flex items-end justify-end">
+            <div className="bg-primary-navy flex min-h-[200px] items-end justify-end rounded-[28px] p-6">
               <button
-                className="bg-white border border-neutral-stroke rounded-full p-3 flex items-center justify-center"
+                className="border-neutral-stroke flex items-center justify-center rounded-full border bg-white p-3"
                 aria-label="Learn more"
               >
-                <ArrowUpRight className="w-4 h-4 text-primary-navy" />
+                <ArrowUpRight className="text-primary-navy h-4 w-4" />
               </button>
             </div>
           </div>

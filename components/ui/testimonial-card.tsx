@@ -1,11 +1,11 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface TestimonialCardProps {
-  quote: string
-  author: string
-  location?: string
-  className?: string
+  quote: string;
+  author: string;
+  location?: string;
+  className?: string;
 }
 
 export function TestimonialCard({
@@ -17,40 +17,39 @@ export function TestimonialCard({
   return (
     <div
       className={cn(
-        "bg-[#ffdfdf] flex flex-col gap-5 items-start p-6 rounded-[28px] w-full",
+        "flex w-full flex-col items-start gap-5 rounded-[28px] bg-[#ffdfdf] p-6",
         className
       )}
     >
       {/* Quote Section */}
-      <div className="flex flex-col gap-3.5 items-start w-full">
-        <div className="flex gap-0 items-start text-primary-navy w-full">
+      <div className="flex w-full flex-col items-start gap-3.5">
+        <div className="text-primary-navy flex w-full items-start gap-0">
           {/* Opening Quote */}
-          <div className="text-[42px] font-semibold leading-[42px] tracking-[-0.21px] shrink-0 text-primary-navy">
+          <div className="text-primary-navy shrink-0 text-[42px] leading-[42px] font-semibold tracking-[-0.21px]">
             "
           </div>
-          
+
           {/* Quote Text */}
-          <p className="flex-1 min-w-0 text-xl font-medium leading-6 text-primary-navy">
+          <p className="text-primary-navy min-w-0 flex-1 text-xl leading-6 font-medium">
             {quote}
           </p>
-          
+
           {/* Closing Quote */}
-          <div className="flex flex-col justify-end text-[42px] font-semibold leading-0 shrink-0 text-primary-navy tracking-[-0.21px]">
+          <div className="text-primary-navy flex shrink-0 flex-col justify-end text-[42px] leading-0 font-semibold tracking-[-0.21px]">
             "
           </div>
         </div>
       </div>
 
       {/* Author Section */}
-      <div className="flex flex-col gap-4 items-start justify-end flex-1 min-h-0 w-full">
-        <div className="flex gap-4 items-center w-full">
-          <p className="flex-1 min-w-0 text-2xl font-semibold leading-8 text-primary-navy">
+      <div className="flex min-h-0 w-full flex-1 flex-col items-start justify-end gap-4">
+        <div className="flex w-full items-center gap-4">
+          <p className="text-primary-navy min-w-0 flex-1 text-2xl leading-8 font-semibold">
             {author}
             {location && `, ${location}`}
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }
-

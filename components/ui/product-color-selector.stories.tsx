@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite"
-import { ProductColorSelector } from "./product-color-selector"
-import { getFigmaUrl } from "../../.storybook/figma.config"
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ProductColorSelector } from "./product-color-selector";
+import { getFigmaUrl } from "../../.storybook/figma.config";
 
 const meta = {
   title: "UI/ProductColorSelector",
@@ -27,10 +27,10 @@ const meta = {
       description: "Callback when color is changed",
     },
   },
-} satisfies Meta<typeof ProductColorSelector>
+} satisfies Meta<typeof ProductColorSelector>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 const defaultColors = [
   { value: "mint", label: "Mint", color: "#e1f2ef" },
@@ -38,28 +38,28 @@ const defaultColors = [
   { value: "blue", label: "Blue", color: "#a8c3f7" },
   { value: "navy", label: "Navy", color: "#050451" },
   { value: "purple", label: "Purple", color: "#dcd7ff" },
-]
+];
 
 export const Default: Story = {
   args: {
     colors: defaultColors,
     selectedColor: undefined,
   },
-}
+};
 
 export const WithSelection: Story = {
   args: {
     colors: defaultColors,
     selectedColor: "mint",
   },
-}
+};
 
 export const SingleColor: Story = {
   args: {
     colors: [{ value: "mint", label: "Mint", color: "#e1f2ef" }],
     selectedColor: "mint",
   },
-}
+};
 
 export const ManyColors: Story = {
   args: {
@@ -71,5 +71,4 @@ export const ManyColors: Story = {
     ],
     selectedColor: "blue",
   },
-}
-
+};

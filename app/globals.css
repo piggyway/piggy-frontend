@@ -7,7 +7,7 @@
   /* Fonts */
   --font-sans: var(--font-outfit);
   --font-mono: var(--font-outfit);
-  
+
   /* Shadcn UI Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -40,7 +40,7 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  
+
   /* Piggy Way Brand Colors - Primary */
   --color-primary-navy: var(--primary-navy);
   --color-primary-navy-light: var(--primary-navy-light);
@@ -48,12 +48,12 @@
   --color-primary-purple-light: var(--primary-purple-light);
   --color-primary-gold: var(--primary-gold);
   --color-primary-light-gold: var(--primary-light-gold);
-  
+
   /* Piggy Way Brand Colors - Secondary */
   --color-secondary-mint: var(--secondary-mint);
   --color-secondary-pink: var(--secondary-pink);
   --color-secondary-blue: var(--secondary-blue);
-  
+
   /* Piggy Way Brand Colors - Neutral */
   --color-neutral-background: var(--neutral-background);
   --color-neutral-background-light: var(--neutral-background-light);
@@ -61,11 +61,11 @@
   --color-neutral-grey-background: var(--neutral-grey-background);
   --color-neutral-pink-background: var(--neutral-pink-background);
   --color-neutral-stroke: var(--neutral-stroke);
-  
+
   /* Slate Colors */
   --color-slate-400: var(--slate-400);
   --color-slate-900: var(--slate-900);
-  
+
   /* Border Radius */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -77,7 +77,7 @@
 :root {
   /* Border Radius */
   --radius: 0.625rem;
-  
+
   /* Piggy Way Brand Colors - Primary */
   --primary-navy: #050451;
   --primary-navy-light: #405aab;
@@ -85,12 +85,12 @@
   --primary-purple-light: #dcd7ff66;
   --primary-gold: #ffcd0e;
   --primary-light-gold: #fffcef;
-  
+
   /* Piggy Way Brand Colors - Secondary */
   --secondary-mint: #e1f2ef;
   --secondary-pink: #fcb1c1;
   --secondary-blue: #a8c3f7;
-  
+
   /* Piggy Way Brand Colors - Neutral */
   --neutral-background: #f7f3ed;
   --neutral-background-light: #fffbf5;
@@ -98,41 +98,41 @@
   --neutral-grey-background: #ececec;
   --neutral-pink-background: #ffdfdf;
   --neutral-stroke: #e2e8f0;
-  
+
   /* Slate Colors */
-  --slate-400: #94A3B8;
-  --slate-900: #0F172A;
-  
+  --slate-400: #94a3b8;
+  --slate-900: #0f172a;
+
   /* Shadcn UI Color System - Mapped to Piggy Way Colors */
   --background: oklch(0.96 0.01 70); /* neutral-background */
-  --foreground: oklch(0.20 0.02 250); /* slate-900 */
+  --foreground: oklch(0.2 0.02 250); /* slate-900 */
   --card: oklch(0.99 0.005 70); /* neutral-background-light */
-  --card-foreground: oklch(0.20 0.02 250); /* slate-900 */
+  --card-foreground: oklch(0.2 0.02 250); /* slate-900 */
   --popover: oklch(1 0 0); /* neutral-white */
-  --popover-foreground: oklch(0.20 0.02 250); /* slate-900 */
+  --popover-foreground: oklch(0.2 0.02 250); /* slate-900 */
   --primary: oklch(0.15 0.08 270); /* primary-navy */
   --primary-foreground: oklch(1 0 0); /* neutral-white */
   --secondary: oklch(0.92 0.03 170); /* secondary-mint */
-  --secondary-foreground: oklch(0.20 0.02 250); /* slate-900 */
+  --secondary-foreground: oklch(0.2 0.02 250); /* slate-900 */
   --muted: oklch(0.93 0 0); /* neutral-grey-background */
   --muted-foreground: oklch(0.65 0.02 250); /* slate-400 */
   --accent: oklch(0.88 0.05 280); /* primary-purple */
-  --accent-foreground: oklch(0.20 0.02 250); /* slate-900 */
+  --accent-foreground: oklch(0.2 0.02 250); /* slate-900 */
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.92 0.005 250); /* neutral-stroke */
   --input: oklch(0.92 0.005 250); /* neutral-stroke */
   --ring: oklch(0.15 0.08 270); /* primary-navy */
   --chart-1: oklch(0.85 0.15 90); /* primary-gold */
   --chart-2: oklch(0.92 0.03 170); /* secondary-mint */
-  --chart-3: oklch(0.80 0.08 10); /* secondary-pink */
+  --chart-3: oklch(0.8 0.08 10); /* secondary-pink */
   --chart-4: oklch(0.75 0.08 240); /* secondary-blue */
   --chart-5: oklch(0.88 0.05 280); /* primary-purple */
   --sidebar: oklch(0.99 0.005 70); /* neutral-background-light */
-  --sidebar-foreground: oklch(0.20 0.02 250); /* slate-900 */
+  --sidebar-foreground: oklch(0.2 0.02 250); /* slate-900 */
   --sidebar-primary: oklch(0.15 0.08 270); /* primary-navy */
   --sidebar-primary-foreground: oklch(1 0 0); /* neutral-white */
   --sidebar-accent: oklch(0.92 0.03 170); /* secondary-mint */
-  --sidebar-accent-foreground: oklch(0.20 0.02 250); /* slate-900 */
+  --sidebar-accent-foreground: oklch(0.2 0.02 250); /* slate-900 */
   --sidebar-border: oklch(0.92 0.005 250); /* neutral-stroke */
   --sidebar-ring: oklch(0.15 0.08 270); /* primary-navy */
 }

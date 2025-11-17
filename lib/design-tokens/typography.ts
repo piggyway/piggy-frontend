@@ -99,5 +99,4 @@ export const typography = {
       style: "Light",
     },
   },
-} as const
-
+} as const;

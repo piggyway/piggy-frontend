@@ -1,48 +1,48 @@
-'use client';
+"use client";
 
-import { ProductCard } from '@/components/ui/product-card';
-import { AnimatedSection } from '../homepage/AnimatedSection';
+import { ProductCard } from "@/components/ui/product-card";
+import { AnimatedSection } from "../homepage/AnimatedSection";
 
 export function FeaturedPicksSection() {
   const products = [
     {
       id: 1,
-      title: 'Product name',
-      subtitle: 'Product name',
-      price: '$99.99',
-      image: '/default-product-image.png',
+      title: "Product name",
+      subtitle: "Product name",
+      price: "$99.99",
+      image: "/default-product-image.png",
     },
     {
       id: 2,
-      title: 'Product name',
-      subtitle: 'Product name',
-      price: '$99.99',
-      image: '/default-product-image.png',
+      title: "Product name",
+      subtitle: "Product name",
+      price: "$99.99",
+      image: "/default-product-image.png",
     },
     {
       id: 3,
-      title: 'Product name',
-      subtitle: 'Product name',
-      price: '$99.99',
-      image: '/default-product-image.png',
+      title: "Product name",
+      subtitle: "Product name",
+      price: "$99.99",
+      image: "/default-product-image.png",
     },
   ];
 
   return (
     <AnimatedSection className="w-full">
-      <div className="container mx-auto px-4 py-12 sm:py-16 md:py-20 max-w-[1160px]">
+      <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* Header */}
         <div className="mb-8 sm:mb-10">
-          <p className="text-[20px] sm:text-[24px] font-normal text-primary-navy leading-[32px] mb-2">
+          <p className="text-primary-navy mb-2 text-[20px] leading-[32px] font-normal sm:text-[24px]">
             Most Loved by Customers
           </p>
-          <h2 className="text-[32px] sm:text-[42px] font-semibold text-primary-navy-light leading-[42px] tracking-[-0.21px]">
+          <h2 className="text-primary-navy-light text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
             Featured Picks
           </h2>
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {products.map((product) => (
             <ProductCard
               key={product.id}

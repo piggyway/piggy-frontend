@@ -1,12 +1,16 @@
-import Image from "next/image"
-import Link from "next/link"
-import { footerLinks, socialMediaLinks, paymentMethods } from "@/lib/types/navigation"
+import Image from "next/image";
+import Link from "next/link";
+import {
+  footerLinks,
+  socialMediaLinks,
+  paymentMethods,
+} from "@/lib/types/navigation";
 
 export function Footer() {
   return (
     <footer className="w-full">
       {/* Main Footer Section */}
-      <div className="bg-primary-navy px-[140px] py-14 rounded-t-[32px]">
+      <div className="bg-primary-navy rounded-t-[32px] px-[140px] py-14">
         <div className="flex flex-col gap-14">
           {/* Logo and Slogan */}
           <div className="flex items-center gap-10">
@@ -19,7 +23,7 @@ export function Footer() {
               />
             </div>
             <div className="flex flex-1 items-center justify-end gap-5">
-              <p className="text-2xl font-semibold leading-8 text-primary-gold text-right">
+              <p className="text-primary-gold text-right text-2xl leading-8 font-semibold">
                 Tiny feet, big comfort.
               </p>
               <div className="relative h-[26px] w-[45px] shrink-0">
@@ -38,7 +42,7 @@ export function Footer() {
             {footerLinks.map((group, index) => (
               <div key={index} className="flex w-40 flex-col gap-3">
                 {group.title && (
-                  <h3 className="text-2xl font-semibold leading-8 text-white">
+                  <h3 className="text-2xl leading-8 font-semibold text-white">
                     {group.title}
                   </h3>
                 )}
@@ -48,7 +52,7 @@ export function Footer() {
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="text-base font-normal leading-6 text-white transition-colors hover:text-primary-gold"
+                      className="hover:text-primary-gold text-base leading-6 font-normal text-white transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -63,13 +67,13 @@ export function Footer() {
               <div className="flex flex-col gap-0">
                 <Link
                   href="/terms"
-                  className="text-base font-normal leading-6 text-white transition-colors hover:text-primary-gold"
+                  className="hover:text-primary-gold text-base leading-6 font-normal text-white transition-colors"
                 >
                   Terms & conditions
                 </Link>
                 <Link
                   href="/privacy"
-                  className="text-base font-normal leading-6 text-white transition-colors hover:text-primary-gold"
+                  className="hover:text-primary-gold text-base leading-6 font-normal text-white transition-colors"
                 >
                   Privacy policy
                 </Link>
@@ -78,7 +82,7 @@ export function Footer() {
 
             {/* Follow Us */}
             <div className="flex w-40 flex-col gap-3">
-              <h3 className="text-2xl font-semibold leading-8 text-white">
+              <h3 className="text-2xl leading-8 font-semibold text-white">
                 Follow us
               </h3>
               <div className="flex gap-3.5">
@@ -106,7 +110,7 @@ export function Footer() {
       {/* Payment Section */}
       <div className="bg-secondary-purple-light px-[140px] py-5">
         <div className="flex flex-col items-center gap-3">
-          <p className="text-base font-normal leading-6 text-primary-navy text-center">
+          <p className="text-primary-navy text-center text-base leading-6 font-normal">
             Payments
           </p>
           <div className="flex items-center gap-10">
@@ -130,25 +134,18 @@ export function Footer() {
 
       {/* Copyright Section */}
       <div className="bg-primary-gold px-[140px] py-3.5">
-        <div className="flex items-center justify-between gap-10 text-sm font-normal leading-5 text-primary-navy">
+        <div className="text-primary-navy flex items-center justify-between gap-10 text-sm leading-5 font-normal">
           <p>Piggyway Crossing© 2025</p>
           <div className="flex gap-10">
-            <Link
-              href="/terms"
-              className="transition-colors hover:underline"
-            >
+            <Link href="/terms" className="transition-colors hover:underline">
               Terms & conditions
             </Link>
-            <Link
-              href="/privacy"
-              className="transition-colors hover:underline"
-            >
+            <Link href="/privacy" className="transition-colors hover:underline">
               Privacy policy
             </Link>
           </div>
         </div>
       </div>
     </footer>
-  )
+  );
 }
-

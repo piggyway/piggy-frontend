@@ -2,18 +2,18 @@
  * Navigation types and data structures
  */
 
-import { NavigationMenuContentItemProps } from "@/components/ui/navigation-menu-content"
+import { NavigationMenuContentItemProps } from "@/components/ui/navigation-menu-content";
 
 export interface NavLink {
-  label: string
-  href: string
-  hasDropdown?: boolean
-  dropdownItems?: NavigationMenuContentItemProps[]
+  label: string;
+  href: string;
+  hasDropdown?: boolean;
+  dropdownItems?: NavigationMenuContentItemProps[];
 }
 
 export interface FooterLinkGroup {
-  title: string
-  links: NavLink[]
+  title: string;
+  links: NavLink[];
 }
 
 export const headerNavigation: NavLink[] = [
@@ -41,11 +41,11 @@ export const headerNavigation: NavLink[] = [
         title: "View all",
         href: "/shop",
       },
-    ]
+    ],
   },
   { label: "Pet Care", href: "/pet-care" },
   { label: "About us", href: "/about" },
-]
+];
 
 export const footerLinks: FooterLinkGroup[] = [
   {
@@ -82,14 +82,14 @@ export const footerLinks: FooterLinkGroup[] = [
       { label: "Contact us", href: "/contact" },
     ],
   },
-]
+];
 
 export const socialMediaLinks = [
   { name: "Instagram", icon: "/instagram.svg", href: "#" },
   { name: "TikTok", icon: "/tiktok.svg", href: "#" },
   { name: "YouTube", icon: "/youtube.svg", href: "#" },
   { name: "Facebook", icon: "/facebook 1.svg", href: "#" },
-]
+];
 
 export const paymentMethods = [
   { name: "Afterpay", icon: "/afterpay.svg" },
@@ -100,5 +100,4 @@ export const paymentMethods = [
   { name: "PayPal", icon: "/paypal.svg" },
   { name: "Shopify", icon: "/shopify.svg" },
   { name: "Visa", icon: "/visa.svg" },
-]
-
+];

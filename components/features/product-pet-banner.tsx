@@ -1,17 +1,17 @@
-import * as React from "react"
-import Image from "next/image"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export interface PetType {
-  name: string
-  icon: string // image path
-  iconAlt?: string
+  name: string;
+  icon: string; // image path
+  iconAlt?: string;
 }
 
 export interface ProductPetBannerProps {
-  title?: string
-  pets: PetType[]
-  className?: string
+  title?: string;
+  pets: PetType[];
+  className?: string;
 }
 
 export function ProductPetBanner({
@@ -20,25 +20,17 @@ export function ProductPetBanner({
   className,
 }: ProductPetBannerProps) {
   return (
-    <div
-      className={cn(
-        "flex flex-col gap-6 items-start w-full",
-        className
-      )}
-    >
+    <div className={cn("flex w-full flex-col items-start gap-6", className)}>
       {/* Title */}
-      <h2 className="text-xl font-medium leading-6 text-primary-navy w-full">
+      <h2 className="text-primary-navy w-full text-xl leading-6 font-medium">
         {title}
       </h2>
 
       {/* Pet Icons Grid */}
-      <div className="flex gap-4 items-center flex-wrap">
+      <div className="flex flex-wrap items-center gap-4">
         {pets.map((pet) => (
-          <div
-            key={pet.name}
-            className="flex flex-col gap-2 items-center"
-          >
-            <div className="size-16 rounded-full bg-neutral-stroke flex items-center justify-center overflow-hidden">
+          <div key={pet.name} className="flex flex-col items-center gap-2">
+            <div className="bg-neutral-stroke flex size-16 items-center justify-center overflow-hidden rounded-full">
               {pet.icon ? (
                 <Image
                   src={pet.icon}
@@ -51,13 +43,12 @@ export function ProductPetBanner({
                 <span className="text-2xl">🐾</span>
               )}
             </div>
-            <p className="text-sm font-normal leading-5 text-primary-navy text-center">
+            <p className="text-primary-navy text-center text-sm leading-5 font-normal">
               {pet.name}
             </p>
           </div>
         ))}
       </div>
     </div>
-  )
+  );
 }
-
