@@ -36,11 +36,10 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
     return product.variants.find((variant) => {
       // Check if all selected options match this variant
-      return Object.entries(selectedOptions).every(
-        ([optionId, valueId]) =>
-          variant.optionValues.some(
-            (ov) => ov.optionId === Number(optionId) && ov.valueId === valueId
-          )
+      return Object.entries(selectedOptions).every(([optionId, valueId]) =>
+        variant.optionValues.some(
+          (ov) => ov.optionId === Number(optionId) && ov.valueId === valueId
+        )
       );
     });
   }, [product.variants, selectedOptions]);
@@ -56,9 +55,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     if (price === null) return product.formattedPrice;
 
     const currencySlug =
-      selectedVariant.currency?.slug ||
-      product.currency?.slug ||
-      "AUD";
+      selectedVariant.currency?.slug || product.currency?.slug || "AUD";
     const currencySymbols: Record<string, string> = {
       AUD: "$",
       USD: "$",
@@ -72,9 +69,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   // Check if current variant is in stock
   const isInStock = useMemo(() => {
     if (!selectedVariant) return false;
-    return (
-      selectedVariant.isAvailable && selectedVariant.stockQuantity > 0
-    );
+    return selectedVariant.isAvailable && selectedVariant.stockQuantity > 0;
   }, [selectedVariant]);
 
   // Check if a specific option value is available (has stock for at least one variant)
@@ -189,7 +184,9 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         {/* Main Image */}
         <div className="bg-neutral-stroke relative aspect-[4/3] flex-1 overflow-hidden rounded-[28px]">
           <Image
-            src={product.images[selectedImageIndex] || "/default-product-image.png"}
+            src={
+              product.images[selectedImageIndex] || "/default-product-image.png"
+            }
             alt={product.title}
             fill
             className="object-contain"
@@ -275,7 +272,10 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
               // Color selector with swatches
               <div className="flex flex-wrap gap-4">
                 {option.values.map((value) => {
-                  const isAvailable = isOptionValueAvailable(option.id, value.id);
+                  const isAvailable = isOptionValueAvailable(
+                    option.id,
+                    value.id
+                  );
                   const isSelected = selectedOptions[option.id] === value.id;
 
                   return (
@@ -320,7 +320,10 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                 className="border-neutral-stroke text-primary-navy focus:ring-primary-navy/20 w-full rounded-[20px] border bg-white px-4 py-3 focus:ring-2 focus:outline-none"
               >
                 {option.values.map((value) => {
-                  const isAvailable = isOptionValueAvailable(option.id, value.id);
+                  const isAvailable = isOptionValueAvailable(
+                    option.id,
+                    value.id
+                  );
                   return (
                     <option
                       key={value.id}

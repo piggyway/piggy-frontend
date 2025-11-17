@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { HeroSection } from "@/components/features/shop/HeroSection";
 import { BestSellingSection } from "@/components/features/shop/BestSellingSection";
 import { LimitedEditionBanner } from "@/components/features/shop/LimitedEditionBanner";
@@ -15,7 +16,9 @@ export default function ShopPage() {
       <LimitedEditionBanner />
       <FeaturedPicksSection />
       <TestimonialsSection />
-      <StarterKitsSection />
+      <Suspense fallback={<div className="h-[400px]" />}>
+        <StarterKitsSection />
+      </Suspense>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { ProductDetailContent } from "@/components/features/product-detail/ProductDetailContent";
 import { ProductInformationSection } from "@/components/features/product-detail/ProductInformationSection";
@@ -40,8 +41,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {/* Testimonials - hardcoded for now */}
       <TestimonialsSection />
 
-      {/* Related Products - hardcoded for now */}
-      <RelatedProductsSection />
+      {/* Related Products */}
+      <Suspense fallback={<div className="h-[400px]" />}>
+        <RelatedProductsSection
+          categorySlug={product.category?.slug}
+          excludeProductId={product.id}
+        />
+      </Suspense>
     </div>
   );
 }
