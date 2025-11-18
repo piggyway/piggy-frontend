@@ -10,11 +10,11 @@ export function Footer() {
   return (
     <footer className="w-full">
       {/* Main Footer Section */}
-      <div className="bg-primary-navy rounded-t-[32px] px-[140px] py-14">
-        <div className="flex flex-col gap-14">
+      <div className="bg-primary-navy rounded-t-[32px] px-4 py-8 sm:px-8 sm:py-10 lg:px-[140px] lg:py-14">
+        <div className="flex flex-col gap-8 sm:gap-10 lg:gap-14">
           {/* Logo and Slogan */}
-          <div className="flex items-center gap-10">
-            <div className="relative h-[82px] w-[160px] shrink-0">
+          <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6 lg:gap-10">
+            <div className="relative h-16 w-32 shrink-0 sm:h-20 sm:w-40 lg:h-[82px] lg:w-[160px]">
               <Image
                 src="/footer-logo.png"
                 alt="Piggy Way Crossing"
@@ -22,11 +22,11 @@ export function Footer() {
                 className="object-contain"
               />
             </div>
-            <div className="flex flex-1 items-center justify-end gap-5">
-              <p className="text-primary-gold text-right text-2xl leading-8 font-semibold">
+            <div className="flex flex-1 flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-5">
+              <p className="text-primary-gold text-center text-lg leading-7 font-semibold sm:text-right sm:text-xl lg:text-2xl lg:leading-8">
                 Tiny feet, big comfort.
               </p>
-              <div className="relative h-[26px] w-[45px] shrink-0">
+              <div className="relative h-6 w-10 shrink-0 sm:h-[26px] sm:w-[45px]">
                 <Image
                   src="/baba.svg"
                   alt="Piggy icon"
@@ -38,21 +38,21 @@ export function Footer() {
           </div>
 
           {/* Footer Links */}
-          <div className="flex gap-10">
+          <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:flex lg:gap-10">
             {footerLinks.map((group, index) => (
-              <div key={index} className="flex w-40 flex-col gap-3">
+              <div key={index} className="flex flex-col gap-2 sm:gap-3 lg:w-40">
                 {group.title && (
-                  <h3 className="text-2xl leading-8 font-semibold text-white">
+                  <h3 className="text-lg leading-7 font-semibold text-white sm:text-xl lg:text-2xl lg:leading-8">
                     {group.title}
                   </h3>
                 )}
-                {!group.title && <div className="h-8" />}
+                {!group.title && <div className="h-6 sm:h-8" />}
                 <div className="flex flex-col gap-0">
                   {group.links.map((link) => (
                     <Link
                       key={link.href}
                       href={link.href}
-                      className="hover:text-primary-gold text-base leading-6 font-normal text-white transition-colors"
+                      className="hover:text-primary-gold text-sm leading-6 font-normal text-white transition-colors sm:text-base"
                     >
                       {link.label}
                     </Link>
@@ -62,18 +62,18 @@ export function Footer() {
             ))}
 
             {/* Terms & Privacy Links */}
-            <div className="flex w-40 flex-col gap-3">
-              <div className="h-8" /> {/* Spacer for alignment */}
+            <div className="flex flex-col gap-2 sm:gap-3 lg:w-40">
+              <div className="h-6 sm:h-8" /> {/* Spacer for alignment */}
               <div className="flex flex-col gap-0">
                 <Link
                   href="/terms"
-                  className="hover:text-primary-gold text-base leading-6 font-normal text-white transition-colors"
+                  className="hover:text-primary-gold text-sm leading-6 font-normal text-white transition-colors sm:text-base"
                 >
                   Terms & conditions
                 </Link>
                 <Link
                   href="/privacy"
-                  className="hover:text-primary-gold text-base leading-6 font-normal text-white transition-colors"
+                  className="hover:text-primary-gold text-sm leading-6 font-normal text-white transition-colors sm:text-base"
                 >
                   Privacy policy
                 </Link>
@@ -81,11 +81,11 @@ export function Footer() {
             </div>
 
             {/* Follow Us */}
-            <div className="flex w-40 flex-col gap-3">
-              <h3 className="text-2xl leading-8 font-semibold text-white">
+            <div className="flex flex-col gap-2 sm:gap-3 lg:w-40">
+              <h3 className="text-lg leading-7 font-semibold text-white sm:text-xl lg:text-2xl lg:leading-8">
                 Follow us
               </h3>
-              <div className="flex gap-3.5">
+              <div className="flex gap-3 sm:gap-3.5">
                 {socialMediaLinks.map((social) => (
                   <Link
                     key={social.name}
@@ -108,12 +108,12 @@ export function Footer() {
       </div>
 
       {/* Payment Section */}
-      <div className="bg-secondary-purple-light px-[140px] py-5">
-        <div className="flex flex-col items-center gap-3">
-          <p className="text-primary-navy text-center text-base leading-6 font-normal">
+      <div className="bg-secondary-purple-light px-4 py-4 sm:px-8 sm:py-5 lg:px-[140px]">
+        <div className="flex flex-col items-center gap-2 sm:gap-3">
+          <p className="text-primary-navy text-center text-sm leading-6 font-normal sm:text-base">
             Payments
           </p>
-          <div className="flex items-center gap-10">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-10">
             {paymentMethods.map((method) => (
               <div
                 key={method.name}
@@ -133,10 +133,10 @@ export function Footer() {
       </div>
 
       {/* Copyright Section */}
-      <div className="bg-primary-gold px-[140px] py-3.5">
-        <div className="text-primary-navy flex items-center justify-between gap-10 text-sm leading-5 font-normal">
+      <div className="bg-primary-gold px-4 py-3 sm:px-8 sm:py-3.5 lg:px-[140px]">
+        <div className="text-primary-navy flex flex-col items-center gap-2 text-xs leading-5 font-normal sm:flex-row sm:justify-between sm:gap-4 sm:text-sm lg:gap-10">
           <p>Piggyway Crossing© 2025</p>
-          <div className="flex gap-10">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-10">
             <Link href="/terms" className="transition-colors hover:underline">
               Terms & conditions
             </Link>
