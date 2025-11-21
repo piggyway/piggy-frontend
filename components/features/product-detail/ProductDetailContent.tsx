@@ -5,6 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, HelpCircle, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import type { ProductDetail, ProductVariant } from "@/lib/types/product";
 
@@ -312,30 +319,34 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
               </div>
             ) : (
               // Other options as dropdown
-              <select
-                value={selectedOptions[option.id] || ""}
-                onChange={(e) =>
-                  handleOptionSelect(option.id, Number(e.target.value))
+              <Select
+                value={selectedOptions[option.id]?.toString() || ""}
+                onValueChange={(val) =>
+                  handleOptionSelect(option.id, Number(val))
                 }
-                className="border-neutral-stroke text-primary-navy focus:ring-primary-navy/20 w-full rounded-[20px] border bg-white px-4 py-3 focus:ring-2 focus:outline-none"
               >
-                {option.values.map((value) => {
-                  const isAvailable = isOptionValueAvailable(
-                    option.id,
-                    value.id
-                  );
-                  return (
-                    <option
-                      key={value.id}
-                      value={value.id}
-                      disabled={!isAvailable}
-                    >
-                      {value.value}
-                      {!isAvailable ? " (Out of Stock)" : ""}
-                    </option>
-                  );
-                })}
-              </select>
+                <SelectTrigger className="w-full rounded-[20px] border-neutral-stroke px-4 py-6 text-primary-navy">
+                  <SelectValue placeholder={`Select ${option.name}`} />
+                </SelectTrigger>
+                <SelectContent>
+                  {option.values.map((value) => {
+                    const isAvailable = isOptionValueAvailable(
+                      option.id,
+                      value.id
+                    );
+                    return (
+                      <SelectItem
+                        key={value.id}
+                        value={value.id.toString()}
+                        disabled={!isAvailable}
+                      >
+                        {value.value}
+                        {!isAvailable ? " (Out of Stock)" : ""}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
             )}
           </div>
         ))}

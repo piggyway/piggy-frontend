@@ -83,7 +83,7 @@ export function ProductCard({
       <Link
         href={href}
         className={cn(
-          "flex w-full cursor-pointer flex-col items-start gap-5 rounded-[28px] bg-white p-6 transition-shadow hover:shadow-lg",
+          "flex h-full w-full cursor-pointer flex-col justify-between gap-5 rounded-[28px] bg-white p-6 transition-shadow hover:shadow-lg",
           className
         )}
       >
@@ -95,7 +95,7 @@ export function ProductCard({
   return (
     <div
       className={cn(
-        "flex w-full flex-col items-start gap-5 rounded-[28px] bg-white p-6",
+        "flex h-full w-full flex-col justify-between gap-5 rounded-[28px] bg-white p-6",
         className
       )}
     >
