@@ -7,6 +7,7 @@ import { BackgroundBlobs } from "@/components/ui/background-blobs";
 import { ProductGridSkeleton } from "@/components/ui/skeleton";
 import { CategoryService } from "@/lib/services/categories";
 import { getBaseUrl } from "@/lib/utils/seo";
+import { FloatingCartButton } from "@/components/features/cart/FloatingCartButton";
 
 interface ShopAllPageProps {
   searchParams: Promise<{
@@ -113,6 +114,7 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
       <Suspense fallback={<div className="h-[400px]" />}>
         <StarterKitsSection />
       </Suspense>
+      <FloatingCartButton />
     </div>
   );
 }

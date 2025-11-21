@@ -4,6 +4,13 @@ import { useState } from "react";
 import Link from "next/link";
 import { ChevronRight, HelpCircle, Minus, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 
 interface Color {
@@ -120,17 +127,18 @@ export function ProductDetailsPanel({
           </button>
         </div>
 
-        <select
-          value={selectedSize}
-          onChange={(e) => setSelectedSize(e.target.value)}
-          className="border-neutral-stroke text-primary-navy focus:ring-primary-navy/20 w-full rounded-[20px] border bg-white px-4 py-3 focus:ring-2 focus:outline-none"
-        >
-          {sizes.map((size) => (
-            <option key={size} value={size}>
-              {size}
-            </option>
-          ))}
-        </select>
+        <Select value={selectedSize} onValueChange={setSelectedSize}>
+          <SelectTrigger className="w-full rounded-[20px] border-neutral-stroke px-4 py-6 text-primary-navy">
+            <SelectValue placeholder="Select size" />
+          </SelectTrigger>
+          <SelectContent>
+            {sizes.map((size) => (
+              <SelectItem key={size} value={size}>
+                {size}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Quantity and Add to Cart */}

@@ -105,7 +105,7 @@ export function ProductsSection({
   return (
     <AnimatedSection>
       {/* Filter Bar */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:justify-between">
         {/* Item Count */}
         <PaginationInfo
           currentPage={page}
@@ -115,10 +115,10 @@ export function ProductsSection({
 
         {/* Sort Dropdown */}
         <div className="relative">
-          <div className="bg-primary-purple flex items-center gap-2 rounded-full px-4 py-2">
+          <div className="bg-primary-purple flex items-center gap-2 rounded-full px-3 py-2 sm:px-4">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
-              className="text-primary-navy text-sm font-medium"
+              className="text-primary-navy text-xs font-medium sm:text-sm"
             >
               Sort by: {currentSortLabel}
             </button>
@@ -135,22 +135,30 @@ export function ProductsSection({
 
           {/* Dropdown Menu */}
           {showDropdown && (
-            <div className="border-neutral-stroke absolute right-0 z-10 mt-2 w-48 rounded-lg border bg-white shadow-lg">
-              {SORT_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => handleSortChange(option.value)}
-                  className={cn(
-                    "w-full px-4 py-2 text-left text-sm transition-colors first:rounded-t-lg last:rounded-b-lg",
-                    sort === option.value
-                      ? "bg-primary-purple text-primary-navy font-medium"
-                      : "text-primary-navy hover:bg-neutral-background"
-                  )}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
+            <>
+              {/* Backdrop */}
+              <div
+                className="fixed inset-0 z-0"
+                onClick={() => setShowDropdown(false)}
+              />
+              {/* Dropdown */}
+              <div className="border-neutral-stroke absolute right-0 z-10 mt-2 w-48 rounded-lg border bg-white shadow-lg">
+                {SORT_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => handleSortChange(option.value)}
+                    className={cn(
+                      "w-full px-4 py-2.5 text-left text-sm transition-colors first:rounded-t-lg last:rounded-b-lg",
+                      sort === option.value
+                        ? "bg-primary-purple text-primary-navy font-medium"
+                        : "text-primary-navy hover:bg-neutral-background"
+                    )}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </>
           )}
         </div>
       </div>
