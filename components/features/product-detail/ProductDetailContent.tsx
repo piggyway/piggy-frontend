@@ -161,11 +161,11 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   };
 
   return (
-    <article className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+    <article className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
       {/* Left: Image Gallery */}
-      <section aria-label="Product gallery" className="flex gap-4">
-        {/* Thumbnail List */}
-        <div className="flex w-24 shrink-0 flex-col gap-4">
+      <section aria-label="Product gallery" className="flex flex-col gap-4 sm:flex-row">
+        {/* Thumbnail List - Hidden on mobile, shown on desktop */}
+        <div className="hidden sm:flex w-24 shrink-0 flex-col gap-4">
           {product.images.map((image, index) => (
             <button
               key={index}
@@ -188,8 +188,34 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
           ))}
         </div>
 
+        {/* Mobile Thumbnail Strip - Horizontal scroll */}
+        {product.images.length > 1 && (
+          <div className="sm:hidden flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+            {product.images.map((image, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedImageIndex(index)}
+                className={cn(
+                  "relative h-20 w-20 shrink-0 overflow-hidden rounded-[12px] border-2 transition-all",
+                  selectedImageIndex === index
+                    ? "border-primary-navy"
+                    : "border-neutral-stroke"
+                )}
+              >
+                <Image
+                  src={image}
+                  alt={`${product.title} thumbnail ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  sizes="80px"
+                />
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Main Image */}
-        <div className="bg-neutral-stroke relative aspect-[4/3] flex-1 overflow-hidden rounded-[28px]">
+        <div className="bg-neutral-stroke relative aspect-[4/3] w-full overflow-hidden rounded-[20px] sm:rounded-[28px]">
           <Image
             src={
               product.images[selectedImageIndex] || "/default-product-image.png"
@@ -197,7 +223,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             alt={product.title}
             fill
             className="object-contain"
-            sizes="(max-width: 1024px) 100vw, 50vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
             priority
           />
         </div>
@@ -228,13 +254,13 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
         {/* Product Name and Description */}
         <header>
-          <h1 className="text-primary-navy-light mb-3 text-[28px] leading-tight font-semibold sm:text-[32px]">
+          <h1 className="text-primary-navy-light mb-2 text-[24px] leading-tight font-semibold sm:mb-3 sm:text-[28px] lg:text-[32px]">
             {product.title}{" "}
             {product.subtitle && (
               <span className="text-primary-navy">{product.subtitle}</span>
             )}
           </h1>
-          <p className="text-primary-navy text-base leading-relaxed">
+          <p className="text-primary-navy text-sm leading-relaxed sm:text-base">
             {product.description}
           </p>
         </header>
@@ -277,7 +303,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             option.name?.toLowerCase().includes("color") ||
             option.name?.toLowerCase().includes("colour") ? (
               // Color selector with swatches
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-3 sm:gap-4">
                 {option.values.map((value) => {
                   const isAvailable = isOptionValueAvailable(
                     option.id,
@@ -299,7 +325,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                     >
                       <div
                         className={cn(
-                          "h-14 w-14 rounded-full border-2 transition-all",
+                          "h-12 w-12 rounded-full border-2 transition-all sm:h-14 sm:w-14",
                           isSelected
                             ? "border-primary-navy scale-110"
                             : isAvailable
@@ -310,7 +336,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                           backgroundColor: value.colorHex || "#cccccc",
                         }}
                       />
-                      <span className="text-primary-navy text-xs">
+                      <span className="text-primary-navy text-[10px] sm:text-xs">
                         {value.value}
                       </span>
                     </button>
@@ -352,18 +378,18 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         ))}
 
         {/* Quantity and Add to Cart */}
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           {/* Quantity Selector */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center gap-3 sm:justify-start">
             <button
               onClick={decrementQuantity}
-              className="bg-primary-navy hover:bg-primary-navy-light flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors"
+              className="bg-primary-navy hover:bg-primary-navy-light flex h-11 w-11 items-center justify-center rounded-full text-white transition-colors sm:h-12 sm:w-12"
               aria-label="Decrease quantity"
             >
               <Minus className="h-5 w-5" />
             </button>
 
-            <span className="text-primary-navy w-12 text-center text-xl font-medium">
+            <span className="text-primary-navy w-12 text-center text-lg font-medium sm:text-xl">
               {quantity}
             </span>
 
@@ -374,7 +400,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                   ? quantity >= selectedVariant.stockQuantity
                   : false
               }
-              className="bg-primary-navy hover:bg-primary-navy-light flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors disabled:opacity-50"
+              className="bg-primary-navy hover:bg-primary-navy-light flex h-11 w-11 items-center justify-center rounded-full text-white transition-colors disabled:opacity-50 sm:h-12 sm:w-12"
               aria-label="Increase quantity"
             >
               <Plus className="h-5 w-5" />
@@ -383,7 +409,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
           {/* Add to Cart Button */}
           <Button
-            className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 h-12 flex-1 rounded-full px-8 py-6 text-lg font-semibold disabled:opacity-50"
+            className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 h-11 w-full rounded-full px-6 py-5 text-base font-semibold disabled:opacity-50 sm:h-12 sm:flex-1 sm:px-8 sm:py-6 sm:text-lg"
             onClick={handleAddToCart}
             disabled={!isInStock}
           >

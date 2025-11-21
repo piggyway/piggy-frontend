@@ -49,14 +49,14 @@ function CollapsibleSection({
     <div className="border-b border-white/20 last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="-mx-4 flex w-full items-center justify-between rounded-lg px-4 py-6 text-left transition-colors hover:bg-white/5"
+        className="-mx-4 flex w-full items-center justify-between rounded-lg px-4 py-4 text-left transition-colors hover:bg-white/5 sm:py-6"
       >
-        <h3 className="text-xl font-semibold text-white">{title}</h3>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white">
+        <h3 className="text-lg font-semibold text-white sm:text-xl">{title}</h3>
+        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white sm:h-8 sm:w-8">
           {isOpen ? (
-            <ChevronUp className="text-primary-navy h-5 w-5" />
+            <ChevronUp className="text-primary-navy h-4 w-4 sm:h-5 sm:w-5" />
           ) : (
-            <ChevronDown className="text-primary-navy h-5 w-5" />
+            <ChevronDown className="text-primary-navy h-4 w-4 sm:h-5 sm:w-5" />
           )}
         </div>
       </button>
@@ -75,11 +75,11 @@ function CollapsibleSection({
 
 export function ProductInformationSection() {
   return (
-    <AnimatedSection className="w-full py-12 sm:py-16 md:py-20">
+    <AnimatedSection className="w-full py-8 sm:py-12 md:py-16 lg:py-20">
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Rounded Navy Container */}
-        <div className="bg-primary-navy rounded-[28px] p-8 sm:p-10 md:p-12">
-          <h2 className="text-primary-gold mb-8 text-[28px] font-semibold sm:text-[32px]">
+        <div className="bg-primary-navy rounded-[20px] p-6 sm:rounded-[28px] sm:p-8 md:p-10 lg:p-12">
+          <h2 className="text-primary-gold mb-6 text-[24px] font-semibold sm:mb-8 sm:text-[28px] lg:text-[32px]">
             Product Information
           </h2>
 

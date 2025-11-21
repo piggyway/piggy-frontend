@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Outfit } from "next/font/google";
 import "./globals.css";
@@ -13,6 +13,12 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Piggy Way Crossing",
   description: "Guinea Pig & Rabbit Essentials",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 export default function RootLayout({
