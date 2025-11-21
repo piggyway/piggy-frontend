@@ -9,6 +9,7 @@ import { TestimonialsSection } from "@/components/features/shop/TestimonialsSect
 import { RelatedProductsSection } from "@/components/features/product-detail/RelatedProductsSection";
 import { ProductService } from "@/lib/services/products";
 import { getBaseUrl, getProductUrl, getCategoryUrl } from "@/lib/utils/seo";
+import { FloatingCartButton } from "@/components/features/cart/FloatingCartButton";
 
 interface ProductPageProps {
   params: Promise<{
@@ -169,7 +170,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       />
 
       {/* Main Product Section */}
-      <div className="container mx-auto max-w-[1160px] px-4 py-8">
+      <div className="container mx-auto max-w-[1160px] px-4 py-6 sm:py-8">
         <ProductDetailContent product={product} />
       </div>
 
@@ -189,6 +190,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           excludeProductId={product.id}
         />
       </Suspense>
+      <FloatingCartButton />
     </div>
   );
 }
