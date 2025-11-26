@@ -128,7 +128,7 @@ export function ProductDetailsPanel({
         </div>
 
         <Select value={selectedSize} onValueChange={setSelectedSize}>
-          <SelectTrigger className="w-full rounded-[20px] border-neutral-stroke px-4 py-6 text-primary-navy">
+          <SelectTrigger className="border-neutral-stroke text-primary-navy w-full rounded-[20px] px-4 py-6">
             <SelectValue placeholder="Select size" />
           </SelectTrigger>
           <SelectContent>

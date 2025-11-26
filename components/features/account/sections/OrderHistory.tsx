@@ -18,19 +18,29 @@ export function OrderHistory() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-primary-navy">Order History</h2>
+        <h2 className="text-primary-navy text-2xl font-semibold">
+          Order History
+        </h2>
       </div>
 
       <div className="space-y-4">
         {mockOrders.map((order) => (
-          <div key={order.id} className="overflow-hidden rounded-lg border bg-white shadow-sm">
+          <div
+            key={order.id}
+            className="overflow-hidden rounded-lg border bg-white shadow-sm"
+          >
             <div className="flex items-center justify-between border-b bg-gray-50 p-4">
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-4">
                 <span className="font-medium text-gray-900">{order.id}</span>
                 <span className="text-sm text-gray-500">{order.date}</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className={cn("rounded-full px-3 py-1 text-xs font-medium", statusColors[order.status])}>
+                <span
+                  className={cn(
+                    "rounded-full px-3 py-1 text-xs font-medium",
+                    statusColors[order.status]
+                  )}
+                >
                   {order.status}
                 </span>
                 <Button variant="ghost" size="sm" className="hidden sm:flex">
@@ -38,7 +48,7 @@ export function OrderHistory() {
                 </Button>
               </div>
             </div>
-            
+
             <div className="p-4">
               <div className="flex flex-col gap-4">
                 {order.items.map((item, idx) => (
@@ -54,10 +64,14 @@ export function OrderHistory() {
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">{item.name}</p>
-                        <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                        <p className="text-sm text-gray-500">
+                          Qty: {item.quantity}
+                        </p>
                       </div>
                     </div>
-                    <p className="font-medium text-gray-900">${item.price.toFixed(2)}</p>
+                    <p className="font-medium text-gray-900">
+                      ${item.price.toFixed(2)}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -70,7 +84,7 @@ export function OrderHistory() {
                     <span>Tracking not available</span>
                   )}
                 </div>
-                <p className="text-lg font-bold text-primary-navy">
+                <p className="text-primary-navy text-lg font-bold">
                   Total: ${order.total.toFixed(2)}
                 </p>
               </div>
@@ -81,4 +95,3 @@ export function OrderHistory() {
     </div>
   );
 }
-

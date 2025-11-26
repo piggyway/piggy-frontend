@@ -18,7 +18,9 @@ export function ProfileInfo() {
   return (
     <div className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-primary-navy">Profile Information</h2>
+        <h2 className="text-primary-navy text-2xl font-semibold">
+          Profile Information
+        </h2>
         <Button
           variant={isEditing ? "default" : "outline"}
           onClick={isEditing ? handleSave : () => setIsEditing(true)}
@@ -29,7 +31,9 @@ export function ProfileInfo() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">First Name</label>
+          <label className="text-sm font-medium text-gray-700">
+            First Name
+          </label>
           <Input
             disabled={!isEditing}
             value={user.firstName}
@@ -53,7 +57,9 @@ export function ProfileInfo() {
           />
         </div>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Phone Number</label>
+          <label className="text-sm font-medium text-gray-700">
+            Phone Number
+          </label>
           <Input
             disabled={!isEditing}
             value={user.phone || ""}
@@ -65,4 +71,3 @@ export function ProfileInfo() {
     </div>
   );
 }
-

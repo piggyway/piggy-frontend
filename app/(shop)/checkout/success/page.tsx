@@ -1,17 +1,20 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default function SuccessPage({
+export default async function SuccessPage({
   searchParams,
 }: {
-  searchParams: { session_id: string };
+  searchParams: Promise<{ session_id?: string }>;
 }) {
+  const params = await searchParams;
+  const sessionId = params.session_id;
+
   return (
-    <div className="container mx-auto py-20 px-4 text-center">
-      <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-sm border">
-        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+    <div className="container mx-auto px-4 py-20 text-center">
+      <div className="mx-auto max-w-md rounded-lg border bg-white p-8 shadow-sm">
+        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
           <svg
-            className="w-8 h-8 text-green-600"
+            className="h-8 w-8 text-green-600"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -24,15 +27,18 @@ export default function SuccessPage({
             />
           </svg>
         </div>
-        
-        <h1 className="text-3xl font-bold text-green-700 mb-4">Payment Successful!</h1>
-        <p className="text-gray-600 mb-8">
-          Thank you for your purchase. Your order has been processed successfully.
+
+        <h1 className="mb-4 text-3xl font-bold text-green-700">
+          Payment Successful!
+        </h1>
+        <p className="mb-8 text-gray-600">
+          Thank you for your purchase. Your order has been processed
+          successfully.
         </p>
-        
-        {searchParams.session_id && (
-          <p className="text-sm text-gray-400 mb-6">
-            Session ID: {searchParams.session_id.slice(0, 10)}...
+
+        {sessionId && (
+          <p className="mb-6 text-sm text-gray-400">
+            Session ID: {sessionId.slice(0, 10)}...
           </p>
         )}
 
@@ -50,5 +56,3 @@ export default function SuccessPage({
     </div>
   );
 }
-
-

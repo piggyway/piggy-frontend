@@ -1,45 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CartItem } from "./CartItem";
 import { CartSummary } from "./CartSummary";
 import { RelatedProducts } from "./RelatedProducts";
-
-import { INITIAL_CART_ITEMS } from "./cart-data";
+import { useCart } from "./CartProvider";
 
 export function CartPage() {
-  const [cartItems, setCartItems] = useState(INITIAL_CART_ITEMS);
+  const { cart, isLoading, isMutating, error, updateItem, removeItem } =
+    useCart();
 
-  const handleQuantityChange = (id: string, newQuantity: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
+  const handleQuantityChange = async (id: string, newQuantity: number) => {
+    await updateItem(id, newQuantity);
   };
 
-  const handleRemoveItem = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
+  const handleRemoveItem = async (id: string) => {
+    await removeItem(id);
   };
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
+  const subtotal = useMemo(
+    () => (cart ? cart.totals.subtotalCents / 100 : 0),
+    [cart]
   );
 
-  // Simple shipping logic for mock
-  const shippingEstimate = subtotal > 50 ? 0 : 9.99;
-  const taxEstimate = subtotal * 0.1; // 10% tax
+  const discount = useMemo(
+    () => (cart ? cart.totals.discountCents / 100 : 0),
+    [cart]
+  );
 
-  if (cartItems.length === 0) {
+  const grandTotal = useMemo(
+    () => (cart ? cart.totals.grandTotalCents / 100 : 0),
+    [cart]
+  );
+
+  if (isLoading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="mb-4 text-3xl font-bold text-primary-navy">
+        <p className="text-lg text-slate-600">Loading your cart...</p>
+      </div>
+    );
+  }
+
+  if (!cart || cart.items.length === 0) {
+    return (
+      <div className="container mx-auto px-4 py-16 text-center">
+        <h1 className="text-primary-navy mb-4 text-3xl font-bold">
           Your Cart is Empty
         </h1>
+        {error && <p className="text-destructive mb-2 text-sm">{error}</p>}
         <p className="mb-8 text-slate-600">
           Looks like you haven't added anything to your cart yet.
         </p>
@@ -47,7 +58,7 @@ export function CartPage() {
           <Link href="/shop">Start Shopping</Link>
         </Button>
         <div className="mt-16 text-left">
-            <RelatedProducts />
+          <RelatedProducts />
         </div>
       </div>
     );
@@ -62,29 +73,35 @@ export function CartPage() {
             Continue Shopping
           </Link>
         </Button>
-        <h1 className="text-2xl font-bold text-primary-navy">Shopping Cart</h1>
+        <h1 className="text-primary-navy text-2xl font-bold">Shopping Cart</h1>
       </div>
 
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
         {/* Cart Items List */}
         <div className="flex-1">
-          <div className="rounded-lg border border-neutral-stroke bg-white px-4 sm:px-6">
-            {cartItems.map((item) => (
+          <div className="border-neutral-stroke rounded-lg border bg-white px-4 sm:px-6">
+            {error && (
+              <div className="text-destructive py-4 text-sm">{error}</div>
+            )}
+            {cart.items.map((item) => (
               <CartItem
                 key={item.id}
                 id={item.id}
-                title={item.title}
-                variant={item.variant}
-                price={item.price}
-                image={item.image}
+                title={item.productTitle}
+                variant={item.variantSku || undefined}
+                price={item.unitPriceCents / 100}
+                image={item.imageUrl}
                 quantity={item.quantity}
+                currencySymbol={cart.currencySymbol}
+                maxQuantity={item.stockQuantity ?? undefined}
+                disabled={isMutating}
                 onQuantityChange={(val) => handleQuantityChange(item.id, val)}
                 onRemove={() => handleRemoveItem(item.id)}
                 className="last:border-0"
               />
             ))}
           </div>
-          
+
           {/* Related Products Section - Shown below cart items on mobile/desktop */}
           <div className="mt-12">
             <RelatedProducts />
@@ -95,8 +112,9 @@ export function CartPage() {
         <div className="w-full lg:w-96 lg:shrink-0">
           <CartSummary
             subtotal={subtotal}
-            shippingEstimate={shippingEstimate}
-            taxEstimate={taxEstimate}
+            discount={discount}
+            grandTotal={grandTotal}
+            currencySymbol={cart.currencySymbol}
             className="sticky top-24"
           />
         </div>

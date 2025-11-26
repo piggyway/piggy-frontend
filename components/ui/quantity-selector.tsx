@@ -10,6 +10,7 @@ export interface QuantitySelectorProps {
   min?: number;
   max?: number;
   onValueChange?: (value: number) => void;
+  disabled?: boolean;
   className?: string;
 }
 
@@ -18,16 +19,17 @@ export function QuantitySelector({
   min = 1,
   max = 99,
   onValueChange,
+  disabled = false,
   className,
 }: QuantitySelectorProps) {
   const handleDecrease = () => {
-    if (value > min) {
+    if (!disabled && value > min) {
       onValueChange?.(value - 1);
     }
   };
 
   const handleIncrease = () => {
-    if (value < max) {
+    if (!disabled && value < max) {
       onValueChange?.(value + 1);
     }
   };
@@ -43,7 +45,7 @@ export function QuantitySelector({
           variant="ghost"
           size="icon-sm"
           onClick={handleDecrease}
-          disabled={value <= min}
+          disabled={disabled || value <= min}
           className="rounded-md border-0"
           aria-label="Decrease quantity"
         >
@@ -57,7 +59,7 @@ export function QuantitySelector({
           variant="ghost"
           size="icon-sm"
           onClick={handleIncrease}
-          disabled={value >= max}
+          disabled={disabled || value >= max}
           className="rounded-md border-0"
           aria-label="Increase quantity"
         >

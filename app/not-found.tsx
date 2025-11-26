@@ -20,7 +20,8 @@ export default function NotFound() {
         Oops! Lost in the Hay?
       </h1>
       <p className="mb-8 max-w-md text-lg text-slate-600">
-        We couldn't find the page you're looking for. It might have been moved or eaten by a hungry guinea pig.
+        We couldn't find the page you're looking for. It might have been moved
+        or eaten by a hungry guinea pig.
       </p>
 
       {/* Action Buttons */}
@@ -41,9 +42,7 @@ export default function NotFound() {
           size="lg"
           className="border-primary-navy text-primary-navy hover:bg-primary-purple/10 gap-2 rounded-full px-8"
         >
-          <Link href="/shop">
-            Continue Shopping
-          </Link>
+          <Link href="/shop">Continue Shopping</Link>
         </Button>
       </div>
     </div>

@@ -15,6 +15,7 @@ export interface ProductCardProps {
   price: string;
   href?: string;
   onAddToCart?: () => void;
+  disabled?: boolean;
   className?: string;
 }
 
@@ -28,6 +29,7 @@ export function ProductCard({
   price,
   href,
   onAddToCart,
+  disabled = false,
   className,
 }: ProductCardProps) {
   const displayImage = image ?? FALLBACK_IMAGE;
@@ -49,9 +51,13 @@ export function ProductCard({
 
         {/* Title and Subtitle - gap-0 */}
         <div className="text-primary-navy flex w-full flex-col items-start gap-0">
-          <h3 className="w-full text-lg leading-6 font-medium sm:text-xl">{title}</h3>
+          <h3 className="w-full text-lg leading-6 font-medium sm:text-xl">
+            {title}
+          </h3>
           {subtitle && (
-            <p className="w-full text-sm leading-6 font-normal sm:text-base">{subtitle}</p>
+            <p className="w-full text-sm leading-6 font-normal sm:text-base">
+              {subtitle}
+            </p>
           )}
         </div>
       </div>
@@ -69,6 +75,7 @@ export function ProductCard({
             e.stopPropagation();
             onAddToCart?.();
           }}
+          disabled={disabled}
           className="bg-primary-navy hover:bg-primary-navy-light flex w-full items-center justify-center gap-2 rounded-[16px] px-4 py-2.5 text-sm text-white sm:rounded-[20px] sm:text-base"
         >
           <ShoppingCart className="size-4" />

@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Suspense } from "react";
 import { Outfit } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -30,6 +30,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${outfit.variable} bg-[#FFFBF5] font-sans antialiased`}>
         {children}
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

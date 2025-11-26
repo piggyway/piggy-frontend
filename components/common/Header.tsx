@@ -74,7 +74,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="lg:hidden flex h-10 w-10 items-center justify-center rounded-full text-primary-navy transition-colors hover:bg-primary-purple/20"
+            className="text-primary-navy hover:bg-primary-purple/20 flex h-10 w-10 items-center justify-center rounded-full transition-colors lg:hidden"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -100,7 +100,7 @@ export function Header() {
           </Link>
 
           {/* Desktop Navigation Menu */}
-          <nav className="hidden lg:flex flex-1 items-center gap-3">
+          <nav className="hidden flex-1 items-center gap-3 lg:flex">
             <div className="flex flex-1 items-center gap-5">
               <NavigationMenu>
                 <NavigationMenuList className="gap-5">
@@ -171,13 +171,13 @@ export function Header() {
 
             {/* Desktop Action Buttons */}
             <div className="flex items-center gap-3">
-              <button
-                type="button"
+              <Link
+                href="/cart"
                 className="bg-primary-navy hover:bg-primary-navy-light flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors"
                 aria-label="Shopping cart"
               >
                 <ShoppingCart className="h-5 w-5" />
-              </button>
+              </Link>
               <button
                 type="button"
                 className="bg-primary-navy hover:bg-primary-navy-light flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors"
@@ -202,18 +202,18 @@ export function Header() {
                   searchInput.focus();
                 }
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-full text-primary-navy transition-colors hover:bg-primary-purple/20"
+              className="text-primary-navy hover:bg-primary-purple/20 flex h-10 w-10 items-center justify-center rounded-full transition-colors"
               aria-label="Search"
             >
               <Search className="h-5 w-5" />
             </button>
-            <button
-              type="button"
+            <Link
+              href="/cart"
               className="bg-primary-navy hover:bg-primary-navy-light flex h-10 w-10 items-center justify-center rounded-full text-white transition-colors"
               aria-label="Shopping cart"
             >
               <ShoppingCart className="h-5 w-5" />
-            </button>
+            </Link>
             <button
               type="button"
               className="bg-primary-navy hover:bg-primary-navy-light flex h-10 w-10 items-center justify-center rounded-full text-white transition-colors"
@@ -226,7 +226,7 @@ export function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="lg:hidden mt-4 border-t border-neutral-stroke pt-4">
+          <div className="border-neutral-stroke mt-4 border-t pt-4 lg:hidden">
             {/* Mobile Search Bar */}
             <form onSubmit={handleSearchSubmit} className="mb-4">
               <div className="relative">

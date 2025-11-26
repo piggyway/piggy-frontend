@@ -13,13 +13,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import type { ProductDetail, ProductVariant } from "@/lib/types/product";
+import type { ProductDetail } from "@/lib/types/product";
+import { useCart } from "@/components/features/cart/CartProvider";
 
 interface ProductDetailContentProps {
   product: ProductDetail;
 }
 
 export function ProductDetailContent({ product }: ProductDetailContentProps) {
+  const { addItem, isMutating } = useCart();
+  const [addError, setAddError] = useState<string | null>(null);
   // State for selected options
   const [selectedOptions, setSelectedOptions] = useState<
     Record<number, number>
@@ -150,22 +153,30 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
   const decrementQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
 
-  const handleAddToCart = () => {
-    console.log("Add to cart", {
-      productId: product.id,
-      variantId: selectedVariant?.id,
-      sku: selectedVariant?.sku,
-      quantity,
-      selectedOptions,
-    });
+  const handleAddToCart = async () => {
+    if (!selectedVariant) {
+      setAddError("Please select an available variant.");
+      return;
+    }
+
+    if (!selectedVariant.isAvailable || selectedVariant.stockQuantity <= 0) {
+      setAddError("This variant is out of stock.");
+      return;
+    }
+
+    setAddError(null);
+    await addItem(selectedVariant.id, quantity);
   };
 
   return (
     <article className="grid grid-cols-1 gap-6 sm:gap-8 lg:grid-cols-2 lg:gap-12">
       {/* Left: Image Gallery */}
-      <section aria-label="Product gallery" className="flex flex-col gap-4 sm:flex-row">
+      <section
+        aria-label="Product gallery"
+        className="flex flex-col gap-4 sm:flex-row"
+      >
         {/* Thumbnail List - Hidden on mobile, shown on desktop */}
-        <div className="hidden sm:flex w-24 shrink-0 flex-col gap-4">
+        <div className="hidden w-24 shrink-0 flex-col gap-4 sm:flex">
           {product.images.map((image, index) => (
             <button
               key={index}
@@ -190,7 +201,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
         {/* Mobile Thumbnail Strip - Horizontal scroll */}
         {product.images.length > 1 && (
-          <div className="sm:hidden flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
+          <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:hidden">
             {product.images.map((image, index) => (
               <button
                 key={index}
@@ -351,7 +362,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                   handleOptionSelect(option.id, Number(val))
                 }
               >
-                <SelectTrigger className="w-full rounded-[20px] border-neutral-stroke px-4 py-6 text-primary-navy">
+                <SelectTrigger className="border-neutral-stroke text-primary-navy w-full rounded-[20px] px-4 py-6">
                   <SelectValue placeholder={`Select ${option.name}`} />
                 </SelectTrigger>
                 <SelectContent>
@@ -411,10 +422,15 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
           <Button
             className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 h-11 w-full rounded-full px-6 py-5 text-base font-semibold disabled:opacity-50 sm:h-12 sm:flex-1 sm:px-8 sm:py-6 sm:text-lg"
             onClick={handleAddToCart}
-            disabled={!isInStock}
+            disabled={!isInStock || isMutating}
           >
-            {isInStock ? "Add to cart" : "Out of Stock"}
+            {isMutating
+              ? "Adding..."
+              : isInStock
+                ? "Add to cart"
+                : "Out of Stock"}
           </Button>
+          {addError && <p className="text-destructive text-sm">{addError}</p>}
         </div>
       </section>
     </article>

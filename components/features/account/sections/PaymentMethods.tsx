@@ -8,7 +8,9 @@ export function PaymentMethods() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-semibold text-primary-navy">Payment Methods</h2>
+        <h2 className="text-primary-navy text-2xl font-semibold">
+          Payment Methods
+        </h2>
         <Button className="gap-2">
           <Plus className="size-4" />
           Add New Method
@@ -17,9 +19,12 @@ export function PaymentMethods() {
 
       <div className="grid gap-6 md:grid-cols-2">
         {mockPaymentMethods.map((method) => (
-          <div key={method.id} className="relative rounded-lg border bg-white p-6 shadow-sm transition-shadow hover:shadow-md">
+          <div
+            key={method.id}
+            className="relative rounded-lg border bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+          >
             {method.isDefault && (
-              <span className="absolute right-4 top-4 rounded-full bg-primary-purple/20 px-2 py-1 text-xs font-medium text-primary-navy">
+              <span className="bg-primary-purple/20 text-primary-navy absolute top-4 right-4 rounded-full px-2 py-1 text-xs font-medium">
                 Default
               </span>
             )}
@@ -29,12 +34,24 @@ export function PaymentMethods() {
               </div>
               <div>
                 <h3 className="font-medium text-gray-900">{method.type}</h3>
-                {method.last4 && <p className="text-sm text-gray-500">•••• •••• •••• {method.last4}</p>}
-                {method.expiryDate && <p className="text-sm text-gray-400">Expires {method.expiryDate}</p>}
+                {method.last4 && (
+                  <p className="text-sm text-gray-500">
+                    •••• •••• •••• {method.last4}
+                  </p>
+                )}
+                {method.expiryDate && (
+                  <p className="text-sm text-gray-400">
+                    Expires {method.expiryDate}
+                  </p>
+                )}
               </div>
             </div>
             <div className="flex items-center justify-end">
-               <Button variant="outline" size="sm" className="gap-2 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2 text-red-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+              >
                 <Trash2 className="size-3" />
                 Remove
               </Button>
@@ -45,4 +62,3 @@ export function PaymentMethods() {
     </div>
   );
 }
-

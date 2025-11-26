@@ -13,18 +13,24 @@ export interface CartItemProps {
   price: number;
   image: string;
   quantity: number;
+  currencySymbol?: string;
+  maxQuantity?: number;
+  disabled?: boolean;
   onQuantityChange: (value: number) => void;
   onRemove: () => void;
   className?: string;
 }
 
 export function CartItem({
-  id,
+  id: _id,
   title,
   variant,
   price,
   image,
   quantity,
+  currencySymbol = "$",
+  maxQuantity,
+  disabled = false,
   onQuantityChange,
   onRemove,
   className,
@@ -32,7 +38,7 @@ export function CartItem({
   return (
     <div
       className={cn(
-        "flex flex-col gap-4 border-b border-neutral-stroke py-6 sm:flex-row sm:items-center",
+        "border-neutral-stroke flex flex-col gap-4 border-b py-6 sm:flex-row sm:items-center",
         className
       )}
     >
@@ -49,26 +55,28 @@ export function CartItem({
       {/* Product Details */}
       <div className="flex flex-1 flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex flex-col gap-1">
-          <h3 className="text-lg font-medium text-primary-navy">{title}</h3>
-          {variant && (
-            <p className="text-sm text-slate-500">{variant}</p>
-          )}
-          <p className="font-medium text-primary-navy sm:hidden">
-            ${price.toFixed(2)}
+          <h3 className="text-primary-navy text-lg font-medium">{title}</h3>
+          {variant && <p className="text-sm text-slate-500">{variant}</p>}
+          <p className="text-primary-navy font-medium sm:hidden">
+            {currencySymbol}
+            {price.toFixed(2)}
           </p>
         </div>
 
         <div className="flex items-center justify-between gap-4 sm:justify-end">
-            {/* Price (Desktop) */}
-          <p className="hidden font-medium text-primary-navy sm:block">
-            ${price.toFixed(2)}
+          {/* Price (Desktop) */}
+          <p className="text-primary-navy hidden font-medium sm:block">
+            {currencySymbol}
+            {price.toFixed(2)}
           </p>
 
           {/* Quantity */}
           <QuantitySelector
             value={quantity}
+            max={maxQuantity}
+            disabled={disabled}
             onValueChange={onQuantityChange}
-            className="[&_label]:hidden" 
+            className="[&_label]:hidden"
           />
 
           {/* Remove Button */}
@@ -76,7 +84,8 @@ export function CartItem({
             variant="ghost"
             size="icon-sm"
             onClick={onRemove}
-            className="text-slate-400 hover:text-destructive"
+            className="hover:text-destructive text-slate-400"
+            disabled={disabled}
             aria-label="Remove item"
           >
             <X className="size-5" />

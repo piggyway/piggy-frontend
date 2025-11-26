@@ -21,7 +21,7 @@ export interface Address {
   isDefault: boolean;
 }
 
-export type OrderStatus = 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+export type OrderStatus = "Processing" | "Shipped" | "Delivered" | "Cancelled";
 
 export interface OrderItem {
   productId: string;
@@ -42,9 +42,8 @@ export interface Order {
 
 export interface PaymentMethod {
   id: string;
-  type: 'Visa' | 'Mastercard' | 'Amex' | 'PayPal';
+  type: "Visa" | "Mastercard" | "Amex" | "PayPal";
   last4?: string;
   expiryDate?: string;
   isDefault: boolean;
 }
-

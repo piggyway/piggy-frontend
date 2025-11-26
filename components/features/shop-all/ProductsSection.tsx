@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { ProductCard } from "@/components/ui/product-card";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 import { Pagination, PaginationInfo } from "@/components/ui/pagination";
 import { ProductGridSkeleton } from "@/components/ui/skeleton";
@@ -14,6 +13,7 @@ import type {
   ProductListParams,
 } from "@/lib/types/product";
 import { SORT_OPTIONS } from "@/lib/types/product";
+import { ProductCardClient } from "@/components/features/shop/ProductCardClient";
 
 interface ProductsSectionProps {
   category?: string;
@@ -197,15 +197,7 @@ export function ProductsSection({
                 productBackgrounds[index % productBackgrounds.length]
               )}
             >
-              <ProductCard
-                title={product.title}
-                subtitle={product.subtitle}
-                price={product.formattedPrice}
-                image={product.imageUrl}
-                href={`/shop/${product.category?.slug || "product"}/${product.slug}`}
-                onAddToCart={() => console.log(`Add ${product.title} to cart`)}
-                className="bg-transparent"
-              />
+              <ProductCardClient product={product} className="bg-transparent" />
             </div>
           ))}
         </div>

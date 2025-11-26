@@ -13,14 +13,14 @@ const RELATED_PRODUCTS = [
   {
     id: "rel-2",
     title: "Fleece Tunnel Hideout",
-    price: 18.50,
+    price: 18.5,
     image: "/hut-example.png",
     category: "Accessories",
   },
   {
     id: "rel-3",
     title: "Cozy Cage Liner - Plaid",
-    price: 45.00,
+    price: 45.0,
     image: "/liner-example.png",
     category: "Bedding",
   },
@@ -36,7 +36,9 @@ const RELATED_PRODUCTS = [
 export function RelatedProducts() {
   return (
     <div className="flex flex-col gap-6 py-8">
-      <h2 className="text-2xl font-semibold text-primary-navy">You Might Also Like</h2>
+      <h2 className="text-primary-navy text-2xl font-semibold">
+        You Might Also Like
+      </h2>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {RELATED_PRODUCTS.map((product) => (
           <ProductCard
@@ -52,4 +54,3 @@ export function RelatedProducts() {
     </div>
   );
 }
-
