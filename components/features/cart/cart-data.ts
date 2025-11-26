@@ -19,7 +19,7 @@ export const INITIAL_CART_ITEMS = [
     id: "3",
     title: "Vitamin C Treats",
     variant: "Pack of 3",
-    price: 12.50,
+    price: 12.5,
     image: "/default-product-image.png",
     quantity: 1,
   },

@@ -2,9 +2,21 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { CreditCard, MapPin, Package, Settings, Truck, User } from "lucide-react";
+import {
+  CreditCard,
+  MapPin,
+  Package,
+  Settings,
+  Truck,
+  User,
+} from "lucide-react";
 
-export type AccountSection = "profile" | "orders" | "track" | "address" | "payment";
+export type AccountSection =
+  | "profile"
+  | "orders"
+  | "track"
+  | "address"
+  | "payment";
 
 interface AccountSidebarProps {
   currentSection: AccountSection;
@@ -12,7 +24,11 @@ interface AccountSidebarProps {
   className?: string;
 }
 
-const menuItems: { id: AccountSection; label: string; icon: React.ElementType }[] = [
+const menuItems: {
+  id: AccountSection;
+  label: string;
+  icon: React.ElementType;
+}[] = [
   { id: "profile", label: "Profile", icon: User },
   { id: "orders", label: "Order History", icon: Package },
   { id: "track", label: "Track Order", icon: Truck },
@@ -20,11 +36,20 @@ const menuItems: { id: AccountSection; label: string; icon: React.ElementType }[
   { id: "payment", label: "Payment Methods", icon: CreditCard },
 ];
 
-export function AccountSidebar({ currentSection, onSectionChange, className }: AccountSidebarProps) {
+export function AccountSidebar({
+  currentSection,
+  onSectionChange,
+  className,
+}: AccountSidebarProps) {
   return (
-    <div className={cn("flex w-full flex-col gap-2 rounded-lg bg-white p-4 shadow-sm md:w-64", className)}>
+    <div
+      className={cn(
+        "flex w-full flex-col gap-2 rounded-lg bg-white p-4 shadow-sm md:w-64",
+        className
+      )}
+    >
       <div className="mb-4 px-4 py-2">
-        <h2 className="text-lg font-semibold text-primary-navy">My Account</h2>
+        <h2 className="text-primary-navy text-lg font-semibold">My Account</h2>
       </div>
       <nav className="flex flex-col gap-1">
         {menuItems.map((item) => {
@@ -36,7 +61,9 @@ export function AccountSidebar({ currentSection, onSectionChange, className }: A
               variant={isActive ? "secondary" : "ghost"}
               className={cn(
                 "w-full justify-start gap-3 px-4 font-medium",
-                isActive ? "text-primary-navy bg-primary-purple/20" : "text-gray-600 hover:text-primary-navy hover:bg-primary-purple/10"
+                isActive
+                  ? "text-primary-navy bg-primary-purple/20"
+                  : "hover:text-primary-navy hover:bg-primary-purple/10 text-gray-600"
               )}
               onClick={() => onSectionChange(item.id)}
             >
@@ -49,4 +76,3 @@ export function AccountSidebar({ currentSection, onSectionChange, className }: A
     </div>
   );
 }
-

@@ -25,7 +25,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         <div className="grid gap-4">
           <div className="grid gap-2">
             <label
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               htmlFor="email"
             >
               Email
@@ -41,7 +41,10 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
               className="bg-white"
             />
           </div>
-          <Button disabled={isLoading} className="w-full bg-primary-navy hover:bg-primary-navy/90 text-white">
+          <Button
+            disabled={isLoading}
+            className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
+          >
             {isLoading && (
               <span className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
             )}
@@ -49,10 +52,10 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
           </Button>
         </div>
       </form>
-      
+
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <span className="w-full border-t border-neutral-stroke" />
+          <span className="border-neutral-stroke w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
           <span className="bg-neutral-background px-2 text-slate-500">
@@ -61,7 +64,12 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         </div>
       </div>
 
-      <Button variant="outline" type="button" disabled={isLoading} className="w-full bg-white">
+      <Button
+        variant="outline"
+        type="button"
+        disabled={isLoading}
+        className="w-full bg-white"
+      >
         {isLoading ? (
           <span className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
         ) : (

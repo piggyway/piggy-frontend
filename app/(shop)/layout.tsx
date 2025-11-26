@@ -1,5 +1,6 @@
 import { Header } from "@/components/common/Header";
 import { Footer } from "@/components/common/Footer";
+import { CartProvider } from "@/components/features/cart/CartProvider";
 
 export default function ShopLayout({
   children,
@@ -7,10 +8,10 @@ export default function ShopLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <>
+    <CartProvider>
       <Header />
       <main className="bg-[#FFFBF5]">{children}</main>
       <Footer />
-    </>
+    </CartProvider>
   );
 }

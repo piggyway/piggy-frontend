@@ -10,13 +10,16 @@ interface EmailStepProps {
 
 export function EmailStep({ onNext }: EmailStepProps) {
   return (
-    <Card className="min-h-[600px] flex flex-col">
+    <Card className="flex min-h-[600px] flex-col">
       <CardHeader>
         <CardTitle>Contact Information</CardTitle>
       </CardHeader>
-      <CardContent className="flex-1 flex flex-col justify-between space-y-4">
+      <CardContent className="flex flex-1 flex-col justify-between space-y-4">
         <div className="grid gap-2">
-          <label htmlFor="email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+          <label
+            htmlFor="email"
+            className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
             Email Address
           </label>
           <Input
@@ -29,7 +32,10 @@ export function EmailStep({ onNext }: EmailStepProps) {
             You are logged in as Sofia Davis.
           </p>
         </div>
-        <Button onClick={onNext} className="w-full bg-primary-navy hover:bg-primary-navy/90 text-white">
+        <Button
+          onClick={onNext}
+          className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
+        >
           Continue to Shipping
         </Button>
       </CardContent>

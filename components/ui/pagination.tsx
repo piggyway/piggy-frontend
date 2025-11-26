@@ -67,7 +67,10 @@ function Pagination({
     <nav
       role="navigation"
       aria-label="Pagination"
-      className={cn("flex items-center justify-center gap-1 sm:gap-2", className)}
+      className={cn(
+        "flex items-center justify-center gap-1 sm:gap-2",
+        className
+      )}
     >
       {/* Previous Button */}
       <Button

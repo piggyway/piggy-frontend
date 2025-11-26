@@ -6,7 +6,7 @@ export const mockUserProfile: UserProfile = {
   lastName: "Doe",
   email: "jane.doe@example.com",
   phone: "+1 (555) 123-4567",
-  avatarUrl: "/piggy-icon.png"
+  avatarUrl: "/piggy-icon.png",
 };
 
 export const mockAddresses: Address[] = [
@@ -20,7 +20,7 @@ export const mockAddresses: Address[] = [
     state: "CA",
     zipCode: "90210",
     country: "USA",
-    isDefault: true
+    isDefault: true,
   },
   {
     id: "addr_2",
@@ -33,8 +33,8 @@ export const mockAddresses: Address[] = [
     state: "CA",
     zipCode: "90001",
     country: "USA",
-    isDefault: false
-  }
+    isDefault: false,
+  },
 ];
 
 export const mockOrders: Order[] = [
@@ -42,41 +42,41 @@ export const mockOrders: Order[] = [
     id: "ORD-2023-001",
     date: "2023-10-15",
     status: "Delivered",
-    total: 125.50,
+    total: 125.5,
     items: [
       {
         productId: "prod_1",
         name: "Premium Guinea Pig Pellets",
         quantity: 2,
-        price: 25.00,
-        image: "/shop-with-us/default.png"
+        price: 25.0,
+        image: "/shop-with-us/default.png",
       },
       {
         productId: "prod_2",
         name: "Cozy Fleece Liner",
         quantity: 1,
-        price: 75.50,
-        image: "/shop-with-us/default.png"
-      }
+        price: 75.5,
+        image: "/shop-with-us/default.png",
+      },
     ],
-    trackingNumber: "TRK123456789"
+    trackingNumber: "TRK123456789",
   },
   {
     id: "ORD-2023-002",
     date: "2023-11-05",
     status: "Shipped",
-    total: 45.00,
+    total: 45.0,
     items: [
       {
         productId: "prod_3",
         name: "Timothy Hay",
         quantity: 3,
-        price: 15.00,
-        image: "/shop-with-us/default.png"
-      }
+        price: 15.0,
+        image: "/shop-with-us/default.png",
+      },
     ],
-    trackingNumber: "TRK987654321"
-  }
+    trackingNumber: "TRK987654321",
+  },
 ];
 
 export const mockPaymentMethods: PaymentMethod[] = [
@@ -85,12 +85,11 @@ export const mockPaymentMethods: PaymentMethod[] = [
     type: "Visa",
     last4: "4242",
     expiryDate: "12/24",
-    isDefault: true
+    isDefault: true,
   },
   {
     id: "pm_2",
     type: "PayPal",
-    isDefault: false
-  }
+    isDefault: false,
+  },
 ];
-

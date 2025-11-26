@@ -12,6 +12,11 @@ export const API_ENDPOINTS = {
   CATEGORIES: "/api/categories",
   CATEGORY_BY_ID: (id: string | number) => `/api/categories/${id}`,
 
+  // Cart
+  CART: "/api/cart",
+  CART_ITEMS: "/api/cart/items",
+  CART_ITEM_BY_ID: (id: string) => `/api/cart/items/${id}`,
+
   // Add more endpoints as needed
   // Users
   // USERS: "/api/users",

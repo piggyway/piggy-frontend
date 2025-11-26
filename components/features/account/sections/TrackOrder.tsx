@@ -22,17 +22,19 @@ export function TrackOrder() {
     <div className="space-y-6">
       <div className="rounded-lg bg-white p-8 shadow-sm">
         <div className="mx-auto max-w-md text-center">
-          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary-purple/20">
-            <Truck className="size-6 text-primary-navy" />
+          <div className="bg-primary-purple/20 mx-auto mb-4 flex size-12 items-center justify-center rounded-full">
+            <Truck className="text-primary-navy size-6" />
           </div>
-          <h2 className="mb-2 text-2xl font-semibold text-primary-navy">Track Your Order</h2>
+          <h2 className="text-primary-navy mb-2 text-2xl font-semibold">
+            Track Your Order
+          </h2>
           <p className="mb-6 text-gray-500">
             Enter your order number below to check the status of your shipment.
           </p>
 
           <form onSubmit={handleTrack} className="space-y-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-gray-400" />
               <Input
                 type="text"
                 placeholder="Order Number (e.g. ORD-2023-001)"
@@ -48,7 +50,7 @@ export function TrackOrder() {
           </form>
         </div>
       </div>
-      
+
       {/* Example Result Placeholder - In a real app, show results here */}
       {/* <div className="rounded-lg bg-white p-6 shadow-sm">
         ...
@@ -56,4 +58,3 @@ export function TrackOrder() {
     </div>
   );
 }
-

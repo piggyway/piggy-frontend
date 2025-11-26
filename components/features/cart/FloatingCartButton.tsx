@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ShoppingCart, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,43 +11,33 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { INITIAL_CART_ITEMS } from "./cart-data";
 import Image from "next/image";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
+import { useCart } from "./CartProvider";
 
 export function FloatingCartButton() {
-  const [cartItems, setCartItems] = useState(INITIAL_CART_ITEMS);
+  const { cart, isLoading, isMutating, updateItem, removeItem } = useCart();
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleQuantityChange = (id: string, newQuantity: number) => {
-    setCartItems((items) =>
-      items.map((item) =>
-        item.id === id ? { ...item, quantity: newQuantity } : item
-      )
-    );
-  };
+  const cartItems = cart?.items ?? [];
 
-  const handleRemoveItem = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
-  };
+  const subtotal = useMemo(() => {
+    if (!cart) return 0;
+    return cart.totals.subtotalCents / 100;
+  }, [cart]);
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+  const totalItems = cart?.totals.itemCount ?? 0;
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button
           size="icon"
-          className="fixed bottom-8 right-8 z-50 h-14 w-14 rounded-full shadow-xl transition-transform hover:scale-105"
+          className="fixed right-8 bottom-8 z-50 h-14 w-14 rounded-full shadow-xl transition-transform hover:scale-105"
         >
           <ShoppingCart className="h-6 w-6" />
           {totalItems > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+            <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
               {totalItems}
             </span>
           )}
@@ -60,8 +50,13 @@ export function FloatingCartButton() {
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto py-4">
-          {cartItems.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+          {isLoading ? (
+            <div className="text-muted-foreground flex h-full flex-col items-center justify-center text-center">
+              <ShoppingCart className="mb-4 h-12 w-12 opacity-20" />
+              <p>Loading cart...</p>
+            </div>
+          ) : cartItems.length === 0 ? (
+            <div className="text-muted-foreground flex h-full flex-col items-center justify-center text-center">
               <ShoppingCart className="mb-4 h-12 w-12 opacity-20" />
               <p>Your cart is empty</p>
               <Button
@@ -76,10 +71,10 @@ export function FloatingCartButton() {
             <div className="flex flex-col gap-6">
               {cartItems.map((item) => (
                 <div key={item.id} className="flex gap-4">
-                  <div className="relative aspect-square h-20 w-20 shrink-0 overflow-hidden rounded-md border bg-muted">
+                  <div className="bg-muted relative aspect-square h-20 w-20 shrink-0 overflow-hidden rounded-md border">
                     <Image
-                      src={item.image}
-                      alt={item.title}
+                      src={item.imageUrl}
+                      alt={item.productTitle}
                       fill
                       className="object-cover"
                     />
@@ -87,14 +82,17 @@ export function FloatingCartButton() {
                   <div className="flex flex-1 flex-col justify-between">
                     <div className="flex justify-between gap-2">
                       <div>
-                        <h4 className="font-medium line-clamp-1">{item.title}</h4>
-                        <p className="text-sm text-muted-foreground">
-                          {item.variant}
+                        <h4 className="line-clamp-1 font-medium">
+                          {item.productTitle}
+                        </h4>
+                        <p className="text-muted-foreground text-sm">
+                          {item.variantSku || "Variant"}
                         </p>
                       </div>
                       <button
-                        onClick={() => handleRemoveItem(item.id)}
-                        className="h-fit text-muted-foreground hover:text-foreground"
+                        onClick={() => removeItem(item.id)}
+                        className="text-muted-foreground hover:text-foreground h-fit disabled:opacity-50"
+                        disabled={isMutating}
                       >
                         <X className="h-4 w-4" />
                         <span className="sr-only">Remove</span>
@@ -103,13 +101,16 @@ export function FloatingCartButton() {
                     <div className="flex items-center justify-between">
                       <QuantitySelector
                         value={item.quantity}
-                        onValueChange={(val) =>
-                          handleQuantityChange(item.id, val)
-                        }
+                        disabled={isMutating}
+                        max={item.stockQuantity ?? undefined}
+                        onValueChange={(val) => updateItem(item.id, val)}
                         className="h-8 w-24"
                       />
                       <p className="font-medium">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        {cart?.currencySymbol}
+                        {((item.unitPriceCents * item.quantity) / 100).toFixed(
+                          2
+                        )}
                       </p>
                     </div>
                   </div>
@@ -123,7 +124,10 @@ export function FloatingCartButton() {
           <div className="border-t pt-4">
             <div className="mb-4 flex items-center justify-between font-medium">
               <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>
+                {cart?.currencySymbol}
+                {subtotal.toFixed(2)}
+              </span>
             </div>
             <div className="grid gap-2">
               <Button asChild className="w-full" size="lg">
