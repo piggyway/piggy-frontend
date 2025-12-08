@@ -1,7 +1,9 @@
 "use client";
 
+import { useRef } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { cn } from "@/lib/utils";
@@ -36,9 +38,14 @@ export function CartItem({
   className,
 }: CartItemProps) {
   return (
-    <div
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, x: -100, transition: { duration: 0.2 } }}
+      transition={{ type: "spring", stiffness: 500, damping: 30 }}
       className={cn(
-        "border-neutral-stroke flex flex-col gap-4 border-b py-6 sm:flex-row sm:items-center",
+        "border-neutral-stroke group relative flex flex-col gap-4 border-b py-6 transition-colors hover:bg-slate-50/50 sm:flex-row sm:items-center",
         className
       )}
     >
@@ -92,6 +99,6 @@ export function CartItem({
           </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

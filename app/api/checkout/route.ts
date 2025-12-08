@@ -1,76 +1,136 @@
-import { NextResponse } from "next/server";
-import Stripe from "stripe";
+/**
+ * Checkout API Route
+ * Proxies checkout session creation to the backend service
+ */
 
-// 初始化 Stripe 实例
-// 注意：STRIPE_SECRET_KEY 必须在服务端使用，不要暴露给前端
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2024-11-20.acacia", // 使用最新的 API 版本，或者你可以去掉这行使用默认版本
-});
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: Request) {
+const API_BASE_URL =
+  process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
+
+type CartItemPayload = {
+  id: string;
+  productTitle: string;
+  variantSku: string | null;
+  quantity: number;
+  unitPriceCents: number;
+  lineSubtotalCents: number;
+  imageUrl: string;
+  currency: string;
+};
+
+type CheckoutRequestBody = {
+  email?: string;
+  fullName?: string;
+  phone?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
+  cartItems?: CartItemPayload[];
+  currency?: string;
+};
+
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json().catch(() => ({}));
-    const {
-      email,
-      fullName,
-      phone,
-      address1,
-      address2,
-      city,
-      state,
-      postalCode,
-      country,
-    } = body as Record<string, string>;
+    if (!API_BASE_URL) {
+      throw new Error("Missing API_BASE_URL");
+    }
 
-    if (!email) {
+    const body = (await request.json().catch(() => ({}))) as CheckoutRequestBody;
+
+    // Transform camelCase to snake_case for backend
+    const backendPayload = {
+      email: body.email,
+      full_name: body.fullName,
+      phone: body.phone,
+      address1: body.address1,
+      address2: body.address2,
+      city: body.city,
+      state: body.state,
+      postal_code: body.postalCode,
+      country: body.country,
+      cart_items: body.cartItems?.map((item) => ({
+        id: String(item.id), // Ensure id is a string
+        product_title: item.productTitle,
+        variant_sku: item.variantSku,
+        quantity: item.quantity,
+        unit_price_cents: item.unitPriceCents,
+        line_subtotal_cents: item.lineSubtotalCents,
+        image_url: item.imageUrl,
+        currency: item.currency || body.currency || "usd", // Ensure currency is never null
+      })),
+      currency: body.currency || "usd",
+    };
+
+    console.log("[Checkout API] Sending payload to backend:", JSON.stringify(backendPayload, null, 2));
+
+    const origin = request.headers.get("origin") || "http://localhost:3000";
+    const token = request.headers.get("authorization") || "oh-my-token";
+
+    const res = await fetch(`${API_BASE_URL}/api/v1/checkout/session`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token,
+        Origin: origin,
+      },
+      body: JSON.stringify(backendPayload),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      // Extract error message, handling different response structures
+      let errorMessage = "Failed to create checkout session";
+      
+      if (data) {
+        // Handle Zod validation errors (array format)
+        if (Array.isArray(data)) {
+          const errors = data.map((err: any) => {
+            const path = err.path?.join('.') || 'unknown';
+            return `${path}: ${err.message}`;
+          }).join(', ');
+          errorMessage = `Validation error: ${errors}`;
+        } else if (typeof data.message === "string") {
+          errorMessage = data.message;
+        } else if (typeof data.error === "string") {
+          errorMessage = data.error;
+        } else if (typeof data.error?.message === "string") {
+          errorMessage = data.error.message;
+        } else if (data.error && typeof data.error === "object" && "message" in data.error && typeof data.error.message === "string") {
+          errorMessage = data.error.message;
+        }
+      }
+      
+      console.error("[Checkout API] Error from backend:", {
+        status: res.status,
+        data,
+        errorMessage,
+      });
+      
       return NextResponse.json(
-        { error: { message: "Email is required to start checkout." } },
-        { status: 400 }
+        {
+          error: {
+            message: errorMessage,
+          },
+        },
+        { status: res.status }
       );
     }
 
-    const origin = request.headers.get("origin") || "http://localhost:3000";
-
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              name: "测试商品 - 豚鼠笼子",
-              description: "这是一个用于测试 Stripe 支付功能的虚拟商品",
-              images: [
-                "https://images.unsplash.com/photo-1548767797-d8c844163c65?q=80&w=1000&auto=format&fit=crop",
-              ],
-            },
-            unit_amount: 2000,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      customer_email: email,
-      billing_address_collection: "auto",
-      metadata: {
-        customer_name: fullName || "",
-        customer_phone: phone || "",
-        address_line1: address1 || "",
-        address_line2: address2 || "",
-        address_city: city || "",
-        address_state: state || "",
-        address_postal_code: postalCode || "",
-        address_country: country || "",
-      },
-      success_url: `${origin}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/checkout/canceled`,
-    });
-
-    return NextResponse.json({ url: session.url });
+    // Extract URL from backend response (which wraps it in success/data)
+    const url = data.data?.url || data.url;
+    return NextResponse.json({ url }, { status: 200 });
   } catch (err: any) {
-    console.error("Error creating checkout session:", err);
+    console.error("[API Route Error] Failed to create checkout session:", err);
+    const errorMessage = err?.message && typeof err.message === "string" 
+      ? err.message 
+      : "Failed to create checkout session";
     return NextResponse.json(
-      { error: { message: err.message } },
+      { error: { message: errorMessage } },
       { status: 500 }
     );
   }

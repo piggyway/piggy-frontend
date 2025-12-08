@@ -198,14 +198,14 @@ export class CartService {
       Math.round(item.line_subtotal_amt / Math.max(item.quantity, 1));
 
     return {
-      id: item.id,
+      id: String(item.id), // Ensure ID is always a string
       cartId: item.cart_id,
       variantRid: item.variant_rid,
       productRid: item.product_rid,
       quantity: item.quantity,
       unitPriceCents,
       lineSubtotalCents: item.line_subtotal_amt,
-      currency: item.currency || cart.currency,
+      currency: item.currency || cart.currency || "usd", // Ensure currency is never null
       productTitle: item.product_title || "Product",
       productSlug: item.product_slug,
       imageUrl: normalizeImageUrl(item.image_url) || FALLBACK_IMAGE,

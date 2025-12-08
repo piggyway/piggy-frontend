@@ -1,5 +1,7 @@
 "use client";
 
+import { motion } from "framer-motion";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -44,9 +46,14 @@ export function CartSummary({
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between text-sm">
           {isFreeShipping ? (
-            <span className="font-medium text-green-600">
+            <motion.span
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ type: "spring", stiffness: 500, damping: 15 }}
+              className="font-medium text-green-600"
+            >
               You've unlocked Free Shipping! 🎉
-            </span>
+            </motion.span>
           ) : (
             <span className="text-slate-600">
               Add{" "}
@@ -60,7 +67,14 @@ export function CartSummary({
             {Math.round(progress)}%
           </span>
         </div>
-        <Progress value={progress} className="h-2" />
+        <div className="relative h-2 w-full overflow-hidden rounded-full bg-neutral-100">
+          <motion.div
+            className="bg-primary-navy h-full rounded-full"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ type: "spring", stiffness: 100, damping: 20 }}
+          />
+        </div>
       </div>
 
       <div className="bg-neutral-stroke h-px w-full" />
@@ -111,10 +125,11 @@ export function CartSummary({
 
       <div className="flex flex-col gap-3">
         <Button
+          asChild
           className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
           size="lg"
         >
-          Checkout
+          <Link href="/checkout">Checkout</Link>
         </Button>
         <p className="text-center text-xs text-slate-500">
           Shipping & taxes calculated at checkout
