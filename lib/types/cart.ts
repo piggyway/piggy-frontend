@@ -6,7 +6,7 @@
 // ==================== API Response Types ====================
 
 export interface CartItemFromAPI {
-  id: string;
+  id: string | number; // Backend may return number, we'll convert to string
   cart_id: string;
   variant_rid: number;
   product_rid: number | null;
@@ -21,7 +21,7 @@ export interface CartItemFromAPI {
   is_available: boolean | null;
   stock_quantity: number | null;
   line_subtotal_amt: number;
-  currency: string;
+  currency: string | null; // May be null, we'll use cart currency as fallback
 }
 
 export interface CartTotalsFromAPI {

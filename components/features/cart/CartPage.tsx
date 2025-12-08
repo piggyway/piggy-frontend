@@ -2,7 +2,8 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShoppingBag } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CartItem } from "./CartItem";
 import { CartSummary } from "./CartSummary";
@@ -47,17 +48,28 @@ export function CartPage() {
   if (!cart || cart.items.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
-        <h1 className="text-primary-navy mb-4 text-3xl font-bold">
-          Your Cart is Empty
-        </h1>
-        {error && <p className="text-destructive mb-2 text-sm">{error}</p>}
-        <p className="mb-8 text-slate-600">
-          Looks like you haven't added anything to your cart yet.
-        </p>
-        <Button asChild>
-          <Link href="/shop">Start Shopping</Link>
-        </Button>
-        <div className="mt-16 text-left">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center"
+        >
+          <div className="bg-primary-navy/5 mb-6 flex h-24 w-24 items-center justify-center rounded-full">
+            <ShoppingBag className="text-primary-navy/40 size-12" />
+          </div>
+          <h1 className="text-primary-navy mb-4 text-3xl font-bold">
+            Your Cart is Empty
+          </h1>
+          {error && <p className="text-destructive mb-2 text-sm">{error}</p>}
+          <p className="mb-8 max-w-md text-slate-600">
+            Looks like you haven't started your shopping spree yet. Explore our
+            products and find something you love!
+          </p>
+          <Button asChild size="lg" className="bg-primary-navy text-white">
+            <Link href="/shop">Start Shopping</Link>
+          </Button>
+        </motion.div>
+        <div className="mt-24 text-left">
           <RelatedProducts />
         </div>
       </div>
@@ -83,23 +95,25 @@ export function CartPage() {
             {error && (
               <div className="text-destructive py-4 text-sm">{error}</div>
             )}
-            {cart.items.map((item) => (
-              <CartItem
-                key={item.id}
-                id={item.id}
-                title={item.productTitle}
-                variant={item.variantSku || undefined}
-                price={item.unitPriceCents / 100}
-                image={item.imageUrl}
-                quantity={item.quantity}
-                currencySymbol={cart.currencySymbol}
-                maxQuantity={item.stockQuantity ?? undefined}
-                disabled={isMutating}
-                onQuantityChange={(val) => handleQuantityChange(item.id, val)}
-                onRemove={() => handleRemoveItem(item.id)}
-                className="last:border-0"
-              />
-            ))}
+            <AnimatePresence mode="popLayout">
+              {cart.items.map((item) => (
+                <CartItem
+                  key={item.id}
+                  id={item.id}
+                  title={item.productTitle}
+                  variant={item.variantSku || undefined}
+                  price={item.unitPriceCents / 100}
+                  image={item.imageUrl}
+                  quantity={item.quantity}
+                  currencySymbol={cart.currencySymbol}
+                  maxQuantity={item.stockQuantity ?? undefined}
+                  disabled={isMutating}
+                  onQuantityChange={(val) => handleQuantityChange(item.id, val)}
+                  onRemove={() => handleRemoveItem(item.id)}
+                  className="last:border-0"
+                />
+              ))}
+            </AnimatePresence>
           </div>
 
           {/* Related Products Section - Shown below cart items on mobile/desktop */}

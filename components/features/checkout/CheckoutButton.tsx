@@ -3,6 +3,17 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
+type CartItemPayload = {
+  id: string;
+  productTitle: string;
+  variantSku: string | null;
+  quantity: number;
+  unitPriceCents: number;
+  lineSubtotalCents: number;
+  imageUrl: string;
+  currency: string;
+};
+
 type CheckoutPayload = {
   email?: string;
   fullName?: string;
@@ -13,6 +24,8 @@ type CheckoutPayload = {
   state?: string;
   postalCode?: string;
   country?: string;
+  cartItems?: CartItemPayload[];
+  currency?: string;
 };
 
 type CheckoutButtonProps = {
@@ -52,8 +65,21 @@ export default function CheckoutButton({
 
       if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
-        const message =
-          errorBody?.error?.message || "Unable to start checkout right now.";
+        let message = "Unable to start checkout right now.";
+        
+        if (errorBody) {
+          // Handle different error response structures
+          if (typeof errorBody?.error === "string") {
+            message = errorBody.error;
+          } else if (typeof errorBody?.error?.message === "string") {
+            message = errorBody.error.message;
+          } else if (typeof errorBody?.message === "string") {
+            message = errorBody.message;
+          } else if (typeof errorBody === "string") {
+            message = errorBody;
+          }
+        }
+        
         onError?.(message);
         return;
       }
