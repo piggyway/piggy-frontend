@@ -170,6 +170,7 @@ export function Header() {
             </form>
 
             {/* Desktop Action Buttons */}
+
             <div className="flex items-center gap-3">
               <Link
                 href="/cart"
@@ -178,14 +179,15 @@ export function Header() {
               >
                 <ShoppingCart className="h-5 w-5" />
               </Link>
-              <button
-                type="button"
+              <Link
+                href="/login"
                 className="bg-primary-navy hover:bg-primary-navy-light flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors"
                 aria-label="User account"
               >
                 <User className="h-5 w-5" />
-              </button>
+              </Link>
             </div>
+
           </nav>
 
           {/* Mobile Right Side Actions */}
@@ -214,13 +216,14 @@ export function Header() {
             >
               <ShoppingCart className="h-5 w-5" />
             </Link>
-            <button
-              type="button"
+            <Link
+              href="/login"
               className="bg-primary-navy hover:bg-primary-navy-light flex h-10 w-10 items-center justify-center rounded-full text-white transition-colors"
               aria-label="User account"
             >
               <User className="h-5 w-5" />
-            </button>
+            </Link>
+
           </div>
         </div>
 
