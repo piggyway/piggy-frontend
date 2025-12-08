@@ -4,23 +4,33 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { signIn } from "next-auth/react";
 
-interface LoginFormProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface LoginFormProps {
+  className?: string;
+}
 
-export function LoginForm({ className, ...props }: LoginFormProps) {
+export function LoginForm({ className }: LoginFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault();
-    setIsLoading(true);
+    // 这里以后接邮箱登录，现在先留空
+  }
 
-    setTimeout(() => {
+  async function handleGoogleLogin() {
+    setIsLoading(true);
+    try {
+      await signIn("google", {
+        callbackUrl: "/", // 登录成功后跳转页面
+      });
+    } finally {
       setIsLoading(false);
-    }, 3000);
+    }
   }
 
   return (
-    <div className={cn("grid gap-6", className)} {...props}>
+    <div className={cn("grid gap-6", className)}>
       <form onSubmit={onSubmit}>
         <div className="grid gap-4">
           <div className="grid gap-2">
@@ -68,6 +78,7 @@ export function LoginForm({ className, ...props }: LoginFormProps) {
         variant="outline"
         type="button"
         disabled={isLoading}
+        onClick={handleGoogleLogin}
         className="w-full bg-white"
       >
         {isLoading ? (

@@ -6,6 +6,19 @@ export const metadata: Metadata = {
   description: "Login to your account",
 };
 
-export default function Page() {
-  return <LoginPage />;
+// Next 16: searchParams 可能是 Promise
+interface LoginPageRouteProps {
+  searchParams:
+    | { error?: string }
+    | Promise<{ error?: string }>;
+}
+
+export default async function Page({ searchParams }: LoginPageRouteProps) {
+  const resolved =
+    searchParams instanceof Promise ? await searchParams : searchParams;
+
+  const error =
+    typeof resolved?.error === "string" ? resolved.error : undefined;
+
+  return <LoginPage error={error} />;
 }

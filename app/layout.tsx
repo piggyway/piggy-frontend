@@ -3,6 +3,8 @@ import { Outfit } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
+import { Providers } from "./providers"; // ⭐ 新增：引入 SessionProvider 包装层
+
 const outfit = Outfit({
   variable: "--font-outfit",
   subsets: ["latin"],
@@ -28,8 +30,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.variable} bg-[#FFFBF5] font-sans antialiased`}>
-        {children}
+      <body
+        className={`${outfit.variable} bg-[#FFFBF5] font-sans antialiased`}
+      >
+        {/* ⭐ 用 Providers 包裹 children */}
+        <Providers>
+          {children}
+        </Providers>
+
         <Toaster position="top-center" richColors />
       </body>
     </html>
