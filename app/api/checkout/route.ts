@@ -5,6 +5,8 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
+const DEFAULT_EMAIL = "zianwang9911@gmail.com";
+
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
 
@@ -43,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Transform camelCase to snake_case for backend
     const backendPayload = {
-      email: body.email,
+      email: body.email || DEFAULT_EMAIL,
       full_name: body.fullName,
       phone: body.phone,
       address1: body.address1,

@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useCart } from "./CartProvider";
+
+const DEFAULT_EMAIL = "zianwang9911@gmail.com";
 
 export interface CartSummaryProps {
   subtotal: number;
@@ -19,6 +21,85 @@ export interface CartSummaryProps {
 }
 
 const FREE_SHIPPING_THRESHOLD = 50;
+
+function CheckoutButtonSection() {
+  const { cart } = useCart();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleCheckout = async () => {
+    if (!cart || cart.items.length === 0) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const payload = {
+        email: DEFAULT_EMAIL,
+        cartItems: cart.items.map((item) => ({
+          id: item.id,
+          productTitle: item.productTitle,
+          variantSku: item.variantSku,
+          quantity: item.quantity,
+          unitPriceCents: item.unitPriceCents,
+          lineSubtotalCents: item.lineSubtotalCents,
+          imageUrl: item.imageUrl,
+          currency: item.currency || cart.currency || "usd",
+        })),
+        currency: cart.currency || "usd",
+      };
+
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        let message = "Unable to start checkout right now.";
+        if (errorBody?.error?.message) {
+          message = errorBody.error.message;
+        } else if (errorBody?.message) {
+          message = errorBody.message;
+        }
+        setError(message);
+        return;
+      }
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setError("No checkout URL returned from server.");
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      {error && (
+        <p className="text-center text-sm text-red-500">{error}</p>
+      )}
+      <Button
+        onClick={handleCheckout}
+        disabled={isLoading || !cart || cart.items.length === 0}
+        className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
+        size="lg"
+      >
+        {isLoading ? "Processing..." : "Checkout"}
+      </Button>
+      <p className="text-center text-xs text-slate-500">
+        Shipping & taxes calculated at checkout
+      </p>
+    </div>
+  );
+}
 
 export function CartSummary({
   subtotal,
@@ -123,18 +204,7 @@ export function CartSummary({
         </span>
       </div>
 
-      <div className="flex flex-col gap-3">
-        <Button
-          asChild
-          className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
-          size="lg"
-        >
-          <Link href="/checkout">Checkout</Link>
-        </Button>
-        <p className="text-center text-xs text-slate-500">
-          Shipping & taxes calculated at checkout
-        </p>
-      </div>
+      <CheckoutButtonSection />
 
       {/* Promo Code Section */}
       <div className="mt-2">

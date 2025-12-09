@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { FeaturedCard } from "@/components/ui/featured-card";
 import { AnimatedSection } from "../homepage/AnimatedSection";
 
@@ -9,18 +10,21 @@ export function BestSellingSection() {
     {
       id: 1,
       title: "Liners",
+      slug: "liner",
       image: "/homepage-essentials/liner-example.png",
       bgColor: "bg-neutral-pink-background",
     },
     {
       id: 2,
       title: "Hut",
+      slug: "hut",
       image: "/homepage-essentials/hut-example.png",
       bgColor: "bg-secondary-mint",
     },
     {
       id: 3,
       title: "Combos",
+      slug: "combo",
       image: "/homepage-essentials/combo-example.png",
       bgColor: "bg-primary-gold",
     },
@@ -57,13 +61,16 @@ export function BestSellingSection() {
         {/* Category Grid */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((category) => (
-            <FeaturedCard
+            <Link
               key={category.id}
-              title={category.title}
-              image={category.image}
-              className={category.bgColor}
-              onClick={() => console.log(`Navigate to ${category.title}`)}
-            />
+              href={`/shop-all?category=${category.slug}`}
+            >
+              <FeaturedCard
+                title={category.title}
+                image={category.image}
+                className={category.bgColor}
+              />
+            </Link>
           ))}
         </div>
       </div>
