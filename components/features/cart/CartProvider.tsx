@@ -149,12 +149,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             const newItem = updatedCart.items.find(
               (item) => item.variantRid === variantRid
             );
-            const productName = newItem?.productTitle || "商品";
-            toast.success(`${productName} 已添加到购物车`, {
-              description: `数量: ${quantity}`,
+            const productName = newItem?.productTitle || "Item";
+            toast.success(`${productName} added to cart`, {
+              description: `Quantity: ${quantity}`,
             });
           },
-          errorMessage: "添加商品到购物车失败",
+          errorMessage: "Failed to add item to cart",
         }
       );
     },
@@ -164,7 +164,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const updateItem = useCallback(
     async (itemId: string, quantity: number, notes?: string | null) => {
       const itemToUpdate = cart?.items.find((item) => item.id === itemId);
-      const productName = itemToUpdate?.productTitle || "商品";
+      const productName = itemToUpdate?.productTitle || "Item";
 
       await runMutation(
         () =>
@@ -173,8 +173,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             notes,
           }),
         {
-          successMessage: `${productName} 数量已更新`,
-          errorMessage: "更新商品数量失败",
+          successMessage: `${productName} quantity updated`,
+          errorMessage: "Failed to update quantity",
         }
       );
     },
@@ -185,11 +185,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     async (itemId: string) => {
       // Get the item name before removing
       const itemToRemove = cart?.items.find((item) => item.id === itemId);
-      const productName = itemToRemove?.productTitle || "商品";
+      const productName = itemToRemove?.productTitle || "Item";
 
       await runMutation(() => CartService.removeItem(itemId), {
-        successMessage: `${productName} 已从购物车移除`,
-        errorMessage: "移除商品失败",
+        successMessage: `${productName} removed from cart`,
+        errorMessage: "Failed to remove item",
       });
     },
     [cart, runMutation]

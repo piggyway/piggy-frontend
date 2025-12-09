@@ -14,10 +14,75 @@ import {
 import Image from "next/image";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { useCart } from "./CartProvider";
+import type { Cart } from "@/lib/types/cart";
+
+const DEFAULT_EMAIL = "zianwang9911@gmail.com";
+
+function useCheckout(cart: Cart | null) {
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  const handleCheckout = async () => {
+    if (!cart || cart.items.length === 0) return;
+
+    setIsCheckingOut(true);
+    setCheckoutError(null);
+
+    try {
+      const payload = {
+        email: DEFAULT_EMAIL,
+        cartItems: cart.items.map((item) => ({
+          id: item.id,
+          productTitle: item.productTitle,
+          variantSku: item.variantSku,
+          quantity: item.quantity,
+          unitPriceCents: item.unitPriceCents,
+          lineSubtotalCents: item.lineSubtotalCents,
+          imageUrl: item.imageUrl,
+          currency: item.currency || cart.currency || "usd",
+        })),
+        currency: cart.currency || "usd",
+      };
+
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.json().catch(() => null);
+        let message = "Unable to start checkout right now.";
+        if (errorBody?.error?.message) {
+          message = errorBody.error.message;
+        } else if (errorBody?.message) {
+          message = errorBody.message;
+        }
+        setCheckoutError(message);
+        return;
+      }
+
+      const data = await response.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        setCheckoutError("No checkout URL returned from server.");
+      }
+    } catch (err) {
+      console.error("Checkout error:", err);
+      setCheckoutError("Something went wrong. Please try again.");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
+  return { isCheckingOut, checkoutError, handleCheckout };
+}
 
 export function FloatingCartButton() {
   const { cart, isLoading, isMutating, updateItem, removeItem } = useCart();
   const [isOpen, setIsOpen] = useState(false);
+  const { isCheckingOut, checkoutError, handleCheckout } = useCheckout(cart);
 
   const cartItems = cart?.items ?? [];
 
@@ -129,9 +194,17 @@ export function FloatingCartButton() {
                 {subtotal.toFixed(2)}
               </span>
             </div>
+            {checkoutError && (
+              <p className="mb-2 text-center text-sm text-red-500">{checkoutError}</p>
+            )}
             <div className="grid gap-2">
-              <Button asChild className="w-full" size="lg">
-                <Link href="/checkout">Checkout</Link>
+              <Button
+                onClick={handleCheckout}
+                disabled={isCheckingOut}
+                className="w-full"
+                size="lg"
+              >
+                {isCheckingOut ? "Processing..." : "Checkout"}
               </Button>
               <Button
                 variant="outline"
