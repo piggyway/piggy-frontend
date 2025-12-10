@@ -1,6 +1,18 @@
 {
   "permissions": {
-    "allow": ["Bash(find:*)", "Bash(git add:*)", "Bash(git commit:*)"],
+    "allow": [
+      "Bash(find:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(cat:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(ls:*)",
+      "Bash(form)",
+      "Bash(button)",
+      "Bash(xargs cat:*)",
+      "Bash(grep:*)"
+    ],
     "deny": [],
     "ask": []
   }
