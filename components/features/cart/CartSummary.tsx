@@ -7,8 +7,137 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "./CartProvider";
+import { PromoService } from "@/lib/services/promo";
+import { X } from "lucide-react";
 
 const DEFAULT_EMAIL = "zianwang9911@gmail.com";
+
+interface PromoCodeInputProps {
+  onApply: (code: string) => Promise<void>;
+  onRemove: () => Promise<void>;
+  appliedCode: string | null;
+  isLoading: boolean;
+  subtotalCents: number;
+}
+
+function PromoCodeInput({
+  onApply,
+  onRemove,
+  appliedCode,
+  isLoading,
+  subtotalCents,
+}: PromoCodeInputProps) {
+  const [code, setCode] = useState("");
+  const [isValidating, setIsValidating] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
+  const [previewDiscount, setPreviewDiscount] = useState<number | null>(null);
+
+  const handleValidate = async () => {
+    if (!code.trim()) {
+      setValidationError("Please enter a promo code");
+      return;
+    }
+
+    setIsValidating(true);
+    setValidationError(null);
+    setPreviewDiscount(null);
+
+    try {
+      const result = await PromoService.validatePromoCode(
+        code.trim(),
+        subtotalCents
+      );
+
+      if (result.valid) {
+        setPreviewDiscount(result.discountAmount || 0);
+        // Auto-apply after successful validation
+        await onApply(code.trim());
+        setCode("");
+        setPreviewDiscount(null);
+      } else {
+        setValidationError(result.message || "Invalid promo code");
+      }
+    } catch (error) {
+      setValidationError("Failed to validate promo code");
+    } finally {
+      setIsValidating(false);
+    }
+  };
+
+  const handleRemove = async () => {
+    await onRemove();
+    setCode("");
+    setValidationError(null);
+    setPreviewDiscount(null);
+  };
+
+  if (appliedCode) {
+    return (
+      <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-3">
+        <div className="flex flex-col">
+          <span className="text-sm font-medium text-green-800">
+            {appliedCode}
+          </span>
+          <span className="text-xs text-green-600">Promo code applied</span>
+        </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleRemove}
+          disabled={isLoading}
+          className="h-8 w-8 p-0 text-green-700 hover:bg-green-100 hover:text-green-900"
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      <label
+        htmlFor="promo-code"
+        className="text-primary-navy text-sm font-medium"
+      >
+        Promo Code
+      </label>
+      <div className="flex gap-2">
+        <Input
+          id="promo-code"
+          placeholder="Enter code"
+          className="bg-white"
+          value={code}
+          onChange={(e) => {
+            setCode(e.target.value.toUpperCase());
+            setValidationError(null);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleValidate();
+            }
+          }}
+          disabled={isValidating || isLoading}
+        />
+        <Button
+          variant="outline"
+          className="shrink-0"
+          onClick={handleValidate}
+          disabled={isValidating || isLoading || !code.trim()}
+        >
+          {isValidating ? "Validating..." : "Apply"}
+        </Button>
+      </div>
+      {validationError && (
+        <p className="text-xs text-red-500">{validationError}</p>
+      )}
+      {previewDiscount !== null && (
+        <p className="text-xs text-green-600">
+          Discount: ${(previewDiscount / 100).toFixed(2)}
+        </p>
+      )}
+    </div>
+  );
+}
 
 export interface CartSummaryProps {
   subtotal: number;
@@ -110,6 +239,8 @@ export function CartSummary({
   currencySymbol = "$",
   className,
 }: CartSummaryProps) {
+  const { cart, applyPromoCode, removePromoCode, isMutating } = useCart();
+  
   const total = Math.max(
     0,
     grandTotal ?? subtotal + shippingEstimate + taxEstimate - discount
@@ -208,22 +339,13 @@ export function CartSummary({
 
       {/* Promo Code Section */}
       <div className="mt-2">
-        <label
-          htmlFor="promo-code"
-          className="text-primary-navy mb-2 block text-sm font-medium"
-        >
-          Promo Code
-        </label>
-        <div className="flex gap-2">
-          <Input
-            id="promo-code"
-            placeholder="Enter code"
-            className="bg-white"
-          />
-          <Button variant="outline" className="shrink-0">
-            Apply
-          </Button>
-        </div>
+        <PromoCodeInput
+          onApply={applyPromoCode}
+          onRemove={removePromoCode}
+          appliedCode={cart?.appliedCouponCode || null}
+          isLoading={isMutating}
+          subtotalCents={cart?.totals.subtotalCents || 0}
+        />
       </div>
     </Card>
   );

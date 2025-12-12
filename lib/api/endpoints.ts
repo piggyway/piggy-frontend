@@ -17,6 +17,9 @@ export const API_ENDPOINTS = {
   CART_ITEMS: "/api/cart/items",
   CART_ITEM_BY_ID: (id: string) => `/api/cart/items/${id}`,
 
+  // Promo Codes
+  PROMO_VALIDATE: "/api/promo",
+
   // Add more endpoints as needed
   // Users
   // USERS: "/api/users",
