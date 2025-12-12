@@ -14,10 +14,25 @@ export async function GET(request: NextRequest) {
       throw new Error("Missing API_BASE_URL");
     }
 
-    const token = request.headers.get("authorization") || "oh-my-token";
+    const token = request.headers.get("authorization");
+    
+    console.log("📦 [Cart API Route] Request headers:", {
+      hasAuthorization: !!token,
+      authorizationHeader: token ? `${token.substring(0, 20)}...` : "none",
+    });
+
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    if (token) {
+      headers.Authorization = token;
+    } else {
+      console.warn("⚠️ [Cart API Route] No authorization header found");
+    }
 
     const res = await fetch(`${API_BASE_URL}/api/v1/cart`, {
-      headers: token ? { Authorization: token } : undefined,
+      headers,
     });
 
     const data = await res.json();

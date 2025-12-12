@@ -70,15 +70,20 @@ export async function POST(request: NextRequest) {
     console.log("[Checkout API] Sending payload to backend:", JSON.stringify(backendPayload, null, 2));
 
     const origin = request.headers.get("origin") || "http://localhost:3000";
-    const token = request.headers.get("authorization") || "oh-my-token";
+    const token = request.headers.get("authorization");
+
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+      Origin: origin,
+    };
+
+    if (token) {
+      headers.Authorization = token;
+    }
 
     const res = await fetch(`${API_BASE_URL}/api/v1/checkout/session`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-        Origin: origin,
-      },
+      headers,
       body: JSON.stringify(backendPayload),
     });
 

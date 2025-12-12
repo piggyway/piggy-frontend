@@ -27,6 +27,8 @@ export class CartService {
   static async getCart(): Promise<Cart | null> {
     try {
       const headers = this.getAuthHeaders();
+      console.log("🟡 [CartService] Fetching cart from:", API_ENDPOINTS.CART);
+      
       const response = await apiClient.get<CartResponseFromAPI>(
         API_ENDPOINTS.CART,
         { headers }
@@ -36,7 +38,21 @@ export class CartService {
         throw new Error(response.error || "Invalid cart response");
       }
 
-      return this.transformCart(response.data);
+      const transformedCart = this.transformCart(response.data);
+      
+      console.log("🟢 [CartService] Cart fetched successfully:", {
+        cartId: transformedCart.id,
+        appliedCouponCode: transformedCart.appliedCouponCode,
+        itemCount: transformedCart.totals.itemCount,
+        subtotalCents: transformedCart.totals.subtotalCents,
+        discountCents: transformedCart.totals.discountCents,
+        grandTotalCents: transformedCart.totals.grandTotalCents,
+        subtotal: transformedCart.totals.formattedSubtotal,
+        discount: transformedCart.totals.formattedDiscount,
+        grandTotal: transformedCart.totals.formattedGrandTotal,
+      });
+      
+      return transformedCart;
     } catch (error) {
       console.error("[CartService] Failed to fetch cart:", error);
       return null;
@@ -133,9 +149,13 @@ export class CartService {
         localStorage.getItem("token");
 
       if (token) {
+        const authHeader = token.startsWith("Bearer") ? token : `Bearer ${token}`;
+        console.log("🔑 [CartService] Found auth token, adding to headers");
         return {
-          Authorization: token.startsWith("Bearer") ? token : `Bearer ${token}`,
+          Authorization: authHeader,
         };
+      } else {
+        console.warn("⚠️ [CartService] No auth token found in localStorage");
       }
     }
 
@@ -146,6 +166,7 @@ export class CartService {
       };
     }
 
+    console.warn("⚠️ [CartService] No auth headers available");
     return {};
   }
 
