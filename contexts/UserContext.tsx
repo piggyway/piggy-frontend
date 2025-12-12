@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { useSession } from "next-auth/react";
+import { UserService } from "@/lib/services/user";
 
 interface UserProfile {
   firstName?: string;
@@ -23,83 +24,153 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const { data: session, status, update } = useSession();
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isFirstLogin, setIsFirstLogin] = useState(false);
+  const isLoadingRef = useRef(false);
+  const hasLoadedRef = useRef(false);
 
-  // Sync user data from session and localStorage
+  // Sync user data from session, backend API, and localStorage
+  // Only run once when authenticated
   useEffect(() => {
-    if (status === "authenticated") {
-      let userData: UserProfile | null = null;
+    // Skip if already loaded or currently loading
+    if (hasLoadedRef.current || isLoadingRef.current) {
+      return;
+    }
 
-      // Priority 1: Get from session
-      if (session?.user) {
-        userData = {
-          firstName: session.user.firstName,
-          lastName: session.user.lastName,
-          email: session.user.email,
-          phone: session.user.phone,
-          avatarUrl: session.user.avatarUrl,
-        };
+    if (status === "authenticated") {
+      isLoadingRef.current = true;
+
+      // Sync accessToken to localStorage for API calls
+      if (typeof window !== "undefined" && (session as any)?.accessToken) {
+        const token = (session as any).accessToken;
+        const authToken = token.startsWith("Bearer") ? token : `Bearer ${token}`;
+        localStorage.setItem("access_token", authToken);
       }
 
-      // Priority 2: Fallback to localStorage if session doesn't have firstName
-      if (!userData?.firstName && typeof window !== "undefined") {
+      // Fetch user profile from backend
+      const loadUserProfile = async () => {
         try {
-          const storedProfile = localStorage.getItem("userProfile");
-          if (storedProfile) {
-            const profile = JSON.parse(storedProfile);
-            userData = {
-              firstName: profile.firstName,
-              lastName: profile.lastName,
-              email: profile.email,
-              phone: profile.phone,
-              avatarUrl: profile.avatarUrl,
+          // Try to get from backend first
+          const backendProfile = await UserService.getProfile();
+          
+          if (backendProfile) {
+            const userData: UserProfile = {
+              firstName: backendProfile.firstName || undefined,
+              lastName: backendProfile.lastName || undefined,
+              email: backendProfile.email || undefined,
+              phone: undefined,
+              avatarUrl: undefined,
             };
+            setUser(userData);
+
+            // Check if first login
+            const isIncomplete = !backendProfile.firstName || !backendProfile.lastName;
+            setIsFirstLogin(isIncomplete);
+            hasLoadedRef.current = true;
+            isLoadingRef.current = false;
+            return;
           }
         } catch (error) {
-          console.log("Error reading profile from localStorage:", error);
+          console.log("Failed to load profile from backend, falling back to session/localStorage:", error);
         }
-      }
 
-      setUser(userData);
+        // Fallback: Get from session
+        let userData: UserProfile | null = null;
+        if (session?.user) {
+          userData = {
+            firstName: session.user.firstName,
+            lastName: session.user.lastName,
+            email: session.user.email,
+            phone: session.user.phone,
+            avatarUrl: session.user.avatarUrl,
+          };
+        }
 
-      // Check if first login
-      const isIncomplete = !userData?.firstName || !userData?.lastName;
-      setIsFirstLogin(isIncomplete);
-    } else {
+        // Fallback: Get from localStorage if session doesn't have firstName
+        if (!userData?.firstName && typeof window !== "undefined") {
+          try {
+            const storedProfile = localStorage.getItem("userProfile");
+            if (storedProfile) {
+              const profile = JSON.parse(storedProfile);
+              userData = {
+                firstName: profile.firstName,
+                lastName: profile.lastName,
+                email: profile.email,
+                phone: profile.phone,
+                avatarUrl: profile.avatarUrl,
+              };
+            }
+          } catch (error) {
+            console.log("Error reading profile from localStorage:", error);
+          }
+        }
+
+        setUser(userData);
+        const isIncomplete = !userData?.firstName || !userData?.lastName;
+        setIsFirstLogin(isIncomplete);
+        hasLoadedRef.current = true;
+        isLoadingRef.current = false;
+      };
+
+      loadUserProfile();
+    } else if (status === "unauthenticated") {
       setUser(null);
       setIsFirstLogin(false);
+      hasLoadedRef.current = false;
+      isLoadingRef.current = false;
     }
-  }, [status, session]);
+  }, [status]); // Only depend on status, not session
 
-  // Update user data (save to both localStorage and session)
+  // Update user data (save to backend and localStorage only - no session update to avoid loops)
   const updateUser = async (data: Partial<UserProfile>) => {
+    // Optimistically update local state
     const updatedUser = { ...user, ...data };
     setUser(updatedUser);
 
-    // Save to localStorage
+    let finalUser = updatedUser;
+
+    // Save to backend API
+    try {
+      const result = await UserService.updateProfile({
+        firstName: data.firstName !== undefined ? data.firstName || null : undefined,
+        lastName: data.lastName !== undefined ? data.lastName || null : undefined,
+        displayName: (data as any).displayName !== undefined ? (data as any).displayName || null : undefined,
+      });
+
+      if (!result.success) {
+        console.error("Failed to update profile on backend:", result.error);
+        // Revert optimistic update on error
+        setUser(user);
+        throw new Error(result.message || "Failed to update profile");
+      }
+
+      // Update local state with backend response if available
+      if (result.user) {
+        const backendUser: UserProfile = {
+          firstName: result.user.firstName || undefined,
+          lastName: result.user.lastName || undefined,
+          email: result.user.email || undefined,
+          phone: updatedUser?.phone,
+          avatarUrl: updatedUser?.avatarUrl,
+        };
+        setUser(backendUser);
+        finalUser = backendUser;
+      }
+    } catch (error) {
+      console.error("Error updating profile on backend:", error);
+    }
+
+    // Save to localStorage as backup
     if (typeof window !== "undefined") {
       localStorage.setItem("userProfile", JSON.stringify({
-        ...updatedUser,
+        ...finalUser,
         savedAt: new Date().toISOString(),
       }));
     }
 
-    // Update session
-    try {
-      await update({
-        user: {
-          ...session?.user,
-          ...data,
-        },
-      });
-    } catch (error) {
-      console.log("Session update info:", error);
-    }
-
     // Update isFirstLogin status
-    const isIncomplete = !updatedUser.firstName || !updatedUser.lastName;
+    const isIncomplete = !finalUser.firstName || !finalUser.lastName;
     setIsFirstLogin(isIncomplete);
   };
 
@@ -113,6 +184,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
       localStorage.removeItem("pendingProfileUpdate");
       localStorage.removeItem("onboardingStatus");
       localStorage.removeItem("userAddresses");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("auth_token");
+      localStorage.removeItem("token");
     }
   };
 

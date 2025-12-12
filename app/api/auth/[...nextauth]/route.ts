@@ -1,5 +1,6 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 const API_BASE_URL = process.env.API_BASE_URL!; // e.g. http://localhost:3000
 
@@ -8,6 +9,43 @@ export const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+    }),
+    CredentialsProvider({
+      id: "email",
+      name: "Email",
+      credentials: {
+        accessToken: { label: "Access Token", type: "text" },
+        refreshToken: { label: "Refresh Token", type: "text" },
+        user: { label: "User", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.accessToken || !credentials?.user) {
+          return null;
+        }
+
+        try {
+          // Parse user data
+          const user = typeof credentials.user === "string" 
+            ? JSON.parse(credentials.user) 
+            : credentials.user;
+
+          // Return user object with backend session data
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.displayName || user.email,
+            image: user.avatarUrl,
+            backendSession: {
+              accessToken: credentials.accessToken,
+              refreshToken: credentials.refreshToken,
+              user: user,
+            },
+          };
+        } catch (error) {
+          console.error("Error parsing credentials:", error);
+          return null;
+        }
+      },
     }),
   ],
 
@@ -21,6 +59,12 @@ export const authOptions: NextAuthOptions = {
      * 这里调用你们后端 /api/v1/auth/sso
      */
     async signIn({ user, account, profile }) {
+      // Email login via credentials - already has backendSession attached
+      if (account?.provider === "email" && (user as any)?.backendSession) {
+        return true;
+      }
+
+      // Google OAuth login
       if (account?.provider !== "google") {
         return true;
       }
