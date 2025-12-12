@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useSession, signOut } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,13 +12,13 @@ import { TrackOrder } from "./sections/TrackOrder";
 import { AddressBook } from "./sections/AddressBook";
 import { PaymentMethods } from "./sections/PaymentMethods";
 import { FirstLoginBanner } from "./FirstLoginBanner";
+import { useUser } from "@/contexts/UserContext";
 
 export function AccountLayout() {
-  const { data: session, status } = useSession();
+  const { isFirstLogin, clearUser } = useUser();
   const router = useRouter();
   const [currentSection, setCurrentSection] =
     useState<AccountSection>("profile");
-  const [isFirstLogin, setIsFirstLogin] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const hasCheckedRef = useRef(false);
@@ -26,14 +26,11 @@ export function AccountLayout() {
 
   // Detect first-time login
   useEffect(() => {
-    if (hasCheckedRef.current || status === "loading") return;
+    if (hasCheckedRef.current) return;
 
-    const isIncomplete =
-      !session?.user?.firstName || !session?.user?.lastName;
-    setIsFirstLogin(isIncomplete);
-    setShowBanner(isIncomplete);
+    setShowBanner(isFirstLogin);
     hasCheckedRef.current = true;
-  }, [status, session?.user?.firstName, session?.user?.lastName]);
+  }, [isFirstLogin]);
 
   const handleBannerComplete = () => {
     // Hide banner
@@ -65,7 +62,6 @@ export function AccountLayout() {
   const handleProfileComplete = () => {
     // Close banner after ProfileInfo save success
     setShowBanner(false);
-    setIsFirstLogin(false);
   };
 
   const handleSkip = () => {
@@ -78,11 +74,8 @@ export function AccountLayout() {
     setIsLoggingOut(true);
 
     try {
-      // Clear all localStorage data
-      localStorage.removeItem("userProfile");
-      localStorage.removeItem("pendingProfileUpdate");
-      localStorage.removeItem("onboardingStatus");
-      localStorage.removeItem("userAddresses");
+      // Clear user data using UserContext (handles all localStorage cleanup)
+      clearUser();
 
       // Use NextAuth's signOut
       await signOut({

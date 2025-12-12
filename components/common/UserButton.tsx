@@ -1,51 +1,19 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { User } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/contexts/UserContext";
 
 interface UserButtonProps {
   size?: "desktop" | "mobile";
 }
 
 export function UserButton({ size = "desktop" }: UserButtonProps) {
-  const { data: session, status } = useSession();
+  const { user, isLoading, isAuthenticated } = useUser();
   const [imageError, setImageError] = useState(false);
-  const [userProfile, setUserProfile] = useState<{
-    firstName?: string;
-    lastName?: string;
-    avatarUrl?: string;
-  } | null>(null);
-
-  // Get user data from session or localStorage
-  useEffect(() => {
-    if (session?.user) {
-      // Prioritize session data
-      setUserProfile({
-        firstName: session.user.firstName,
-        lastName: session.user.lastName,
-        avatarUrl: session.user.avatarUrl,
-      });
-    } else if (status === "authenticated") {
-      // If logged in but session has no data, read from localStorage
-      try {
-        const storedProfile = localStorage.getItem("userProfile");
-        if (storedProfile) {
-          const profile = JSON.parse(storedProfile);
-          setUserProfile({
-            firstName: profile.firstName,
-            lastName: profile.lastName,
-            avatarUrl: profile.avatarUrl,
-          });
-        }
-      } catch (error) {
-        console.log("Error reading profile from localStorage:", error);
-      }
-    }
-  }, [session, status]);
 
   // Size configuration
   const sizeConfig = {
@@ -55,7 +23,7 @@ export function UserButton({ size = "desktop" }: UserButtonProps) {
   const config = sizeConfig[size];
 
   // Loading state
-  if (status === "loading") {
+  if (isLoading) {
     return (
       <div
         className={cn(
@@ -67,9 +35,8 @@ export function UserButton({ size = "desktop" }: UserButtonProps) {
     );
   }
 
-  // Authenticated state (use userProfile instead of directly using session.user)
-  if (status === "authenticated" && (session?.user || userProfile)) {
-    const user = userProfile || session?.user;
+  // Authenticated state
+  if (isAuthenticated && user) {
     const href = "/account";
     const ariaLabel = `User account - ${user?.firstName || ""} ${user?.lastName || ""}`.trim();
 

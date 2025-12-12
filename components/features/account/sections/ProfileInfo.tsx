@@ -3,10 +3,10 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState, useEffect, useRef } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { profileValidators } from "@/lib/validators/profile";
 import { onboardingStorage } from "@/lib/utils/onboarding";
+import { useUser } from "@/contexts/UserContext";
 
 interface ProfileInfoProps {
   autoEdit?: boolean;
@@ -14,7 +14,7 @@ interface ProfileInfoProps {
 }
 
 export function ProfileInfo({ autoEdit = false, onComplete }: ProfileInfoProps) {
-  const { data: session, update } = useSession();
+  const { user: contextUser, updateUser } = useUser();
   const router = useRouter();
   const firstNameInputRef = useRef<HTMLInputElement>(null);
 
@@ -28,34 +28,17 @@ export function ProfileInfo({ autoEdit = false, onComplete }: ProfileInfoProps) 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
 
-  // Initialize user data from session or localStorage
+  // Initialize user data from UserContext
   useEffect(() => {
-    if (session?.user) {
-      // Prioritize session data
+    if (contextUser) {
       setUser({
-        firstName: session.user.firstName || "",
-        lastName: session.user.lastName || "",
-        email: session.user.email || "",
-        phone: session.user.phone || "",
+        firstName: contextUser.firstName || "",
+        lastName: contextUser.lastName || "",
+        email: contextUser.email || "",
+        phone: contextUser.phone || "",
       });
-    } else {
-      // If session has no data, try reading from localStorage
-      try {
-        const storedProfile = localStorage.getItem("userProfile");
-        if (storedProfile) {
-          const profile = JSON.parse(storedProfile);
-          setUser({
-            firstName: profile.firstName || "",
-            lastName: profile.lastName || "",
-            email: profile.email || "",
-            phone: profile.phone || "",
-          });
-        }
-      } catch (error) {
-        console.log("Error reading profile from localStorage:", error);
-      }
     }
-  }, [session]);
+  }, [contextUser]);
 
   // Auto-enter edit mode (first login) and focus on first input
   useEffect(() => {
@@ -106,41 +89,19 @@ export function ProfileInfo({ autoEdit = false, onComplete }: ProfileInfoProps) 
     setIsSaving(true);
 
     try {
-      // Save to localStorage (as backup storage)
-      const profileData = {
+      // Use UserContext to update user data (handles both localStorage and session)
+      await updateUser({
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
         phone: user.phone,
-        savedAt: new Date().toISOString(),
-      };
-
-      localStorage.setItem("pendingProfileUpdate", JSON.stringify(profileData));
-
-      // Also save to userProfile key (as primary storage)
-      localStorage.setItem("userProfile", JSON.stringify(profileData));
+      });
 
       // Mark onboarding as completed
       onboardingStorage.setProfileCompleted();
 
       // TODO: Replace with API call when backend is ready
       // await updateUserProfile(user);
-
-      // Manually update NextAuth session data
-      try {
-        await update({
-          user: {
-            ...session?.user,
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            phone: user.phone,
-          },
-        });
-      } catch (updateError) {
-        console.log("Session update info:", updateError);
-        // Even if session update fails, we have localStorage as backup
-      }
 
       setIsEditing(false);
 
