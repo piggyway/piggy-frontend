@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useEffect, useRef, useState, FormEvent } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 
 interface LoginPageProps {
@@ -14,6 +15,7 @@ interface LoginPageProps {
 
 export function LoginPage({ error }: LoginPageProps) {
   const router = useRouter();
+  const hasShownUrlErrorToast = useRef(false);
 
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
@@ -24,6 +26,30 @@ export function LoginPage({ error }: LoginPageProps) {
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+  useEffect(() => {
+    if (!error || hasShownUrlErrorToast.current) return;
+    hasShownUrlErrorToast.current = true;
+
+    if (error === "email_only_account") {
+      toast.error("Google sign-in isn’t available for this email", {
+        description:
+          "This email was previously registered using email login. Please sign in with email instead.",
+      });
+      return;
+    }
+
+    if (error === "sso_failed") {
+      toast.error("Google login failed", {
+        description: "Please try again.",
+      });
+      return;
+    }
+
+    toast.error("Login error", {
+      description: error,
+    });
+  }, [error]);
 
   /** 发送邮箱验证码 */
   const handleSendCode = async (e: FormEvent) => {
@@ -107,7 +133,29 @@ export function LoginPage({ error }: LoginPageProps) {
         return;
       }
 
+      // Create NextAuth session with the backend session data
+      const result = await signIn("email", {
+        redirect: false,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken,
+        user: JSON.stringify(data.user),
+      });
+
+      if (result?.error) {
+        setFormError("Failed to create session. Please try again.");
+        return;
+      }
+
       setInfoMessage("Login successful. Redirecting...");
+      
+      // Store token in localStorage for API calls
+      if (typeof window !== "undefined" && data.accessToken) {
+        const token = data.accessToken.startsWith("Bearer")
+          ? data.accessToken
+          : `Bearer ${data.accessToken}`;
+        localStorage.setItem("access_token", token);
+      }
+
       router.push("/");
       router.refresh();
     } catch (err) {
@@ -165,16 +213,20 @@ export function LoginPage({ error }: LoginPageProps) {
 
               {/* URL 带过来的错误（比如 Google SSO 出错） */}
               {error && (
-                <p className="mt-2 text-sm text-red-500">
-                  {error === "sso_failed"
-                    ? "Google login failed. Please try again."
-                    : `Login error: ${error}`}
-                </p>
+                <div className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {error === "email_only_account"
+                    ? "This email was previously registered using email login. Please sign in with email instead."
+                    : error === "sso_failed"
+                      ? "Google login failed. Please try again."
+                      : `Login error: ${error}`}
+                </div>
               )}
 
               {/* 本地表单错误 */}
               {formError && (
-                <p className="mt-2 text-sm text-red-500">{formError}</p>
+                <div className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                  {formError}
+                </div>
               )}
 
               {/* 提示信息 */}

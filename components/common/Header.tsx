@@ -62,15 +62,17 @@ export function Header() {
   return (
     <header className="w-full bg-[#FFFBF5]">
       {/* Top Banner */}
-      <div className="bg-primary-purple py-3 text-center">
-        <p className="text-primary-navy text-sm font-medium">
-          Free shipping over $99
-        </p>
+      <div className="bg-primary-purple w-full py-3">
+        <div className="mx-auto max-w-[1160px] px-4 text-center">
+          <p className="text-primary-navy text-sm font-medium">
+            Free shipping over $99
+          </p>
+        </div>
       </div>
 
       {/* Main Header */}
-      <div className="mx-auto max-w-[1160px] px-4 py-3 sm:px-8 sm:py-4 lg:px-20 lg:py-[22px]">
-        <div className="flex items-center gap-4 sm:gap-6 lg:gap-10">
+      <div className="mx-auto max-w-[1160px] px-4 py-3 sm:py-4 lg:py-[22px]">
+        <div className="flex w-full items-center gap-4 sm:gap-6 lg:gap-10">
           {/* Mobile Menu Button */}
           <button
             type="button"

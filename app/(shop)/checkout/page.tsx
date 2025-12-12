@@ -4,6 +4,7 @@ import { useMemo, useState, useEffect } from "react";
 import CheckoutButton from "@/components/features/checkout/CheckoutButton";
 import { mockAddresses } from "@/lib/mock/account";
 import { useCart } from "@/components/features/cart/CartProvider";
+import { useUser } from "@/contexts/UserContext";
 import {
   Card,
   CardContent,
@@ -33,12 +34,13 @@ const formatter = new Intl.NumberFormat("en-US", {
 
 export default function CheckoutPage() {
   const { cart, isLoading } = useCart();
+  const { user, isAuthenticated } = useUser();
   const [selectedAddressId, setSelectedAddressId] = useState<string>(
     mockAddresses[0]?.id || "new"
   );
 
   const [form, setForm] = useState<ShippingForm>({
-    email: "zianwang9911@gmail.com",
+    email: "",
     fullName: "",
     phone: "",
     address1: "",
@@ -48,6 +50,21 @@ export default function CheckoutPage() {
     postalCode: "",
     country: "",
   });
+
+  // Auto-fill user information when authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      setForm((prev) => ({
+        ...prev,
+        email: user.email || prev.email,
+        fullName:
+          user.firstName && user.lastName
+            ? `${user.firstName} ${user.lastName}`
+            : prev.fullName,
+        phone: user.phone || prev.phone,
+      }));
+    }
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     if (selectedAddressId === "new") {

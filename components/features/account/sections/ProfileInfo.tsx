@@ -89,7 +89,7 @@ export function ProfileInfo({ autoEdit = false, onComplete }: ProfileInfoProps) 
     setIsSaving(true);
 
     try {
-      // Use UserContext to update user data (handles both localStorage and session)
+      // Use UserContext to update user data (handles backend API, localStorage, and session)
       await updateUser({
         firstName: user.firstName,
         lastName: user.lastName,
@@ -99,9 +99,6 @@ export function ProfileInfo({ autoEdit = false, onComplete }: ProfileInfoProps) 
 
       // Mark onboarding as completed
       onboardingStorage.setProfileCompleted();
-
-      // TODO: Replace with API call when backend is ready
-      // await updateUserProfile(user);
 
       setIsEditing(false);
 
