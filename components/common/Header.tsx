@@ -4,8 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useState, useEffect } from "react";
-import { ShoppingCart, User, ChevronDown, Search, Menu, X } from "lucide-react";
+import { ShoppingCart, ChevronDown, Search, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { UserButton } from "@/components/common/UserButton";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -179,13 +180,7 @@ export function Header() {
               >
                 <ShoppingCart className="h-5 w-5" />
               </Link>
-              <Link
-                href="/login"
-                className="bg-primary-navy hover:bg-primary-navy-light flex h-12 w-12 items-center justify-center rounded-full text-white transition-colors"
-                aria-label="User account"
-              >
-                <User className="h-5 w-5" />
-              </Link>
+              <UserButton size="desktop" />
             </div>
 
           </nav>
@@ -216,13 +211,7 @@ export function Header() {
             >
               <ShoppingCart className="h-5 w-5" />
             </Link>
-            <Link
-              href="/login"
-              className="bg-primary-navy hover:bg-primary-navy-light flex h-10 w-10 items-center justify-center rounded-full text-white transition-colors"
-              aria-label="User account"
-            >
-              <User className="h-5 w-5" />
-            </Link>
+            <UserButton size="mobile" />
 
           </div>
         </div>
