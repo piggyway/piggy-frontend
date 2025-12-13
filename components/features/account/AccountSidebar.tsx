@@ -14,6 +14,7 @@ import {
 export type AccountSection =
   | "profile"
   | "orders"
+  | "order-details"
   | "track"
   | "address"
   | "payment";

@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button";
 import { AccountSidebar, AccountSection } from "./AccountSidebar";
 import { ProfileInfo } from "./sections/ProfileInfo";
 import { OrderHistory } from "./sections/OrderHistory";
+import { OrderDetails } from "./sections/OrderDetails";
 import { TrackOrder } from "./sections/TrackOrder";
+import { mockOrders } from "@/lib/mock/account";
 import { AddressBook } from "./sections/AddressBook";
 import { PaymentMethods } from "./sections/PaymentMethods";
 import { FirstLoginBanner } from "./FirstLoginBanner";
@@ -19,6 +21,7 @@ export function AccountLayout() {
   const router = useRouter();
   const [currentSection, setCurrentSection] =
     useState<AccountSection>("profile");
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [showBanner, setShowBanner] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const hasCheckedRef = useRef(false);
@@ -49,7 +52,8 @@ export function AccountLayout() {
         const windowHeight = window.innerHeight;
 
         // Calculate scroll position to center element
-        const scrollTo = absoluteElementTop - (windowHeight / 2) + (elementHeight / 2);
+        const scrollTo =
+          absoluteElementTop - windowHeight / 2 + elementHeight / 2;
 
         window.scrollTo({
           top: scrollTo,
@@ -90,6 +94,17 @@ export function AccountLayout() {
     }
   };
 
+  const handleOrderClick = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setCurrentSection("order-details");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleBackToOrders = () => {
+    setSelectedOrderId(null);
+    setCurrentSection("orders");
+  };
+
   const renderContent = () => {
     switch (currentSection) {
       case "profile":
@@ -100,7 +115,11 @@ export function AccountLayout() {
           />
         );
       case "orders":
-        return <OrderHistory />;
+        return <OrderHistory onOrderClick={handleOrderClick} />;
+      case "order-details":
+        const order = mockOrders.find((o) => o.id === selectedOrderId);
+        if (!order) return <OrderHistory onOrderClick={handleOrderClick} />;
+        return <OrderDetails order={order} onBack={handleBackToOrders} />;
       case "track":
         return <TrackOrder />;
       case "address":

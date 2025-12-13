@@ -14,7 +14,11 @@ const statusColors: Record<OrderStatus, string> = {
   Cancelled: "bg-red-100 text-red-700",
 };
 
-export function OrderHistory() {
+interface OrderHistoryProps {
+  onOrderClick: (orderId: string) => void;
+}
+
+export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -43,7 +47,12 @@ export function OrderHistory() {
                 >
                   {order.status}
                 </span>
-                <Button variant="ghost" size="sm" className="hidden sm:flex">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="hidden sm:flex"
+                  onClick={() => onOrderClick(order.id)}
+                >
                   View Details
                 </Button>
               </div>
