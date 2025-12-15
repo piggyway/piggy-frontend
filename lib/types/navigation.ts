@@ -51,34 +51,34 @@ export const footerLinks: FooterLinkGroup[] = [
   {
     title: "Shop",
     links: [
-      { label: "SALE", href: "/shop/sale" },
-      { label: "for Guinea pigs", href: "/shop/guinea-pigs" },
-      { label: "for Rabbit", href: "/shop/rabbit" },
+      { label: "SALE", href: "/shop-all?category=sale" },
+      { label: "for Guinea pigs", href: "/shop-all?category=guinea-pig" },
+      { label: "for Rabbit", href: "/shop-all?category=rabbit" },
     ],
   },
   {
     title: "",
     links: [
-      { label: "Bedding", href: "/shop/bedding" },
-      { label: "Food & Treats", href: "/shop/food-treats" },
-      { label: "C&C Cage & Housing", href: "/shop/cage-housing" },
-      { label: "Merch", href: "/shop/merch" },
+      { label: "Bedding", href: "/shop-all?category=bedding" },
+      { label: "Food & Treats", href: "/shop-all?category=food-treats" },
+      { label: "C&C Cage & Housing", href: "/shop-all?category=housing" },
+      { label: "Merch", href: "/shop-all?category=merch" },
     ],
   },
   {
     title: "Helps",
     links: [
       { label: "My account", href: "/account" },
-      { label: "Shipping & Delivery", href: "/shipping" },
-      { label: "Returns Policy", href: "/returns" },
+      { label: "Shipping & Delivery", href: "/shipping-delivery" },
+      { label: "Returns Policy", href: "/returns-policy" },
       { label: "FAQs", href: "/faqs" },
     ],
   },
   {
     title: "About us",
     links: [
-      { label: "Pet Care+", href: "/pet-care-plus" },
-      { label: "Our story", href: "/story" },
+      { label: "Pet Care+", href: "/pet-care" },
+      { label: "Our story", href: "/about" },
       { label: "Contact us", href: "/contact" },
     ],
   },
