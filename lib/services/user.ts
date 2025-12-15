@@ -3,7 +3,7 @@
  * Business logic layer for user profile operations
  */
 
-import { apiClient } from "@/lib/api/client";
+import { fetchWithAuth } from "@/lib/api/client";
 
 export interface UserProfile {
   id: string;
@@ -32,10 +32,7 @@ export class UserService {
    */
   static async getProfile(): Promise<UserProfile | null> {
     try {
-      const headers = this.getAuthHeaders();
-      const response = await fetch("/api/users/me", {
-        headers,
-      });
+      const response = await fetchWithAuth("/api/users/me", { method: "GET" });
 
       if (!response.ok) {
         throw new Error("Failed to get user profile");
@@ -56,12 +53,10 @@ export class UserService {
     payload: UpdateUserProfilePayload
   ): Promise<UpdateUserProfileResponse> {
     try {
-      const headers = this.getAuthHeaders();
-      const response = await fetch("/api/users/me", {
+      const response = await fetchWithAuth("/api/users/me", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          ...headers,
         },
         body: JSON.stringify(payload),
       });
@@ -77,32 +72,7 @@ export class UserService {
       };
     }
   }
-
-  /**
-   * Resolve auth headers from browser storage or env for backend calls
-   */
-  private static getAuthHeaders(): HeadersInit {
-    // Client-side: try to pull a token from storage
-    if (typeof window !== "undefined") {
-      const token =
-        localStorage.getItem("access_token") ||
-        localStorage.getItem("auth_token") ||
-        localStorage.getItem("token");
-
-      if (token) {
-        return {
-          Authorization: token.startsWith("Bearer") ? token : `Bearer ${token}`,
-        };
-      }
-    }
-
-    // Server-side fallback (useful for local testing)
-    if (process.env.NEXT_PUBLIC_API_AUTH_TOKEN) {
-      return {
-        Authorization: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
-      };
-    }
-
-    return {};
-  }
 }
+
+
+

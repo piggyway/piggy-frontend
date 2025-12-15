@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ShoppingCart, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -80,9 +80,15 @@ function useCheckout(cart: Cart | null) {
 }
 
 export function FloatingCartButton() {
-  const { cart, isLoading, isMutating, updateItem, removeItem } = useCart();
+  const { cart, isLoading, isMutating, updateItem, removeItem, ensureLoaded } =
+    useCart();
   const [isOpen, setIsOpen] = useState(false);
   const { isCheckingOut, checkoutError, handleCheckout } = useCheckout(cart);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    ensureLoaded().catch(() => null);
+  }, [isOpen, ensureLoaded]);
 
   const cartItems = cart?.items ?? [];
 

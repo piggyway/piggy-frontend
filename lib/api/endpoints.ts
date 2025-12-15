@@ -20,6 +20,10 @@ export const API_ENDPOINTS = {
   // Promo Codes
   PROMO_VALIDATE: "/api/promo",
 
+  // Orders
+  ORDERS: "/api/orders",
+  ORDER_BY_NUMBER: (orderNumber: string) => `/api/orders/${orderNumber}`,
+
   // Add more endpoints as needed
   // Users
   // USERS: "/api/users",

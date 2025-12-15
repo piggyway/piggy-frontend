@@ -4,6 +4,72 @@ import CredentialsProvider from "next-auth/providers/credentials";
 
 const API_BASE_URL = process.env.API_BASE_URL!; // e.g. http://localhost:3000
 
+function parseJwtExpMs(accessToken: string): number | null {
+  try {
+    const parts = accessToken.split(".");
+    if (parts.length < 2) return null;
+    const payload = JSON.parse(Buffer.from(parts[1], "base64url").toString());
+    const expSec = payload?.exp;
+    if (typeof expSec !== "number") return null;
+    return expSec * 1000;
+  } catch {
+    return null;
+  }
+}
+
+function extractRtFromSetCookie(setCookie: string | null): string | null {
+  if (!setCookie) return null;
+  const m = setCookie.match(/(?:^|;\s*)rt=([^;]+)/);
+  return m?.[1] ?? null;
+}
+
+async function refreshAccessToken(token: any) {
+  try {
+    if (!token?.refreshToken) {
+      return { ...token, error: "RefreshAccessTokenError" as const };
+    }
+
+    const res = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
+      method: "POST",
+      headers: {
+        Cookie: `rt=${token.refreshToken}`,
+      },
+    });
+
+    const text = await res.text();
+    let body: any = null;
+    try {
+      body = text ? JSON.parse(text) : null;
+    } catch {
+      body = null;
+    }
+
+    if (!res.ok) {
+      return { ...token, error: "RefreshAccessTokenError" as const };
+    }
+
+    const accessToken = body?.accessToken as string | undefined;
+    if (!accessToken) {
+      return { ...token, error: "RefreshAccessTokenError" as const };
+    }
+
+    const setCookie = res.headers.get("set-cookie");
+    const newRefreshToken = extractRtFromSetCookie(setCookie);
+    const expMs = parseJwtExpMs(accessToken);
+
+    return {
+      ...token,
+      accessToken,
+      refreshToken: newRefreshToken ?? token.refreshToken,
+      accessTokenExpires: expMs ?? Date.now() + 24 * 60 * 60 * 1000,
+      error: undefined,
+    };
+  } catch (e) {
+    console.error("[NextAuth] refreshAccessToken failed:", e);
+    return { ...token, error: "RefreshAccessTokenError" as const };
+  }
+}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
@@ -120,13 +186,36 @@ export const authOptions: NextAuthOptions = {
     /**
      * 把后端 session 信息写入 JWT
      */
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       const backendSession = (user as any)?.backendSession;
 
       if (backendSession) {
         token.accessToken = backendSession.accessToken;
         token.refreshToken = backendSession.refreshToken;
         token.user = backendSession.user;
+        token.accessTokenExpires =
+          parseJwtExpMs(backendSession.accessToken) ??
+          Date.now() + 24 * 60 * 60 * 1000;
+      }
+
+      // Client-triggered updates (e.g. after calling /api/auth/refresh)
+      if (trigger === "update" && session) {
+        const s: any = session as any;
+        if (s.accessToken) {
+          token.accessToken = s.accessToken;
+          token.accessTokenExpires =
+            parseJwtExpMs(String(s.accessToken)) ??
+            Date.now() + 24 * 60 * 60 * 1000;
+        }
+        if (s.refreshToken) {
+          token.refreshToken = s.refreshToken;
+        }
+      }
+
+      // Auto-refresh access token if it's close to expiring (5 minutes leeway)
+      const expires = (token as any).accessTokenExpires as number | undefined;
+      if (expires && Date.now() > expires - 5 * 60 * 1000) {
+        return await refreshAccessToken(token);
       }
 
       return token;
@@ -142,6 +231,7 @@ export const authOptions: NextAuthOptions = {
 
       (session as any).accessToken = token.accessToken;
       (session as any).refreshToken = token.refreshToken;
+      (session as any).error = (token as any).error;
 
       return session;
     },

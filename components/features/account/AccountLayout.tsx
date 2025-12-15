@@ -3,14 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { AccountSidebar, AccountSection } from "./AccountSidebar";
 import { ProfileInfo } from "./sections/ProfileInfo";
 import { OrderHistory } from "./sections/OrderHistory";
+import { OrderDetails } from "./sections/OrderDetails";
 import { TrackOrder } from "./sections/TrackOrder";
-import { AddressBook } from "./sections/AddressBook";
-import { PaymentMethods } from "./sections/PaymentMethods";
 import { FirstLoginBanner } from "./FirstLoginBanner";
 import { useUser } from "@/contexts/UserContext";
 
@@ -19,6 +16,9 @@ export function AccountLayout() {
   const router = useRouter();
   const [currentSection, setCurrentSection] =
     useState<AccountSection>("profile");
+  const [selectedOrderNumber, setSelectedOrderNumber] = useState<string | null>(
+    null
+  );
   const [showBanner, setShowBanner] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const hasCheckedRef = useRef(false);
@@ -49,7 +49,8 @@ export function AccountLayout() {
         const windowHeight = window.innerHeight;
 
         // Calculate scroll position to center element
-        const scrollTo = absoluteElementTop - (windowHeight / 2) + (elementHeight / 2);
+        const scrollTo =
+          absoluteElementTop - windowHeight / 2 + elementHeight / 2;
 
         window.scrollTo({
           top: scrollTo,
@@ -90,6 +91,17 @@ export function AccountLayout() {
     }
   };
 
+  const handleOrderClick = (orderNumber: string) => {
+    setSelectedOrderNumber(orderNumber);
+    setCurrentSection("order-details");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleBackToOrders = () => {
+    setSelectedOrderNumber(null);
+    setCurrentSection("orders");
+  };
+
   const renderContent = () => {
     switch (currentSection) {
       case "profile":
@@ -100,13 +112,19 @@ export function AccountLayout() {
           />
         );
       case "orders":
-        return <OrderHistory />;
+        return <OrderHistory onOrderClick={handleOrderClick} />;
+      case "order-details":
+        if (!selectedOrderNumber) {
+          return <OrderHistory onOrderClick={handleOrderClick} />;
+        }
+        return (
+          <OrderDetails
+            orderNumber={selectedOrderNumber}
+            onBack={handleBackToOrders}
+          />
+        );
       case "track":
         return <TrackOrder />;
-      case "address":
-        return <AddressBook />;
-      case "payment":
-        return <PaymentMethods />;
       default:
         return (
           <ProfileInfo
@@ -118,19 +136,10 @@ export function AccountLayout() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header with Logout Button */}
+    <div className="mx-auto max-w-[1160px] px-4 py-8">
+      {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-primary-navy text-3xl font-bold">My Account</h1>
-        <Button
-          variant="outline"
-          onClick={handleLogout}
-          disabled={isLoggingOut}
-          className="gap-2"
-        >
-          <LogOut className="h-4 w-4" />
-          {isLoggingOut ? "Logging out..." : "Logout"}
-        </Button>
       </div>
 
       {/* First Login Banner */}
@@ -147,6 +156,8 @@ export function AccountLayout() {
           <AccountSidebar
             currentSection={currentSection}
             onSectionChange={setCurrentSection}
+            onLogout={handleLogout}
+            isLoggingOut={isLoggingOut}
           />
         </aside>
         <main ref={contentRef} className="flex-1">

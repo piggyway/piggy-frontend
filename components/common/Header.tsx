@@ -113,7 +113,7 @@ export function Header() {
                       pathname.startsWith(item.href + "/");
 
                     return (
-                      <NavigationMenuItem key={item.href}>
+                      <NavigationMenuItem key={item.href} value={item.href}>
                         {item.hasDropdown && item.dropdownItems ? (
                           <>
                             <NavigationMenuTrigger
@@ -184,7 +184,6 @@ export function Header() {
               </Link>
               <UserButton size="desktop" />
             </div>
-
           </nav>
 
           {/* Mobile Right Side Actions */}
@@ -214,7 +213,6 @@ export function Header() {
               <ShoppingCart className="h-5 w-5" />
             </Link>
             <UserButton size="mobile" />
-
           </div>
         </div>
 

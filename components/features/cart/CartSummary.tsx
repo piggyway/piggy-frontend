@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { useCart } from "./CartProvider";
 import { PromoService } from "@/lib/services/promo";
 import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const DEFAULT_EMAIL = "zianwang9911@gmail.com";
 
@@ -154,67 +155,15 @@ const FREE_SHIPPING_THRESHOLD = 50;
 function CheckoutButtonSection() {
   const { cart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
-  const handleCheckout = async () => {
-    if (!cart || cart.items.length === 0) return;
-
+  const handleCheckout = () => {
     setIsLoading(true);
-    setError(null);
-
-    try {
-      const payload = {
-        email: DEFAULT_EMAIL,
-        cartItems: cart.items.map((item) => ({
-          id: item.id,
-          productTitle: item.productTitle,
-          variantSku: item.variantSku,
-          quantity: item.quantity,
-          unitPriceCents: item.unitPriceCents,
-          lineSubtotalCents: item.lineSubtotalCents,
-          imageUrl: item.imageUrl,
-          currency: item.currency || cart.currency || "usd",
-        })),
-        currency: cart.currency || "usd",
-      };
-
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        let message = "Unable to start checkout right now.";
-        if (errorBody?.error?.message) {
-          message = errorBody.error.message;
-        } else if (errorBody?.message) {
-          message = errorBody.message;
-        }
-        setError(message);
-        return;
-      }
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        setError("No checkout URL returned from server.");
-      }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
-    }
+    router.push("/checkout");
   };
 
   return (
     <div className="flex flex-col gap-3">
-      {error && (
-        <p className="text-center text-sm text-red-500">{error}</p>
-      )}
       <Button
         onClick={handleCheckout}
         disabled={isLoading || !cart || cart.items.length === 0}
@@ -240,7 +189,7 @@ export function CartSummary({
   className,
 }: CartSummaryProps) {
   const { cart, applyPromoCode, removePromoCode, isMutating } = useCart();
-  
+
   const total = Math.max(
     0,
     grandTotal ?? subtotal + shippingEstimate + taxEstimate - discount
