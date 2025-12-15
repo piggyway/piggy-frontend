@@ -1,9 +1,9 @@
 "use client";
 
+import { Suspense, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
 import { ShoppingCart, ChevronDown, Search, Menu, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { UserButton } from "@/components/common/UserButton";
@@ -19,14 +19,14 @@ import { NavigationMenuContent as CustomMenuContent } from "@/components/ui/navi
 import { headerNavigation } from "@/lib/types/navigation";
 import { cn } from "@/lib/utils";
 
-export function Header() {
+function SearchQueryUpdater({
+  setSearchQuery,
+}: {
+  setSearchQuery: (q: string) => void;
+}) {
   const pathname = usePathname();
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Read search query from URL if on shop-all page
   useEffect(() => {
     if (pathname === "/shop-all") {
       const q = searchParams.get("q") || "";
@@ -34,7 +34,17 @@ export function Header() {
     } else {
       setSearchQuery("");
     }
-  }, [pathname, searchParams]);
+  }, [pathname, searchParams, setSearchQuery]);
+
+  return null;
+}
+
+export function Header() {
+  const pathname = usePathname();
+  const router = useRouter();
+  // Removed useSearchParams from here
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Handle search form submission
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -59,8 +69,14 @@ export function Header() {
       }
     }
   };
+
   return (
     <header className="w-full bg-[#FFFBF5]">
+      {/* Suspense wrapper for the search query updater */}
+      <Suspense fallback={null}>
+        <SearchQueryUpdater setSearchQuery={setSearchQuery} />
+      </Suspense>
+
       {/* Top Banner */}
       <div className="bg-primary-purple w-full py-3">
         <div className="mx-auto max-w-[1160px] px-4 text-center">

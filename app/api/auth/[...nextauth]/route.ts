@@ -91,14 +91,17 @@ export const authOptions: NextAuthOptions = {
 
         try {
           // Parse user data
-          const user = typeof credentials.user === "string" 
-            ? JSON.parse(credentials.user) 
-            : credentials.user;
+          const user =
+            typeof credentials.user === "string"
+              ? JSON.parse(credentials.user)
+              : credentials.user;
 
           // Return user object with backend session data
           return {
             id: user.id,
             email: user.email,
+            firstName: user.firstName || "",
+            lastName: user.lastName || "",
             name: user.displayName || user.email,
             image: user.avatarUrl,
             backendSession: {
@@ -141,7 +144,8 @@ export const authOptions: NextAuthOptions = {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             provider: "google",
-            providerAccountId: account.providerAccountId ?? (account as any).userId,
+            providerAccountId:
+              account.providerAccountId ?? (account as any).userId,
             email: user.email,
             displayName: user.name,
             avatarUrl: user.image,
