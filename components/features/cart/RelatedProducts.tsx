@@ -46,11 +46,10 @@ export function RelatedProducts() {
         {visibleProducts.map((product) => (
           <ProductCard
             key={product.id}
-            id={product.id}
             title={product.title}
-            price={product.price}
+            price={`$${product.price.toFixed(2)}`}
             image={product.image}
-            category={product.category}
+            subtitle={product.category}
           />
         ))}
       </div>
