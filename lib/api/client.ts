@@ -3,6 +3,8 @@
  * Used by React components to call Next.js API Routes
  */
 
+import { refreshTokens } from "@/lib/services/auth";
+
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
 }
@@ -63,6 +65,51 @@ async function apiFetch<T>(
     console.error("[Frontend API Error]", error);
     throw error;
   }
+}
+
+/**
+ * Fetch wrapper for client-side calls that require Authorization.
+ * If the request returns 401, it will attempt a refresh and retry once.
+ */
+export async function fetchWithAuth(
+  endpoint: string,
+  options: RequestOptions = {}
+): Promise<Response> {
+  const headers = new Headers(options.headers);
+
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("access_token");
+    if (token && !headers.has("Authorization")) {
+      headers.set("Authorization", token.startsWith("Bearer") ? token : `Bearer ${token}`);
+    }
+  }
+
+  const baseUrl = getBaseUrl();
+  const url = `${baseUrl}${endpoint}`;
+
+  const doFetch = () =>
+    fetch(url, {
+      ...options,
+      headers,
+    });
+
+  let res = await doFetch();
+  if (res.status !== 401) return res;
+
+  // Attempt refresh once
+  const refreshed = await refreshTokens();
+  if (!refreshed?.accessToken || typeof window === "undefined") {
+    return res;
+  }
+
+  const bearer = refreshed.accessToken.startsWith("Bearer")
+    ? refreshed.accessToken
+    : `Bearer ${refreshed.accessToken}`;
+  localStorage.setItem("access_token", bearer);
+  headers.set("Authorization", bearer);
+
+  res = await doFetch();
+  return res;
 }
 
 /**

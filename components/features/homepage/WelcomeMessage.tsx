@@ -1,0 +1,36 @@
+"use client";
+
+import { useUser } from "@/contexts/UserContext";
+import { useEffect, useState } from "react";
+
+export function WelcomeMessage() {
+  const { user, isAuthenticated } = useUser();
+  const [show, setShow] = useState(false);
+
+  useEffect(() => {
+    // Show welcome message with fade-in animation
+    if (isAuthenticated && user?.firstName) {
+      setTimeout(() => setShow(true), 100);
+    } else {
+      setShow(false);
+    }
+  }, [isAuthenticated, user?.firstName]);
+
+  // Only render when authenticated and has user name, otherwise take no space
+  if (!isAuthenticated || !user?.firstName || !show) {
+    return null;
+  }
+
+  return (
+    <div className="container mx-auto px-4">
+      <div className="relative z-10 mb-8 mt-8 rounded-2xl border border-primary-navy/10 bg-white/80 p-6 shadow-lg backdrop-blur-sm">
+        <h2 className="text-primary-navy text-2xl font-semibold md:text-3xl">
+          Hello, {user.firstName} {user.lastName}! 👋
+        </h2>
+        <p className="mt-2 text-gray-600">
+          Welcome back to PiggyWay. Discover the best for your furry friends.
+        </p>
+      </div>
+    </div>
+  );
+}

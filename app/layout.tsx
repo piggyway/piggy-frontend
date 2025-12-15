@@ -1,9 +1,9 @@
-import type { Metadata } from "next";
-import { Suspense } from "react";
+import type { Metadata, Viewport } from "next";
 import { Outfit } from "next/font/google";
-import { Header } from "@/components/common/Header";
-import { Footer } from "@/components/common/Footer";
+import { Toaster } from "sonner";
 import "./globals.css";
+
+import { Providers } from "./providers"; // ⭐ 新增：引入 SessionProvider 包装层
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   description: "Guinea Pig & Rabbit Essentials",
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -24,12 +30,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${outfit.variable} bg-[#FFFBF5] font-sans antialiased`}>
-        <Suspense fallback={<div className="h-[82px]" />}>
-          <Header />
-        </Suspense>
-        <main className="bg-[#FFFBF5]">{children}</main>
-        <Footer />
+      <body
+        className={`${outfit.variable} bg-[#FFFBF5] font-sans antialiased`}
+      >
+        {/* ⭐ 用 Providers 包裹 children */}
+        <Providers>
+          {children}
+        </Providers>
+
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

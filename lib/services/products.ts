@@ -5,6 +5,7 @@
 
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import { apiClient } from "@/lib/api/client";
+import { normalizeImageUrl } from "@/lib/utils/images";
 import type {
   ProductListParams,
   ProductListResponseFromAPI,
@@ -130,7 +131,8 @@ export class ProductService {
       formattedPrice: this.formatPrice(price, currencySlug),
       currency: product.currency,
       brand: product.brand,
-      imageUrl: product.image_url || DEFAULT_PRODUCT_IMAGE,
+      category: product.category || null,
+      imageUrl: normalizeImageUrl(product.image_url) || DEFAULT_PRODUCT_IMAGE,
       variantsCount: product.variants_count,
       isFeatured: product.is_featured,
     };
@@ -158,7 +160,11 @@ export class ProductService {
       category: product.category,
       species: product.species || [],
       images:
-        product.images.length > 0 ? product.images : [DEFAULT_PRODUCT_IMAGE],
+        product.images.length > 0
+          ? product.images.map(
+              (image) => normalizeImageUrl(image) || DEFAULT_PRODUCT_IMAGE
+            )
+          : [DEFAULT_PRODUCT_IMAGE],
       options: product.options.map((option) => this.transformOption(option)),
       variants: product.variants.map((variant) =>
         this.transformVariant(variant)
@@ -244,7 +250,7 @@ export class ProductService {
         valueId: ov.value_id,
         value: ov.value,
       })),
-      imageUrl: variant.image_url,
+      imageUrl: normalizeImageUrl(variant.image_url),
     };
   }
 

@@ -40,7 +40,7 @@ export function CategoryFilterBar({
   };
 
   return (
-    <div className="mb-8 flex flex-wrap items-center gap-4">
+    <div className="mb-6 flex flex-wrap items-center gap-3 overflow-x-auto pb-2 sm:mb-8 sm:gap-4">
       {categories.map((category) => {
         const Icon = category.icon;
         const isActive = activeCategory === category.id;
@@ -50,28 +50,28 @@ export function CategoryFilterBar({
             key={category.id}
             onClick={() => handleCategoryClick(category.id)}
             className={cn(
-              "flex flex-col items-center gap-2 rounded-lg p-3 transition-all",
+              "flex shrink-0 flex-col items-center gap-1.5 rounded-lg p-2.5 transition-all sm:gap-2 sm:p-3",
               "hover:bg-primary-purple/20",
               isActive && "bg-primary-purple/30"
             )}
           >
             <div
               className={cn(
-                "flex h-12 w-12 items-center justify-center rounded-full transition-colors",
+                "flex h-10 w-10 items-center justify-center rounded-full transition-colors sm:h-12 sm:w-12",
                 "border-2 bg-white",
                 isActive ? "border-primary-navy" : "border-neutral-stroke"
               )}
             >
               <Icon
                 className={cn(
-                  "h-6 w-6",
+                  "h-5 w-5 sm:h-6 sm:w-6",
                   isActive ? "text-primary-navy" : "text-primary-navy/60"
                 )}
               />
             </div>
             <span
               className={cn(
-                "text-xs font-medium",
+                "text-[10px] font-medium sm:text-xs",
                 isActive ? "text-primary-navy" : "text-primary-navy/80"
               )}
             >
