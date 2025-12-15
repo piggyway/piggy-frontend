@@ -25,21 +25,21 @@ export const headerNavigation: NavLink[] = [
       {
         title: "Liners",
         description: "Soft paws, clean floors.",
-        href: "/shop/liners",
+        href: "/shop-all?category=liner",
       },
       {
         title: "Hut",
         description: "Every bunny needs a hidey.",
-        href: "/shop/hut",
+        href: "/shop-all?category=hut",
       },
       {
         title: "Snack",
         description: "Nibble, crunch, repeat",
-        href: "/shop/snack",
+        href: "/shop-all?category=snack",
       },
       {
         title: "View all",
-        href: "/shop",
+        href: "/shop-all",
       },
     ],
   },

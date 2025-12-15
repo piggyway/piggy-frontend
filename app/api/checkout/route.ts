@@ -12,6 +12,8 @@ const API_BASE_URL =
 
 type CartItemPayload = {
   id: string;
+  productRid?: number | null;
+  variantRid?: number | null;
   productTitle: string;
   variantSku: string | null;
   quantity: number;
@@ -23,16 +25,14 @@ type CartItemPayload = {
 
 type CheckoutRequestBody = {
   email?: string;
-  fullName?: string;
-  phone?: string;
-  address1?: string;
-  address2?: string;
-  city?: string;
-  state?: string;
-  postalCode?: string;
-  country?: string;
+  fulfillmentType?: "delivery" | "pickup";
+  pickupDate?: string;
+  pickupTime?: string;
+  cartId?: string | number;
   cartItems?: CartItemPayload[];
   currency?: string;
+  promoCode?: string;
+  userId?: string;
 };
 
 export async function POST(request: NextRequest) {
@@ -46,16 +46,16 @@ export async function POST(request: NextRequest) {
     // Transform camelCase to snake_case for backend
     const backendPayload = {
       email: body.email || DEFAULT_EMAIL,
-      full_name: body.fullName,
-      phone: body.phone,
-      address1: body.address1,
-      address2: body.address2,
-      city: body.city,
-      state: body.state,
-      postal_code: body.postalCode,
-      country: body.country,
+      fulfillment_type: body.fulfillmentType || "delivery",
+      pickup_date: body.pickupDate,
+      pickup_time: body.pickupTime,
+      cart_id: body.cartId != null ? String(body.cartId) : undefined,
       cart_items: body.cartItems?.map((item) => ({
         id: String(item.id), // Ensure id is a string
+        product_rid:
+          item.productRid == null ? null : Number.parseInt(String(item.productRid), 10),
+        variant_rid:
+          item.variantRid == null ? null : Number.parseInt(String(item.variantRid), 10),
         product_title: item.productTitle,
         variant_sku: item.variantSku,
         quantity: item.quantity,
@@ -65,9 +65,13 @@ export async function POST(request: NextRequest) {
         currency: item.currency || body.currency || "usd", // Ensure currency is never null
       })),
       currency: body.currency || "usd",
+      promo_code: body.promoCode,
+      user_id: body.userId,
     };
 
-    console.log("[Checkout API] Sending payload to backend:", JSON.stringify(backendPayload, null, 2));
+    // #region agent log (debug-session)
+    fetch('http://127.0.0.1:7244/ingest/4d167c0f-d521-47a0-b9c1-cf8baf1e5421',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'B',location:'piggy-frontend/app/api/checkout/route.ts:POST',message:'Proxy -> backend payload (sanitized)',data:{hasEmail:!!backendPayload.email,emailLen:(backendPayload.email||'').length,fulfillmentType:backendPayload.fulfillment_type,pickupDateProvided:!!backendPayload.pickup_date,pickupTimeProvided:!!backendPayload.pickup_time,cartItemCount:Array.isArray(backendPayload.cart_items)?backendPayload.cart_items.length:0,currency:backendPayload.currency,hasPromo:!!backendPayload.promo_code,hasUserId:!!backendPayload.user_id},timestamp:Date.now()})}).catch(()=>{});
+    // #endregion agent log (debug-session)
 
     const origin = request.headers.get("origin") || "http://localhost:3000";
     const token = request.headers.get("authorization");

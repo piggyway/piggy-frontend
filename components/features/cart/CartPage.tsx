@@ -1,18 +1,23 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import Link from "next/link";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { CartItem } from "./CartItem";
 import { CartSummary } from "./CartSummary";
 import { RelatedProducts } from "./RelatedProducts";
 import { useCart } from "./CartProvider";
 
 export function CartPage() {
-  const { cart, isLoading, isMutating, error, updateItem, removeItem } =
+  const { cart, isLoading, isMutating, error, updateItem, removeItem, ensureLoaded } =
     useCart();
+
+  useEffect(() => {
+    ensureLoaded().catch(() => null);
+  }, [ensureLoaded]);
 
   const handleQuantityChange = async (id: string, newQuantity: number) => {
     await updateItem(id, newQuantity);
@@ -37,9 +42,12 @@ export function CartPage() {
     [cart]
   );
 
+  const itemCount = cart?.items.length ?? 0;
+  const shouldScrollItems = itemCount > 4;
+
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
+      <div className="mx-auto max-w-[1160px] px-4 py-16 text-center">
         <p className="text-lg text-slate-600">Loading your cart...</p>
       </div>
     );
@@ -47,7 +55,7 @@ export function CartPage() {
 
   if (!cart || cart.items.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
+      <div className="mx-auto max-w-[1160px] px-4 py-16 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -77,7 +85,7 @@ export function CartPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 pt-32 pb-24">
+    <div className="mx-auto max-w-[1160px] px-4 pt-32 pb-24">
       <div className="mb-12 flex items-center gap-4">
         <Button variant="ghost" size="sm" asChild className="gap-2">
           <Link href="/shop">
@@ -91,7 +99,13 @@ export function CartPage() {
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
         {/* Cart Items List */}
         <div className="flex-1">
-          <div className="border-neutral-stroke rounded-lg border bg-white px-4 sm:px-6">
+          <div
+            className={cn(
+              // Keep a consistent, tidy list area on >= sm, but avoid clipping on mobile.
+              "border-neutral-stroke rounded-lg border bg-white px-4 sm:px-6 sm:h-[720px] sm:overflow-hidden",
+              shouldScrollItems && "sm:overflow-y-auto sm:pr-2"
+            )}
+          >
             {error && (
               <div className="text-destructive py-4 text-sm">{error}</div>
             )}

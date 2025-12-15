@@ -2,27 +2,16 @@
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import {
-  CreditCard,
-  MapPin,
-  Package,
-  Settings,
-  Truck,
-  User,
-} from "lucide-react";
+import { Package, Truck, User, LogOut } from "lucide-react";
 
-export type AccountSection =
-  | "profile"
-  | "orders"
-  | "order-details"
-  | "track"
-  | "address"
-  | "payment";
+export type AccountSection = "profile" | "orders" | "order-details" | "track";
 
 interface AccountSidebarProps {
   currentSection: AccountSection;
   onSectionChange: (section: AccountSection) => void;
   className?: string;
+  onLogout: () => void;
+  isLoggingOut?: boolean;
 }
 
 const menuItems: {
@@ -33,14 +22,14 @@ const menuItems: {
   { id: "profile", label: "Profile", icon: User },
   { id: "orders", label: "Order History", icon: Package },
   { id: "track", label: "Track Order", icon: Truck },
-  { id: "address", label: "Addresses", icon: MapPin },
-  { id: "payment", label: "Payment Methods", icon: CreditCard },
 ];
 
 export function AccountSidebar({
   currentSection,
   onSectionChange,
   className,
+  onLogout,
+  isLoggingOut,
 }: AccountSidebarProps) {
   return (
     <div
@@ -73,6 +62,18 @@ export function AccountSidebar({
             </Button>
           );
         })}
+
+        <div className="my-2 border-t border-gray-100" />
+
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-3 px-4 font-medium text-red-600 hover:bg-red-50 hover:text-red-700"
+          onClick={onLogout}
+          disabled={isLoggingOut}
+        >
+          <LogOut className="size-4" />
+          {isLoggingOut ? "Logging out..." : "Logout"}
+        </Button>
       </nav>
     </div>
   );

@@ -34,13 +34,16 @@ const RELATED_PRODUCTS = [
 ];
 
 export function RelatedProducts() {
+  const itemsToShow = 2;
+  const visibleProducts = RELATED_PRODUCTS.slice(0, itemsToShow);
+
   return (
     <div className="flex flex-col gap-6 py-8">
       <h2 className="text-primary-navy text-2xl font-semibold">
         You Might Also Like
       </h2>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {RELATED_PRODUCTS.map((product) => (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+        {visibleProducts.map((product) => (
           <ProductCard
             key={product.id}
             id={product.id}

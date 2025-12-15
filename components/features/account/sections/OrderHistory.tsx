@@ -1,106 +1,326 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { mockOrders } from "@/lib/mock/account";
-import { OrderStatus } from "@/lib/types/account";
-import { cn } from "@/lib/utils";
-import { Package } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { Package, Truck, Store, Copy, Check } from "lucide-react";
+import { OrderService } from "@/lib/services/order";
+import type { OrderWithItems, OrderStatus } from "@/lib/types/order";
+import { normalizeImageUrl } from "@/lib/utils/images";
+import { motion, AnimatePresence } from "framer-motion";
 
-const statusColors: Record<OrderStatus, string> = {
-  Processing: "bg-blue-100 text-blue-700",
-  Shipped: "bg-purple-100 text-purple-700",
-  Delivered: "bg-green-100 text-green-700",
-  Cancelled: "bg-red-100 text-red-700",
+const statusLabel: Record<OrderStatus, string> = {
+  pending_payment: "Pending payment",
+  paid: "Paid",
+  processing: "Processing",
+  shipped: "Shipped",
+  completed: "Completed",
+  cancelled: "Cancelled",
+  refunded: "Refunded",
+  disputed: "Disputed",
 };
 
+const statusColors: Record<OrderStatus, string> = {
+  pending_payment: "bg-yellow-100 text-yellow-800",
+  paid: "bg-green-100 text-green-700",
+  processing: "bg-blue-100 text-blue-700",
+  shipped: "bg-purple-100 text-purple-700",
+  completed: "bg-green-100 text-green-700",
+  cancelled: "bg-red-100 text-red-700",
+  refunded: "bg-slate-100 text-slate-700",
+  disputed: "bg-orange-100 text-orange-700",
+};
+
+const FALLBACK_IMAGE = "/default-product-image.png";
+
 interface OrderHistoryProps {
-  onOrderClick: (orderId: string) => void;
+  onOrderClick: (orderNumber: string) => void;
 }
 
 export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
+  const [orders, setOrders] = useState<OrderWithItems[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const currencyFormatter = useMemo(() => {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    });
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    (async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        // Cast the result to expect OrderWithItems[] based on updated types
+        const result = (await OrderService.getOrders(1, 50)) as unknown as {
+          orders: OrderWithItems[];
+        };
+        if (cancelled) return;
+        setOrders(result.orders);
+      } catch (e: any) {
+        if (cancelled) return;
+        setError(e?.message || "Failed to load orders");
+      } finally {
+        if (cancelled) return;
+        setIsLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-[400px] space-y-6 rounded-lg bg-white p-6 shadow-sm">
+        <h2 className="text-primary-navy text-2xl font-semibold">
+          Order History
+        </h2>
+        <div className="animate-pulse space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-40 rounded-lg bg-gray-100" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-[400px] space-y-6 rounded-lg bg-white p-6 shadow-sm">
+        <h2 className="text-primary-navy text-2xl font-semibold">
+          Order History
+        </h2>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="mb-4 rounded-full bg-red-50 p-3">
+            <Package className="h-8 w-8 text-red-500" />
+          </div>
+          <p className="mb-2 text-red-500">{error}</p>
+          <Button onClick={() => window.location.reload()} variant="outline">
+            Try Again
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <div className="min-h-[400px] space-y-6 rounded-lg bg-white p-6 shadow-sm">
+        <h2 className="text-primary-navy text-2xl font-semibold">
+          Order History
+        </h2>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="mb-4 rounded-full bg-gray-50 p-4">
+            <Package className="h-12 w-12 text-gray-300" />
+          </div>
+          <h3 className="mb-1 text-lg font-semibold text-gray-900">
+            No orders yet
+          </h3>
+          <p className="mb-6 text-sm text-gray-500">
+            Looks like you haven't placed any orders yet.
+          </p>
+          <Button onClick={() => (window.location.href = "/")}>
+            Start Shopping
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="min-h-[400px] space-y-6 rounded-lg bg-white p-6 shadow-sm">
+      <div className="mx-1 flex items-center justify-between">
         <h2 className="text-primary-navy text-2xl font-semibold">
           Order History
         </h2>
       </div>
 
-      <div className="space-y-4">
-        {mockOrders.map((order) => (
-          <div
-            key={order.id}
-            className="overflow-hidden rounded-lg border bg-white shadow-sm"
-          >
-            <div className="flex items-center justify-between border-b bg-gray-50 p-4">
-              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-4">
-                <span className="font-medium text-gray-900">{order.id}</span>
-                <span className="text-sm text-gray-500">{order.date}</span>
-              </div>
-              <div className="flex items-center gap-4">
+      <motion.div
+        className="space-y-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
+        {orders.map((order) => {
+          // Determine active status display logic (including Pickup vs Shipping)
+          const isPickup = order.delivery_method === "pickup";
+          let displayStatus = statusLabel[order.status];
+          if (isPickup) {
+            if (order.status === "shipped") displayStatus = "Ready for Pickup";
+            if (order.status === "completed") displayStatus = "Picked Up";
+          }
+
+          return (
+            <motion.div
+              key={order.order_number}
+              variants={itemVariants}
+              className="overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md"
+            >
+              {/* Header */}
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-gray-50 p-4">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-gray-900">
+                      {new Date(order.date_created).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span>{order.order_number}</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(order.order_number);
+                        toast.success("Order number copied to clipboard");
+                      }}
+                      className="hover:text-primary-navy text-gray-400 transition-colors"
+                      title="Copy order number"
+                    >
+                      <Copy className="h-3 w-3" />
+                    </button>
+                  </div>
+                  {/* Delivery Method Badge */}
+                  {isPickup ? (
+                    <div className="flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                      <Store className="h-3 w-3" />
+                      Pickup
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 rounded bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
+                      <Truck className="h-3 w-3" />
+                      Delivery
+                    </div>
+                  )}
+                </div>
+
                 <span
                   className={cn(
                     "rounded-full px-3 py-1 text-xs font-medium",
                     statusColors[order.status]
                   )}
                 >
-                  {order.status}
+                  {displayStatus}
                 </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="hidden sm:flex"
-                  onClick={() => onOrderClick(order.id)}
-                >
-                  View Details
-                </Button>
               </div>
-            </div>
 
-            <div className="p-4">
-              <div className="flex flex-col gap-4">
-                {order.items.map((item, idx) => (
-                  <div key={idx} className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="relative size-16 overflow-hidden rounded-md border bg-gray-100">
-                        <Image
-                          src={item.image}
-                          alt={item.name}
-                          fill
-                          className="object-cover"
-                        />
+              {/* Items List */}
+              <div className="divide-y divide-gray-100">
+                {order.items && order.items.length > 0 ? (
+                  order.items.map((item, idx) => {
+                    const imageUrl =
+                      normalizeImageUrl(item.image_url, {
+                        maxWidth: 200,
+                      }) || FALLBACK_IMAGE;
+
+                    return (
+                      <div
+                        key={idx}
+                        className="flex gap-4 p-4 hover:bg-gray-50/50"
+                      >
+                        {/* Product Image */}
+                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-white">
+                          <Image
+                            src={imageUrl}
+                            alt={item.product_title}
+                            fill
+                            className="object-cover"
+                            sizes="80px"
+                          />
+                        </div>
+
+                        {/* Details */}
+                        <div className="flex flex-1 flex-col justify-between sm:flex-row sm:gap-8">
+                          <div className="flex-1 space-y-1">
+                            <h4 className="line-clamp-2 font-medium text-gray-900">
+                              {item.product_title}
+                            </h4>
+                            <div className="flex flex-wrap gap-2 text-sm text-gray-500">
+                              {item.variant_attributes &&
+                                Array.isArray(item.variant_attributes) &&
+                                item.variant_attributes.map((attr, i) => (
+                                  <span
+                                    key={i}
+                                    className="rounded bg-gray-100 px-1.5 py-0.5 text-xs"
+                                  >
+                                    {attr.option_name}: {attr.option_value}
+                                  </span>
+                                ))}
+                            </div>
+                          </div>
+
+                          <div className="mt-2 flex items-end justify-between sm:mt-0 sm:flex-col sm:items-end sm:justify-start sm:text-right">
+                            <p className="font-medium text-gray-900">
+                              {currencyFormatter.format(
+                                item.unit_price_cents / 100
+                              )}
+                            </p>
+                            <p className="text-sm text-gray-500">
+                              x {item.quantity}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{item.name}</p>
-                        <p className="text-sm text-gray-500">
-                          Qty: {item.quantity}
-                        </p>
-                      </div>
-                    </div>
-                    <p className="font-medium text-gray-900">
-                      ${item.price.toFixed(2)}
-                    </p>
+                    );
+                  })
+                ) : (
+                  // Fallback if no items (should ideally not happen with updated backend)
+                  <div className="p-8 text-center text-gray-500">
+                    No items found for this order.
                   </div>
-                ))}
+                )}
               </div>
-              <div className="mt-4 flex items-center justify-between border-t pt-4">
-                <div className="flex items-center gap-2 text-sm text-gray-500">
-                  <Package className="size-4" />
-                  {order.trackingNumber ? (
-                    <span>Tracking: {order.trackingNumber}</span>
-                  ) : (
-                    <span>Tracking not available</span>
-                  )}
+
+              {/* Footer */}
+              <div className="flex items-center justify-between border-t bg-gray-50 p-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">Total:</span>
+                  <span className="text-primary-navy text-lg font-bold">
+                    {currencyFormatter.format(order.grand_total_amt / 100)}
+                  </span>
                 </div>
-                <p className="text-primary-navy text-lg font-bold">
-                  Total: ${order.total.toFixed(2)}
-                </p>
+                <div className="flex gap-3">
+                  {/* <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onOrderClick(order.order_number)}
+                  >
+                    Track Order
+                  </Button> */}
+                  <Button
+                    variant="default"
+                    size="sm"
+                    onClick={() => onOrderClick(order.order_number)}
+                  >
+                    Order Details
+                  </Button>
+                </div>
               </div>
-            </div>
-          </div>
-        ))}
-      </div>
+            </motion.div>
+          );
+        })}
+      </motion.div>
     </div>
   );
 }

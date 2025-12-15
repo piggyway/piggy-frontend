@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { useSession } from "next-auth/react";
 import { UserService } from "@/lib/services/user";
+import { fetchWithAuth } from "@/lib/api/client";
 
 interface UserProfile {
   firstName?: string;
@@ -29,6 +30,44 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const isLoadingRef = useRef(false);
   const hasLoadedRef = useRef(false);
+  const hasEnsuredCartRef = useRef(false);
+
+  // Always sync accessToken to localStorage as soon as it's available
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    if (typeof window === "undefined") return;
+
+    const accessToken = (session as any)?.accessToken;
+    if (!accessToken) return;
+
+    const authToken = accessToken.startsWith("Bearer")
+      ? accessToken
+      : `Bearer ${accessToken}`;
+    localStorage.setItem("access_token", authToken);
+  }, [status, (session as any)?.accessToken]);
+
+  // Ensure a default (empty) cart exists after login (for both new and returning users).
+  // This is a fire-and-forget call: backend can create the cart lazily if missing.
+  useEffect(() => {
+    if (status !== "authenticated") {
+      hasEnsuredCartRef.current = false;
+      return;
+    }
+
+    const accessToken = (session as any)?.accessToken;
+    if (!accessToken) return;
+    if (hasEnsuredCartRef.current) return;
+
+    // Wait until user profile is loaded to avoid calling APIs with incomplete auth state
+    if (!hasLoadedRef.current) return;
+
+    hasEnsuredCartRef.current = true;
+
+    // Trigger cart creation on backend if it doesn't exist yet
+    fetchWithAuth("/api/cart", { method: "GET" }).catch((err) => {
+      console.warn("[UserContext] Failed to ensure default cart:", err);
+    });
+  }, [status, (session as any)?.accessToken, user]);
 
   // Sync user data from session, backend API, and localStorage
   // Only run once when authenticated
@@ -39,14 +78,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }
 
     if (status === "authenticated") {
-      isLoadingRef.current = true;
-
-      // Sync accessToken to localStorage for API calls
-      if (typeof window !== "undefined" && (session as any)?.accessToken) {
-        const token = (session as any).accessToken;
-        const authToken = token.startsWith("Bearer") ? token : `Bearer ${token}`;
-        localStorage.setItem("access_token", authToken);
+      // Wait until accessToken is available; otherwise backend calls will 401 and we'll mark as loaded incorrectly
+      const accessToken = (session as any)?.accessToken;
+      if (!accessToken) {
+        return;
       }
+
+      isLoadingRef.current = true;
 
       // Fetch user profile from backend
       const loadUserProfile = async () => {
@@ -120,7 +158,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       hasLoadedRef.current = false;
       isLoadingRef.current = false;
     }
-  }, [status]); // Only depend on status, not session
+  }, [status, (session as any)?.accessToken]); // Depend on accessToken so first login can load after session is ready
 
   // Update user data (save to backend and localStorage only - no session update to avoid loops)
   const updateUser = async (data: Partial<UserProfile>) => {
@@ -129,6 +167,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     setUser(updatedUser);
 
     let finalUser = updatedUser;
+    let backendSuccess = false;
 
     // Save to backend API
     try {
@@ -140,28 +179,29 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
       if (!result.success) {
         console.error("Failed to update profile on backend:", result.error);
-        // Revert optimistic update on error
-        setUser(user);
-        throw new Error(result.message || "Failed to update profile");
-      }
-
-      // Update local state with backend response if available
-      if (result.user) {
-        const backendUser: UserProfile = {
-          firstName: result.user.firstName || undefined,
-          lastName: result.user.lastName || undefined,
-          email: result.user.email || undefined,
-          phone: updatedUser?.phone,
-          avatarUrl: updatedUser?.avatarUrl,
-        };
-        setUser(backendUser);
-        finalUser = backendUser;
+        // Don't revert - keep the optimistic update for better UX
+        // The data is still saved to localStorage below
+      } else {
+        backendSuccess = true;
+        // Update local state with backend response if available
+        if (result.user) {
+          const backendUser: UserProfile = {
+            firstName: result.user.firstName || undefined,
+            lastName: result.user.lastName || undefined,
+            email: result.user.email || undefined,
+            phone: updatedUser?.phone,
+            avatarUrl: updatedUser?.avatarUrl,
+          };
+          setUser(backendUser);
+          finalUser = backendUser;
+        }
       }
     } catch (error) {
       console.error("Error updating profile on backend:", error);
+      // Continue anyway - save to localStorage and create cart
     }
 
-    // Save to localStorage as backup
+    // Save to localStorage as backup (always, even if backend failed)
     if (typeof window !== "undefined") {
       localStorage.setItem("userProfile", JSON.stringify({
         ...finalUser,
@@ -169,9 +209,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
       }));
     }
 
-    // Update isFirstLogin status
+    // Update isFirstLogin status based on what we have locally
     const isIncomplete = !finalUser.firstName || !finalUser.lastName;
     setIsFirstLogin(isIncomplete);
+
+    // If backend failed, throw error so UI can show appropriate message
+    if (!backendSuccess) {
+      throw new Error("Failed to save profile to server");
+    }
   };
 
   // Clear user data (for logout)

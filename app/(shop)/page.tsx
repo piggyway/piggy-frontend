@@ -6,7 +6,7 @@ import { TestimonialsSection } from "@/components/features/homepage/Testimonials
 import { WhyShopSection } from "@/components/features/homepage/WhyShopSection";
 import { OurStorySection } from "@/components/features/homepage/OurStorySection";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
-import { WelcomeMessage } from "@/components/features/homepage/WelcomeMessage";
+// import { WelcomeMessage } from "@/components/features/homepage/WelcomeMessage";
 import { FirstLoginRedirect } from "@/components/features/auth/FirstLoginRedirect";
 
 export default function Home() {
@@ -14,7 +14,7 @@ export default function Home() {
     <div className="bg-neutral-background-light relative min-h-screen">
       <FirstLoginRedirect />
       <BackgroundBlobs variant={1} />
-      <WelcomeMessage />
+      {/* <WelcomeMessage /> */}
       <HeroSection />
       <ShopByCategorySection />
       <PetCareTipsSection />

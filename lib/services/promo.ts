@@ -47,12 +47,6 @@ export class PromoService {
       const headers = this.getAuthHeaders();
       const backendUrl = this.getBackendUrl();
 
-      console.log("🔵 [PromoService] Applying promo code:", {
-        code: code.toUpperCase(),
-        backendUrl: `${backendUrl}/api/v1/promo/apply`,
-        hasAuthHeaders: !!headers.Authorization,
-      });
-
       const response = await fetch(`${backendUrl}/api/v1/promo/apply`, {
         method: "POST",
         headers: {
@@ -63,16 +57,6 @@ export class PromoService {
       });
 
       const data = await response.json();
-      
-      console.log("🟢 [PromoService] Promo code apply response:", {
-        status: response.status,
-        statusText: response.statusText,
-        success: data.success,
-        message: data.message,
-        discountAmount: data.discountAmount,
-        promoCode: data.promoCode,
-      });
-      
       return data;
     } catch (error) {
       console.error("[PromoService] Failed to apply promo code:", error);
