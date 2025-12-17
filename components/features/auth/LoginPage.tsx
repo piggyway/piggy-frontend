@@ -28,9 +28,15 @@ export function LoginPage({ error }: LoginPageProps) {
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+  // 确保只在客户端渲染 Turnstile，避免 hydration 不匹配
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!error || hasShownUrlErrorToast.current) return;
@@ -299,29 +305,32 @@ export function LoginPage({ error }: LoginPageProps) {
                   />
                 </div>
 
-                {turnstileSiteKey ? (
-                  <div className="flex justify-center">
-                    <Turnstile
-                      ref={turnstileRef}
-                      siteKey={turnstileSiteKey}
-                      onSuccess={(token) => setTurnstileToken(token)}
-                      onExpire={() => setTurnstileToken(null)}
-                      onError={() => setTurnstileToken(null)}
-                      options={{
-                        action: "email_code",
-                      }}
-                    />
-                  </div>
-                ) : (
-                  <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                    Turnstile is not configured. Please set
-                    NEXT_PUBLIC_TURNSTILE_SITE_KEY.
-                  </div>
+                {/* 只在客户端渲染 Turnstile，避免 hydration 不匹配 */}
+                {mounted && (
+                  turnstileSiteKey ? (
+                    <div className="flex justify-center">
+                      <Turnstile
+                        ref={turnstileRef}
+                        siteKey={turnstileSiteKey}
+                        onSuccess={(token) => setTurnstileToken(token)}
+                        onExpire={() => setTurnstileToken(null)}
+                        onError={() => setTurnstileToken(null)}
+                        options={{
+                          action: "email_code",
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                      Turnstile is not configured. Please set
+                      NEXT_PUBLIC_TURNSTILE_SITE_KEY.
+                    </div>
+                  )
                 )}
 
                 <button
                   type="submit"
-                  disabled={loading || !turnstileSiteKey || !turnstileToken}
+                  disabled={loading || !mounted || !turnstileSiteKey || !turnstileToken}
                   className="inline-flex w-full items-center justify-center rounded-full bg-primary-navy px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-navy-light disabled:opacity-60"
                 >
                   {loading ? (
