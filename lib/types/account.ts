@@ -7,18 +7,20 @@ export interface UserProfile {
   avatarUrl?: string;
 }
 
+export type AddressType = "shipping" | "billing" | "other";
+
 export interface Address {
   id: string;
-  label: string;
-  firstName: string;
-  lastName: string;
-  street: string;
-  apartment?: string;
-  city: string;
-  state: string;
-  zipCode: string;
-  country: string;
+  userId: string;
+  type: AddressType;
   isDefault: boolean;
+  recipientName: string | null;
+  addressText: string;
+  postalCode: string;
+  countryCode: string;
+  phoneAu: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export type OrderStatus = "Processing" | "Shipped" | "Delivered" | "Cancelled";
