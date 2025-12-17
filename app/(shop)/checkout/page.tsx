@@ -50,6 +50,13 @@ const PICKUP_DATES = [
   "Tue, Oct 28",
 ];
 
+const PICKUP_SLOTS = [
+  { id: "slot_1", label: "09:00 AM - 10:00 AM", isAvailable: true },
+  { id: "slot_2", label: "10:00 AM - 11:00 AM", isAvailable: true },
+  { id: "slot_3", label: "11:00 AM - 12:00 PM", isAvailable: false },
+];
+
+
 export default function CheckoutPage() {
   const {
     cart,
@@ -82,6 +89,11 @@ export default function CheckoutPage() {
   // Pickup State
   const [pickupDate, setPickupDate] = useState<string>(PICKUP_DATES[0]);
   const [pickupTime, setPickupTime] = useState<string | null>(null);
+  // which location? 
+  const [selectedPickupLocationId, setSelectedPickupLocationId] = useState<string | null>(null);
+  // which slot
+  const [selectedPickupSlotId, setSelectedPickupSlotId] = useState<string | null>(null);
+
 
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -134,7 +146,8 @@ export default function CheckoutPage() {
       return true;
     } else {
       // Pickup
-      return !!pickupDate && !!pickupTime;
+      //return !!pickupDate && !!pickupTime;
+      return !!selectedPickupLocationId && !!selectedPickupSlotId;
     }
   }, [cart, fulfillmentType, contactForm, pickupDate, pickupTime]);
 
@@ -159,12 +172,19 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           email: contactForm.email,
-          fulfillmentType,
+          fulfillmentType, // "delivery" | "pickup"
           cartId: cart.id,
-          pickupDate: fulfillmentType === "pickup" ? pickupDate : undefined,
-          pickupTime: fulfillmentType === "pickup" ? pickupTime : undefined,
+
+          // pickup locationId+ slotId instead of 
+          pickupLocationId:
+            fulfillmentType === "pickup" ? selectedPickupLocationId : undefined,
+
+          pickupSlotId:
+            fulfillmentType === "pickup" ? selectedPickupSlotId : undefined,
+
           promoCode: cart.appliedCouponCode || undefined,
           userId: (session?.user as any)?.id,
+
           cartItems: cart.items.map((item) => ({
             id: item.id,
             productRid: item.productRid,
@@ -177,10 +197,10 @@ export default function CheckoutPage() {
             imageUrl: item.imageUrl,
             currency: item.currency,
           })),
+
           currency: cart.currency,
         }),
       });
-
       const data = await res.json().catch(() => ({}));
       const url = data?.url;
 
@@ -347,18 +367,20 @@ export default function CheckoutPage() {
                   <div className="space-y-3">
                     <label className="text-sm font-medium">Select a Time</label>
                     <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                      {PICKUP_TIMES.map((time) => (
+                     
+                      {PICKUP_SLOTS.map((slot) => (
                         <button
-                          key={time}
-                          onClick={() => setPickupTime(time)}
+                          key={slot.id}
+                          disabled={!slot.isAvailable}
+                          onClick={() => setSelectedPickupSlotId(slot.id)} 
                           className={cn(
                             "rounded-md border px-3 py-2 text-center text-sm transition-all",
-                            pickupTime === time
+                            selectedPickupSlotId === slot.id
                               ? "border-primary-navy bg-primary-navy/5 text-primary-navy ring-primary-navy font-semibold ring-1"
                               : "border-gray-200 text-gray-600 hover:border-gray-300"
                           )}
                         >
-                          {time}
+                          {slot.label}
                         </button>
                       ))}
                     </div>
@@ -373,6 +395,7 @@ export default function CheckoutPage() {
                   className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
                   disabled={!canSubmit || isProcessing}
                   onClick={handlePayment}
+
                 >
                   {isProcessing ? "Processing..." : "Continue to payment"}
                 </Button>
