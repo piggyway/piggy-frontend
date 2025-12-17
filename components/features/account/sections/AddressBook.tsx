@@ -89,7 +89,7 @@ export function AddressBook() {
             Add your first address to get started
           </p>
           <Button onClick={handleAddNew}>
-            <Plus className="mr-2 size-4" />
+            <Plus className="mr-1 size-4" />
             Add Address
           </Button>
         </div>
