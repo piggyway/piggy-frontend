@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Address } from "@/lib/types/account";
+import type { Address, AddressType } from "@/lib/types/account";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -11,11 +11,23 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
+export type AddressFormValues = {
+  type: AddressType;
+  isDefault: boolean;
+  recipientName: string | null;
+  addressText: string;
+  postalCode: string;
+  countryCode: string;
+  phoneAu: string | null;
+};
+
+export type UpsertAddressInput = AddressFormValues & { id?: string };
+
 interface AddressFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   address?: Address;
-  onSave: (address: Omit<Address, "id"> | Address) => void;
+  onSave: (payload: UpsertAddressInput) => void;
 }
 
 export function AddressFormDialog({
@@ -24,36 +36,38 @@ export function AddressFormDialog({
   address,
   onSave,
 }: AddressFormDialogProps) {
-  const [formData, setFormData] = useState<Omit<Address, "id">>({
-    label: "",
-    firstName: "",
-    lastName: "",
-    street: "",
-    apartment: "",
-    city: "",
-    state: "",
-    zipCode: "",
-    country: "United States",
+  const [formData, setFormData] = useState<AddressFormValues>({
+    type: "shipping",
     isDefault: false,
+    recipientName: null,
+    addressText: "",
+    postalCode: "",
+    countryCode: "AU",
+    phoneAu: null,
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (address) {
-      setFormData(address);
+      setFormData({
+        type: address.type,
+        isDefault: address.isDefault,
+        recipientName: address.recipientName,
+        addressText: address.addressText,
+        postalCode: address.postalCode,
+        countryCode: address.countryCode,
+        phoneAu: address.phoneAu,
+      });
     } else {
       setFormData({
-        label: "",
-        firstName: "",
-        lastName: "",
-        street: "",
-        apartment: "",
-        city: "",
-        state: "",
-        zipCode: "",
-        country: "United States",
+        type: "shipping",
         isDefault: false,
+        recipientName: null,
+        addressText: "",
+        postalCode: "",
+        countryCode: "AU",
+        phoneAu: null,
       });
     }
     setErrors({});
@@ -62,15 +76,10 @@ export function AddressFormDialog({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.label.trim()) newErrors.label = "Address label is required";
-    if (!formData.firstName.trim())
-      newErrors.firstName = "First name is required";
-    if (!formData.lastName.trim())
-      newErrors.lastName = "Last name is required";
-    if (!formData.street.trim()) newErrors.street = "Street address is required";
-    if (!formData.city.trim()) newErrors.city = "City is required";
-    if (!formData.state.trim()) newErrors.state = "State is required";
-    if (!formData.zipCode.trim()) newErrors.zipCode = "Zip code is required";
+    if (!formData.addressText.trim()) newErrors.addressText = "Address is required";
+    if (!formData.postalCode.trim()) newErrors.postalCode = "Postal code is required";
+    if (!/^[A-Za-z]{2}$/.test(formData.countryCode.trim()))
+      newErrors.countryCode = "Country code must be 2 letters (e.g., AU)";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -81,17 +90,17 @@ export function AddressFormDialog({
 
     if (!validateForm()) return;
 
-    if (address) {
-      onSave({ ...address, ...formData });
-    } else {
-      onSave(formData);
-    }
+    onSave(address ? { id: address.id, ...formData } : formData);
 
     onOpenChange(false);
   };
 
-  const handleChange = (field: keyof typeof formData, value: string | boolean) => {
-    setFormData({ ...formData, [field]: value });
+  const handleChange = (
+    field: keyof AddressFormValues,
+    value: string | boolean | null
+  ) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setFormData({ ...formData, [field]: value } as any);
     if (errors[field]) {
       setErrors({ ...errors, [field]: "" });
     }
@@ -107,130 +116,95 @@ export function AddressFormDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Address Label */}
+          {/* Address Type */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Address Label <span className="text-red-500">*</span>
+              Address Type <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.type}
+              onChange={(e) => handleChange("type", e.target.value as AddressType)}
+              className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+            >
+              <option value="shipping">Shipping</option>
+              <option value="billing">Billing</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          {/* Recipient Name */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Recipient Name
             </label>
             <Input
-              value={formData.label}
-              onChange={(e) => handleChange("label", e.target.value)}
-              placeholder="e.g., Home, Work"
-              className={errors.label ? "border-red-500" : ""}
+              value={formData.recipientName ?? ""}
+              onChange={(e) =>
+                handleChange("recipientName", e.target.value || null)
+              }
+              placeholder="e.g., John Doe"
             />
-            {errors.label && (
-              <p className="text-xs text-red-500">{errors.label}</p>
+          </div>
+
+          {/* Address */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Address <span className="text-red-500">*</span>
+            </label>
+            <Input
+              value={formData.addressText}
+              onChange={(e) => handleChange("addressText", e.target.value)}
+              placeholder="Street, suburb, state"
+              className={errors.addressText ? "border-red-500" : ""}
+            />
+            {errors.addressText && (
+              <p className="text-xs text-red-500">{errors.addressText}</p>
             )}
           </div>
 
-          {/* Name Fields */}
+          {/* Postal / CountryCode */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                First Name <span className="text-red-500">*</span>
+                Postal Code <span className="text-red-500">*</span>
               </label>
               <Input
-                value={formData.firstName}
-                onChange={(e) => handleChange("firstName", e.target.value)}
-                className={errors.firstName ? "border-red-500" : ""}
+                value={formData.postalCode}
+                onChange={(e) => handleChange("postalCode", e.target.value)}
+                className={errors.postalCode ? "border-red-500" : ""}
               />
-              {errors.firstName && (
-                <p className="text-xs text-red-500">{errors.firstName}</p>
+              {errors.postalCode && (
+                <p className="text-xs text-red-500">{errors.postalCode}</p>
               )}
             </div>
 
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                Last Name <span className="text-red-500">*</span>
+                Country Code <span className="text-red-500">*</span>
               </label>
               <Input
-                value={formData.lastName}
-                onChange={(e) => handleChange("lastName", e.target.value)}
-                className={errors.lastName ? "border-red-500" : ""}
+                value={formData.countryCode}
+                onChange={(e) =>
+                  handleChange("countryCode", e.target.value.toUpperCase())
+                }
+                placeholder="AU"
+                className={errors.countryCode ? "border-red-500" : ""}
               />
-              {errors.lastName && (
-                <p className="text-xs text-red-500">{errors.lastName}</p>
+              {errors.countryCode && (
+                <p className="text-xs text-red-500">{errors.countryCode}</p>
               )}
             </div>
           </div>
 
-          {/* Street Address */}
+          {/* Phone */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              Street Address <span className="text-red-500">*</span>
+              Phone (AU)
             </label>
             <Input
-              value={formData.street}
-              onChange={(e) => handleChange("street", e.target.value)}
-              className={errors.street ? "border-red-500" : ""}
-            />
-            {errors.street && (
-              <p className="text-xs text-red-500">{errors.street}</p>
-            )}
-          </div>
-
-          {/* Apartment */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Apartment, Suite, etc. (Optional)
-            </label>
-            <Input
-              value={formData.apartment || ""}
-              onChange={(e) => handleChange("apartment", e.target.value)}
-            />
-          </div>
-
-          {/* City, State, Zip */}
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                City <span className="text-red-500">*</span>
-              </label>
-              <Input
-                value={formData.city}
-                onChange={(e) => handleChange("city", e.target.value)}
-                className={errors.city ? "border-red-500" : ""}
-              />
-              {errors.city && (
-                <p className="text-xs text-red-500">{errors.city}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                State <span className="text-red-500">*</span>
-              </label>
-              <Input
-                value={formData.state}
-                onChange={(e) => handleChange("state", e.target.value)}
-                className={errors.state ? "border-red-500" : ""}
-              />
-              {errors.state && (
-                <p className="text-xs text-red-500">{errors.state}</p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Zip Code <span className="text-red-500">*</span>
-              </label>
-              <Input
-                value={formData.zipCode}
-                onChange={(e) => handleChange("zipCode", e.target.value)}
-                className={errors.zipCode ? "border-red-500" : ""}
-              />
-              {errors.zipCode && (
-                <p className="text-xs text-red-500">{errors.zipCode}</p>
-              )}
-            </div>
-          </div>
-
-          {/* Country */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Country</label>
-            <Input
-              value={formData.country}
-              onChange={(e) => handleChange("country", e.target.value)}
+              value={formData.phoneAu ?? ""}
+              onChange={(e) => handleChange("phoneAu", e.target.value || null)}
+              placeholder="+61400111222"
             />
           </div>
 

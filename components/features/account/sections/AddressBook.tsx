@@ -2,10 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { mockAddresses } from "@/lib/mock/account";
 import { Address } from "@/lib/types/account";
-import { addressStorage } from "@/lib/utils/addressStorage";
-import { AddressFormDialog } from "../AddressFormDialog";
+import { UserService } from "@/lib/services/user";
+import { AddressFormDialog, type UpsertAddressInput } from "../AddressFormDialog";
 import { Edit2, MapPin, Plus, Trash2 } from "lucide-react";
 
 export function AddressBook() {
@@ -13,17 +12,19 @@ export function AddressBook() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | undefined>();
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // 初始化：从localStorage加载或使用mock数据
   useEffect(() => {
-    const stored = addressStorage.getAll();
-    if (stored.length > 0) {
-      setAddresses(stored);
-    } else {
-      // 首次加载，使用mock数据初始化
-      setAddresses(mockAddresses);
-      addressStorage.save(mockAddresses);
-    }
+    const load = async () => {
+      setIsLoading(true);
+      try {
+        const data = await UserService.getAddresses();
+        setAddresses(data ?? []);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    load();
   }, []);
 
   const handleAddNew = () => {
@@ -36,23 +37,24 @@ export function AddressBook() {
     setDialogOpen(true);
   };
 
-  const handleSave = (addressData: Omit<Address, "id"> | Address) => {
-    if ("id" in addressData) {
-      // 更新现有地址
-      addressStorage.update(addressData.id, addressData);
-    } else {
-      // 添加新地址
-      addressStorage.add(addressData);
-    }
-
-    // 刷新列表
-    setAddresses(addressStorage.getAll());
+  const refresh = async () => {
+    const data = await UserService.getAddresses();
+    setAddresses(data ?? []);
   };
 
-  const handleDelete = (id: string) => {
+  const handleSave = async (payload: UpsertAddressInput) => {
+    if (payload.id) {
+      await UserService.updateAddress(payload.id, payload);
+    } else {
+      await UserService.createAddress(payload);
+    }
+    await refresh();
+  };
+
+  const handleDelete = async (id: string) => {
     if (deleteConfirm === id) {
-      addressStorage.delete(id);
-      setAddresses(addressStorage.getAll());
+      await UserService.deleteAddress(id);
+      await refresh();
       setDeleteConfirm(null);
     } else {
       setDeleteConfirm(id);
@@ -73,7 +75,11 @@ export function AddressBook() {
         </Button>
       </div>
 
-      {addresses.length === 0 ? (
+      {isLoading ? (
+        <div className="rounded-lg border bg-white p-6 text-sm text-gray-600">
+          Loading addresses...
+        </div>
+      ) : addresses.length === 0 ? (
         <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center">
           <MapPin className="mx-auto mb-4 h-12 w-12 text-gray-400" />
           <h3 className="mb-2 text-lg font-medium text-gray-900">
@@ -83,7 +89,7 @@ export function AddressBook() {
             Add your first address to get started
           </p>
           <Button onClick={handleAddNew}>
-            <Plus className="mr-2 size-4" />
+            <Plus className="mr-1 size-4" />
             Add Address
           </Button>
         </div>
@@ -104,19 +110,20 @@ export function AddressBook() {
                   <MapPin className="size-5 text-gray-600" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">{address.label}</h3>
+                  <h3 className="font-medium text-gray-900">
+                    {address.type.toUpperCase()}
+                  </h3>
                   <p className="text-sm text-gray-500">
-                    {address.firstName} {address.lastName}
+                    {address.recipientName ?? "—"}
                   </p>
                 </div>
               </div>
               <div className="mb-6 space-y-1 text-sm text-gray-600">
-                <p>{address.street}</p>
-                {address.apartment && <p>{address.apartment}</p>}
+                <p>{address.addressText}</p>
                 <p>
-                  {address.city}, {address.state} {address.zipCode}
+                  {address.postalCode} · {address.countryCode}
                 </p>
-                <p>{address.country}</p>
+                {address.phoneAu && <p>{address.phoneAu}</p>}
               </div>
               <div className="flex items-center gap-3">
                 <Button
@@ -136,7 +143,7 @@ export function AddressBook() {
                       ? "border-red-500 bg-red-50 text-red-700"
                       : "text-red-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700"
                   }`}
-                  onClick={() => handleDelete(address.id)}
+                  onClick={() => void handleDelete(address.id)}
                 >
                   <Trash2 className="size-3" />
                   {deleteConfirm === address.id ? "Confirm?" : "Delete"}
