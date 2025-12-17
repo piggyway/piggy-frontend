@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 
 
 interface LoginPageProps {
@@ -20,12 +22,15 @@ export function LoginPage({ error }: LoginPageProps) {
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
 
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   useEffect(() => {
     if (!error || hasShownUrlErrorToast.current) return;
@@ -51,6 +56,19 @@ export function LoginPage({ error }: LoginPageProps) {
     });
   }, [error]);
 
+  useEffect(() => {
+    // 切换回邮箱步骤时，要求重新做人机验证
+    if (step === "email") {
+      setTurnstileToken(null);
+      // 尽量重置 widget（如果已加载）
+      try {
+        turnstileRef.current?.reset();
+      } catch {
+        // ignore
+      }
+    }
+  }, [step]);
+
   /** 发送邮箱验证码 */
   const handleSendCode = async (e: FormEvent) => {
     e.preventDefault();
@@ -68,28 +86,58 @@ export function LoginPage({ error }: LoginPageProps) {
       return;
     }
 
+    if (!turnstileSiteKey) {
+      setFormError("Turnstile site key is not configured.");
+      return;
+    }
+
+    if (!turnstileToken) {
+      setFormError("Please complete the human verification.");
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await fetch(`${apiBase}/api/v1/auth/email/code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email: trimmedEmail }),
+        body: JSON.stringify({ email: trimmedEmail, turnstileToken }),
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        // Turnstile token 可能已使用/过期，失败后强制重置，避免用户重复提交同一个 token
+        setTurnstileToken(null);
+        try {
+          turnstileRef.current?.reset();
+        } catch {
+          // ignore
+        }
         setFormError(
           data?.error ?? "Failed to send verification code. Please try again."
         );
         return;
       }
 
+      // 成功也重置 token（一次性使用）
+      setTurnstileToken(null);
+      try {
+        turnstileRef.current?.reset();
+      } catch {
+        // ignore
+      }
       setInfoMessage("Verification code sent. Please check your email.");
       setStep("code");
     } catch (err) {
       console.error("Failed to send email code", err);
+      setTurnstileToken(null);
+      try {
+        turnstileRef.current?.reset();
+      } catch {
+        // ignore
+      }
       setFormError("Network error. Please try again.");
     } finally {
       setLoading(false);
@@ -251,9 +299,29 @@ export function LoginPage({ error }: LoginPageProps) {
                   />
                 </div>
 
+                {turnstileSiteKey ? (
+                  <div className="flex justify-center">
+                    <Turnstile
+                      ref={turnstileRef}
+                      siteKey={turnstileSiteKey}
+                      onSuccess={(token) => setTurnstileToken(token)}
+                      onExpire={() => setTurnstileToken(null)}
+                      onError={() => setTurnstileToken(null)}
+                      options={{
+                        action: "email_code",
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                    Turnstile is not configured. Please set
+                    NEXT_PUBLIC_TURNSTILE_SITE_KEY.
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || !turnstileSiteKey || !turnstileToken}
                   className="inline-flex w-full items-center justify-center rounded-full bg-primary-navy px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-navy-light disabled:opacity-60"
                 >
                   {loading ? (
