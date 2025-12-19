@@ -87,7 +87,12 @@ export function FloatingCartButton() {
 
   useEffect(() => {
     if (!isOpen) return;
-    ensureLoaded().catch(() => null);
+    ensureLoaded().catch((err) => {
+      // If auth is required, close the sheet and let CartProvider show the dialog.
+      if (String((err as any)?.message || err).includes("AUTH_REQUIRED")) {
+        setIsOpen(false);
+      }
+    });
   }, [isOpen, ensureLoaded]);
 
   const cartItems = cart?.items ?? [];

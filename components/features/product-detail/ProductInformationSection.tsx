@@ -78,12 +78,12 @@ export function ProductInformationSection() {
     <AnimatedSection className="w-full py-8 sm:py-12 md:py-16 lg:py-20">
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Rounded Navy Container */}
-        <div className="bg-primary-navy rounded-[20px] p-6 sm:rounded-[28px] sm:p-8 md:p-10 lg:p-12">
+        <div className="bg-primary-navy flex h-[560px] flex-col overflow-hidden rounded-[20px] p-6 sm:h-[609px] sm:rounded-[28px] sm:p-8 md:p-10 lg:p-12">
           <h2 className="text-primary-gold mb-6 text-[24px] font-semibold sm:mb-8 sm:text-[28px] lg:text-[32px]">
             Product Information
           </h2>
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+          <div className="grid flex-1 grid-cols-1 gap-8 overflow-y-auto pr-1 lg:grid-cols-2 lg:gap-12">
             {/* Left: Collapsible Sections */}
             <div className="space-y-2">
               <CollapsibleSection title="Product Features" defaultOpen>

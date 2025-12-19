@@ -69,10 +69,6 @@ export async function POST(request: NextRequest) {
       user_id: body.userId,
     };
 
-    // #region agent log (debug-session)
-    fetch('http://127.0.0.1:7244/ingest/4d167c0f-d521-47a0-b9c1-cf8baf1e5421',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'B',location:'piggy-frontend/app/api/checkout/route.ts:POST',message:'Proxy -> backend payload (sanitized)',data:{hasEmail:!!backendPayload.email,emailLen:(backendPayload.email||'').length,fulfillmentType:backendPayload.fulfillment_type,pickupDateProvided:!!backendPayload.pickup_date,pickupTimeProvided:!!backendPayload.pickup_time,cartItemCount:Array.isArray(backendPayload.cart_items)?backendPayload.cart_items.length:0,currency:backendPayload.currency,hasPromo:!!backendPayload.promo_code,hasUserId:!!backendPayload.user_id},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion agent log (debug-session)
-
     const origin = request.headers.get("origin") || "http://localhost:3000";
     const token = request.headers.get("authorization");
 
