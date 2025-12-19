@@ -152,10 +152,6 @@ export default function CheckoutPage() {
     setPromoError(null);
 
     try {
-      // #region agent log (debug-session)
-      fetch('http://127.0.0.1:7244/ingest/4d167c0f-d521-47a0-b9c1-cf8baf1e5421',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'A',location:'piggy-frontend/app/(shop)/checkout/page.tsx:handlePayment',message:'Checkout click: payload snapshot (sanitized)',data:{fulfillmentType,pickupDate:fulfillmentType==='pickup'?pickupDate:null,pickupTime:fulfillmentType==='pickup'?pickupTime:null,cartItemCount:cart.items.length,cartCurrency:cart.currency,hasPromo:!!cart.appliedCouponCode,emailLen:contactForm.email?.length||0,qtySum:cart.items.reduce((s,i)=>s+(i.quantity||0),0),hasSessionUserId:!!(session?.user as any)?.id},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion agent log (debug-session)
-
       const token =
         typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
 

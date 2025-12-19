@@ -184,7 +184,7 @@ export interface ProductVariant {
   widthUnit: string | null;
   heightUnit: string | null;
   optionValues: VariantOptionValue[];
-  imageUrl: string | null;
+  imageUrls: string[];
 }
 
 /**
@@ -236,7 +236,7 @@ export interface ProductDetailFromAPI {
       value_id: number;
       value: string | null;
     }>;
-    image_url: string | null;
+    image_urls: string[];
   }>;
 }
 
