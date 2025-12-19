@@ -225,7 +225,7 @@ export class ProductService {
       value_id: number;
       value: string | null;
     }>;
-    image_url: string | null;
+    image_urls: string[];
   }): ProductVariant {
     return {
       id: variant.id,
@@ -250,7 +250,9 @@ export class ProductService {
         valueId: ov.value_id,
         value: ov.value,
       })),
-      imageUrl: normalizeImageUrl(variant.image_url),
+      imageUrls: variant.image_urls
+        .map((url) => normalizeImageUrl(url))
+        .filter((url): url is string => url !== null),
     };
   }
 
