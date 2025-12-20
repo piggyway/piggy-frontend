@@ -70,6 +70,25 @@ export function Header() {
     }
   };
 
+  // Handle input change and sync with URL if cleared
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    // If input is cleared on shop-all page, remove q param from URL
+    // This prevents the search term from reappearing when navigating (e.g. clicking category)
+    if (value.trim() === "" && pathname === "/shop-all") {
+      // Use window.location.search to get current params without useSearchParams hook
+      const currentParams = new URLSearchParams(window.location.search);
+      if (currentParams.has("q")) {
+        currentParams.delete("q");
+        const newSearch = currentParams.toString();
+        const newUrl = newSearch ? `${pathname}?${newSearch}` : pathname;
+        router.replace(newUrl, { scroll: false });
+      }
+    }
+  };
+
   return (
     <header className="w-full bg-[#FFFBF5]">
       {/* Suspense wrapper for the search query updater */}
@@ -174,7 +193,7 @@ export function Header() {
                   type="search"
                   placeholder="Search"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleInputChange}
                   onKeyDown={handleSearchKeyDown}
                   className="h-9 w-full rounded-[20px] border-slate-300 bg-white py-2 pr-10 pl-3 text-sm placeholder:text-slate-400"
                 />
@@ -242,7 +261,7 @@ export function Header() {
                   type="search"
                   placeholder="Search"
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={handleInputChange}
                   onKeyDown={handleSearchKeyDown}
                   className="h-10 w-full rounded-[20px] border-slate-300 bg-white py-2 pr-10 pl-3 text-sm placeholder:text-slate-400"
                 />
