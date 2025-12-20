@@ -136,14 +136,14 @@ export function Footer() {
       <div className="bg-primary-gold px-4 py-3 sm:px-8 sm:py-3.5 lg:px-[140px]">
         <div className="text-primary-navy flex flex-col items-center gap-2 text-xs leading-5 font-normal sm:flex-row sm:justify-between sm:gap-4 sm:text-sm lg:gap-10">
           <p>Piggyway Crossing© 2025</p>
-          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-10">
+          {/* <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-10">
             <Link href="/terms" className="transition-colors hover:underline">
               Terms & conditions
             </Link>
             <Link href="/privacy" className="transition-colors hover:underline">
               Privacy policy
             </Link>
-          </div>
+          </div> */}
         </div>
       </div>
     </footer>

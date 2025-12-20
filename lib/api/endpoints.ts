@@ -19,6 +19,8 @@ export const API_ENDPOINTS = {
 
   // Promo Codes
   PROMO_VALIDATE: "/api/promo",
+  PROMO_APPLY: "/api/promo/apply",
+  PROMO_REMOVE: "/api/promo/remove",
 
   // Orders
   ORDERS: "/api/orders",

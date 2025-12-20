@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { UserService } from "@/lib/services/user";
 import { fetchWithAuth } from "@/lib/api/client";
 
@@ -31,6 +31,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const isLoadingRef = useRef(false);
   const hasLoadedRef = useRef(false);
   const hasEnsuredCartRef = useRef(false);
+
+  // Handle session errors (e.g. refresh failed)
+  useEffect(() => {
+    if ((session as any)?.error === "RefreshAccessTokenError") {
+      signOut({ callbackUrl: "/login" });
+    }
+  }, [session]);
 
   // Always sync accessToken to localStorage as soon as it's available
   useEffect(() => {

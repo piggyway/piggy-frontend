@@ -69,7 +69,10 @@ function NavigationMenuContentItem({
   if (href) {
     return (
       <NavigationMenuLink asChild>
-        <Link href={href} className="p-0! transition-opacity hover:opacity-80">
+        <Link
+          href={href}
+          className="px-3 py-2.5 transition-opacity hover:opacity-80"
+        >
           {content}
         </Link>
       </NavigationMenuLink>
