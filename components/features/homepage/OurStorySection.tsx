@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 
@@ -65,8 +66,11 @@ export function OurStorySection() {
               <div className="bg-secondary-mint absolute top-0 left-[68px] h-[150px] w-[133px] rounded-[33px]" />
 
               {/* Navy card with button - right side */}
-              <div className="bg-primary-navy absolute top-0 left-[201px] flex h-[300px] w-[319px] items-end justify-end rounded-[32px] p-8">
-                <button
+              <Link
+                href="/about"
+                className="bg-primary-navy absolute top-0 left-[201px] flex h-[300px] w-[319px] items-end justify-end rounded-[32px] p-8 transition-transform hover:scale-[1.02]"
+              >
+                <div
                   className="border-neutral-stroke flex size-[40px] shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Learn more"
                 >
@@ -74,8 +78,8 @@ export function OurStorySection() {
                     className="text-primary-navy h-[11px] w-[11px]"
                     strokeWidth={2}
                   />
-                </button>
-              </div>
+                </div>
+              </Link>
             </div>
           </div>
 
@@ -93,14 +97,14 @@ export function OurStorySection() {
             </p>
 
             {/* Simplified card for mobile */}
-            <div className="bg-primary-navy flex min-h-[200px] items-end justify-end rounded-[28px] p-6">
-              <button
-                className="border-neutral-stroke flex items-center justify-center rounded-full border bg-white p-3"
-                aria-label="Learn more"
-              >
+            <Link
+              href="/about"
+              className="bg-primary-navy flex min-h-[200px] items-end justify-end rounded-[28px] p-6 active:scale-[0.98] transition-transform"
+            >
+              <div className="border-neutral-stroke flex items-center justify-center rounded-full border bg-white p-3">
                 <ArrowUpRight className="text-primary-navy h-4 w-4" />
-              </button>
-            </div>
+              </div>
+            </Link>
           </div>
         </div>
       </div>
