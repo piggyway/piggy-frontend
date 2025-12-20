@@ -4,7 +4,7 @@
  */
 
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
-import { apiClient } from "@/lib/api/client";
+import { fetchWithAuth } from "@/lib/api/client";
 import { normalizeImageUrl } from "@/lib/utils/images";
 import type {
   AddCartItemPayload,
@@ -26,19 +26,19 @@ export class CartService {
    */
   static async getCart(): Promise<Cart | null> {
     try {
-      const headers = this.getAuthHeaders();
       console.log("🟡 [CartService] Fetching cart from:", API_ENDPOINTS.CART);
       
-      const response = await apiClient.get<CartResponseFromAPI>(
-        API_ENDPOINTS.CART,
-        { headers }
-      );
+      const response = await fetchWithAuth(API_ENDPOINTS.CART, {
+        method: "GET",
+      });
 
-      if (!response.success || !response.data) {
-        throw new Error(response.error || "Invalid cart response");
+      const data: CartResponseFromAPI = await response.json();
+
+      if (!data.success || !data.data) {
+        throw new Error(data.error || "Invalid cart response");
       }
 
-      const transformedCart = this.transformCart(response.data);
+      const transformedCart = this.transformCart(data.data);
       
       console.log("🟢 [CartService] Cart fetched successfully:", {
         cartId: transformedCart.id,
@@ -64,22 +64,25 @@ export class CartService {
    */
   static async addItem(payload: AddCartItemPayload): Promise<Cart | null> {
     try {
-      const headers = this.getAuthHeaders();
-      const response = await apiClient.post<CartResponseFromAPI>(
-        API_ENDPOINTS.CART_ITEMS,
-        {
+      const response = await fetchWithAuth(API_ENDPOINTS.CART_ITEMS, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           variant_rid: payload.variantRid,
           quantity: payload.quantity ?? 1,
           notes: payload.notes,
-        },
-        { headers }
-      );
+        }),
+      });
 
-      if (!response.success || !response.data) {
-        throw new Error(response.error || "Failed to add cart item");
+      const data: CartResponseFromAPI = await response.json();
+
+      if (!data.success || !data.data) {
+        throw new Error(data.error || "Failed to add cart item");
       }
 
-      return this.transformCart(response.data);
+      return this.transformCart(data.data);
     } catch (error) {
       console.error("[CartService] Failed to add cart item:", error);
       return null;
@@ -94,21 +97,24 @@ export class CartService {
     payload: UpdateCartItemPayload
   ): Promise<Cart | null> {
     try {
-      const headers = this.getAuthHeaders();
-      const response = await apiClient.patch<CartResponseFromAPI>(
-        API_ENDPOINTS.CART_ITEM_BY_ID(itemId),
-        {
+      const response = await fetchWithAuth(API_ENDPOINTS.CART_ITEM_BY_ID(itemId), {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           quantity: payload.quantity,
           notes: payload.notes,
-        },
-        { headers }
-      );
+        }),
+      });
 
-      if (!response.success || !response.data) {
-        throw new Error(response.error || "Failed to update cart item");
+      const data: CartResponseFromAPI = await response.json();
+
+      if (!data.success || !data.data) {
+        throw new Error(data.error || "Failed to update cart item");
       }
 
-      return this.transformCart(response.data);
+      return this.transformCart(data.data);
     } catch (error) {
       console.error("[CartService] Failed to update cart item:", error);
       return null;
@@ -120,54 +126,21 @@ export class CartService {
    */
   static async removeItem(itemId: string): Promise<Cart | null> {
     try {
-      const headers = this.getAuthHeaders();
-      const response = await apiClient.delete<CartResponseFromAPI>(
-        API_ENDPOINTS.CART_ITEM_BY_ID(itemId),
-        { headers }
-      );
+      const response = await fetchWithAuth(API_ENDPOINTS.CART_ITEM_BY_ID(itemId), {
+        method: "DELETE",
+      });
 
-      if (!response.success || !response.data) {
-        throw new Error(response.error || "Failed to remove cart item");
+      const data: CartResponseFromAPI = await response.json();
+
+      if (!data.success || !data.data) {
+        throw new Error(data.error || "Failed to remove cart item");
       }
 
-      return this.transformCart(response.data);
+      return this.transformCart(data.data);
     } catch (error) {
       console.error("[CartService] Failed to remove cart item:", error);
       return null;
     }
-  }
-
-  /**
-   * Resolve auth headers from browser storage or env for backend calls
-   */
-  private static getAuthHeaders(): HeadersInit {
-    // Client-side: try to pull a token from storage
-    if (typeof window !== "undefined") {
-      const token =
-        localStorage.getItem("access_token") ||
-        localStorage.getItem("auth_token") ||
-        localStorage.getItem("token");
-
-      if (token) {
-        const authHeader = token.startsWith("Bearer") ? token : `Bearer ${token}`;
-        console.log("🔑 [CartService] Found auth token, adding to headers");
-        return {
-          Authorization: authHeader,
-        };
-      } else {
-        console.warn("⚠️ [CartService] No auth token found in localStorage");
-      }
-    }
-
-    // Server-side fallback (useful for local testing)
-    if (process.env.NEXT_PUBLIC_API_AUTH_TOKEN) {
-      return {
-        Authorization: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
-      };
-    }
-
-    console.warn("⚠️ [CartService] No auth headers available");
-    return {};
   }
 
   /**

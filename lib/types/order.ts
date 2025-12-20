@@ -66,3 +66,4 @@ export interface OrderDetailResponse {
   success: true;
   data: OrderWithItems;
 }
+
