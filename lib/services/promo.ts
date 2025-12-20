@@ -4,7 +4,7 @@
  */
 
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
-import { apiClient } from "@/lib/api/client";
+import { apiClient, fetchWithAuth } from "@/lib/api/client";
 import type {
   ValidatePromoResponse,
   ApplyPromoResponse,
@@ -44,14 +44,10 @@ export class PromoService {
    */
   static async applyPromoCode(code: string): Promise<ApplyPromoResponse> {
     try {
-      const headers = this.getAuthHeaders();
-      const backendUrl = this.getBackendUrl();
-
-      const response = await fetch(`${backendUrl}/api/v1/promo/apply`, {
+      const response = await fetchWithAuth(API_ENDPOINTS.PROMO_APPLY, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...headers,
         },
         body: JSON.stringify({ code: code.toUpperCase() }),
       });
@@ -73,14 +69,10 @@ export class PromoService {
    */
   static async removePromoCode(): Promise<RemovePromoResponse> {
     try {
-      const headers = this.getAuthHeaders();
-      const backendUrl = this.getBackendUrl();
-
-      const response = await fetch(`${backendUrl}/api/v1/promo/remove`, {
+      const response = await fetchWithAuth(API_ENDPOINTS.PROMO_REMOVE, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          ...headers,
         },
       });
 
@@ -95,46 +87,4 @@ export class PromoService {
       };
     }
   }
-
-  /**
-   * Get backend URL from environment
-   */
-  private static getBackendUrl(): string {
-    if (typeof window !== "undefined") {
-      return (
-        process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3001"
-      );
-    }
-    return process.env.API_BASE_URL || "http://localhost:3001";
-  }
-
-  /**
-   * Resolve auth headers from browser storage or env for backend calls
-   */
-  private static getAuthHeaders(): HeadersInit {
-    // Client-side: try to pull a token from storage
-    if (typeof window !== "undefined") {
-      const token =
-        localStorage.getItem("access_token") ||
-        localStorage.getItem("auth_token") ||
-        localStorage.getItem("token");
-
-      if (token) {
-        return {
-          Authorization: token.startsWith("Bearer") ? token : `Bearer ${token}`,
-        };
-      }
-    }
-
-    // Server-side fallback (useful for local testing)
-    if (process.env.NEXT_PUBLIC_API_AUTH_TOKEN) {
-      return {
-        Authorization: process.env.NEXT_PUBLIC_API_AUTH_TOKEN,
-      };
-    }
-
-    return {};
-  }
 }
-
-
