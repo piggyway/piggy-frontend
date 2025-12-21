@@ -12,7 +12,10 @@ export class OrderService {
   static async getOrders(
     page = 1,
     limit = 10
-  ): Promise<{ orders: Order[]; meta: { total: number; page: number; limit: number } }> {
+  ): Promise<{
+    orders: OrderWithItems[];
+    meta: { total: number; page: number; limit: number };
+  }> {
     try {
       const endpoint = `${API_ENDPOINTS.ORDERS}?page=${page}&limit=${limit}`;
 

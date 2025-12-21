@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
 import { useSession, signOut } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { UserService } from "@/lib/services/user";
 import { fetchWithAuth } from "@/lib/api/client";
 
@@ -26,6 +27,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
   const [user, setUser] = useState<UserProfile | null>(null);
   const [isFirstLogin, setIsFirstLogin] = useState(false);
   const isLoadingRef = useRef(false);
@@ -35,9 +37,20 @@ export function UserProvider({ children }: { children: ReactNode }) {
   // Handle session errors (e.g. refresh failed)
   useEffect(() => {
     if ((session as any)?.error === "RefreshAccessTokenError") {
-      signOut({ callbackUrl: "/login" });
+      // Only redirect to login if on protected pages
+      const protectedPaths = ["/account", "/checkout", "/cart"];
+      const isProtected = protectedPaths.some((path) =>
+        pathname?.startsWith(path)
+      );
+
+      if (isProtected) {
+        signOut({ callbackUrl: "/login" });
+      } else {
+        // On public pages, just sign out without redirecting
+        signOut({ redirect: false });
+      }
     }
-  }, [session]);
+  }, [session, pathname]);
 
   // Always sync accessToken to localStorage as soon as it's available
   useEffect(() => {
