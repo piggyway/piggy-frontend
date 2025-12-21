@@ -80,7 +80,7 @@ export default function CheckoutButton({
       if (!response.ok) {
         const errorBody = await response.json().catch(() => null);
         let message = "Unable to start checkout right now.";
-        
+
         if (errorBody) {
           // Handle different error response structures
           if (typeof errorBody?.error === "string") {
@@ -93,7 +93,7 @@ export default function CheckoutButton({
             message = errorBody;
           }
         }
-        
+
         onError?.(message);
         return;
       }

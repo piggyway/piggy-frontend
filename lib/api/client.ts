@@ -4,6 +4,7 @@
  */
 
 import { refreshTokens } from "@/lib/services/auth";
+import { signOut } from "next-auth/react";
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
@@ -80,7 +81,10 @@ export async function fetchWithAuth(
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("access_token");
     if (token && !headers.has("Authorization")) {
-      headers.set("Authorization", token.startsWith("Bearer") ? token : `Bearer ${token}`);
+      headers.set(
+        "Authorization",
+        token.startsWith("Bearer") ? token : `Bearer ${token}`
+      );
     }
   }
 
@@ -99,6 +103,12 @@ export async function fetchWithAuth(
   // Attempt refresh once
   const refreshed = await refreshTokens();
   if (!refreshed?.accessToken || typeof window === "undefined") {
+    // Refresh failed or we are on server -> if client, force logout
+    if (typeof window !== "undefined") {
+      // Use window.location as fallback if signOut fails or to ensure hard redirect
+      // But signOut is better for clearing cookies
+      signOut({ callbackUrl: "/login" });
+    }
     return res;
   }
 
@@ -109,6 +119,12 @@ export async function fetchWithAuth(
   headers.set("Authorization", bearer);
 
   res = await doFetch();
+
+  // If still 401 after refresh, token is invalid -> force logout
+  if (res.status === 401 && typeof window !== "undefined") {
+    signOut({ callbackUrl: "/login" });
+  }
+
   return res;
 }
 

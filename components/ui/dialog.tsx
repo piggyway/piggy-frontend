@@ -59,16 +59,22 @@ export function DialogContent({ children, className }: DialogContentProps) {
 
 interface DialogHeaderProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-export function DialogHeader({ children }: DialogHeaderProps) {
-  return <div className="mb-4">{children}</div>;
+export function DialogHeader({ children, className }: DialogHeaderProps) {
+  return <div className={cn("mb-4", className)}>{children}</div>;
 }
 
 interface DialogTitleProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-export function DialogTitle({ children }: DialogTitleProps) {
-  return <h2 className="text-xl font-semibold text-gray-900">{children}</h2>;
+export function DialogTitle({ children, className }: DialogTitleProps) {
+  return (
+    <h2 className={cn("text-xl font-semibold text-gray-900", className)}>
+      {children}
+    </h2>
+  );
 }

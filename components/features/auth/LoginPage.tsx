@@ -7,7 +7,8 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 
 interface LoginPageProps {
   error?: string;
@@ -20,12 +21,21 @@ export function LoginPage({ error }: LoginPageProps) {
   const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
 
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+  // 确保只在客户端渲染 Turnstile，避免 hydration 不匹配
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!error || hasShownUrlErrorToast.current) return;
@@ -51,6 +61,19 @@ export function LoginPage({ error }: LoginPageProps) {
     });
   }, [error]);
 
+  useEffect(() => {
+    // 切换回邮箱步骤时，要求重新做人机验证
+    if (step === "email") {
+      setTurnstileToken(null);
+      // 尽量重置 widget（如果已加载）
+      try {
+        turnstileRef.current?.reset();
+      } catch {
+        // ignore
+      }
+    }
+  }, [step]);
+
   /** 发送邮箱验证码 */
   const handleSendCode = async (e: FormEvent) => {
     e.preventDefault();
@@ -68,28 +91,58 @@ export function LoginPage({ error }: LoginPageProps) {
       return;
     }
 
+    if (!turnstileSiteKey) {
+      setFormError("Turnstile site key is not configured.");
+      return;
+    }
+
+    if (!turnstileToken) {
+      setFormError("Please complete the human verification.");
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await fetch(`${apiBase}/api/v1/auth/email/code`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ email: trimmedEmail }),
+        body: JSON.stringify({ email: trimmedEmail, turnstileToken }),
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        // Turnstile token 可能已使用/过期，失败后强制重置，避免用户重复提交同一个 token
+        setTurnstileToken(null);
+        try {
+          turnstileRef.current?.reset();
+        } catch {
+          // ignore
+        }
         setFormError(
           data?.error ?? "Failed to send verification code. Please try again."
         );
         return;
       }
 
+      // 成功也重置 token（一次性使用）
+      setTurnstileToken(null);
+      try {
+        turnstileRef.current?.reset();
+      } catch {
+        // ignore
+      }
       setInfoMessage("Verification code sent. Please check your email.");
       setStep("code");
     } catch (err) {
       console.error("Failed to send email code", err);
+      setTurnstileToken(null);
+      try {
+        turnstileRef.current?.reset();
+      } catch {
+        // ignore
+      }
       setFormError("Network error. Please try again.");
     } finally {
       setLoading(false);
@@ -127,9 +180,7 @@ export function LoginPage({ error }: LoginPageProps) {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setFormError(
-          data?.error ?? "Invalid code or email. Please try again."
-        );
+        setFormError(data?.error ?? "Invalid code or email. Please try again.");
         return;
       }
 
@@ -147,7 +198,7 @@ export function LoginPage({ error }: LoginPageProps) {
       }
 
       setInfoMessage("Login successful. Redirecting...");
-      
+
       // Store token in localStorage for API calls
       if (typeof window !== "undefined" && data.accessToken) {
         const token = data.accessToken.startsWith("Bearer")
@@ -173,7 +224,7 @@ export function LoginPage({ error }: LoginPageProps) {
 
   return (
     <div className="flex flex-col">
-      <div className="relative container flex min-height-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 min-h-screen">
+      <div className="min-height-screen relative container flex min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
         {/* 左侧背景图 */}
         <div className="relative hidden h-full flex-col bg-neutral-100 p-10 text-white lg:flex dark:border-r">
           <div className="bg-primary-navy absolute inset-0">
@@ -247,14 +298,38 @@ export function LoginPage({ error }: LoginPageProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
-                    className="flex h-10 w-full rounded-full border border-slate-300 bg-background px-3 py-2 text-sm text-slate-900 outline-none ring-offset-background placeholder:text-slate-400 focus:border-primary-navy focus:ring-2 focus:ring-primary-navy/40"
+                    className="bg-background ring-offset-background focus:border-primary-navy focus:ring-primary-navy/40 flex h-10 w-full rounded-full border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-2"
                   />
                 </div>
 
+                {/* 只在客户端渲染 Turnstile，避免 hydration 不匹配 */}
+                {mounted &&
+                  (turnstileSiteKey ? (
+                    <div className="flex justify-center">
+                      <Turnstile
+                        ref={turnstileRef}
+                        siteKey={turnstileSiteKey}
+                        onSuccess={(token) => setTurnstileToken(token)}
+                        onExpire={() => setTurnstileToken(null)}
+                        onError={() => setTurnstileToken(null)}
+                        options={{
+                          action: "email_code",
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                      Turnstile is not configured. Please set
+                      NEXT_PUBLIC_TURNSTILE_SITE_KEY.
+                    </div>
+                  ))}
+
                 <button
                   type="submit"
-                  disabled={loading}
-                  className="inline-flex w-full items-center justify-center rounded-full bg-primary-navy px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-navy-light disabled:opacity-60"
+                  disabled={
+                    loading || !mounted || !turnstileSiteKey || !turnstileToken
+                  }
+                  className="bg-primary-navy hover:bg-primary-navy-light inline-flex w-full items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-60"
                 >
                   {loading ? (
                     <>
@@ -292,14 +367,14 @@ export function LoginPage({ error }: LoginPageProps) {
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     placeholder="Enter the 6-digit code"
-                    className="flex h-10 w-full rounded-full border border-slate-300 bg-background px-3 py-2 text-sm text-slate-900 outline-none ring-offset-background placeholder:text-slate-400 focus:border-primary-navy focus:ring-2 focus:ring-primary-navy/40"
+                    className="bg-background ring-offset-background focus:border-primary-navy focus:ring-primary-navy/40 flex h-10 w-full rounded-full border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-2"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex w-full items-center justify-center rounded-full bg-primary-navy px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-navy-light disabled:opacity-60"
+                  className="bg-primary-navy hover:bg-primary-navy-light inline-flex w-full items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-60"
                 >
                   {loading ? (
                     <>

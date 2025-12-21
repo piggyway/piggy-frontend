@@ -43,10 +43,11 @@ export async function PATCH(
   } catch (error) {
     console.error("[API Route Error] Failed to set default address:", error);
     return NextResponse.json(
-      { error: "set_default_address_failed", message: "Failed to set default address" },
+      {
+        error: "set_default_address_failed",
+        message: "Failed to set default address",
+      },
       { status: 500 }
     );
   }
 }
-
-

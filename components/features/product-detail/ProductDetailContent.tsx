@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, HelpCircle, Minus, Plus } from "lucide-react";
@@ -12,6 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { ProductDetail } from "@/lib/types/product";
 import { useCart } from "@/components/features/cart/CartProvider";
@@ -39,12 +45,22 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [activeGuide, setActiveGuide] = useState<"size" | "color" | null>(null);
+
+  // Track previous variant to only auto-switch images when the variant actually changes
+  const lastSelectedVariantId = useRef(
+    // Initialize with current variant ID to avoid initial effect run if desired,
+    // or undefined to allow initial sync.
+    // Given the logic, we want to allow initial sync if needed, but not fight user clicks.
+    // Let's initialize with undefined so first effect run sets it up correctly if needed.
+    undefined as number | undefined
+  );
 
   // Find the variant that matches selected options
   const selectedVariant = useMemo(() => {
     if (product.variants.length === 0) return null;
 
-    return product.variants.find((variant) => {
+    const found = product.variants.find((variant) => {
       // Check if all selected options match this variant
       return Object.entries(selectedOptions).every(([optionId, valueId]) =>
         variant.optionValues.some(
@@ -52,6 +68,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         )
       );
     });
+    return found;
   }, [product.variants, selectedOptions]);
 
   // Get current price based on selected variant
@@ -81,6 +98,55 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     if (!selectedVariant) return false;
     return selectedVariant.isAvailable && selectedVariant.stockQuantity > 0;
   }, [selectedVariant]);
+
+  // Combine product images with all variant images for gallery display
+  const allImages = useMemo(() => {
+    const variantImages = product.variants.flatMap((v) => v.imageUrls);
+    const combined = [...product.images, ...variantImages];
+    // Remove duplicates while preserving order
+    const result = [...new Set(combined)];
+    return result;
+  }, [product.images, product.variants]);
+
+  // Map each image URL to the variant it belongs to (if any)
+  const imageToVariant = useMemo(() => {
+    const map = new Map<string, (typeof product.variants)[number]>();
+    for (const v of product.variants) {
+      for (const url of v.imageUrls) {
+        // If duplicates exist across variants, keep the first encountered deterministically.
+        if (!map.has(url)) map.set(url, v);
+      }
+    }
+    return map;
+  }, [product.variants]);
+
+  const selectVariantOptions = useCallback(
+    (variant: (typeof product.variants)[number]) => {
+      setSelectedOptions((prev) => {
+        const next: Record<number, number> = { ...prev };
+        for (const ov of variant.optionValues) {
+          next[ov.optionId] = ov.valueId;
+        }
+        return next;
+      });
+    },
+    []
+  );
+
+  const handleImageSelect = useCallback(
+    (index: number) => {
+      const image = allImages[index];
+      if (!image) return;
+
+      setSelectedImageIndex(index);
+
+      const variant = imageToVariant.get(image);
+      if (variant) {
+        selectVariantOptions(variant);
+      }
+    },
+    [allImages, imageToVariant, selectVariantOptions]
+  );
 
   // Check if a specific option value is available (has stock for at least one variant)
   const isOptionValueAvailable = useCallback(
@@ -113,34 +179,49 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     [product.variants, selectedOptions]
   );
 
+  // Update image when variant changes
+  useEffect(() => {
+    // Only proceed if variant has effectively changed (or on first run)
+    if (selectedVariant?.id === lastSelectedVariantId.current) {
+      return;
+    }
+    lastSelectedVariantId.current = selectedVariant?.id;
+
+    // If the current selected image already belongs to the selected variant, keep it.
+    const currentImage = allImages[selectedImageIndex];
+    if (
+      currentImage &&
+      selectedVariant?.id &&
+      imageToVariant.get(currentImage)?.id === selectedVariant.id
+    ) {
+      return;
+    }
+
+    const firstVariantImage = selectedVariant?.imageUrls?.[0];
+    const index = firstVariantImage ? allImages.indexOf(firstVariantImage) : -1;
+    const fallbackImage = product.images?.[0] || null;
+    const fallbackIndex = fallbackImage ? allImages.indexOf(fallbackImage) : 0;
+    if (firstVariantImage && index !== -1) {
+      setSelectedImageIndex(index);
+      return;
+    }
+
+    // If the selected variant has no images, reset to the product's primary image (or 0).
+    setSelectedImageIndex(fallbackIndex >= 0 ? fallbackIndex : 0);
+  }, [
+    selectedVariant,
+    allImages,
+    imageToVariant,
+    selectedImageIndex,
+    product.images,
+  ]);
+
   // Handle option selection
   const handleOptionSelect = (optionId: number, valueId: number) => {
     setSelectedOptions((prev) => ({
       ...prev,
       [optionId]: valueId,
     }));
-
-    // If this is a color option, switch to variant image if available
-    const option = product.options.find((o) => o.id === optionId);
-    if (
-      option?.slug === "color" ||
-      option?.name?.toLowerCase().includes("color") ||
-      option?.name?.toLowerCase().includes("colour")
-    ) {
-      // Find variant with this color and get its image
-      const variantWithColor = product.variants.find((v) =>
-        v.optionValues.some(
-          (ov) => ov.optionId === optionId && ov.valueId === valueId
-        )
-      );
-      if (variantWithColor?.imageUrl) {
-        // Find the image in the product images array
-        const imageIndex = product.images.indexOf(variantWithColor.imageUrl);
-        if (imageIndex !== -1) {
-          setSelectedImageIndex(imageIndex);
-        }
-      }
-    }
   };
 
   const incrementQuantity = () => {
@@ -177,10 +258,10 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
       >
         {/* Thumbnail List - Hidden on mobile, shown on desktop */}
         <div className="hidden w-24 shrink-0 flex-col gap-4 sm:flex">
-          {product.images.map((image, index) => (
+          {allImages.map((image, index) => (
             <button
               key={index}
-              onClick={() => setSelectedImageIndex(index)}
+              onClick={() => handleImageSelect(index)}
               className={cn(
                 "relative aspect-square overflow-hidden rounded-[20px] border-2 transition-all",
                 selectedImageIndex === index
@@ -200,12 +281,12 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         </div>
 
         {/* Mobile Thumbnail Strip - Horizontal scroll */}
-        {product.images.length > 1 && (
+        {allImages.length > 1 && (
           <div className="-mx-4 flex gap-3 overflow-x-auto px-4 pb-2 sm:hidden">
-            {product.images.map((image, index) => (
+            {allImages.map((image, index) => (
               <button
                 key={index}
-                onClick={() => setSelectedImageIndex(index)}
+                onClick={() => handleImageSelect(index)}
                 className={cn(
                   "relative h-20 w-20 shrink-0 overflow-hidden rounded-[12px] border-2 transition-all",
                   selectedImageIndex === index
@@ -228,9 +309,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         {/* Main Image */}
         <div className="bg-neutral-stroke relative aspect-[4/3] w-full overflow-hidden rounded-[20px] sm:rounded-[28px]">
           <Image
-            src={
-              product.images[selectedImageIndex] || "/default-product-image.png"
-            }
+            src={allImages[selectedImageIndex] || "/default-product-image.png"}
             alt={product.title}
             fill
             className="object-contain"
@@ -297,96 +376,118 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         </div>
 
         {/* Dynamic Options */}
-        {product.options.map((option) => (
-          <div key={option.id}>
-            <div className="mb-4 flex items-center gap-3">
-              <h2 className="text-primary-navy-light text-lg font-semibold">
-                {option.name}
-              </h2>
-              <button className="text-primary-navy hover:text-primary-navy-light flex items-center gap-1 text-sm transition-colors">
-                <HelpCircle className="h-4 w-4" />
-                Size guide
-              </button>
-            </div>
-
-            {/* Check if this is a color option */}
-            {option.slug === "color" ||
+        {product.options.map((option) => {
+          const isColor =
+            option.slug === "color" ||
             option.name?.toLowerCase().includes("color") ||
-            option.name?.toLowerCase().includes("colour") ? (
-              // Color selector with swatches
-              <div className="flex flex-wrap gap-3 sm:gap-4">
-                {option.values.map((value) => {
-                  const isAvailable = isOptionValueAvailable(
-                    option.id,
-                    value.id
-                  );
-                  const isSelected = selectedOptions[option.id] === value.id;
+            option.name?.toLowerCase().includes("colour");
+          const isSize =
+            option.slug === "size" ||
+            option.name?.toLowerCase().includes("size");
 
-                  return (
-                    <button
-                      key={value.id}
-                      onClick={() =>
-                        isAvailable && handleOptionSelect(option.id, value.id)
-                      }
-                      disabled={!isAvailable}
-                      className={cn(
-                        "flex flex-col items-center gap-2",
-                        !isAvailable && "cursor-not-allowed opacity-40"
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "h-12 w-12 rounded-full border-2 transition-all sm:h-14 sm:w-14",
-                          isSelected
-                            ? "border-primary-navy scale-110"
-                            : isAvailable
-                              ? "border-transparent hover:scale-105"
-                              : "border-gray-300"
-                        )}
-                        style={{
-                          backgroundColor: value.colorHex || "#cccccc",
-                        }}
-                      />
-                      <span className="text-primary-navy text-[10px] sm:text-xs">
-                        {value.value}
-                      </span>
-                    </button>
-                  );
-                })}
+          return (
+            <div key={option.id}>
+              <div className="mb-4 flex items-center gap-3">
+                <h2 className="text-primary-navy-light text-lg font-semibold">
+                  {option.name}
+                </h2>
+                {isSize && (
+                  <button
+                    onClick={() => setActiveGuide("size")}
+                    className="text-primary-navy hover:text-primary-navy-light flex items-center gap-1 text-sm transition-colors"
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                    Size guide
+                  </button>
+                )}
+                {isColor && (
+                  <button
+                    onClick={() => setActiveGuide("color")}
+                    className="text-primary-navy hover:text-primary-navy-light flex items-center gap-1 text-sm transition-colors"
+                  >
+                    <HelpCircle className="h-4 w-4" />
+                    Color guide
+                  </button>
+                )}
               </div>
-            ) : (
-              // Other options as dropdown
-              <Select
-                value={selectedOptions[option.id]?.toString() || ""}
-                onValueChange={(val) =>
-                  handleOptionSelect(option.id, Number(val))
-                }
-              >
-                <SelectTrigger className="border-neutral-stroke text-primary-navy w-full rounded-[20px] px-4 py-6">
-                  <SelectValue placeholder={`Select ${option.name}`} />
-                </SelectTrigger>
-                <SelectContent>
+
+              {/* Check if this is a color option */}
+              {isColor ? (
+                // Color selector with swatches
+                <div className="flex flex-wrap gap-3 sm:gap-4">
                   {option.values.map((value) => {
                     const isAvailable = isOptionValueAvailable(
                       option.id,
                       value.id
                     );
+                    const isSelected = selectedOptions[option.id] === value.id;
+
                     return (
-                      <SelectItem
+                      <button
                         key={value.id}
-                        value={value.id.toString()}
+                        onClick={() =>
+                          isAvailable && handleOptionSelect(option.id, value.id)
+                        }
                         disabled={!isAvailable}
+                        className={cn(
+                          "flex flex-col items-center gap-2",
+                          !isAvailable && "cursor-not-allowed opacity-40"
+                        )}
                       >
-                        {value.value}
-                        {!isAvailable ? " (Out of Stock)" : ""}
-                      </SelectItem>
+                        <div
+                          className={cn(
+                            "h-12 w-12 rounded-full border-2 transition-all sm:h-14 sm:w-14",
+                            isSelected
+                              ? "border-primary-navy scale-110"
+                              : isAvailable
+                                ? "border-transparent hover:scale-105"
+                                : "border-gray-300"
+                          )}
+                          style={{
+                            backgroundColor: value.colorHex || "#cccccc",
+                          }}
+                        />
+                        <span className="text-primary-navy text-[10px] sm:text-xs">
+                          {value.value}
+                        </span>
+                      </button>
                     );
                   })}
-                </SelectContent>
-              </Select>
-            )}
-          </div>
-        ))}
+                </div>
+              ) : (
+                // Other options as dropdown
+                <Select
+                  value={selectedOptions[option.id]?.toString() || ""}
+                  onValueChange={(val) =>
+                    handleOptionSelect(option.id, Number(val))
+                  }
+                >
+                  <SelectTrigger className="border-neutral-stroke text-primary-navy w-full rounded-[20px] px-4 py-6">
+                    <SelectValue placeholder={`Select ${option.name}`} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {option.values.map((value) => {
+                      const isAvailable = isOptionValueAvailable(
+                        option.id,
+                        value.id
+                      );
+                      return (
+                        <SelectItem
+                          key={value.id}
+                          value={value.id.toString()}
+                          disabled={!isAvailable}
+                        >
+                          {value.value}
+                          {!isAvailable ? " (Out of Stock)" : ""}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+          );
+        })}
 
         {/* Quantity and Add to Cart */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
@@ -433,6 +534,88 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
           {addError && <p className="text-destructive text-sm">{addError}</p>}
         </div>
       </section>
+
+      {/* Guide Dialog */}
+      <Dialog
+        open={!!activeGuide}
+        onOpenChange={(open) => !open && setActiveGuide(null)}
+      >
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {activeGuide === "size" ? "Size Guide" : "Color Guide"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            {activeGuide === "size" ? (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-500">
+                  Please refer to the size chart below to find your perfect fit.
+                </p>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="px-4 py-2 text-left font-medium">
+                          Size
+                        </th>
+                        <th className="px-4 py-2 text-left font-medium">
+                          Chest (cm)
+                        </th>
+                        <th className="px-4 py-2 text-left font-medium">
+                          Length (cm)
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b">
+                        <td className="px-4 py-2">XS</td>
+                        <td className="px-4 py-2">30-35</td>
+                        <td className="px-4 py-2">20</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="px-4 py-2">S</td>
+                        <td className="px-4 py-2">35-40</td>
+                        <td className="px-4 py-2">25</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="px-4 py-2">M</td>
+                        <td className="px-4 py-2">40-45</td>
+                        <td className="px-4 py-2">30</td>
+                      </tr>
+                      <tr className="border-b">
+                        <td className="px-4 py-2">L</td>
+                        <td className="px-4 py-2">45-50</td>
+                        <td className="px-4 py-2">35</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-gray-500">
+                  Colors may vary slightly due to monitor settings.
+                </p>
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-red-500" />
+                    <span className="text-sm">Red</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-blue-500" />
+                    <span className="text-sm">Blue</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-full bg-green-500" />
+                    <span className="text-sm">Green</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </article>
   );
 }

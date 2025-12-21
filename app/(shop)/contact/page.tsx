@@ -1,9 +1,7 @@
 import { Metadata } from "next";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Mail, MapPin, Instagram } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
+import { ContactForm } from "@/components/features/contact/ContactForm";
 
 export const metadata: Metadata = {
   title: "Contact Us | Piggy Way Crossing",
@@ -105,75 +103,7 @@ export default function ContactPage() {
             </div>
 
             {/* Contact Form */}
-            <div className="rounded-[32px] bg-white p-8 shadow-sm sm:p-12">
-              <h2 className="text-primary-navy mb-6 text-2xl font-bold">
-                Send us a Message
-              </h2>
-              <form className="space-y-6">
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="firstName"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      First Name
-                    </label>
-                    <Input id="firstName" placeholder="John" />
-                  </div>
-                  <div className="space-y-2">
-                    <label
-                      htmlFor="lastName"
-                      className="text-sm font-medium text-gray-700"
-                    >
-                      Last Name
-                    </label>
-                    <Input id="lastName" placeholder="Doe" />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    htmlFor="email"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Email Address
-                  </label>
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="john@example.com"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    htmlFor="subject"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Subject
-                  </label>
-                  <Input id="subject" placeholder="Order Inquiry" />
-                </div>
-
-                <div className="space-y-2">
-                  <label
-                    htmlFor="message"
-                    className="text-sm font-medium text-gray-700"
-                  >
-                    Message
-                  </label>
-                  <Textarea
-                    id="message"
-                    placeholder="How can we help you today?"
-                    className="min-h-[150px]"
-                  />
-                </div>
-
-                <Button className="bg-primary-navy hover:bg-primary-navy-light h-12 w-full rounded-[16px] text-base text-white">
-                  Send Message
-                </Button>
-              </form>
-            </div>
+            <ContactForm />
           </div>
         </AnimatedSection>
       </div>

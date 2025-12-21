@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight, Plus } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 
@@ -21,32 +22,40 @@ export function PetCareTipsSection() {
         {/* Cards Container - Desktop Only */}
         <div className="relative hidden overflow-hidden lg:block">
           <div className="flex items-center gap-6 pb-4">
-            {/* Card 1 - Dark Blue with Illustration */}
-            <div className="bg-primary-navy flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6">
+            {/* Card 1 - Dark Blue with Illustration (Diet) */}
+            <Link
+              href="/pet-care/guinea-pig-diet-guide"
+              className="bg-primary-navy flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
+            >
               <div className="flex flex-1 flex-col gap-[14px]">
                 {/* Illustration Area */}
                 <div className="relative h-[153px] w-full">
-                  <div className="bg-secondary-mint absolute top-0 left-0 h-[153px] w-[221px] rounded-[33px]" />
-                  <div className="bg-secondary-mint absolute top-0 right-0 h-[153px] w-[91px] rounded-[33px]" />
+                  {/* Center the decorative blocks as a group (221 + 91) */}
+                  <div className="absolute inset-0 flex items-start justify-center">
+                    <div className="relative h-[153px] w-[312px]">
+                      <div className="bg-secondary-mint absolute top-0 left-0 h-[153px] w-[221px] rounded-[33px]" />
+                      <div className="bg-secondary-mint absolute top-0 right-0 h-[153px] w-[91px] rounded-[33px]" />
+                    </div>
+                  </div>
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <Image
                       src="/pet-care-tips/default1.png"
                       alt=""
-                      width={65}
-                      height={65}
+                      width={180}
+                      height={180}
                       className="object-contain"
                     />
                   </div>
                 </div>
-                <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
-                  Topic XXX headline here, total text maximum within 2 lines
+                <p className="text-[20px] leading-[24px] font-medium text-white">
+                  Guinea Pig Diet Guide: What to Feed Your Piggy
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
                 <p className="flex-1 text-[24px] leading-[32px] font-semibold text-white">
                   Read more
                 </p>
-                <button
+                <div
                   className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Read more"
                 >
@@ -54,26 +63,46 @@ export function PetCareTipsSection() {
                     className="text-primary-navy h-[11px] w-[11px]"
                     strokeWidth={2}
                   />
-                </button>
+                </div>
               </div>
-            </div>
+            </Link>
 
-            {/* Card 2 - White Text Card */}
-            <div className="relative flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] bg-white p-6">
-              <div className="flex flex-1 flex-col gap-[14px]">
+            {/* Card 2 - White Text Card (Housing) */}
+            <Link
+              href="/pet-care/habitat-setup-tips"
+              className="relative flex h-[387px] flex-1 flex-col gap-5 overflow-hidden rounded-[28px] bg-white p-6 transition-transform hover:scale-[1.02]"
+            >
+              <div className="relative z-10 flex flex-1 flex-col gap-[14px]">
                 <p className="text-primary-navy-light text-[32px] leading-[40px] font-semibold">
                   Everything You Need to Begin
                 </p>
                 <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
-                  We're guinea pig & rabbit lovers creating products that make
-                  life easier.
+                  Setting Up the Perfect Habitat for Small Pets
                 </p>
               </div>
-              <div className="flex items-center justify-between gap-4">
+              <div className="relative h-[115px] w-full">
+                {/* Smaller centered decorative blocks (scaled down from 153x312) */}
+                <div className="absolute inset-0 flex items-start justify-center">
+                  <div className="relative h-[115px] w-[234px]">
+                    <div className="bg-secondary-mint absolute top-0 left-0 h-[115px] w-[166px] rounded-[25px]" />
+                    <div className="bg-secondary-mint absolute top-0 right-0 h-[115px] w-[68px] rounded-[25px]" />
+                  </div>
+                </div>
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                  <Image
+                    src="/pet-care-tips/default1.png"
+                    alt=""
+                    width={180}
+                    height={180}
+                    className="object-contain"
+                  />
+                </div>
+              </div>
+              <div className="relative z-10 flex items-center justify-between gap-4">
                 <p className="text-primary-navy flex-1 text-[24px] leading-[32px] font-semibold">
                   Read more
                 </p>
-                <button
+                <div
                   className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Read more"
                 >
@@ -81,45 +110,44 @@ export function PetCareTipsSection() {
                     className="text-primary-navy h-[11px] w-[11px]"
                     strokeWidth={2}
                   />
-                </button>
+                </div>
               </div>
-              {/* Overlapping Guinea Pig Image */}
-              <div className="pointer-events-none absolute top-[78px] left-[176px] h-[151px] w-[160px]">
-                <Image
-                  src="/pet-care-tips/default1.png"
-                  alt=""
-                  fill
-                  className="object-contain"
-                />
-              </div>
-            </div>
+            </Link>
 
-            {/* Card 3 - Gold with Illustration */}
-            <div className="bg-primary-gold flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6">
+            {/* Card 3 - Gold with Illustration (Bonding) */}
+            <Link
+              href="/pet-care/bonding-with-your-pet"
+              className="bg-primary-gold flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
+            >
               <div className="flex flex-1 flex-col gap-[14px]">
                 {/* Illustration Area */}
                 <div className="relative h-[153px] w-full">
-                  <div className="bg-secondary-light-gold absolute top-0 left-0 h-[153px] w-[221px] rounded-[33px]" />
-                  <div className="bg-secondary-light-gold absolute top-0 right-0 h-[153px] w-[91px] rounded-[33px]" />
+                  {/* Center the decorative blocks as a group (221 + 91) */}
+                  <div className="absolute inset-0 flex items-start justify-center">
+                    <div className="relative h-[153px] w-[312px]">
+                      <div className="bg-secondary-mint absolute top-0 left-0 h-[153px] w-[221px] rounded-[33px]" />
+                      <div className="bg-secondary-mint absolute top-0 right-0 h-[153px] w-[91px] rounded-[33px]" />
+                    </div>
+                  </div>
                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                     <Image
                       src="/pet-care-tips/default1.png"
                       alt=""
-                      width={65}
-                      height={65}
+                      width={180}
+                      height={180}
                       className="object-contain"
                     />
                   </div>
                 </div>
                 <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
-                  Topic XXX headline here, total text maximum within 2 lines
+                  Bonding Tips: Building Trust with Small Pets
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
                 <p className="flex-1 text-[24px] leading-[32px] font-semibold text-white">
                   Read more
                 </p>
-                <button
+                <div
                   className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Read more"
                 >
@@ -127,45 +155,59 @@ export function PetCareTipsSection() {
                     className="text-primary-navy h-[11px] w-[11px]"
                     strokeWidth={2}
                   />
-                </button>
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
 
         {/* Mobile/Tablet Layout */}
         <div className="flex flex-col gap-6 lg:hidden">
           {/* Simplified cards for mobile */}
-          <div className="bg-primary-navy flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6">
-            <h3 className="text-xl font-semibold text-white">Topic Headline</h3>
+          <Link
+            href="/pet-care/guinea-pig-diet-guide"
+            className="bg-primary-navy flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
+            <h3 className="text-xl font-semibold text-white">
+              Diet & Nutrition
+            </h3>
             <p className="flex-1 text-base text-white/80">
-              Topic XXX headline here, total text maximum within 2 lines
+              Guinea Pig Diet Guide: What to Feed Your Piggy
             </p>
-            <button className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+            <div className="border-neutral-stroke self-end rounded-full border bg-white p-3">
               <Plus className="text-primary-navy h-4 w-4" />
-            </button>
-          </div>
-          <div className="flex min-h-[280px] flex-col gap-4 rounded-[28px] bg-white p-6">
+            </div>
+          </Link>
+
+          <Link
+            href="/pet-care/habitat-setup-tips"
+            className="flex min-h-[280px] flex-col gap-4 rounded-[28px] bg-white p-6 transition-transform active:scale-[0.98]"
+          >
             <h3 className="text-primary-navy-light text-xl font-semibold">
               Everything You Need to Begin
             </h3>
             <p className="text-primary-navy flex-1 text-base">
-              We're guinea pig & rabbit lovers creating products that make life
-              easier.
+              Setting Up the Perfect Habitat for Small Pets
             </p>
-            <button className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+            <div className="border-neutral-stroke self-end rounded-full border bg-white p-3">
               <ArrowUpRight className="text-primary-navy h-4 w-4" />
-            </button>
-          </div>
-          <div className="bg-primary-gold flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6">
-            <h3 className="text-xl font-semibold text-white">Topic Headline</h3>
+            </div>
+          </Link>
+
+          <Link
+            href="/pet-care/bonding-with-your-pet"
+            className="bg-primary-gold flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
+            <h3 className="text-xl font-semibold text-white">
+              Bonding & Trust
+            </h3>
             <p className="text-primary-navy flex-1 text-base">
-              Topic XXX headline here, total text maximum within 2 lines
+              Bonding Tips: Building Trust with Small Pets
             </p>
-            <button className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+            <div className="border-neutral-stroke self-end rounded-full border bg-white p-3">
               <Plus className="text-primary-navy h-4 w-4" />
-            </button>
-          </div>
+            </div>
+          </Link>
         </div>
       </div>
     </AnimatedSection>

@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Pagination, PaginationInfo } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Package, Truck, Store, Copy, Check } from "lucide-react";
+import { Package, Truck, Store, Copy } from "lucide-react";
 import { OrderService } from "@/lib/services/order";
 import type { OrderWithItems, OrderStatus } from "@/lib/types/order";
 import { normalizeImageUrl } from "@/lib/utils/images";
@@ -40,14 +41,20 @@ interface OrderHistoryProps {
 }
 
 export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
+  const PAGE_SIZE = 10;
+
   const [orders, setOrders] = useState<OrderWithItems[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const listContainerRef = useRef<HTMLDivElement>(null);
 
   const currencyFormatter = useMemo(() => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-AU", {
       style: "currency",
-      currency: "USD",
+      currency: "AUD",
     });
   }, []);
 
@@ -58,12 +65,21 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
       try {
         setIsLoading(true);
         setError(null);
-        // Cast the result to expect OrderWithItems[] based on updated types
-        const result = (await OrderService.getOrders(1, 50)) as unknown as {
-          orders: OrderWithItems[];
-        };
+        const result = await OrderService.getOrders(currentPage, PAGE_SIZE);
         if (cancelled) return;
         setOrders(result.orders);
+        setTotalItems(result.meta.total);
+        const computedTotalPages = Math.max(
+          1,
+          Math.ceil(result.meta.total / result.meta.limit)
+        );
+        setTotalPages(computedTotalPages);
+
+        // If we somehow landed on an invalid page (e.g. total decreased), snap back.
+        if (currentPage > computedTotalPages) {
+          setCurrentPage(computedTotalPages);
+          return;
+        }
       } catch (e: any) {
         if (cancelled) return;
         setError(e?.message || "Failed to load orders");
@@ -76,7 +92,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [currentPage]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -93,7 +109,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
     show: { opacity: 1, y: 0 },
   };
 
-  if (isLoading) {
+  if (isLoading && orders.length === 0) {
     return (
       <div className="min-h-[400px] space-y-6 rounded-lg bg-white p-6 shadow-sm">
         <h2 className="text-primary-navy text-2xl font-semibold">
@@ -127,7 +143,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
     );
   }
 
-  if (orders.length === 0) {
+  if (!isLoading && orders.length === 0) {
     return (
       <div className="min-h-[400px] space-y-6 rounded-lg bg-white p-6 shadow-sm">
         <h2 className="text-primary-navy text-2xl font-semibold">
@@ -152,175 +168,217 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
   }
 
   return (
-    <div className="min-h-[400px] space-y-6 rounded-lg bg-white p-6 shadow-sm">
-      <div className="mx-1 flex items-center justify-between">
+    <div className="flex h-[800px] flex-col space-y-6 rounded-lg bg-white p-6 shadow-sm">
+      <div className="mx-1 flex flex-shrink-0 items-center justify-between">
         <h2 className="text-primary-navy text-2xl font-semibold">
           Order History
         </h2>
       </div>
 
-      <motion.div
-        className="space-y-6"
-        variants={containerVariants}
-        initial="hidden"
-        animate="show"
-      >
-        {orders.map((order) => {
-          // Determine active status display logic (including Pickup vs Shipping)
-          const isPickup = order.delivery_method === "pickup";
-          let displayStatus = statusLabel[order.status];
-          if (isPickup) {
-            if (order.status === "shipped") displayStatus = "Ready for Pickup";
-            if (order.status === "completed") displayStatus = "Picked Up";
-          }
+      <div ref={listContainerRef} className="flex-1 overflow-y-auto pr-2">
+        <motion.div
+          className="space-y-6"
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+        >
+          <AnimatePresence>
+            {isLoading && orders.length > 0 && (
+              <motion.div
+                key="loading-overlay"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="sticky top-0 z-10 rounded-lg border bg-white/80 p-3 text-sm text-slate-600 backdrop-blur"
+              >
+                Loading…
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          return (
-            <motion.div
-              key={order.order_number}
-              variants={itemVariants}
-              className="overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md"
-            >
-              {/* Header */}
-              <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-gray-50 p-4">
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-gray-900">
-                      {new Date(order.date_created).toLocaleDateString()}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span>{order.order_number}</span>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(order.order_number);
-                        toast.success("Order number copied to clipboard");
-                      }}
-                      className="hover:text-primary-navy text-gray-400 transition-colors"
-                      title="Copy order number"
-                    >
-                      <Copy className="h-3 w-3" />
-                    </button>
-                  </div>
-                  {/* Delivery Method Badge */}
-                  {isPickup ? (
-                    <div className="flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
-                      <Store className="h-3 w-3" />
-                      Pickup
+          {orders.map((order) => {
+            // Determine active status display logic (including Pickup vs Shipping)
+            const isPickup = order.delivery_method === "pickup";
+            let displayStatus = statusLabel[order.status];
+            if (isPickup) {
+              if (order.status === "shipped")
+                displayStatus = "Ready for Pickup";
+              if (order.status === "completed") displayStatus = "Picked Up";
+            }
+
+            return (
+              <motion.div
+                key={order.order_number}
+                variants={itemVariants}
+                className="overflow-hidden rounded-lg border bg-white shadow-sm transition-shadow hover:shadow-md"
+              >
+                {/* Header */}
+                <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-gray-50 p-4">
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-900">
+                        {new Date(order.date_created).toLocaleDateString()}
+                      </span>
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-1 rounded bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
-                      <Truck className="h-3 w-3" />
-                      Delivery
-                    </div>
-                  )}
-                </div>
-
-                <span
-                  className={cn(
-                    "rounded-full px-3 py-1 text-xs font-medium",
-                    statusColors[order.status]
-                  )}
-                >
-                  {displayStatus}
-                </span>
-              </div>
-
-              {/* Items List */}
-              <div className="divide-y divide-gray-100">
-                {order.items && order.items.length > 0 ? (
-                  order.items.map((item, idx) => {
-                    const imageUrl =
-                      normalizeImageUrl(item.image_url, {
-                        maxWidth: 200,
-                      }) || FALLBACK_IMAGE;
-
-                    return (
-                      <div
-                        key={idx}
-                        className="flex gap-4 p-4 hover:bg-gray-50/50"
+                    <div className="flex items-center gap-2">
+                      <span>{order.order_number}</span>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(order.order_number);
+                          toast.success("Order number copied to clipboard");
+                        }}
+                        className="hover:text-primary-navy text-gray-400 transition-colors"
+                        title="Copy order number"
                       >
-                        {/* Product Image */}
-                        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-white">
-                          <Image
-                            src={imageUrl}
-                            alt={item.product_title}
-                            fill
-                            className="object-cover"
-                            sizes="80px"
-                          />
-                        </div>
-
-                        {/* Details */}
-                        <div className="flex flex-1 flex-col justify-between sm:flex-row sm:gap-8">
-                          <div className="flex-1 space-y-1">
-                            <h4 className="line-clamp-2 font-medium text-gray-900">
-                              {item.product_title}
-                            </h4>
-                            <div className="flex flex-wrap gap-2 text-sm text-gray-500">
-                              {item.variant_attributes &&
-                                Array.isArray(item.variant_attributes) &&
-                                item.variant_attributes.map((attr, i) => (
-                                  <span
-                                    key={i}
-                                    className="rounded bg-gray-100 px-1.5 py-0.5 text-xs"
-                                  >
-                                    {attr.option_name}: {attr.option_value}
-                                  </span>
-                                ))}
-                            </div>
-                          </div>
-
-                          <div className="mt-2 flex items-end justify-between sm:mt-0 sm:flex-col sm:items-end sm:justify-start sm:text-right">
-                            <p className="font-medium text-gray-900">
-                              {currencyFormatter.format(
-                                item.unit_price_cents / 100
-                              )}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              x {item.quantity}
-                            </p>
-                          </div>
-                        </div>
+                        <Copy className="h-3 w-3" />
+                      </button>
+                    </div>
+                    {/* Delivery Method Badge */}
+                    {isPickup ? (
+                      <div className="flex items-center gap-1 rounded bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-700">
+                        <Store className="h-3 w-3" />
+                        Pickup
                       </div>
-                    );
-                  })
-                ) : (
-                  // Fallback if no items (should ideally not happen with updated backend)
-                  <div className="p-8 text-center text-gray-500">
-                    No items found for this order.
+                    ) : (
+                      <div className="flex items-center gap-1 rounded bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-700">
+                        <Truck className="h-3 w-3" />
+                        Delivery
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
 
-              {/* Footer */}
-              <div className="flex items-center justify-between border-t bg-gray-50 p-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500">Total:</span>
-                  <span className="text-primary-navy text-lg font-bold">
-                    {currencyFormatter.format(order.grand_total_amt / 100)}
+                  <span
+                    className={cn(
+                      "rounded-full px-3 py-1 text-xs font-medium",
+                      statusColors[order.status]
+                    )}
+                  >
+                    {displayStatus}
                   </span>
                 </div>
-                <div className="flex gap-3">
-                  {/* <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onOrderClick(order.order_number)}
-                  >
-                    Track Order
-                  </Button> */}
-                  <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => onOrderClick(order.order_number)}
-                  >
-                    Order Details
-                  </Button>
+
+                {/* Items List */}
+                <div className="divide-y divide-gray-100">
+                  {order.items && order.items.length > 0 ? (
+                    order.items.map((item, idx) => {
+                      const imageUrl =
+                        normalizeImageUrl(item.image_url, {
+                          maxWidth: 200,
+                        }) || FALLBACK_IMAGE;
+
+                      return (
+                        <div
+                          key={idx}
+                          className="flex gap-4 p-4 hover:bg-gray-50/50"
+                        >
+                          {/* Product Image */}
+                          <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-md border border-gray-100 bg-white">
+                            <Image
+                              src={imageUrl}
+                              alt={item.product_title}
+                              fill
+                              className="object-cover"
+                              sizes="80px"
+                            />
+                          </div>
+
+                          {/* Details */}
+                          <div className="flex flex-1 flex-col justify-between sm:flex-row sm:gap-8">
+                            <div className="flex-1 space-y-1">
+                              <h4 className="line-clamp-2 font-medium text-gray-900">
+                                {item.product_title}
+                              </h4>
+                              <div className="flex flex-wrap gap-2 text-sm text-gray-500">
+                                {item.variant_attributes &&
+                                  Array.isArray(item.variant_attributes) &&
+                                  item.variant_attributes.map((attr, i) => (
+                                    <span
+                                      key={i}
+                                      className="rounded bg-gray-100 px-1.5 py-0.5 text-xs"
+                                    >
+                                      {attr.option_name}: {attr.option_value}
+                                    </span>
+                                  ))}
+                              </div>
+                            </div>
+
+                            <div className="mt-2 flex items-end justify-between sm:mt-0 sm:flex-col sm:items-end sm:justify-start sm:text-right">
+                              <p className="font-medium text-gray-900">
+                                {currencyFormatter.format(
+                                  item.unit_price_cents / 100
+                                )}
+                              </p>
+                              <p className="text-sm text-gray-500">
+                                x {item.quantity}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    // Fallback if no items (should ideally not happen with updated backend)
+                    <div className="p-8 text-center text-gray-500">
+                      No items found for this order.
+                    </div>
+                  )}
                 </div>
-              </div>
-            </motion.div>
-          );
-        })}
-      </motion.div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between border-t bg-gray-50 p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-500">Total:</span>
+                    <span className="text-primary-navy text-lg font-bold">
+                      {currencyFormatter.format(order.grand_total_amt / 100)}
+                    </span>
+                  </div>
+                  <div className="flex gap-3">
+                    {/* <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onOrderClick(order.order_number)}
+                    >
+                      Track Order
+                    </Button> */}
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => onOrderClick(order.order_number)}
+                    >
+                      Order Details
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      </div>
+
+      {/* Pagination */}
+      <div className="flex flex-shrink-0 flex-col gap-3 border-t pt-4">
+        <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+          <PaginationInfo
+            currentPage={currentPage}
+            pageSize={PAGE_SIZE}
+            total={totalItems}
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => {
+              const safePage = Math.min(Math.max(1, page), totalPages);
+              if (safePage === currentPage) return;
+              setCurrentPage(safePage);
+              // Reset scroll position when page changes
+              listContainerRef.current?.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
+            }}
+          />
+        </div>
+      </div>
     </div>
   );
 }

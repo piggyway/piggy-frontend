@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { Plus } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 
@@ -21,8 +22,11 @@ export function StarterKitsSection() {
         {/* Cards Container - Desktop */}
         <div className="relative hidden overflow-hidden lg:block">
           <div className="flex items-center gap-6 pb-4">
-            {/* Card 1 - Grey with Illustration */}
-            <div className="bg-neutral-stroke flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6">
+            {/* Card 1 - Grey with Illustration (Essentials) */}
+            <Link
+              href="/guides/first-time-owner-essentials"
+              className="bg-neutral-stroke flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
+            >
               <div className="flex flex-1 flex-col gap-[14px]">
                 {/* Illustration Area */}
                 <div className="relative h-[153px] w-full">
@@ -39,14 +43,14 @@ export function StarterKitsSection() {
                   </div>
                 </div>
                 <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
-                  Topic XXX headline here, total text maximum within 2 lines
+                  First-Time Guinea Pig Owner: Complete Essentials Checklist
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
                 <p className="text-primary-navy flex-1 text-[24px] leading-[32px] font-semibold">
                   Read more
                 </p>
-                <button
+                <div
                   className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Read more"
                 >
@@ -54,26 +58,28 @@ export function StarterKitsSection() {
                     className="text-primary-navy h-[11px] w-[11px]"
                     strokeWidth={2}
                   />
-                </button>
+                </div>
               </div>
-            </div>
+            </Link>
 
-            {/* Card 2 - Navy Blue Text Card */}
-            <div className="bg-primary-navy-light flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6">
+            {/* Card 2 - Navy Blue Text Card (Liners) */}
+            <Link
+              href="/guides/cage-liner-benefits"
+              className="bg-primary-navy-light flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
+            >
               <div className="flex flex-1 flex-col gap-[14px] text-white">
                 <p className="text-[32px] leading-[40px] font-semibold">
-                  Placeholder headline to be here
+                  Why Fleece Cage Liners Are a Game-Changer
                 </p>
                 <p className="text-[20px] leading-[24px] font-medium">
-                  We're guinea pig & rabbit lovers creating products that make
-                  life easier.
+                  Cleaner, healthier, and eco-friendly choice for guinea pigs.
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
                 <p className="flex-1 text-[24px] leading-[32px] font-semibold text-white">
                   Read more
                 </p>
-                <button
+                <div
                   className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Read more"
                 >
@@ -81,26 +87,28 @@ export function StarterKitsSection() {
                     className="text-primary-navy h-[11px] w-[11px]"
                     strokeWidth={2}
                   />
-                </button>
+                </div>
               </div>
-            </div>
+            </Link>
 
-            {/* Card 3 - Mint Text Card */}
-            <div className="bg-secondary-mint flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6">
+            {/* Card 3 - Mint Text Card (Bunny) */}
+            <Link
+              href="/guides/bunny-starter-kit"
+              className="bg-secondary-mint flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
+            >
               <div className="flex flex-1 flex-col gap-[14px]">
                 <p className="text-primary-navy-light text-[32px] leading-[40px] font-semibold">
-                  Placeholder headline to be here
+                  Rabbit Starter Kit: Everything You Need for Day One
                 </p>
                 <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
-                  We're guinea pig & rabbit lovers creating products that make
-                  life easier.
+                  Preparing for a new bunny? Use our comprehensive checklist.
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
                 <p className="text-primary-navy flex-1 text-[24px] leading-[32px] font-semibold">
                   Read more
                 </p>
-                <button
+                <div
                   className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Read more"
                 >
@@ -108,49 +116,56 @@ export function StarterKitsSection() {
                     className="text-primary-navy h-[11px] w-[11px]"
                     strokeWidth={2}
                   />
-                </button>
+                </div>
               </div>
-            </div>
+            </Link>
           </div>
         </div>
 
         {/* Mobile/Tablet Layout */}
         <div className="flex flex-col gap-6 lg:hidden">
-          <div className="bg-neutral-stroke flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6">
+          <Link
+            href="/guides/first-time-owner-essentials"
+            className="bg-neutral-stroke flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
             <h3 className="text-primary-navy text-xl font-semibold">
-              Topic Headline
+              Essentials Checklist
             </h3>
             <p className="text-primary-navy flex-1 text-base">
-              Topic XXX headline here, total text maximum within 2 lines
+              First-Time Guinea Pig Owner: Complete Essentials Checklist
             </p>
-            <button className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+            <div className="border-neutral-stroke self-end rounded-full border bg-white p-3">
               <Plus className="text-primary-navy h-4 w-4" />
-            </button>
-          </div>
-          <div className="bg-primary-navy-light flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6">
+            </div>
+          </Link>
+          <Link
+            href="/guides/cage-liner-benefits"
+            className="bg-primary-navy-light flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
             <h3 className="text-xl font-semibold text-white">
-              Placeholder headline to be here
+              Why Fleece Cage Liners Are a Game-Changer
             </h3>
             <p className="flex-1 text-base text-white">
-              We're guinea pig & rabbit lovers creating products that make life
-              easier.
+              Cleaner, healthier, and eco-friendly choice for guinea pigs.
             </p>
-            <button className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+            <div className="border-neutral-stroke self-end rounded-full border bg-white p-3">
               <Plus className="text-primary-navy h-4 w-4" />
-            </button>
-          </div>
-          <div className="bg-secondary-mint flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6">
+            </div>
+          </Link>
+          <Link
+            href="/guides/bunny-starter-kit"
+            className="bg-secondary-mint flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
             <h3 className="text-primary-navy-light text-xl font-semibold">
-              Placeholder headline to be here
+              Rabbit Starter Kit: Everything You Need for Day One
             </h3>
             <p className="text-primary-navy flex-1 text-base">
-              We're guinea pig & rabbit lovers creating products that make life
-              easier.
+              Preparing for a new bunny? Use our comprehensive checklist.
             </p>
-            <button className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+            <div className="border-neutral-stroke self-end rounded-full border bg-white p-3">
               <Plus className="text-primary-navy h-4 w-4" />
-            </button>
-          </div>
+            </div>
+          </Link>
         </div>
       </div>
     </AnimatedSection>

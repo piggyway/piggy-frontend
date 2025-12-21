@@ -43,9 +43,9 @@ export function OrderDetails({ orderNumber, onBack }: OrderDetailsProps) {
   const [error, setError] = useState<string | null>(null);
 
   const currencyFormatter = useMemo(() => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-AU", {
       style: "currency",
-      currency: "USD",
+      currency: "AUD",
     });
   }, []);
 
@@ -241,7 +241,7 @@ export function OrderDetails({ orderNumber, onBack }: OrderDetailsProps) {
         </div>
 
         {/* Sidebar Info */}
-        <div className="space-y-6">
+        <div className="space-y-6 pt-[43px]">
           <div className="rounded-lg border border-gray-100 p-4">
             <h4 className="mb-4 font-semibold text-gray-900">Order Info</h4>
             <div className="space-y-4">

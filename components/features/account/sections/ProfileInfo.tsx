@@ -14,7 +14,10 @@ interface ProfileInfoProps {
   onComplete?: () => void;
 }
 
-export function ProfileInfo({ autoEdit = false, onComplete }: ProfileInfoProps) {
+export function ProfileInfo({
+  autoEdit = false,
+  onComplete,
+}: ProfileInfoProps) {
   const { user: contextUser, updateUser } = useUser();
   const router = useRouter();
   const firstNameInputRef = useRef<HTMLInputElement>(null);

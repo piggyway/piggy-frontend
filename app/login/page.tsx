@@ -8,9 +8,7 @@ export const metadata: Metadata = {
 
 // Next 16: searchParams 可能是 Promise
 interface LoginPageRouteProps {
-  searchParams:
-    | { error?: string }
-    | Promise<{ error?: string }>;
+  searchParams: { error?: string } | Promise<{ error?: string }>;
 }
 
 export default async function Page({ searchParams }: LoginPageRouteProps) {

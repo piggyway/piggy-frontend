@@ -36,9 +36,3 @@ export interface RemovePromoResponse {
   error?: string;
   timestamp?: string;
 }
-
-
-
-
-
-

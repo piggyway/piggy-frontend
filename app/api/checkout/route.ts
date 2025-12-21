@@ -55,7 +55,9 @@ export async function POST(request: NextRequest) {
       throw new Error("Missing API_BASE_URL");
     }
 
-    const body = (await request.json().catch(() => ({}))) as CheckoutRequestBody;
+    const body = (await request
+      .json()
+      .catch(() => ({}))) as CheckoutRequestBody;
 
     const fulfillmentType: "delivery" | "pickup" = body.fulfillmentType || "delivery";
 
@@ -90,22 +92,32 @@ export async function POST(request: NextRequest) {
 
       cart_id: body.cartId != null ? String(body.cartId) : undefined,
       cart_items: body.cartItems?.map((item) => ({
-        id: String(item.id),
-        product_rid: toIntOrNull(item.productRid),
-        variant_rid: toIntOrNull(item.variantRid),
+
+        id: String(item.id), // Ensure id is a string
+        product_rid:
+          item.productRid == null
+            ? null
+            : Number.parseInt(String(item.productRid), 10),
+        variant_rid:
+          item.variantRid == null
+            ? null
+            : Number.parseInt(String(item.variantRid), 10),
+
         product_title: item.productTitle,
         variant_sku: item.variantSku,
         quantity: item.quantity,
         unit_price_cents: item.unitPriceCents,
         line_subtotal_cents: item.lineSubtotalCents,
         image_url: item.imageUrl,
-        currency: item.currency || body.currency || "usd",
-      })),
 
-      currency: body.currency || "usd",
+        currency: item.currency || body.currency || "aud", // Ensure currency is never null
+      })),
+      currency: body.currency || "aud",
+
       promo_code: body.promoCode,
       user_id: body.userId,
     };
+
 
     // #region agent log (debug-session)
     fetch("http://127.0.0.1:7244/ingest/4d167c0f-d521-47a0-b9c1-cf8baf1e5421", {
@@ -132,6 +144,7 @@ export async function POST(request: NextRequest) {
       }),
     }).catch(() => {});
     // #endregion agent log (debug-session)
+
 
     const origin = request.headers.get("origin") || "http://localhost:3000";
     const token = request.headers.get("authorization");
@@ -208,6 +221,12 @@ export async function POST(request: NextRequest) {
       err?.message && typeof err.message === "string"
         ? err.message
         : "Failed to create checkout session";
-    return NextResponse.json({ error: { message: errorMessage } }, { status: 500 });
+
+    return NextResponse.json(
+      { error: { message: errorMessage } },
+      { status: 500 }
+    );
+
+    
   }
 }

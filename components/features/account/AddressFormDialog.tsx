@@ -76,8 +76,10 @@ export function AddressFormDialog({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.addressText.trim()) newErrors.addressText = "Address is required";
-    if (!formData.postalCode.trim()) newErrors.postalCode = "Postal code is required";
+    if (!formData.addressText.trim())
+      newErrors.addressText = "Address is required";
+    if (!formData.postalCode.trim())
+      newErrors.postalCode = "Postal code is required";
     if (!/^[A-Za-z]{2}$/.test(formData.countryCode.trim()))
       newErrors.countryCode = "Country code must be 2 letters (e.g., AU)";
 
@@ -123,7 +125,9 @@ export function AddressFormDialog({
             </label>
             <select
               value={formData.type}
-              onChange={(e) => handleChange("type", e.target.value as AddressType)}
+              onChange={(e) =>
+                handleChange("type", e.target.value as AddressType)
+              }
               className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
             >
               <option value="shipping">Shipping</option>

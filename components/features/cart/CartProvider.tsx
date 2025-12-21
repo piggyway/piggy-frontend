@@ -10,9 +10,17 @@ import {
 } from "react";
 import { toast } from "sonner";
 import { useSession } from "next-auth/react";
+import { usePathname, useRouter } from "next/navigation";
 import { CartService } from "@/lib/services/cart";
 import { PromoService } from "@/lib/services/promo";
 import type { Cart } from "@/lib/types/cart";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface CartContextValue {
   cart: Cart | null;
@@ -41,11 +49,27 @@ const CartContext = createContext<CartContextValue | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
+  const router = useRouter();
+  const pathname = usePathname();
   const [cart, setCart] = useState<Cart | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isLoadingRef = useRef(false);
+  const [isLoginPromptOpen, setIsLoginPromptOpen] = useState(false);
+  const [loginPromptIntent, setLoginPromptIntent] = useState<string | null>(
+    null
+  );
+
+  const requireAuth = useCallback(
+    (intent?: string) => {
+      if (status === "authenticated") return true;
+      setLoginPromptIntent(intent || null);
+      setIsLoginPromptOpen(true);
+      return false;
+    },
+    [status]
+  );
 
   const loadCart = useCallback(async () => {
     // Prevent concurrent loads
@@ -76,9 +100,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [status]);
 
   const ensureLoaded = useCallback(async () => {
+    if (!requireAuth("view your cart")) {
+      throw new Error("AUTH_REQUIRED");
+    }
     if (cart) return;
     await loadCart();
-  }, [cart, loadCart]);
+  }, [cart, loadCart, requireAuth]);
 
   const clearCart = useCallback(() => {
     setCart(null);
@@ -168,6 +195,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addItem = useCallback(
     async (variantRid: number, quantity = 1, notes?: string) => {
+      if (!requireAuth("add items")) return;
       await runMutation(
         () =>
           CartService.addItem({
@@ -190,11 +218,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
       );
     },
-    [runMutation]
+    [requireAuth, runMutation]
   );
 
   const updateItem = useCallback(
     async (itemId: string, quantity: number, notes?: string | null) => {
+      if (!requireAuth("update items")) return;
       const itemToUpdate = cart?.items.find((item) => item.id === itemId);
       const productName = itemToUpdate?.productTitle || "Item";
 
@@ -210,11 +239,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
       );
     },
-    [cart, runMutation]
+    [cart, requireAuth, runMutation]
   );
 
   const removeItem = useCallback(
     async (itemId: string) => {
+      if (!requireAuth("remove items")) return;
       // Get the item name before removing
       const itemToRemove = cart?.items.find((item) => item.id === itemId);
       const productName = itemToRemove?.productTitle || "Item";
@@ -224,11 +254,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         errorMessage: "Failed to remove item",
       });
     },
-    [cart, runMutation]
+    [cart, requireAuth, runMutation]
   );
 
   const applyPromoCode = useCallback(
     async (code: string) => {
+      if (!requireAuth("apply promo codes")) return;
       setIsMutating(true);
 
       try {
@@ -250,14 +281,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsMutating(false);
       }
     },
-    [cart, loadCart]
+    [cart, loadCart, requireAuth]
   );
 
   const removePromoCode = useCallback(async () => {
+    if (!requireAuth("remove promo codes")) return;
     setIsMutating(true);
     try {
       const result = await PromoService.removePromoCode();
-      
+
       if (result.success) {
         // Refresh cart to get updated totals
         await loadCart();
@@ -274,7 +306,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsMutating(false);
     }
-  }, [loadCart]);
+  }, [loadCart, requireAuth]);
 
   const value = useMemo(
     () => ({
@@ -307,7 +339,56 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     ]
   );
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+
+      <Dialog open={isLoginPromptOpen} onOpenChange={setIsLoginPromptOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-primary-navy">
+              Sign in to continue?
+            </DialogTitle>
+            <p className="text-primary-navy/80 mt-2 text-sm">
+              {loginPromptIntent
+                ? `To help you ${loginPromptIntent} and keep your items safe, please sign in or create an account first.`
+                : "To save your cart items and sync them across your devices, please sign in or create an account first."}
+            </p>
+          </DialogHeader>
+
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsLoginPromptOpen(false);
+                router.push("/shop-all");
+              }}
+            >
+              Just browsing
+            </Button>
+            <Button
+              className="bg-primary-navy text-white"
+              onClick={() => {
+                setIsLoginPromptOpen(false);
+                toast.message("Taking you to sign in...", {
+                  description: "You'll be back to your shopping in no time!",
+                });
+                const callbackUrl =
+                  typeof pathname === "string" && pathname.length > 0
+                    ? pathname
+                    : "/shop";
+                router.push(
+                  `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                );
+              }}
+            >
+              Sign In / Register
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </CartContext.Provider>
+  );
 }
 
 export function useCart() {

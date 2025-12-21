@@ -23,7 +23,7 @@ export function WelcomeMessage() {
 
   return (
     <div className="container mx-auto px-4">
-      <div className="relative z-10 mb-8 mt-8 rounded-2xl border border-primary-navy/10 bg-white/80 p-6 shadow-lg backdrop-blur-sm">
+      <div className="border-primary-navy/10 relative z-10 mt-8 mb-8 rounded-2xl border bg-white/80 p-6 shadow-lg backdrop-blur-sm">
         <h2 className="text-primary-navy text-2xl font-semibold md:text-3xl">
           Hello, {user.firstName} {user.lastName}! 👋
         </h2>

@@ -39,9 +39,9 @@ function useCheckout(cart: Cart | null) {
           unitPriceCents: item.unitPriceCents,
           lineSubtotalCents: item.lineSubtotalCents,
           imageUrl: item.imageUrl,
-          currency: item.currency || cart.currency || "usd",
+          currency: item.currency || cart.currency || "aud",
         })),
-        currency: cart.currency || "usd",
+        currency: cart.currency || "aud",
       };
 
       const response = await fetch("/api/checkout", {
@@ -87,7 +87,12 @@ export function FloatingCartButton() {
 
   useEffect(() => {
     if (!isOpen) return;
-    ensureLoaded().catch(() => null);
+    ensureLoaded().catch((err) => {
+      // If auth is required, close the sheet and let CartProvider show the dialog.
+      if (String((err as any)?.message || err).includes("AUTH_REQUIRED")) {
+        setIsOpen(false);
+      }
+    });
   }, [isOpen, ensureLoaded]);
 
   const cartItems = cart?.items ?? [];
@@ -201,7 +206,9 @@ export function FloatingCartButton() {
               </span>
             </div>
             {checkoutError && (
-              <p className="mb-2 text-center text-sm text-red-500">{checkoutError}</p>
+              <p className="mb-2 text-center text-sm text-red-500">
+                {checkoutError}
+              </p>
             )}
             <div className="grid gap-2">
               <Button
