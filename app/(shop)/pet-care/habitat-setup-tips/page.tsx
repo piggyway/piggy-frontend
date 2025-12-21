@@ -45,19 +45,19 @@ export default function HabitatSetupPage() {
   };
 
   return (
-    <div className="bg-white min-h-screen font-sans text-gray-900 selection:bg-primary-purple/20">
+    <div className="selection:bg-primary-purple/20 min-h-screen bg-white font-sans text-gray-900">
       <BackgroundBlobs variant={2} className="opacity-30" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="container mx-auto max-w-3xl px-6 py-12 sm:py-20 relative z-10">
+      <div className="relative z-10 container mx-auto max-w-3xl px-6 py-12 sm:py-20">
         {/* Navigation */}
         <nav className="mb-8">
           <Link
             href="/pet-care"
-            className="group inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary-navy transition-colors"
+            className="group hover:text-primary-navy inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Back to Pet Care
@@ -66,11 +66,13 @@ export default function HabitatSetupPage() {
 
         {/* Article Header */}
         <header className="mb-10 text-center sm:text-left">
-          <h1 className="text-3xl font-extrabold tracking-tight text-primary-navy sm:text-4xl md:text-5xl leading-tight mb-6">
+          <h1 className="text-primary-navy mb-6 text-3xl leading-tight font-extrabold tracking-tight sm:text-4xl md:text-5xl">
             Setting Up the Perfect Habitat for Small Pets
           </h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 sm:justify-start justify-center">
-            <span className="font-medium text-gray-900">Piggy Way Crossing Team</span>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500 sm:justify-start">
+            <span className="font-medium text-gray-900">
+              Piggy Way Crossing Team
+            </span>
             <span className="hidden sm:inline">•</span>
             <span>March 22, 2024</span>
             <span className="hidden sm:inline">•</span>
@@ -90,10 +92,10 @@ export default function HabitatSetupPage() {
         </div>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-primary-purple prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none text-gray-700 leading-relaxed">
-          <p className="lead text-xl text-gray-600 mb-8">
-            Your pet's habitat is their entire world. It's where they sleep, eat,
-            play, and exercise. Creating a spacious, safe, and stimulating
+        <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-primary-purple prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
+          <p className="lead mb-8 text-xl text-gray-600">
+            Your pet's habitat is their entire world. It's where they sleep,
+            eat, play, and exercise. Creating a spacious, safe, and stimulating
             environment is key to their physical health and mental well-being.
           </p>
 
@@ -106,14 +108,14 @@ export default function HabitatSetupPage() {
           </p>
           <ul>
             <li>
-              <strong>Guinea Pigs:</strong> Need a minimum of 7.5 square feet for a
-              pair, but 10.5+ square feet is recommended. C&C (Cubes and Coroplast)
-              cages are a popular, customizable choice.
+              <strong>Guinea Pigs:</strong> Need a minimum of 7.5 square feet
+              for a pair, but 10.5+ square feet is recommended. C&C (Cubes and
+              Coroplast) cages are a popular, customizable choice.
             </li>
             <li>
               <strong>Rabbits:</strong> Ideally should be free-roam or have an
-              exercise pen (x-pen) setup. A standard "hutch" is rarely enough room
-              for a bunny to hop and binky.
+              exercise pen (x-pen) setup. A standard "hutch" is rarely enough
+              room for a bunny to hop and binky.
             </li>
           </ul>
 
@@ -125,78 +127,109 @@ export default function HabitatSetupPage() {
           <h3>Fleece Liners (Our Favorite!)</h3>
           <p>
             Reusable fleece liners are eco-friendly, soft on sensitive paws, and
-            dust-free (great for respiratory health). They wick moisture away to an
-            absorbent layer underneath, keeping the surface dry. Plus, they look
-            adorable!
+            dust-free (great for respiratory health). They wick moisture away to
+            an absorbent layer underneath, keeping the surface dry. Plus, they
+            look adorable!
           </p>
           <h3>Other Options</h3>
           <ul>
-            <li><strong>Aspen Shavings:</strong> Safe wood option, but can be messy.</li>
-            <li><strong>Paper Bedding:</strong> Soft and absorbent, but disposable costs add up.</li>
-            <li><strong>Avoid:</strong> Cedar and Pine shavings (unless kiln-dried). The aromatic oils can damage small animal respiratory tracts and livers.</li>
+            <li>
+              <strong>Aspen Shavings:</strong> Safe wood option, but can be
+              messy.
+            </li>
+            <li>
+              <strong>Paper Bedding:</strong> Soft and absorbent, but disposable
+              costs add up.
+            </li>
+            <li>
+              <strong>Avoid:</strong> Cedar and Pine shavings (unless
+              kiln-dried). The aromatic oils can damage small animal respiratory
+              tracts and livers.
+            </li>
           </ul>
 
           <h2>Hideouts & Security</h2>
           <p>
-            Small animals are prey species. They need multiple places to hide to feel
-            safe.
+            Small animals are prey species. They need multiple places to hide to
+            feel safe.
           </p>
           <ul>
-            <li>Provide at least one hideout per animal to prevent squabbles.</li>
-            <li>Mix it up with wooden huts, fleece tunnels, and cuddle sacks.</li>
-            <li>Open-ended tunnels are great for running through during "zoomies."</li>
+            <li>
+              Provide at least one hideout per animal to prevent squabbles.
+            </li>
+            <li>
+              Mix it up with wooden huts, fleece tunnels, and cuddle sacks.
+            </li>
+            <li>
+              Open-ended tunnels are great for running through during "zoomies."
+            </li>
           </ul>
 
           <h2>Enrichment & Boredom Busters</h2>
           <p>A bored pet is an unhappy pet. Keep their minds active with:</p>
           <ul>
-            <li><strong>Foraging:</strong> Hide treats or pellets in hay piles or treat balls.</li>
-            <li><strong>Chew Toys:</strong> Willow balls, apple sticks, and cardboard tubes are safe and fun to destroy.</li>
-            <li><strong>Rotation:</strong> Switch out toys weekly to keep things fresh.</li>
+            <li>
+              <strong>Foraging:</strong> Hide treats or pellets in hay piles or
+              treat balls.
+            </li>
+            <li>
+              <strong>Chew Toys:</strong> Willow balls, apple sticks, and
+              cardboard tubes are safe and fun to destroy.
+            </li>
+            <li>
+              <strong>Rotation:</strong> Switch out toys weekly to keep things
+              fresh.
+            </li>
           </ul>
 
           <h2>Location, Location, Location</h2>
           <p>Where you put the cage matters too:</p>
-          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 my-6 rounded-r-lg">
-            <p className="text-yellow-800 text-sm mb-0">
-              <strong>Temperature Warning:</strong> Keep away from direct sunlight, drafts, and radiators. Guinea pigs are prone to heatstroke above 75°F (24°C).
+          <div className="my-6 rounded-r-lg border-l-4 border-yellow-400 bg-yellow-50 p-6">
+            <p className="mb-0 text-sm text-yellow-800">
+              <strong>Temperature Warning:</strong> Keep away from direct
+              sunlight, drafts, and radiators. Guinea pigs are prone to
+              heatstroke above 75°F (24°C).
             </p>
           </div>
           <p>
-            Place them in a family area (like a living room) so they feel part of the "herd," but avoid high-noise areas like right next to a TV or stereo.
+            Place them in a family area (like a living room) so they feel part
+            of the "herd," but avoid high-noise areas like right next to a TV or
+            stereo.
           </p>
         </article>
 
         {/* Read Next Section */}
-        <div className="mt-16 pt-10 border-t border-gray-200">
-          <h3 className="text-2xl font-bold text-primary-navy mb-6">Upgrade Their Home</h3>
+        <div className="mt-16 border-t border-gray-200 pt-10">
+          <h3 className="text-primary-navy mb-6 text-2xl font-bold">
+            Upgrade Their Home
+          </h3>
           <div className="grid gap-6 sm:grid-cols-2">
             <Link
               href="/shop-all"
-              className="group block rounded-xl border border-gray-200 p-6 transition-all hover:border-primary-purple hover:shadow-md bg-white"
+              className="group hover:border-primary-purple block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
-              <h4 className="font-bold text-lg text-primary-navy mb-2 group-hover:text-primary-purple transition-colors">
+              <h4 className="text-primary-navy group-hover:text-primary-purple mb-2 text-lg font-bold transition-colors">
                 Shop Fleece Liners
               </h4>
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="mb-4 text-sm text-gray-600">
                 The foundation of a clean and cozy habitat.
               </p>
-              <span className="text-sm font-semibold text-primary-purple flex items-center gap-1">
+              <span className="text-primary-purple flex items-center gap-1 text-sm font-semibold">
                 View Collection <ChevronRight className="h-4 w-4" />
               </span>
             </Link>
-            
+
             <Link
               href="/shop-all"
-              className="group block rounded-xl border border-gray-200 p-6 transition-all hover:border-secondary-pink hover:shadow-md bg-white"
+              className="group hover:border-secondary-pink block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
-              <h4 className="font-bold text-lg text-primary-navy mb-2 group-hover:text-secondary-pink transition-colors">
+              <h4 className="text-primary-navy group-hover:text-secondary-pink mb-2 text-lg font-bold transition-colors">
                 Cozy Hideouts
               </h4>
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="mb-4 text-sm text-gray-600">
                 Safe spaces for sleeping and snuggling.
               </p>
-              <span className="text-sm font-semibold text-secondary-pink flex items-center gap-1">
+              <span className="text-secondary-pink flex items-center gap-1 text-sm font-semibold">
                 View Collection <ChevronRight className="h-4 w-4" />
               </span>
             </Link>

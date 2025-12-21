@@ -99,7 +99,7 @@ export function OurStorySection() {
             {/* Simplified card for mobile */}
             <Link
               href="/about"
-              className="bg-primary-navy flex min-h-[200px] items-end justify-end rounded-[28px] p-6 active:scale-[0.98] transition-transform"
+              className="bg-primary-navy flex min-h-[200px] items-end justify-end rounded-[28px] p-6 transition-transform active:scale-[0.98]"
             >
               <div className="border-neutral-stroke flex items-center justify-center rounded-full border bg-white p-3">
                 <ArrowUpRight className="text-primary-navy h-4 w-4" />

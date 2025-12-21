@@ -38,7 +38,8 @@ export function UserButton({ size = "desktop" }: UserButtonProps) {
   // Authenticated state
   if (isAuthenticated && user) {
     const href = "/account";
-    const ariaLabel = `User account - ${user?.firstName || ""} ${user?.lastName || ""}`.trim();
+    const ariaLabel =
+      `User account - ${user?.firstName || ""} ${user?.lastName || ""}`.trim();
 
     // Get first initial
     const getInitial = () => {
@@ -56,7 +57,7 @@ export function UserButton({ size = "desktop" }: UserButtonProps) {
           href={href}
           className={cn(
             config.container,
-            "relative overflow-hidden rounded-full bg-primary-navy transition-colors hover:bg-primary-navy-light"
+            "bg-primary-navy hover:bg-primary-navy-light relative overflow-hidden rounded-full transition-colors"
           )}
           aria-label={ariaLabel}
         >
@@ -79,7 +80,7 @@ export function UserButton({ size = "desktop" }: UserButtonProps) {
           className={cn(
             config.container,
             config.text,
-            "flex items-center justify-center rounded-full bg-primary-navy font-semibold text-white transition-colors hover:bg-primary-navy-light"
+            "bg-primary-navy hover:bg-primary-navy-light flex items-center justify-center rounded-full font-semibold text-white transition-colors"
           )}
           aria-label={ariaLabel}
         >
@@ -94,7 +95,7 @@ export function UserButton({ size = "desktop" }: UserButtonProps) {
         href={href}
         className={cn(
           config.container,
-          "flex items-center justify-center rounded-full bg-primary-navy text-white transition-colors hover:bg-primary-navy-light"
+          "bg-primary-navy hover:bg-primary-navy-light flex items-center justify-center rounded-full text-white transition-colors"
         )}
         aria-label={ariaLabel || "User account"}
       >
@@ -109,7 +110,7 @@ export function UserButton({ size = "desktop" }: UserButtonProps) {
       href="/login"
       className={cn(
         config.container,
-        "flex items-center justify-center rounded-full bg-primary-navy text-white transition-colors hover:bg-primary-navy-light"
+        "bg-primary-navy hover:bg-primary-navy-light flex items-center justify-center rounded-full text-white transition-colors"
       )}
       aria-label="User account login"
     >

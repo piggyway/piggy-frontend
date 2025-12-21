@@ -57,10 +57,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (!res.ok) {
-      return NextResponse.json(
-        body ?? { error: "refresh_failed" },
-        { status: res.status }
-      );
+      return NextResponse.json(body ?? { error: "refresh_failed" }, {
+        status: res.status,
+      });
     }
 
     const accessToken = body?.accessToken as string | undefined;
@@ -102,6 +101,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-
-

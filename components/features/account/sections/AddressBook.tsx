@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Address } from "@/lib/types/account";
 import { UserService } from "@/lib/services/user";
-import { AddressFormDialog, type UpsertAddressInput } from "../AddressFormDialog";
+import {
+  AddressFormDialog,
+  type UpsertAddressInput,
+} from "../AddressFormDialog";
 import { Edit2, MapPin, Plus, Trash2 } from "lucide-react";
 
 export function AddressBook() {

@@ -81,7 +81,10 @@ export async function fetchWithAuth(
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("access_token");
     if (token && !headers.has("Authorization")) {
-      headers.set("Authorization", token.startsWith("Bearer") ? token : `Bearer ${token}`);
+      headers.set(
+        "Authorization",
+        token.startsWith("Bearer") ? token : `Bearer ${token}`
+      );
     }
   }
 

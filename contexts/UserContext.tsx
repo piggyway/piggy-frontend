@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, useRef, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useRef,
+  ReactNode,
+} from "react";
 import { useSession, signOut } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { UserService } from "@/lib/services/user";
@@ -111,7 +118,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         try {
           // Try to get from backend first
           const backendProfile = await UserService.getProfile();
-          
+
           if (backendProfile) {
             const userData: UserProfile = {
               firstName: backendProfile.firstName || undefined,
@@ -123,14 +130,18 @@ export function UserProvider({ children }: { children: ReactNode }) {
             setUser(userData);
 
             // Check if first login
-            const isIncomplete = !backendProfile.firstName || !backendProfile.lastName;
+            const isIncomplete =
+              !backendProfile.firstName || !backendProfile.lastName;
             setIsFirstLogin(isIncomplete);
             hasLoadedRef.current = true;
             isLoadingRef.current = false;
             return;
           }
         } catch (error) {
-          console.log("Failed to load profile from backend, falling back to session/localStorage:", error);
+          console.log(
+            "Failed to load profile from backend, falling back to session/localStorage:",
+            error
+          );
         }
 
         // Fallback: Get from session
@@ -192,9 +203,14 @@ export function UserProvider({ children }: { children: ReactNode }) {
     // Save to backend API
     try {
       const result = await UserService.updateProfile({
-        firstName: data.firstName !== undefined ? data.firstName || null : undefined,
-        lastName: data.lastName !== undefined ? data.lastName || null : undefined,
-        displayName: (data as any).displayName !== undefined ? (data as any).displayName || null : undefined,
+        firstName:
+          data.firstName !== undefined ? data.firstName || null : undefined,
+        lastName:
+          data.lastName !== undefined ? data.lastName || null : undefined,
+        displayName:
+          (data as any).displayName !== undefined
+            ? (data as any).displayName || null
+            : undefined,
       });
 
       if (!result.success) {
@@ -223,10 +239,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     // Save to localStorage as backup (always, even if backend failed)
     if (typeof window !== "undefined") {
-      localStorage.setItem("userProfile", JSON.stringify({
-        ...finalUser,
-        savedAt: new Date().toISOString(),
-      }));
+      localStorage.setItem(
+        "userProfile",
+        JSON.stringify({
+          ...finalUser,
+          savedAt: new Date().toISOString(),
+        })
+      );
     }
 
     // Update isFirstLogin status based on what we have locally

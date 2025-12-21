@@ -12,8 +12,15 @@ import { RelatedProducts } from "./RelatedProducts";
 import { useCart } from "./CartProvider";
 
 export function CartPage() {
-  const { cart, isLoading, isMutating, error, updateItem, removeItem, ensureLoaded } =
-    useCart();
+  const {
+    cart,
+    isLoading,
+    isMutating,
+    error,
+    updateItem,
+    removeItem,
+    ensureLoaded,
+  } = useCart();
 
   useEffect(() => {
     ensureLoaded().catch(() => null);
@@ -102,7 +109,7 @@ export function CartPage() {
           <div
             className={cn(
               // Keep a consistent, tidy list area on >= sm, but avoid clipping on mobile.
-              "border-neutral-stroke rounded-lg border bg-white px-4 sm:px-6 sm:h-[720px] sm:overflow-hidden",
+              "border-neutral-stroke rounded-lg border bg-white px-4 sm:h-[720px] sm:overflow-hidden sm:px-6",
               shouldScrollItems && "sm:overflow-y-auto sm:pr-2"
             )}
           >

@@ -57,7 +57,7 @@ export const footerLinks: FooterLinkGroup[] = [
     ],
   },
   {
-    title: "",
+    title: "Categories",
     links: [
       { label: "Bedding", href: "/shop-all?category=bedding" },
       { label: "Food & Treats", href: "/shop-all?category=food-treats" },

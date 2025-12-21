@@ -73,9 +73,7 @@ interface DialogTitleProps {
 
 export function DialogTitle({ children, className }: DialogTitleProps) {
   return (
-    <h2
-      className={cn("text-xl font-semibold text-gray-900", className)}
-    >
+    <h2 className={cn("text-xl font-semibold text-gray-900", className)}>
       {children}
     </h2>
   );

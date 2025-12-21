@@ -10,7 +10,6 @@ import { toast } from "sonner";
 import { Turnstile } from "@marsidev/react-turnstile";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
 
-
 interface LoginPageProps {
   error?: string;
 }
@@ -181,9 +180,7 @@ export function LoginPage({ error }: LoginPageProps) {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setFormError(
-          data?.error ?? "Invalid code or email. Please try again."
-        );
+        setFormError(data?.error ?? "Invalid code or email. Please try again.");
         return;
       }
 
@@ -201,7 +198,7 @@ export function LoginPage({ error }: LoginPageProps) {
       }
 
       setInfoMessage("Login successful. Redirecting...");
-      
+
       // Store token in localStorage for API calls
       if (typeof window !== "undefined" && data.accessToken) {
         const token = data.accessToken.startsWith("Bearer")
@@ -227,7 +224,7 @@ export function LoginPage({ error }: LoginPageProps) {
 
   return (
     <div className="flex flex-col">
-      <div className="relative container flex min-height-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0 min-h-screen">
+      <div className="min-height-screen relative container flex min-h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
         {/* 左侧背景图 */}
         <div className="relative hidden h-full flex-col bg-neutral-100 p-10 text-white lg:flex dark:border-r">
           <div className="bg-primary-navy absolute inset-0">
@@ -301,13 +298,13 @@ export function LoginPage({ error }: LoginPageProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
-                    className="flex h-10 w-full rounded-full border border-slate-300 bg-background px-3 py-2 text-sm text-slate-900 outline-none ring-offset-background placeholder:text-slate-400 focus:border-primary-navy focus:ring-2 focus:ring-primary-navy/40"
+                    className="bg-background ring-offset-background focus:border-primary-navy focus:ring-primary-navy/40 flex h-10 w-full rounded-full border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-2"
                   />
                 </div>
 
                 {/* 只在客户端渲染 Turnstile，避免 hydration 不匹配 */}
-                {mounted && (
-                  turnstileSiteKey ? (
+                {mounted &&
+                  (turnstileSiteKey ? (
                     <div className="flex justify-center">
                       <Turnstile
                         ref={turnstileRef}
@@ -325,13 +322,14 @@ export function LoginPage({ error }: LoginPageProps) {
                       Turnstile is not configured. Please set
                       NEXT_PUBLIC_TURNSTILE_SITE_KEY.
                     </div>
-                  )
-                )}
+                  ))}
 
                 <button
                   type="submit"
-                  disabled={loading || !mounted || !turnstileSiteKey || !turnstileToken}
-                  className="inline-flex w-full items-center justify-center rounded-full bg-primary-navy px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-navy-light disabled:opacity-60"
+                  disabled={
+                    loading || !mounted || !turnstileSiteKey || !turnstileToken
+                  }
+                  className="bg-primary-navy hover:bg-primary-navy-light inline-flex w-full items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-60"
                 >
                   {loading ? (
                     <>
@@ -369,14 +367,14 @@ export function LoginPage({ error }: LoginPageProps) {
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     placeholder="Enter the 6-digit code"
-                    className="flex h-10 w-full rounded-full border border-slate-300 bg-background px-3 py-2 text-sm text-slate-900 outline-none ring-offset-background placeholder:text-slate-400 focus:border-primary-navy focus:ring-2 focus:ring-primary-navy/40"
+                    className="bg-background ring-offset-background focus:border-primary-navy focus:ring-primary-navy/40 flex h-10 w-full rounded-full border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-2"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="inline-flex w-full items-center justify-center rounded-full bg-primary-navy px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-navy-light disabled:opacity-60"
+                  className="bg-primary-navy hover:bg-primary-navy-light inline-flex w-full items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-60"
                 >
                   {loading ? (
                     <>

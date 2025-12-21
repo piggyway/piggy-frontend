@@ -29,9 +29,12 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     console.error("[API Route Error] Failed to remove promo code:", error);
     return NextResponse.json(
-      { success: false, error: "removal_error", message: "Failed to remove promo code" },
+      {
+        success: false,
+        error: "removal_error",
+        message: "Failed to remove promo code",
+      },
       { status: 500 }
     );
   }
 }
-
