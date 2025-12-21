@@ -23,7 +23,7 @@ export function PetCareTipsSection() {
         <div className="relative hidden overflow-hidden lg:block">
           <div className="flex items-center gap-6 pb-4">
             {/* Card 1 - Dark Blue with Illustration (Diet) */}
-            <Link 
+            <Link
               href="/pet-care/guinea-pig-diet-guide"
               className="bg-primary-navy flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
@@ -47,7 +47,7 @@ export function PetCareTipsSection() {
                     />
                   </div>
                 </div>
-                <p className="text-white text-[20px] leading-[24px] font-medium">
+                <p className="text-[20px] leading-[24px] font-medium text-white">
                   Guinea Pig Diet Guide: What to Feed Your Piggy
                 </p>
               </div>
@@ -68,9 +68,9 @@ export function PetCareTipsSection() {
             </Link>
 
             {/* Card 2 - White Text Card (Housing) */}
-            <Link 
+            <Link
               href="/pet-care/habitat-setup-tips"
-              className="relative flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] bg-white p-6 overflow-hidden transition-transform hover:scale-[1.02]"
+              className="relative flex h-[387px] flex-1 flex-col gap-5 overflow-hidden rounded-[28px] bg-white p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="relative z-10 flex flex-1 flex-col gap-[14px]">
                 <p className="text-primary-navy-light text-[32px] leading-[40px] font-semibold">
@@ -115,7 +115,7 @@ export function PetCareTipsSection() {
             </Link>
 
             {/* Card 3 - Gold with Illustration (Bonding) */}
-            <Link 
+            <Link
               href="/pet-care/bonding-with-your-pet"
               className="bg-primary-gold flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
@@ -164,8 +164,13 @@ export function PetCareTipsSection() {
         {/* Mobile/Tablet Layout */}
         <div className="flex flex-col gap-6 lg:hidden">
           {/* Simplified cards for mobile */}
-          <Link href="/pet-care/guinea-pig-diet-guide" className="bg-primary-navy flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 active:scale-[0.98] transition-transform">
-            <h3 className="text-xl font-semibold text-white">Diet & Nutrition</h3>
+          <Link
+            href="/pet-care/guinea-pig-diet-guide"
+            className="bg-primary-navy flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
+            <h3 className="text-xl font-semibold text-white">
+              Diet & Nutrition
+            </h3>
             <p className="flex-1 text-base text-white/80">
               Guinea Pig Diet Guide: What to Feed Your Piggy
             </p>
@@ -173,8 +178,11 @@ export function PetCareTipsSection() {
               <Plus className="text-primary-navy h-4 w-4" />
             </div>
           </Link>
-          
-          <Link href="/pet-care/habitat-setup-tips" className="flex min-h-[280px] flex-col gap-4 rounded-[28px] bg-white p-6 active:scale-[0.98] transition-transform">
+
+          <Link
+            href="/pet-care/habitat-setup-tips"
+            className="flex min-h-[280px] flex-col gap-4 rounded-[28px] bg-white p-6 transition-transform active:scale-[0.98]"
+          >
             <h3 className="text-primary-navy-light text-xl font-semibold">
               Everything You Need to Begin
             </h3>
@@ -186,8 +194,13 @@ export function PetCareTipsSection() {
             </div>
           </Link>
 
-          <Link href="/pet-care/bonding-with-your-pet" className="bg-primary-gold flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 active:scale-[0.98] transition-transform">
-            <h3 className="text-xl font-semibold text-white">Bonding & Trust</h3>
+          <Link
+            href="/pet-care/bonding-with-your-pet"
+            className="bg-primary-gold flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
+            <h3 className="text-xl font-semibold text-white">
+              Bonding & Trust
+            </h3>
             <p className="text-primary-navy flex-1 text-base">
               Bonding Tips: Building Trust with Small Pets
             </p>

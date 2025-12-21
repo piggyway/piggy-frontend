@@ -27,9 +27,9 @@ type CheckoutContactForm = {
 };
 
 // --- Formatters ---
-const formatter = new Intl.NumberFormat("en-US", {
+const formatter = new Intl.NumberFormat("en-AU", {
   style: "currency",
-  currency: "USD",
+  currency: "AUD",
 });
 
 // --- Mock Data ---
@@ -136,13 +136,7 @@ export default function CheckoutPage() {
       // Pickup
       return !!pickupDate && !!pickupTime;
     }
-  }, [
-    cart,
-    fulfillmentType,
-    contactForm,
-    pickupDate,
-    pickupTime,
-  ]);
+  }, [cart, fulfillmentType, contactForm, pickupDate, pickupTime]);
 
   // Handlers
   const handlePayment = async () => {
@@ -153,7 +147,9 @@ export default function CheckoutPage() {
 
     try {
       const token =
-        typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
+        typeof window !== "undefined"
+          ? localStorage.getItem("access_token")
+          : null;
 
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -321,8 +317,8 @@ export default function CheckoutPage() {
               {fulfillmentType === "delivery" ? (
                 <div className="space-y-4">
                   <p className="text-sm text-slate-600">
-                    Delivery address and phone number will be collected on Stripe
-                    Checkout.
+                    Delivery address and phone number will be collected on
+                    Stripe Checkout.
                   </p>
                 </div>
               ) : (

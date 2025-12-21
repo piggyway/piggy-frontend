@@ -30,13 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${outfit.variable} bg-[#FFFBF5] font-sans antialiased`}
-      >
+      <body className={`${outfit.variable} bg-[#FFFBF5] font-sans antialiased`}>
         {/* ⭐ 用 Providers 包裹 children */}
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
 
         <Toaster position="top-center" richColors />
       </body>

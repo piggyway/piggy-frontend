@@ -52,9 +52,9 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
   const listContainerRef = useRef<HTMLDivElement>(null);
 
   const currencyFormatter = useMemo(() => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-AU", {
       style: "currency",
-      currency: "USD",
+      currency: "AUD",
     });
   }, []);
 
@@ -201,7 +201,8 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
             const isPickup = order.delivery_method === "pickup";
             let displayStatus = statusLabel[order.status];
             if (isPickup) {
-              if (order.status === "shipped") displayStatus = "Ready for Pickup";
+              if (order.status === "shipped")
+                displayStatus = "Ready for Pickup";
               if (order.status === "completed") displayStatus = "Picked Up";
             }
 
@@ -370,7 +371,10 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
               if (safePage === currentPage) return;
               setCurrentPage(safePage);
               // Reset scroll position when page changes
-              listContainerRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+              listContainerRef.current?.scrollTo({
+                top: 0,
+                behavior: "smooth",
+              });
             }}
           />
         </div>

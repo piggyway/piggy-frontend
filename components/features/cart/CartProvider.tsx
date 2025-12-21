@@ -289,7 +289,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsMutating(true);
     try {
       const result = await PromoService.removePromoCode();
-      
+
       if (result.success) {
         // Refresh cart to get updated totals
         await loadCart();
@@ -377,7 +377,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                   typeof pathname === "string" && pathname.length > 0
                     ? pathname
                     : "/shop";
-                router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+                router.push(
+                  `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                );
               }}
             >
               Sign In / Register

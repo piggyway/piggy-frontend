@@ -45,19 +45,19 @@ export default function CageLinerBenefitsPage() {
   };
 
   return (
-    <div className="bg-white min-h-screen font-sans text-gray-900 selection:bg-secondary-blue/20">
+    <div className="selection:bg-secondary-blue/20 min-h-screen bg-white font-sans text-gray-900">
       <BackgroundBlobs variant={2} className="opacity-30" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="container mx-auto max-w-3xl px-6 py-12 sm:py-20 relative z-10">
+      <div className="relative z-10 container mx-auto max-w-3xl px-6 py-12 sm:py-20">
         {/* Navigation */}
         <nav className="mb-8">
           <Link
             href="/"
-            className="group inline-flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-primary-navy transition-colors"
+            className="group hover:text-primary-navy inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors"
           >
             <ArrowLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Back to Home
@@ -66,11 +66,13 @@ export default function CageLinerBenefitsPage() {
 
         {/* Article Header */}
         <header className="mb-10 text-center sm:text-left">
-          <h1 className="text-3xl font-extrabold tracking-tight text-primary-navy sm:text-4xl md:text-5xl leading-tight mb-6">
+          <h1 className="text-primary-navy mb-6 text-3xl leading-tight font-extrabold tracking-tight sm:text-4xl md:text-5xl">
             Why Fleece Liners Are a Game-Changer
           </h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 sm:justify-start justify-center">
-            <span className="font-medium text-gray-900">Piggy Way Crossing Team</span>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500 sm:justify-start">
+            <span className="font-medium text-gray-900">
+              Piggy Way Crossing Team
+            </span>
             <span className="hidden sm:inline">•</span>
             <span>March 18, 2024</span>
             <span className="hidden sm:inline">•</span>
@@ -90,15 +92,15 @@ export default function CageLinerBenefitsPage() {
         </div>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-secondary-blue prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none text-gray-700 leading-relaxed">
-          <p className="lead text-xl text-gray-600 mb-8">
-            If you're tired of buying bags of wood shavings, dealing with dust, and
-            constantly scooping mess, it's time to switch to fleece.
+        <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-secondary-blue prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
+          <p className="lead mb-8 text-xl text-gray-600">
+            If you're tired of buying bags of wood shavings, dealing with dust,
+            and constantly scooping mess, it's time to switch to fleece.
           </p>
 
-          <div className="grid md:grid-cols-2 gap-6 my-10 not-prose">
-            <div className="bg-red-50 p-6 rounded-xl border border-red-100">
-              <h4 className="text-red-800 font-bold mb-4 flex items-center gap-2">
+          <div className="not-prose my-10 grid gap-6 md:grid-cols-2">
+            <div className="rounded-xl border border-red-100 bg-red-50 p-6">
+              <h4 className="mb-4 flex items-center gap-2 font-bold text-red-800">
                 <X className="h-5 w-5" /> Traditional Bedding
               </h4>
               <ul className="space-y-2 text-sm text-red-700">
@@ -108,8 +110,8 @@ export default function CageLinerBenefitsPage() {
                 <li>• Hard to spot clean</li>
               </ul>
             </div>
-            <div className="bg-green-50 p-6 rounded-xl border border-green-100 shadow-sm">
-              <h4 className="text-green-800 font-bold mb-4 flex items-center gap-2">
+            <div className="rounded-xl border border-green-100 bg-green-50 p-6 shadow-sm">
+              <h4 className="mb-4 flex items-center gap-2 font-bold text-green-800">
                 <Check className="h-5 w-5" /> Fleece Liners
               </h4>
               <ul className="space-y-2 text-sm text-green-700">
@@ -127,74 +129,85 @@ export default function CageLinerBenefitsPage() {
           <p>
             Guinea pigs have sensitive respiratory systems. Wood shavings—even
             "safe" ones like aspen—can be dusty. Pine and cedar shavings contain
-            aromatic oils (phenols) that can damage the liver and respiratory tract
-            over time.
+            aromatic oils (phenols) that can damage the liver and respiratory
+            tract over time.
           </p>
           <p>
-            Fleece is virtually dust-free, making it the safest option for your pet
-            (and great for owners with allergies too!).
+            Fleece is virtually dust-free, making it the safest option for your
+            pet (and great for owners with allergies too!).
           </p>
 
           <h2>2. Saves Money in the Long Run</h2>
           <p>
-            While the initial cost of a few liners is higher than a bag of bedding,
-            they are reusable for years. Imagine never having to buy disposable
-            bedding again. The savings add up quickly.
+            While the initial cost of a few liners is higher than a bag of
+            bedding, they are reusable for years. Imagine never having to buy
+            disposable bedding again. The savings add up quickly.
           </p>
 
           <h2>3. Easier Spot Cleaning</h2>
           <p>
-            With fleece, daily maintenance is a breeze. Simply use a hand broom or
-            vacuum to sweep up poops once or twice a day. No more wrestling with
-            messy clumps of soiled wood chips.
+            With fleece, daily maintenance is a breeze. Simply use a hand broom
+            or vacuum to sweep up poops once or twice a day. No more wrestling
+            with messy clumps of soiled wood chips.
           </p>
 
           <h2>4. Comfort & Style</h2>
           <p>
-            Fleece is soft and warm. It mimics the feeling of natural ground better
-            than hard pellets or shavings. Plus, it comes in endless patterns and
-            colors to match your home decor!
+            Fleece is soft and warm. It mimics the feeling of natural ground
+            better than hard pellets or shavings. Plus, it comes in endless
+            patterns and colors to match your home decor!
           </p>
 
           <h2>How Piggy Way Crossing Liners Are Different</h2>
           <p>Not all liners are created equal. Ours feature:</p>
           <ul>
-            <li><strong>Wicking Fleece Top Layer:</strong> Pulls moisture down instantly so the surface stays dry.</li>
-            <li><strong>Absorbent Core:</strong> Traps liquid and odor effectively.</li>
-            <li><strong>Waterproof Base:</strong> Protects your cage floor from leaks.</li>
+            <li>
+              <strong>Wicking Fleece Top Layer:</strong> Pulls moisture down
+              instantly so the surface stays dry.
+            </li>
+            <li>
+              <strong>Absorbent Core:</strong> Traps liquid and odor
+              effectively.
+            </li>
+            <li>
+              <strong>Waterproof Base:</strong> Protects your cage floor from
+              leaks.
+            </li>
           </ul>
         </article>
 
         {/* Read Next Section */}
-        <div className="mt-16 pt-10 border-t border-gray-200">
-          <h3 className="text-2xl font-bold text-primary-navy mb-6">Ready to Switch?</h3>
+        <div className="mt-16 border-t border-gray-200 pt-10">
+          <h3 className="text-primary-navy mb-6 text-2xl font-bold">
+            Ready to Switch?
+          </h3>
           <div className="grid gap-6 sm:grid-cols-2">
             <Link
               href="/shop-all"
-              className="group block rounded-xl border border-gray-200 p-6 transition-all hover:border-secondary-blue hover:shadow-md bg-white"
+              className="group hover:border-secondary-blue block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
-              <h4 className="font-bold text-lg text-primary-navy mb-2 group-hover:text-secondary-blue transition-colors">
+              <h4 className="text-primary-navy group-hover:text-secondary-blue mb-2 text-lg font-bold transition-colors">
                 Shop C&C Cage Liners
               </h4>
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="mb-4 text-sm text-gray-600">
                 Perfectly sized for standard C&C grid cages.
               </p>
-              <span className="text-sm font-semibold text-secondary-blue flex items-center gap-1">
+              <span className="text-secondary-blue flex items-center gap-1 text-sm font-semibold">
                 Shop Now <ChevronRight className="h-4 w-4" />
               </span>
             </Link>
-            
+
             <Link
               href="/shop-all"
-              className="group block rounded-xl border border-gray-200 p-6 transition-all hover:border-secondary-blue hover:shadow-md bg-white"
+              className="group hover:border-secondary-blue block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
-              <h4 className="font-bold text-lg text-primary-navy mb-2 group-hover:text-secondary-blue transition-colors">
+              <h4 className="text-primary-navy group-hover:text-secondary-blue mb-2 text-lg font-bold transition-colors">
                 Shop MidWest Liners
               </h4>
-              <p className="text-gray-600 text-sm mb-4">
+              <p className="mb-4 text-sm text-gray-600">
                 Custom fit for the popular MidWest Habitat.
               </p>
-              <span className="text-sm font-semibold text-secondary-blue flex items-center gap-1">
+              <span className="text-secondary-blue flex items-center gap-1 text-sm font-semibold">
                 Shop Now <ChevronRight className="h-4 w-4" />
               </span>
             </Link>

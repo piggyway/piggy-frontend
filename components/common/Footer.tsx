@@ -63,7 +63,9 @@ export function Footer() {
 
             {/* Terms & Privacy Links */}
             <div className="flex flex-col gap-2 sm:gap-3 lg:w-40">
-              <div className="h-6 sm:h-8" /> {/* Spacer for alignment */}
+              <h3 className="text-lg leading-7 font-semibold text-white sm:text-xl lg:text-2xl lg:leading-8">
+                Policies
+              </h3>
               <div className="flex flex-col gap-0">
                 <Link
                   href="/terms"

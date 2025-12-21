@@ -22,7 +22,11 @@ export async function POST(request: NextRequest) {
 
     if (!code || typeof orderAmount !== "number") {
       return NextResponse.json(
-        { valid: false, error: "invalid_request", message: "Invalid request parameters" },
+        {
+          valid: false,
+          error: "invalid_request",
+          message: "Invalid request parameters",
+        },
         { status: 400 }
       );
     }
@@ -40,16 +44,12 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[API Route Error] Failed to validate promo code:", error);
     return NextResponse.json(
-      { valid: false, error: "validation_error", message: "Failed to validate promo code" },
+      {
+        valid: false,
+        error: "validation_error",
+        message: "Failed to validate promo code",
+      },
       { status: 500 }
     );
   }
 }
-
-
-
-
-
-
-
-

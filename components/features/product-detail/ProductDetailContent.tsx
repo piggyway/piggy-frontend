@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, HelpCircle, Minus, Plus } from "lucide-react";
@@ -46,6 +46,15 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [activeGuide, setActiveGuide] = useState<"size" | "color" | null>(null);
+
+  // Track previous variant to only auto-switch images when the variant actually changes
+  const lastSelectedVariantId = useRef(
+    // Initialize with current variant ID to avoid initial effect run if desired,
+    // or undefined to allow initial sync.
+    // Given the logic, we want to allow initial sync if needed, but not fight user clicks.
+    // Let's initialize with undefined so first effect run sets it up correctly if needed.
+    undefined as number | undefined
+  );
 
   // Find the variant that matches selected options
   const selectedVariant = useMemo(() => {
@@ -172,6 +181,12 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
   // Update image when variant changes
   useEffect(() => {
+    // Only proceed if variant has effectively changed (or on first run)
+    if (selectedVariant?.id === lastSelectedVariantId.current) {
+      return;
+    }
+    lastSelectedVariantId.current = selectedVariant?.id;
+
     // If the current selected image already belongs to the selected variant, keep it.
     const currentImage = allImages[selectedImageIndex];
     if (
@@ -193,7 +208,13 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
     // If the selected variant has no images, reset to the product's primary image (or 0).
     setSelectedImageIndex(fallbackIndex >= 0 ? fallbackIndex : 0);
-  }, [selectedVariant, allImages, imageToVariant, selectedImageIndex, product.images]);
+  }, [
+    selectedVariant,
+    allImages,
+    imageToVariant,
+    selectedImageIndex,
+    product.images,
+  ]);
 
   // Handle option selection
   const handleOptionSelect = (optionId: number, valueId: number) => {
@@ -288,9 +309,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         {/* Main Image */}
         <div className="bg-neutral-stroke relative aspect-[4/3] w-full overflow-hidden rounded-[20px] sm:rounded-[28px]">
           <Image
-            src={
-              allImages[selectedImageIndex] || "/default-product-image.png"
-            }
+            src={allImages[selectedImageIndex] || "/default-product-image.png"}
             alt={product.title}
             fill
             className="object-contain"
@@ -537,7 +556,9 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b">
-                        <th className="px-4 py-2 text-left font-medium">Size</th>
+                        <th className="px-4 py-2 text-left font-medium">
+                          Size
+                        </th>
                         <th className="px-4 py-2 text-left font-medium">
                           Chest (cm)
                         </th>
