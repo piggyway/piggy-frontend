@@ -17,572 +17,536 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Truck, Store, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 
-// --- Types ---
-type CheckoutContactForm = {
-  email: string;
+
+
+const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || ""; //  pickup endpoints
+
+type FulfillmentType = "delivery" | "pickup";
+
+type CartItemPayload = {
+  id: string;
+  productRid?: number | null;
+  variantRid?: number | null;
+  productTitle: string;
+  variantSku: string | null;
+  quantity: number;
+  unitPriceCents: number;
+  lineSubtotalCents: number;
+  imageUrl: string;
+  currency: string;
 };
 
-// --- Formatters ---
-const formatter = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-});
+type PickupLocation = {
+  id: string;
+  name: string;
+  address: string;
+  instructions?: string | null;
+  timezone: string;
+  inventory: number;
+};
 
-// --- Mock Data ---
-const PICKUP_TIMES = [
-  "09:00 AM - 10:00 AM",
-  "10:00 AM - 11:00 AM",
-  "11:00 AM - 12:00 PM",
-  "01:00 PM - 02:00 PM",
-  "02:00 PM - 03:00 PM",
-  "03:00 PM - 04:00 PM",
-  "04:00 PM - 05:00 PM",
-];
+type PickupSlot = {
+  id: string;
+  locationId: string;
+  slotDate: string; // YYYY-MM-DD
+  startAt: string;  // ISO
+  endAt: string;    // ISO
+};
 
-const PICKUP_DATES = [
-  "Today, Oct 24",
-  "Tomorrow, Oct 25",
-  "Mon, Oct 27",
-  "Tue, Oct 28",
-];
+function ymd(d: Date) {
+  return d.toISOString().slice(0, 10);
+}
 
-const PICKUP_SLOTS = [
-  { id: "slot_1", label: "09:00 AM - 10:00 AM", isAvailable: true },
-  { id: "slot_2", label: "10:00 AM - 11:00 AM", isAvailable: true },
-  { id: "slot_3", label: "11:00 AM - 12:00 PM", isAvailable: false },
-];
+function slotLabel(s: PickupSlot) {
+  const a = new Date(s.startAt);
+  const b = new Date(s.endAt);
+  const fmt = (x: Date) => x.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  return `${fmt(a)} – ${fmt(b)}`;
+}
 
+function money(cents: number, currency: string) {
+  const v = cents / 100;
+  try {
+    return new Intl.NumberFormat(undefined, { style: "currency", currency }).format(v);
+  } catch {
+    return `${v.toFixed(2)} ${currency}`;
+  }
+}
+
+async function apiGet<T>(path: string): Promise<T> {
+  const res = await fetch(`${API_BASE}${path}`, { cache: "no-store" });
+  if (!res.ok) throw new Error(await res.text());
+  return await res.json();
+}
+
+async function postToNext<T>(path: string, body: any): Promise<T> {
+  const res = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  const json = await res.json().catch(() => null);
+  if (!res.ok) {
+    const msg = json?.error?.message || (typeof json?.message === "string" ? json.message : "") || "Request failed";
+    throw new Error(msg);
+  }
+  return json as T;
+}
+
+/**
+ * TODO: Replace with your real cart store.
+ * This must produce the camelCase payload expected by /api/checkout/route.ts
+ */
+async function getCartItems(): Promise<CartItemPayload[]> {
+  if (typeof window === "undefined") return [];
+  const raw = window.localStorage.getItem("cart_items_payload");
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as CartItemPayload[]) : [];
+  } catch {
+    return [];
+  }
+}
 
 export default function CheckoutPage() {
-  const {
-    cart,
-    isLoading,
-    isMutating,
-    error,
-    ensureLoaded,
-    applyPromoCode,
-    removePromoCode,
-  } = useCart();
-  const { user, isAuthenticated } = useUser();
-  const router = useRouter();
-  const { data: session } = useSession();
+  const [email, setEmail] = useState("");
+  const [fulfillmentType, setFulfillmentType] = useState<FulfillmentType>("delivery");
+  const [currency, setCurrency] = useState("AUD");
 
-  // Ensure cart is loaded on checkout page
+  const [cartItems, setCartItems] = useState<CartItemPayload[]>([]);
+  const [loadingCart, setLoadingCart] = useState(false);
+  const [pickupLocations, setPickupLocations] = useState<PickupLocation[]>([]);
+  const [pickupSlots, setPickupSlots] = useState<PickupSlot[]>([]);
+ 
+
+  const [pickupLoading, setPickupLoading] = useState(false);
+  const [pickupError, setPickupError] = useState<string | null>(null);
+  
+  const [selectedPickupLocationId, setSelectedPickupLocationId] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>("");
+  const [selectedSlotId, setSelectedSlotId] = useState<string>("");
+
+  const [loadingPickup, setLoadingPickup] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [error, setError] = useState<string>("");
+
+  // load cart
   useEffect(() => {
-    ensureLoaded().catch(() => null);
-  }, [ensureLoaded]);
-
-  // State
-  const [fulfillmentType, setFulfillmentType] = useState<"delivery" | "pickup">(
-    "delivery"
-  );
-
-  // Forms
-  const [contactForm, setContactForm] = useState<CheckoutContactForm>({
-    email: "",
-  });
-
-  // Pickup State
-  const [pickupDate, setPickupDate] = useState<string>(PICKUP_DATES[0]);
-  const [pickupTime, setPickupTime] = useState<string | null>(null);
-  // which location? 
-  const [selectedPickupLocationId, setSelectedPickupLocationId] = useState<string | null>(null);
-  // which slot
-  const [selectedPickupSlotId, setSelectedPickupSlotId] = useState<string | null>(null);
-
-
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  // Promo code UI state (status + validation message)
-  const [promoCode, setPromoCode] = useState("");
-  const [promoError, setPromoError] = useState<string | null>(null);
-  const [isValidatingPromo, setIsValidatingPromo] = useState(false);
-
-  // Auto-fill user info
-  useEffect(() => {
-    if (isAuthenticated && user) {
-      setContactForm((prev) => ({
-        ...prev,
-        email: user.email || prev.email,
-      }));
-    }
-  }, [isAuthenticated, user]);
-
-  // Derived State
-  const totals = useMemo(() => {
-    if (!cart) return { subtotal: 0, shipping: 0, tax: 0, total: 0 };
-
-    const subtotal = cart.totals.subtotalCents;
-    const taxBase = subtotal - cart.totals.discountCents;
-    const tax = Math.round(taxBase * 0.1);
-    const shipping = fulfillmentType === "pickup" ? 0 : 0; // Free shipping logic or logic here
-    const grandTotal = Math.max(
-      0,
-      subtotal + shipping + tax - cart.totals.discountCents
-    );
-
-    return {
-      subtotal,
-      shipping,
-      tax,
-      total: grandTotal,
-    };
-  }, [cart, fulfillmentType]);
-
-  // Validation
-  const canSubmit = useMemo(() => {
-    if (!cart) return false;
-
-    // Always require an email for Stripe Checkout
-    if (!contactForm.email.trim()) return false;
-
-    // Check Fulfillment
-    if (fulfillmentType === "delivery") {
-      // Address will be collected on Stripe Checkout
-      return true;
-    } else {
-      // Pickup
-      //return !!pickupDate && !!pickupTime;
-      return !!selectedPickupLocationId && !!selectedPickupSlotId;
-    }
-  }, [
-    cart,
-    fulfillmentType,
-    contactForm,
-    pickupDate,
-    pickupTime,
-  ]);
-
-  // Handlers
-  const handlePayment = async () => {
-    if (!cart) return;
-
-    setIsProcessing(true);
-    setPromoError(null);
-
-    try {
-      // #region agent log (debug-session)
-      fetch('http://127.0.0.1:7244/ingest/4d167c0f-d521-47a0-b9c1-cf8baf1e5421',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:'debug-session',runId:'pre-fix',hypothesisId:'A',location:'piggy-frontend/app/(shop)/checkout/page.tsx:handlePayment',message:'Checkout click: payload snapshot (sanitized)',data:{fulfillmentType,pickupDate:fulfillmentType==='pickup'?pickupDate:null,pickupTime:fulfillmentType==='pickup'?pickupTime:null,cartItemCount:cart.items.length,cartCurrency:cart.currency,hasPromo:!!cart.appliedCouponCode,emailLen:contactForm.email?.length||0,qtySum:cart.items.reduce((s,i)=>s+(i.quantity||0),0),hasSessionUserId:!!(session?.user as any)?.id},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion agent log (debug-session)
-
-      const token =
-        typeof window !== "undefined" ? localStorage.getItem("access_token") : null;
-
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: token } : {}),
-        },
-        body: JSON.stringify({
-          email: contactForm.email,
-          fulfillmentType, // "delivery" | "pickup"
-          cartId: cart.id,
-
-          // pickup locationId+ slotId instead of 
-          pickupLocationId:
-            fulfillmentType === "pickup" ? selectedPickupLocationId : undefined,
-
-          pickupSlotId:
-            fulfillmentType === "pickup" ? selectedPickupSlotId : undefined,
-
-          promoCode: cart.appliedCouponCode || undefined,
-          userId: (session?.user as any)?.id,
-
-          cartItems: cart.items.map((item) => ({
-            id: item.id,
-            productRid: item.productRid,
-            variantRid: item.variantRid,
-            productTitle: item.productTitle,
-            variantSku: item.variantSku,
-            quantity: item.quantity,
-            unitPriceCents: item.unitPriceCents,
-            lineSubtotalCents: item.lineSubtotalCents,
-            imageUrl: item.imageUrl,
-            currency: item.currency,
-          })),
-
-          currency: cart.currency,
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
-      const url = data?.url;
-
-      if (!res.ok || !url) {
-        const message =
-          data?.error?.message ||
-          data?.message ||
-          "Failed to start checkout. Please try again.";
-        throw new Error(message);
+    let cancel = false;
+    (async () => {
+      try {
+        setLoadingCart(true);
+        const items = await getCartItems();
+        if (cancel) return;
+        setCartItems(items);
+        if (items[0]?.currency) setCurrency(items[0].currency.toUpperCase());
+      } catch (e: any) {
+        if (cancel) return;
+        setError(e?.message || "Failed to load cart");
+      } finally {
+        if (!cancel) setLoadingCart(false);
       }
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, []);
 
-      // Redirect to Stripe Checkout
-      window.location.assign(url);
-    } catch (err: any) {
-      toast.error(err?.message || "Payment failed. Please try again.");
-      setIsProcessing(false);
-    }
-  };
+  // load pickup locations when switch to pickup
+  useEffect(() => {
+    if (fulfillmentType !== "pickup") return;
 
-  const handleContactChange = (value: string) => {
-    setContactForm((prev) => ({ ...prev, email: value }));
-  };
+    let cancel = false;
+    (async () => {
+      try {
+        setError("");
+        setLoadingPickup(true);
 
-  const handleApplyPromo = async () => {
-    if (!cart) return;
+        const res = await apiGet<{ success: boolean; data: any[] }>(`/api/v1/pickup/locations`);
+        if (cancel) return;
 
-    const code = promoCode.trim();
-    if (!code) {
-      setPromoError("Please enter a promo code");
-      return;
-    }
+        const data = Array.isArray(res?.data) ? res.data : [];
+        const mapped: PickupLocation[] = data.map((x: any) => ({
+          id: x.id,
+          name: x.name,
+          address: x.address,
+          instructions: x.instructions ?? null,
+          timezone: x.timezone,
+          inventory: Number(x.inventory ?? 0),
+        }));
 
-    setIsValidatingPromo(true);
-    setPromoError(null);
+        setPickupLocations(mapped);
+
+        // default location
+        const first = mapped[0];
+        setSelectedPickupLocationId(first?.id || "");
+      } catch (e: any) {
+        if (cancel) return;
+        setError(e?.message || "Failed to load pickup locations");
+      } finally {
+        if (!cancel) setLoadingPickup(false);
+      }
+    })();
+
+    return () => {
+      cancel = true;
+    };
+  }, [fulfillmentType]);
+
+  // load slots for selected location (future 14 days)
+  useEffect(() => {
+    if (fulfillmentType !== "pickup") return;
+    if (!selectedPickupLocationId) return;
+
+    let cancel = false;
+    (async () => {
+      try {
+        setError("");
+        setLoadingPickup(true);
+
+        setPickupSlots([]);
+        setSelectedDate("");
+        setSelectedSlotId("");
+
+        const start = new Date();
+        const end = new Date();
+        end.setDate(end.getDate() + 14);
+
+        const qs =
+          `?location_id=${encodeURIComponent(selectedPickupLocationId)}` +
+          `&start_date=${encodeURIComponent(ymd(start))}` +
+          `&end_date=${encodeURIComponent(ymd(end))}`;
+
+        const res = await apiGet<{ success: boolean; data: any[] }>(`/api/v1/pickup/slots${qs}`);
+        if (cancel) return;
+
+        const data = Array.isArray(res?.data) ? res.data : [];
+        const mapped: PickupSlot[] = data.map((x: any) => ({
+          id: x.id,
+          locationId: x.location_id ?? x.locationId,
+          slotDate: x.slot_date ?? x.slotDate,
+          startAt: x.start_at ?? x.startAt,
+          endAt: x.end_at ?? x.endAt,
+        }));
+
+        setPickupSlots(mapped);
+        setSelectedSlotId("");
+
+        const firstDate = mapped[0]?.slotDate || "";
+        setSelectedDate(firstDate);
+      } catch (e: any) {
+        if (cancel) return;
+        setError(e?.message || "Failed to load pickup slots");
+      } finally {
+        if (!cancel) setLoadingPickup(false);
+      }
+    })();
+
+    return () => {
+      cancel = true;
+    };
+  }, [fulfillmentType, selectedPickupLocationId]);
+
+  // clear slot when date changes
+  useEffect(() => {
+    if (fulfillmentType !== "pickup") return;
+    setSelectedSlotId("");
+  }, [selectedDate, fulfillmentType]);
+
+  const dates = useMemo(() => {
+    const set = new Set<string>();
+    for (const s of pickupSlots) set.add(s.slotDate);
+    return Array.from(set).sort();
+  }, [pickupSlots]);
+
+  const slotsInDate = useMemo(() => {
+    if (!selectedDate) return [];
+    return pickupSlots.filter((s) => s.slotDate === selectedDate);
+  }, [pickupSlots, selectedDate]);
+
+  const subtotalCents = useMemo(() => {
+    return cartItems.reduce((sum, it) => sum + (it.unitPriceCents * it.quantity), 0);
+  }, [cartItems]);
+
+  async function handlePay() {
     try {
-      const validation = await PromoService.validatePromoCode(
-        code,
-        cart.totals.subtotalCents
-      );
+      setError("");
 
-      if (!validation.valid) {
-        setPromoError(validation.message || "Invalid promo code");
+      if (!email || !email.includes("@")) {
+        setError("Please enter a valid email.");
         return;
       }
+      if (!cartItems.length) {
+        setError("Your cart is empty.");
+        return;
+      }
+      if (fulfillmentType === "pickup") {
+        if (!selectedPickupLocationId) {
+          setError("Please select a pickup location.");
+          return;
+        }
+        if (!selectedSlotId) {
+          setError("Please select a pickup time slot.");
+          return;
+        }
+      }
 
-      await applyPromoCode(code);
-      setPromoCode("");
-    } catch {
-      setPromoError("Failed to validate promo code");
+      setPaying(true);
+
+      // Send camelCase to Next /api/checkout, route.ts will map to backend snake_case
+      const payload = {
+        email,
+        fulfillmentType,
+        pickupLocationId: fulfillmentType === "pickup" ? selectedPickupLocationId : null,
+        pickupSlotId: fulfillmentType === "pickup" ? selectedSlotId : null,
+        cartItems,
+        currency: currency.toLowerCase(),
+      };
+
+      const res = await postToNext<{ url: string }>("/api/checkout", payload);
+      window.location.href = res.url;
+    } catch (e: any) {
+      setError(e?.message || "Checkout failed");
     } finally {
-      setIsValidatingPromo(false);
+      setPaying(false);
     }
-  };
-
-  const handleRemovePromo = async () => {
-    await removePromoCode();
-    setPromoCode("");
-    setPromoError(null);
-  };
-
-  // Loading / Empty States
-  if (isLoading) {
-    return (
-      <div className="container mx-auto max-w-6xl px-4 py-12 text-center lg:py-16">
-        <p className="text-lg text-slate-600">Loading checkout...</p>
-      </div>
-    );
   }
 
-  if (!cart || cart.items.length === 0) {
-    return (
-      <div className="container mx-auto max-w-6xl px-4 py-12 text-center lg:py-16">
-        <h1 className="text-primary-navy mb-4 text-3xl font-bold">
-          Your Cart is Empty
-        </h1>
-        <Button onClick={() => router.push("/")} className="mt-4">
-          Back to Shop
-        </Button>
-      </div>
-    );
-  }
+  const selectedLocation = useMemo(
+    () => pickupLocations.find((l) => l.id === selectedPickupLocationId),
+    [pickupLocations, selectedPickupLocationId],
+  );
 
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-12 lg:py-16">
-      <div className="mb-8">
-        <p className="text-sm font-semibold text-slate-400">Checkout</p>
-        <h1 className="text-primary-navy text-3xl font-bold">
-          Complete your order
-        </h1>
-      </div>
+    <div style={{ maxWidth: 980, margin: "0 auto", padding: 20 }}>
+      <h1 style={{ fontSize: 28, fontWeight: 800, marginBottom: 14 }}>Checkout</h1>
 
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.6fr_1fr]">
-        <div className="space-y-6">
-          {/* 1. Fulfillment Method */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Delivery Method</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Tabs
-                value={fulfillmentType}
-                onValueChange={(v) =>
-                  setFulfillmentType(v as "delivery" | "pickup")
-                }
-                className="w-full"
-              >
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="delivery" className="gap-2">
-                    <Truck className="size-4" /> Delivery
-                  </TabsTrigger>
-                  <TabsTrigger value="pickup" className="gap-2">
-                    <Store className="size-4" /> Pickup
-                  </TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </CardContent>
-          </Card>
+      {error ? (
+        <div
+          style={{
+            border: "1px solid #f3c1c1",
+            background: "#fff5f5",
+            color: "#8a1f1f",
+            padding: 12,
+            borderRadius: 10,
+            marginBottom: 14,
+          }}
+        >
+          {error}
+        </div>
+      ) : null}
 
-          {/* 2. Addresses or Time Slots */}
-          <Card>
-            <CardHeader className="border-b">
-              <CardTitle>
-                {fulfillmentType === "delivery"
-                  ? "Delivery"
-                  : "Pickup Schedule"}
-              </CardTitle>
-              <CardDescription>
-                {fulfillmentType === "delivery"
-                  ? "You'll enter delivery address on Stripe Checkout."
-                  : "When would you like to come by?"}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6 pt-6">
-              {fulfillmentType === "delivery" ? (
-                <div className="space-y-4">
-                  <p className="text-sm text-slate-600">
-                    Delivery address and phone number will be collected on Stripe
-                    Checkout.
-                  </p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 360px", gap: 20 }}>
+        {/* Left */}
+        <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 10 }}>Contact</h2>
+          <label style={{ display: "block", fontSize: 13, marginBottom: 6 }}>Email</label>
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@email.com"
+            style={{
+              width: "100%",
+              padding: 10,
+              borderRadius: 10,
+              border: "1px solid #d1d5db",
+              marginBottom: 16,
+            }}
+          />
+
+          <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 10 }}>Fulfillment</h2>
+          <div style={{ display: "flex", gap: 14, marginBottom: 14 }}>
+            <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <input
+                type="radio"
+                checked={fulfillmentType === "delivery"}
+                onChange={() => setFulfillmentType("delivery")}
+              />
+              Delivery
+            </label>
+
+            <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <input
+                type="radio"
+                checked={fulfillmentType === "pickup"}
+                onChange={() => setFulfillmentType("pickup")}
+              />
+              Pickup
+            </label>
+          </div>
+
+          {fulfillmentType === "pickup" ? (
+            <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 12 }}>
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>
+                  Pickup location
                 </div>
-              ) : (
-                /* Pickup Form */
-                <div className="space-y-6">
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium">Select a Date</label>
-                    <div className="flex gap-2 overflow-x-auto pb-2">
-                      {PICKUP_DATES.map((date) => (
-                        <button
-                          key={date}
-                          onClick={() => setPickupDate(date)}
-                          className={cn(
-                            "flex-shrink-0 rounded-lg border px-4 py-2 text-sm font-medium transition-colors",
-                            pickupDate === date
-                              ? "bg-primary-navy border-primary-navy text-white"
-                              : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
-                          )}
-                        >
-                          {date}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                {loadingPickup ? (
+                  <div style={{ fontSize: 13, color: "#6b7280" }}>Loading…</div>
+                ) : (
+                  <select
+                    value={selectedPickupLocationId}
+                    onChange={(e) => setSelectedPickupLocationId(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: 10,
+                      borderRadius: 10,
+                      border: "1px solid #d1d5db",
+                    }}
+                  >
+                    {pickupLocations.length ? null : <option value="">No pickup Locations</option>}
+                    {pickupLocations.map((loc) => (
+                      <option key={loc.id} value={loc.id}>
+                        {loc.name} — {loc.address}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
 
-                  <div className="space-y-3">
-                    <label className="text-sm font-medium">Select a Time</label>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                     
-                      {PICKUP_SLOTS.map((slot) => (
-                        <button
-                          key={slot.id}
-                          disabled={!slot.isAvailable}
-                          onClick={() => setSelectedPickupSlotId(slot.id)} 
-                          className={cn(
-                            "rounded-md border px-3 py-2 text-center text-sm transition-all",
-                            selectedPickupSlotId === slot.id
-                              ? "border-primary-navy bg-primary-navy/5 text-primary-navy ring-primary-navy font-semibold ring-1"
-                              : "border-gray-200 text-gray-600 hover:border-gray-300"
-                          )}
-                        >
-                          {slot.label}
-                        </button>
-                      ))}
+              {selectedLocation ? (
+                <div style={{ fontSize: 13, color: "#374151", marginBottom: 12, lineHeight: 1.5 }}>
+                  <div style={{ fontWeight: 800 }}>{selectedLocation.name}</div>
+                  <div>{selectedLocation.address}</div>
+                  {selectedLocation.instructions ? (
+                    <div style={{ color: "#6b7280", marginTop: 6 }}>
+                      {selectedLocation.instructions}
                     </div>
-                  </div>
+                  ) : null}
                 </div>
-              )}
-            </CardContent>
-            <CardFooter className="rounded-b-lg border-t bg-slate-50 pt-6">
-              <div className="w-full">
-                <Button
-                  size="lg"
-                  className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
-                  disabled={!canSubmit || isProcessing}
-                  onClick={handlePayment}
+              ) : null}
 
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>
+                  Pickup date
+                </div>
+                <select
+                  value={selectedDate}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    borderRadius: 10,
+                    border: "1px solid #d1d5db",
+                  }}
+                  disabled={loadingPickup || dates.length === 0}
                 >
-                  {isProcessing ? "Processing..." : "Continue to payment"}
-                </Button>
-                <p className="mt-4 flex items-center justify-center gap-1 text-center text-xs text-slate-500">
-                  <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold text-green-700">
-                    Encrypted
-                  </span>
-                  Payments are processed securely
-                </p>
+                  {dates.length ? null : <option value="">No dates</option>}
+                  {dates.map((d) => (
+                    <option key={d} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
               </div>
-            </CardFooter>
-          </Card>
 
-          {/* 3. Contact */}
-          {/* <Card>
-            <CardHeader className="border-b">
-              <CardTitle>Contact</CardTitle>
-              <CardDescription>
-                We'll send your receipt and order updates to this email.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4 pt-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Email</label>
-                <Input
-                  value={contactForm.email}
-                  onChange={(e) => handleContactChange(e.target.value)}
-                  placeholder="you@example.com"
-                />
-              </div>
-            </CardContent>
-          </Card> */}
-
-          {/* 4. Payment Details */}
-          {/* <Card>
-            <CardFooter className="rounded-b-lg border-t bg-slate-50 pt-6">
-              <div className="w-full">
-                <Button
-                  size="lg"
-                  className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
-                  disabled={!canSubmit || isProcessing}
-                  onClick={handlePayment}
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>
+                  Pickup time slot
+                </div>
+                <select
+                  value={selectedSlotId}
+                  onChange={(e) => setSelectedSlotId(e.target.value)}
+                  style={{
+                    width: "100%",
+                    padding: 10,
+                    borderRadius: 10,
+                    border: "1px solid #d1d5db",
+                  }}
+                  disabled={loadingPickup || !selectedDate}
                 >
-                  {isProcessing ? "Processing..." : "Continue to payment"}
-                </Button>
-                <p className="mt-4 flex items-center justify-center gap-1 text-center text-xs text-slate-500">
-                  <span className="rounded bg-green-100 px-1.5 py-0.5 text-[10px] font-bold text-green-700">
-                    Encrypted
-                  </span>
-                  Payments are processed securely
-                </p>
+                  <option value="">Select a time slot</option>
+                  {slotsInDate.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {slotLabel(s)}
+                    </option>
+                  ))}
+                </select>
               </div>
-            </CardFooter>
-          </Card> */}
+            </div>
+          ) : (
+            <div style={{ fontSize: 13, color: "#6b7280" }}>
+              Delivery address and phone will be collected on Stripe Checkout.
+            </div>
+          )}
         </div>
 
-        {/* Right Column: Order Summary (Simplified View) */}
-        <div className="h-fit space-y-6">
-          <Card className="sticky top-24 bg-slate-50">
-            <CardHeader>
-              <CardTitle>Order Summary</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Subtotal</span>
-                  <span className="font-medium">
-                    {formatter.format(totals.subtotal / 100)}
-                  </span>
-                </div>
-                {cart.totals.discountCents > 0 && (
-                  <div className="flex justify-between">
-                    <span className="text-slate-500">Discount</span>
-                    <span className="font-medium text-green-600">
-                      -{formatter.format(cart.totals.discountCents / 100)}
-                    </span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Shipping</span>
-                  <span className="font-medium">
-                    {totals.shipping === 0
-                      ? "Free"
-                      : formatter.format(totals.shipping / 100)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-500">Tax</span>
-                  <span className="font-medium">
-                    {formatter.format(totals.tax / 100)}
-                  </span>
-                </div>
-                <div className="flex justify-between border-t pt-4 text-lg font-bold">
-                  <span>Total</span>
-                  <span>{formatter.format(totals.total / 100)}</span>
-                </div>
-              </div>
+        {/* Right */}
+        <div style={{ border: "1px solid #e5e7eb", borderRadius: 12, padding: 16 }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 10 }}>
+            Order summary
+          </h2>
 
-              {/* Promo code status */}
-              <div className="border-t pt-4">
-                {cart.appliedCouponCode ? (
-                  <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 p-3">
-                    <div className="flex flex-col">
-                      <span className="text-sm font-medium text-green-800">
-                        {cart.appliedCouponCode}
-                      </span>
-                      <span className="text-xs text-green-600">
-                        Promo code applied
-                      </span>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleRemovePromo}
-                      disabled={isMutating}
-                      className="h-8 w-8 p-0 text-green-700 hover:bg-green-100 hover:text-green-900"
-                      aria-label="Remove promo code"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
+          {loadingCart ? (
+            <div style={{ fontSize: 13, color: "#6b7280" }}>Loading cart…</div>
+          ) : cartItems.length ? (
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {cartItems.map((it) => (
+                <div
+                  key={it.id}
+                  style={{
+                    display: "flex",
+                    gap: 10,
+                    borderBottom: "1px solid #f3f4f6",
+                    paddingBottom: 10,
+                  }}
+                >
+                  <img
+                    src={it.imageUrl}
+                    alt={it.productTitle}
+                    style={{ width: 56, height: 56, objectFit: "cover", borderRadius: 10 }}
+                  />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 800, fontSize: 14 }}>{it.productTitle}</div>
+                    {it.variantSku ? (
+                      <div style={{ fontSize: 12, color: "#6b7280" }}>SKU: {it.variantSku}</div>
+                    ) : null}
+                    <div style={{ fontSize: 12, color: "#6b7280" }}>Qty: {it.quantity}</div>
                   </div>
-                ) : (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Promo Code</p>
-                    <div className="flex gap-2">
-                      <Input
-                        value={promoCode}
-                        onChange={(e) => {
-                          setPromoCode(e.target.value.toUpperCase());
-                          setPromoError(null);
-                        }}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
-                            handleApplyPromo();
-                          }
-                        }}
-                        placeholder="Enter code"
-                        disabled={isMutating || isValidatingPromo}
-                      />
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className="shrink-0"
-                        onClick={handleApplyPromo}
-                        disabled={
-                          isMutating || isValidatingPromo || !promoCode.trim()
-                        }
-                      >
-                        {isValidatingPromo ? "Validating..." : "Apply"}
-                      </Button>
-                    </div>
-                    {(promoError || error) && (
-                      <p className="text-xs text-red-500">
-                        {promoError || error}
-                      </p>
-                    )}
+                  <div style={{ fontWeight: 800 }}>
+                    {money(it.unitPriceCents * it.quantity, currency)}
                   </div>
-                )}
-              </div>
-
-              <div className="border-t pt-4">
-                <p className="mb-2 text-sm font-medium">
-                  Items ({cart.items.length})
-                </p>
-                <div className="max-h-40 space-y-1 overflow-y-auto pr-2 text-sm text-slate-500">
-                  {cart.items.map((item) => (
-                    <div key={item.id} className="flex justify-between">
-                      <span className="flex-1 truncate pr-4">
-                        {item.quantity}x {item.productTitle}
-                      </span>
-                      <span>{item.formattedLineSubtotal}</span>
-                    </div>
-                  ))}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              ))}
+            </div>
+          ) : (
+            <div style={{ fontSize: 13, color: "#6b7280" }}>Your cart is empty.</div>
+          )}
+
+          <div style={{ marginTop: 14, borderTop: "1px solid #e5e7eb", paddingTop: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+              <span style={{ color: "#6b7280" }}>Subtotal</span>
+              <span style={{ fontWeight: 900 }}>{money(subtotalCents, currency)}</span>
+            </div>
+
+            <button
+              onClick={handlePay}
+              disabled={paying || loadingCart || !cartItems.length}
+              style={{
+                marginTop: 8,
+                width: "100%",
+                padding: "12px 14px",
+                borderRadius: 12,
+                border: "1px solid #111827",
+                background: paying ? "#9ca3af" : "#111827",
+                color: "white",
+                fontWeight: 900,
+                cursor: paying ? "not-allowed" : "pointer",
+              }}
+            >
+              {paying ? "Redirecting…" : "Pay with Stripe"}
+            </button>
+
+            <div style={{ marginTop: 10, fontSize: 12, color: "#6b7280", lineHeight: 1.4 }}>
+              You’ll be redirected to Stripe to complete payment.
+            </div>
+          </div>
         </div>
       </div>
     </div>
