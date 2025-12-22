@@ -76,7 +76,8 @@ export async function fetchWithAuth(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<Response> {
-  const headers = new Headers(options.headers);
+  const { params, headers: initialHeaders, ...fetchOptions } = options;
+  const headers = new Headers(initialHeaders);
 
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("access_token");
@@ -89,11 +90,17 @@ export async function fetchWithAuth(
   }
 
   const baseUrl = getBaseUrl();
-  const url = `${baseUrl}${endpoint}`;
+  let url = `${baseUrl}${endpoint}`;
+  if (params) {
+    const searchParams = new URLSearchParams(
+      Object.entries(params).map(([key, value]) => [key, String(value)])
+    );
+    url += `?${searchParams.toString()}`;
+  }
 
   const doFetch = () =>
     fetch(url, {
-      ...options,
+      ...fetchOptions,
       headers,
     });
 

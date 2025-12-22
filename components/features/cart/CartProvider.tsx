@@ -100,12 +100,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [status]);
 
   const ensureLoaded = useCallback(async () => {
-    if (!requireAuth("view your cart")) {
-      throw new Error("AUTH_REQUIRED");
-    }
+    // We don't force auth just to load the cart anymore, to support guest carts or better UX
     if (cart) return;
     await loadCart();
-  }, [cart, loadCart, requireAuth]);
+  }, [cart, loadCart]);
 
   const clearCart = useCallback(() => {
     setCart(null);
