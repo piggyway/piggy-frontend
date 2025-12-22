@@ -53,7 +53,7 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
           />
           {isAuthenticated && user && (
              <p className="text-xs text-slate-500">
-               You are logged in as {user.name || user.email}.
+               You are logged in as {user.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : user.email}.
              </p>
           )}
         </div>
