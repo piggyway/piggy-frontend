@@ -27,7 +27,7 @@ export class CartService {
   static async getCart(): Promise<Cart | null> {
     try {
       console.log("🟡 [CartService] Fetching cart from:", API_ENDPOINTS.CART);
-      
+
       const response = await fetchWithAuth(API_ENDPOINTS.CART, {
         method: "GET",
       });
@@ -39,7 +39,7 @@ export class CartService {
       }
 
       const transformedCart = this.transformCart(data.data);
-      
+
       console.log("🟢 [CartService] Cart fetched successfully:", {
         cartId: transformedCart.id,
         appliedCouponCode: transformedCart.appliedCouponCode,
@@ -51,7 +51,7 @@ export class CartService {
         discount: transformedCart.totals.formattedDiscount,
         grandTotal: transformedCart.totals.formattedGrandTotal,
       });
-      
+
       return transformedCart;
     } catch (error) {
       console.error("[CartService] Failed to fetch cart:", error);
@@ -97,16 +97,19 @@ export class CartService {
     payload: UpdateCartItemPayload
   ): Promise<Cart | null> {
     try {
-      const response = await fetchWithAuth(API_ENDPOINTS.CART_ITEM_BY_ID(itemId), {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          quantity: payload.quantity,
-          notes: payload.notes,
-        }),
-      });
+      const response = await fetchWithAuth(
+        API_ENDPOINTS.CART_ITEM_BY_ID(itemId),
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            quantity: payload.quantity,
+            notes: payload.notes,
+          }),
+        }
+      );
 
       const data: CartResponseFromAPI = await response.json();
 
@@ -126,9 +129,12 @@ export class CartService {
    */
   static async removeItem(itemId: string): Promise<Cart | null> {
     try {
-      const response = await fetchWithAuth(API_ENDPOINTS.CART_ITEM_BY_ID(itemId), {
-        method: "DELETE",
-      });
+      const response = await fetchWithAuth(
+        API_ENDPOINTS.CART_ITEM_BY_ID(itemId),
+        {
+          method: "DELETE",
+        }
+      );
 
       const data: CartResponseFromAPI = await response.json();
 
@@ -199,7 +205,7 @@ export class CartService {
       quantity: item.quantity,
       unitPriceCents,
       lineSubtotalCents: item.line_subtotal_amt,
-      currency: item.currency || cart.currency || "usd", // Ensure currency is never null
+      currency: item.currency || cart.currency || "aud", // Ensure currency is never null
       productTitle: item.product_title || "Product",
       productSlug: item.product_slug,
       imageUrl: normalizeImageUrl(item.image_url) || FALLBACK_IMAGE,

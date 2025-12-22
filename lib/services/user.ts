@@ -118,7 +118,9 @@ export class UserService {
   /**
    * Create a new address
    */
-  static async createAddress(payload: CreateAddressPayload): Promise<Address | null> {
+  static async createAddress(
+    payload: CreateAddressPayload
+  ): Promise<Address | null> {
     try {
       const response = await fetchWithAuth("/api/users/me/addresses", {
         method: "POST",
@@ -148,11 +150,14 @@ export class UserService {
     try {
       // Avoid accidentally sending `id` in the payload
       const { id: _ignored, ...body } = payload ?? {};
-      const response = await fetchWithAuth(`/api/users/me/addresses/${addressId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
+      const response = await fetchWithAuth(
+        `/api/users/me/addresses/${addressId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        }
+      );
 
       const data = await response.json();
       if (!response.ok) {
@@ -171,9 +176,12 @@ export class UserService {
    */
   static async deleteAddress(addressId: string): Promise<boolean> {
     try {
-      const response = await fetchWithAuth(`/api/users/me/addresses/${addressId}`, {
-        method: "DELETE",
-      });
+      const response = await fetchWithAuth(
+        `/api/users/me/addresses/${addressId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       const data = await response.json();
       if (!response.ok) {
@@ -209,6 +217,3 @@ export class UserService {
     }
   }
 }
-
-
-

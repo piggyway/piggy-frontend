@@ -100,12 +100,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, [status]);
 
   const ensureLoaded = useCallback(async () => {
-    if (!requireAuth("view your cart")) {
-      throw new Error("AUTH_REQUIRED");
-    }
+    // We don't force auth just to load the cart anymore, to support guest carts or better UX
     if (cart) return;
     await loadCart();
-  }, [cart, loadCart, requireAuth]);
+  }, [cart, loadCart]);
 
   const clearCart = useCallback(() => {
     setCart(null);
@@ -289,7 +287,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setIsMutating(true);
     try {
       const result = await PromoService.removePromoCode();
-      
+
       if (result.success) {
         // Refresh cart to get updated totals
         await loadCart();
@@ -377,7 +375,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
                   typeof pathname === "string" && pathname.length > 0
                     ? pathname
                     : "/shop";
-                router.push(`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`);
+                router.push(
+                  `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+                );
               }}
             >
               Sign In / Register

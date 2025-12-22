@@ -23,7 +23,7 @@ export function StarterKitsSection() {
         <div className="relative hidden overflow-hidden lg:block">
           <div className="flex items-center gap-6 pb-4">
             {/* Card 1 - Grey with Illustration (Essentials) */}
-            <Link 
+            <Link
               href="/guides/first-time-owner-essentials"
               className="bg-neutral-stroke flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
@@ -63,7 +63,7 @@ export function StarterKitsSection() {
             </Link>
 
             {/* Card 2 - Navy Blue Text Card (Liners) */}
-            <Link 
+            <Link
               href="/guides/cage-liner-benefits"
               className="bg-primary-navy-light flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
@@ -92,7 +92,7 @@ export function StarterKitsSection() {
             </Link>
 
             {/* Card 3 - Mint Text Card (Bunny) */}
-            <Link 
+            <Link
               href="/guides/bunny-starter-kit"
               className="bg-secondary-mint flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
@@ -124,7 +124,10 @@ export function StarterKitsSection() {
 
         {/* Mobile/Tablet Layout */}
         <div className="flex flex-col gap-6 lg:hidden">
-          <Link href="/guides/first-time-owner-essentials" className="bg-neutral-stroke flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 active:scale-[0.98] transition-transform">
+          <Link
+            href="/guides/first-time-owner-essentials"
+            className="bg-neutral-stroke flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
             <h3 className="text-primary-navy text-xl font-semibold">
               Essentials Checklist
             </h3>
@@ -135,7 +138,10 @@ export function StarterKitsSection() {
               <Plus className="text-primary-navy h-4 w-4" />
             </div>
           </Link>
-          <Link href="/guides/cage-liner-benefits" className="bg-primary-navy-light flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 active:scale-[0.98] transition-transform">
+          <Link
+            href="/guides/cage-liner-benefits"
+            className="bg-primary-navy-light flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
             <h3 className="text-xl font-semibold text-white">
               Why Fleece Cage Liners Are a Game-Changer
             </h3>
@@ -146,7 +152,10 @@ export function StarterKitsSection() {
               <Plus className="text-primary-navy h-4 w-4" />
             </div>
           </Link>
-          <Link href="/guides/bunny-starter-kit" className="bg-secondary-mint flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 active:scale-[0.98] transition-transform">
+          <Link
+            href="/guides/bunny-starter-kit"
+            className="bg-secondary-mint flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
             <h3 className="text-primary-navy-light text-xl font-semibold">
               Rabbit Starter Kit: Everything You Need for Day One
             </h3>

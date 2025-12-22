@@ -31,7 +31,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("[API Route Error] Failed to apply promo code:", error);
     return NextResponse.json(
-      { success: false, error: "application_error", message: "Failed to apply promo code" },
+      {
+        success: false,
+        error: "application_error",
+        message: "Failed to apply promo code",
+      },
       { status: 500 }
     );
   }

@@ -10,7 +10,10 @@ const API_BASE_URL =
 
 type Params = { addressId: string };
 
-export async function GET(request: NextRequest, ctx: { params: Promise<Params> }) {
+export async function GET(
+  request: NextRequest,
+  ctx: { params: Promise<Params> }
+) {
   try {
     if (!API_BASE_URL) throw new Error("Missing API_BASE_URL");
 
@@ -24,13 +27,16 @@ export async function GET(request: NextRequest, ctx: { params: Promise<Params> }
 
     const { addressId } = await ctx.params;
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }
+    );
 
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
@@ -61,14 +67,17 @@ export async function PATCH(
     const { addressId } = await ctx.params;
     const body = await request.json();
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-      body: JSON.stringify(body),
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+        body: JSON.stringify(body),
+      }
+    );
 
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
@@ -98,13 +107,16 @@ export async function DELETE(
 
     const { addressId } = await ctx.params;
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: token,
-      },
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
+      }
+    );
 
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
@@ -116,5 +128,3 @@ export async function DELETE(
     );
   }
 }
-
-

@@ -26,8 +26,8 @@ type CartItemPayload = {
 type CheckoutRequestBody = {
   email?: string;
   fulfillmentType?: "delivery" | "pickup";
-  pickupDate?: string;
-  pickupTime?: string;
+  pickupLocationId?: number;
+  pickupSlotId?: number;
   cartId?: string | number;
   cartItems?: CartItemPayload[];
   currency?: string;
@@ -41,30 +41,36 @@ export async function POST(request: NextRequest) {
       throw new Error("Missing API_BASE_URL");
     }
 
-    const body = (await request.json().catch(() => ({}))) as CheckoutRequestBody;
+    const body = (await request
+      .json()
+      .catch(() => ({}))) as CheckoutRequestBody;
 
     // Transform camelCase to snake_case for backend
     const backendPayload = {
       email: body.email || DEFAULT_EMAIL,
       fulfillment_type: body.fulfillmentType || "delivery",
-      pickup_date: body.pickupDate,
-      pickup_time: body.pickupTime,
+      pickup_location_id: body.pickupLocationId,
+      pickup_slot_id: body.pickupSlotId,
       cart_id: body.cartId != null ? String(body.cartId) : undefined,
       cart_items: body.cartItems?.map((item) => ({
         id: String(item.id), // Ensure id is a string
         product_rid:
-          item.productRid == null ? null : Number.parseInt(String(item.productRid), 10),
+          item.productRid == null
+            ? null
+            : Number.parseInt(String(item.productRid), 10),
         variant_rid:
-          item.variantRid == null ? null : Number.parseInt(String(item.variantRid), 10),
+          item.variantRid == null
+            ? null
+            : Number.parseInt(String(item.variantRid), 10),
         product_title: item.productTitle,
         variant_sku: item.variantSku,
         quantity: item.quantity,
         unit_price_cents: item.unitPriceCents,
         line_subtotal_cents: item.lineSubtotalCents,
         image_url: item.imageUrl,
-        currency: item.currency || body.currency || "usd", // Ensure currency is never null
+        currency: item.currency || body.currency || "aud", // Ensure currency is never null
       })),
-      currency: body.currency || "usd",
+      currency: body.currency || "aud",
       promo_code: body.promoCode,
       user_id: body.userId,
     };
@@ -92,14 +98,16 @@ export async function POST(request: NextRequest) {
     if (!res.ok) {
       // Extract error message, handling different response structures
       let errorMessage = "Failed to create checkout session";
-      
+
       if (data) {
         // Handle Zod validation errors (array format)
         if (Array.isArray(data)) {
-          const errors = data.map((err: any) => {
-            const path = err.path?.join('.') || 'unknown';
-            return `${path}: ${err.message}`;
-          }).join(', ');
+          const errors = data
+            .map((err: any) => {
+              const path = err.path?.join(".") || "unknown";
+              return `${path}: ${err.message}`;
+            })
+            .join(", ");
           errorMessage = `Validation error: ${errors}`;
         } else if (typeof data.message === "string") {
           errorMessage = data.message;
@@ -107,17 +115,22 @@ export async function POST(request: NextRequest) {
           errorMessage = data.error;
         } else if (typeof data.error?.message === "string") {
           errorMessage = data.error.message;
-        } else if (data.error && typeof data.error === "object" && "message" in data.error && typeof data.error.message === "string") {
+        } else if (
+          data.error &&
+          typeof data.error === "object" &&
+          "message" in data.error &&
+          typeof data.error.message === "string"
+        ) {
           errorMessage = data.error.message;
         }
       }
-      
+
       console.error("[Checkout API] Error from backend:", {
         status: res.status,
         data,
         errorMessage,
       });
-      
+
       return NextResponse.json(
         {
           error: {
@@ -132,10 +145,11 @@ export async function POST(request: NextRequest) {
     const url = data.data?.url || data.url;
     return NextResponse.json({ url }, { status: 200 });
   } catch (err: any) {
-    console.error("[API Route Error] Failed to create checkout session:", err);
-    const errorMessage = err?.message && typeof err.message === "string" 
-      ? err.message 
-      : "Failed to create checkout session";
+    console.error("[API Route Route] Failed to create checkout session:", err);
+    const errorMessage =
+      err?.message && typeof err.message === "string"
+        ? err.message
+        : "Failed to create checkout session";
     return NextResponse.json(
       { error: { message: errorMessage } },
       { status: 500 }

@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     }
 
     const token = request.headers.get("authorization");
-    
+
     console.log("📦 [Cart API Route] Request headers:", {
       hasAuthorization: !!token,
       authorizationHeader: token ? `${token.substring(0, 20)}...` : "none",

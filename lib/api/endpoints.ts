@@ -35,4 +35,8 @@ export const API_ENDPOINTS = {
   // LOGIN: "/api/auth/login",
   // LOGOUT: "/api/auth/logout",
   // REGISTER: "/api/auth/register",
+
+  // Pickup
+  PICKUP_LOCATIONS: "/api/pickup/locations",
+  PICKUP_SLOTS_BY_DATE: "/api/pickup/slots",
 } as const;

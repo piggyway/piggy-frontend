@@ -1,93 +1,93 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { PickupSelector } from "../PickupSelector";
 
 interface AddressStepProps {
   onNext: () => void;
   onBack: () => void;
+  fulfillmentType: "delivery" | "pickup";
+  setFulfillmentType: (type: "delivery" | "pickup") => void;
+  selectedLocationId?: number;
+  setSelectedLocationId: (id: number) => void;
+  selectedSlotId?: number;
+  setSelectedSlotId: (id: number) => void;
+  isLoading?: boolean;
 }
 
-export function AddressStep({ onNext, onBack }: AddressStepProps) {
+export function AddressStep({
+  onNext,
+  onBack,
+  fulfillmentType,
+  setFulfillmentType,
+  selectedLocationId,
+  setSelectedLocationId,
+  selectedSlotId,
+  setSelectedSlotId,
+  isLoading = false,
+}: AddressStepProps) {
+  const handleTabChange = (value: string) => {
+    setFulfillmentType(value as "delivery" | "pickup");
+  };
+
+  const isPickupComplete =
+    fulfillmentType === "pickup" && selectedLocationId && selectedSlotId;
+    
+  // For delivery, validation logic would go here
+  const isDeliveryComplete = fulfillmentType === "delivery"; // Simplified for now
+
+  const canContinue = fulfillmentType === "delivery" ? isDeliveryComplete : isPickupComplete;
+
   return (
     <Card className="flex min-h-[600px] flex-col">
       <CardHeader>
-        <CardTitle>Shipping Address</CardTitle>
+        <CardTitle>Shipping Method</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col justify-between space-y-4">
-        <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <label htmlFor="firstName" className="text-sm font-medium">
-                First Name
-              </label>
-              <Input id="firstName" placeholder="Sofia" />
-            </div>
-            <div className="grid gap-2">
-              <label htmlFor="lastName" className="text-sm font-medium">
-                Last Name
-              </label>
-              <Input id="lastName" placeholder="Davis" />
-            </div>
-          </div>
+        <Tabs
+          defaultValue={fulfillmentType}
+          value={fulfillmentType}
+          onValueChange={handleTabChange}
+          className="w-full"
+        >
+          <TabsList className="grid w-full grid-cols-2 mb-6">
+            <TabsTrigger value="delivery">Delivery</TabsTrigger>
+            <TabsTrigger value="pickup">Pickup</TabsTrigger>
+          </TabsList>
 
-          <div className="grid gap-2">
-            <label htmlFor="address" className="text-sm font-medium">
-              Address
-            </label>
-            <Input id="address" placeholder="123 Piggy Lane" />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <label htmlFor="city" className="text-sm font-medium">
-                City
-              </label>
-              <Input id="city" placeholder="Guineaville" />
+          <TabsContent value="delivery" className="space-y-4">
+            <div className="rounded-lg border border-slate-200 bg-slate-50 p-8 text-center">
+              <p className="text-slate-600">
+                Please proceed to payment. You will enter your shipping address securely during the checkout process.
+              </p>
             </div>
-            <div className="grid gap-2">
-              <label htmlFor="zip" className="text-sm font-medium">
-                ZIP Code
-              </label>
-              <Input id="zip" placeholder="12345" />
-            </div>
-          </div>
+          </TabsContent>
 
-          <div className="grid gap-2">
-            <label htmlFor="country" className="text-sm font-medium">
-              Country
-            </label>
-            {/* Using a simple select for now, ideally this would be a proper country selector */}
-            <Select defaultValue="us">
-              <SelectTrigger>
-                <SelectValue placeholder="Select a country" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="us">United States</SelectItem>
-                <SelectItem value="ca">Canada</SelectItem>
-                <SelectItem value="uk">United Kingdom</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+          <TabsContent value="pickup">
+            <PickupSelector
+              onLocationChange={setSelectedLocationId}
+              onSlotChange={setSelectedSlotId}
+              selectedLocationId={selectedLocationId}
+              selectedSlotId={selectedSlotId}
+            />
+          </TabsContent>
+        </Tabs>
 
-        <div className="flex justify-between pt-4">
+        <div className="flex justify-between pt-4 mt-auto">
           <Button variant="outline" onClick={onBack}>
             Back
           </Button>
           <Button
             onClick={onNext}
+            disabled={!canContinue || isLoading}
             className="bg-primary-navy hover:bg-primary-navy/90 text-white"
           >
-            Continue to Payment
+            {isLoading && (
+              <span className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+            )}
+            Proceed to Payment
           </Button>
         </div>
       </CardContent>

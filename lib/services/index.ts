@@ -5,6 +5,7 @@
 
 // export * from "./products";
 export * from "./categories";
+export * from "./pickup";
 
 // Add more service exports as needed
 // export * from "./users";
