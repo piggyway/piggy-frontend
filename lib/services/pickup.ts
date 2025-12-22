@@ -1,0 +1,76 @@
+import { API_ENDPOINTS } from "@/lib/api/endpoints";
+import { fetchWithAuth } from "@/lib/api/client";
+import type {
+  PickupLocation,
+  PickupSlot,
+  PickupLocationsResponse,
+  PickupSlotsResponse,
+} from "@/lib/types/pickup";
+
+export class PickupService {
+  /**
+   * Fetch active pickup locations
+   */
+  static async getLocations(): Promise<PickupLocation[]> {
+    try {
+      const response = await fetchWithAuth(API_ENDPOINTS.PICKUP_LOCATIONS, {
+        method: "GET",
+      });
+
+      const data: PickupLocationsResponse = await response.json();
+
+      if (!data.success || !data.data) {
+        const errorMsg =
+          typeof data.error === "object"
+            ? JSON.stringify(data.error)
+            : data.error || data.message || "Failed to fetch pickup locations";
+        throw new Error(errorMsg);
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error("[PickupService] Failed to fetch locations:", error);
+      return [];
+    }
+  }
+
+  /**
+   * Fetch pickup slots by location and date
+   * @param locationId 
+   * @param date YYYY-MM-DD
+   */
+  static async getSlotsByDate(
+    locationId: number,
+    date: string
+  ): Promise<PickupSlot[]> {
+    try {
+      console.log(`[PickupService] Fetching slots for location ${locationId} on ${date}`);
+      
+      const response = await fetchWithAuth(API_ENDPOINTS.PICKUP_SLOTS_BY_DATE, {
+        method: "GET",
+        params: {
+          location_id: locationId,
+          date,
+        },
+      });
+
+      const data: PickupSlotsResponse = await response.json();
+
+      if (!data.success || !data.data) {
+        const errorMsg =
+          typeof data.error === "object"
+            ? JSON.stringify(data.error, null, 2)
+            : data.error || data.message || "Failed to fetch pickup slots";
+        console.error("[PickupService] API Error Response:", data);
+        throw new Error(errorMsg);
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error("[PickupService] Failed to fetch slots:", error);
+      // Re-throw to let the component handle empty state if needed, 
+      // or just return empty array but log the error
+      return [];
+    }
+  }
+}

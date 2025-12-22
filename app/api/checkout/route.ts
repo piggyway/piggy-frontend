@@ -26,8 +26,8 @@ type CartItemPayload = {
 type CheckoutRequestBody = {
   email?: string;
   fulfillmentType?: "delivery" | "pickup";
-  pickupDate?: string;
-  pickupTime?: string;
+  pickupLocationId?: number;
+  pickupSlotId?: number;
   cartId?: string | number;
   cartItems?: CartItemPayload[];
   currency?: string;
@@ -49,8 +49,8 @@ export async function POST(request: NextRequest) {
     const backendPayload = {
       email: body.email || DEFAULT_EMAIL,
       fulfillment_type: body.fulfillmentType || "delivery",
-      pickup_date: body.pickupDate,
-      pickup_time: body.pickupTime,
+      pickup_location_id: body.pickupLocationId,
+      pickup_slot_id: body.pickupSlotId,
       cart_id: body.cartId != null ? String(body.cartId) : undefined,
       cart_items: body.cartItems?.map((item) => ({
         id: String(item.id), // Ensure id is a string
@@ -145,7 +145,7 @@ export async function POST(request: NextRequest) {
     const url = data.data?.url || data.url;
     return NextResponse.json({ url }, { status: 200 });
   } catch (err: any) {
-    console.error("[API Route Error] Failed to create checkout session:", err);
+    console.error("[API Route Route] Failed to create checkout session:", err);
     const errorMessage =
       err?.message && typeof err.message === "string"
         ? err.message
