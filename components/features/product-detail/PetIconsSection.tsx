@@ -1,6 +1,7 @@
 "use client";
 
 import { Dog, Cat, Rabbit, Bird, Mouse, Circle } from "lucide-react";
+import { GuineaPigIcon } from "@/components/icons/PetIcons";
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import type { SpeciesInfo } from "@/lib/types/product";
 
@@ -29,7 +30,7 @@ const speciesMap: Record<
     emoji: "🐰",
   },
   guinea_pig: {
-    icon: Circle,
+    icon: GuineaPigIcon,
     bgColor: "bg-neutral-pink-background",
     emoji: "🐹",
   },

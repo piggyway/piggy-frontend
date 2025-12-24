@@ -8,6 +8,7 @@ import { signOut } from "next-auth/react";
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
+  redirectOnAuthError?: boolean;
 }
 
 /**
@@ -76,7 +77,7 @@ export async function fetchWithAuth(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<Response> {
-  const { params, headers: initialHeaders, ...fetchOptions } = options;
+  const { params, redirectOnAuthError = true, headers: initialHeaders, ...fetchOptions } = options;
   const headers = new Headers(initialHeaders);
 
   if (typeof window !== "undefined") {
@@ -114,7 +115,11 @@ export async function fetchWithAuth(
     if (typeof window !== "undefined") {
       // Use window.location as fallback if signOut fails or to ensure hard redirect
       // But signOut is better for clearing cookies
-      signOut({ callbackUrl: "/login" });
+      if (redirectOnAuthError) {
+        signOut({ callbackUrl: "/login" });
+      } else {
+        signOut({ redirect: false });
+      }
     }
     return res;
   }
@@ -129,7 +134,11 @@ export async function fetchWithAuth(
 
   // If still 401 after refresh, token is invalid -> force logout
   if (res.status === 401 && typeof window !== "undefined") {
-    signOut({ callbackUrl: "/login" });
+    if (redirectOnAuthError) {
+      signOut({ callbackUrl: "/login" });
+    } else {
+      signOut({ redirect: false });
+    }
   }
 
   return res;

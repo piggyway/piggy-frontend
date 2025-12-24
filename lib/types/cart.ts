@@ -5,6 +5,11 @@
 
 // ==================== API Response Types ====================
 
+export interface VariantOption {
+  name: string;
+  value: string;
+}
+
 export interface CartItemFromAPI {
   id: string | number; // Backend may return number, we'll convert to string
   cart_id: string;
@@ -15,6 +20,7 @@ export interface CartItemFromAPI {
   snapshot_currency: string | null;
   notes: string | null;
   variant_sku: string | null;
+  variant_options?: VariantOption[];
   product_title: string | null;
   product_slug: string | null;
   image_url: string | null;
@@ -32,6 +38,12 @@ export interface CartTotalsFromAPI {
   currency: string;
 }
 
+export interface CartPaginationFromAPI {
+  next_cursor: number | null;
+  has_more: boolean;
+  page_size: number;
+}
+
 export interface CartFromAPI {
   id: string;
   status: "active" | "locked";
@@ -39,6 +51,7 @@ export interface CartFromAPI {
   applied_coupon_code: string | null;
   items: CartItemFromAPI[];
   totals: CartTotalsFromAPI;
+  pagination: CartPaginationFromAPI;
 }
 
 export interface CartResponseFromAPI {
@@ -65,6 +78,7 @@ export interface CartItem {
   isAvailable: boolean | null;
   stockQuantity: number | null;
   variantSku: string | null;
+  variantOptions: VariantOption[];
   notes: string | null;
   formattedUnitPrice: string;
   formattedLineSubtotal: string;
@@ -81,6 +95,12 @@ export interface CartTotals {
   formattedGrandTotal: string;
 }
 
+export interface CartPagination {
+  nextCursor: number | null;
+  hasMore: boolean;
+  pageSize: number;
+}
+
 export interface Cart {
   id: string;
   status: "active" | "locked";
@@ -89,6 +109,7 @@ export interface Cart {
   appliedCouponCode: string | null;
   items: CartItem[];
   totals: CartTotals;
+  pagination: CartPagination;
 }
 
 export interface AddCartItemPayload {

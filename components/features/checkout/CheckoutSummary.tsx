@@ -58,7 +58,7 @@ export function CheckoutSummary() {
   return (
     <div className="flex flex-col gap-6">
       {/* Items List */}
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 max-h-[320px] overflow-y-auto pr-2">
         {cart.items.map((item) => (
           <div key={item.id} className="flex gap-4">
             <div className="border-neutral-stroke relative aspect-square w-16 shrink-0 overflow-hidden rounded-md border bg-white">
@@ -76,8 +76,18 @@ export function CheckoutSummary() {
               <p className="text-primary-navy text-sm font-medium">
                 {item.productTitle}
               </p>
-              {item.variantSku && (
-                <p className="text-xs text-slate-500">{item.variantSku}</p>
+              {item.variantOptions && item.variantOptions.length > 0 ? (
+                <div className="flex flex-col gap-0.5">
+                  {item.variantOptions.map((opt, i) => (
+                    <p key={i} className="text-xs text-slate-500">
+                      {opt.name}: {opt.value}
+                    </p>
+                  ))}
+                </div>
+              ) : (
+                item.variantSku && (
+                  <p className="text-xs text-slate-500">{item.variantSku}</p>
+                )
               )}
             </div>
             <div className="flex flex-col justify-center">

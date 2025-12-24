@@ -14,76 +14,20 @@ import {
 import Image from "next/image";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { useCart } from "./CartProvider";
-import type { Cart } from "@/lib/types/cart";
-
-const DEFAULT_EMAIL = "zianwang9911@gmail.com";
-
-function useCheckout(cart: Cart | null) {
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [checkoutError, setCheckoutError] = useState<string | null>(null);
-
-  const handleCheckout = async () => {
-    if (!cart || cart.items.length === 0) return;
-
-    setIsCheckingOut(true);
-    setCheckoutError(null);
-
-    try {
-      const payload = {
-        email: DEFAULT_EMAIL,
-        cartItems: cart.items.map((item) => ({
-          id: item.id,
-          productTitle: item.productTitle,
-          variantSku: item.variantSku,
-          quantity: item.quantity,
-          unitPriceCents: item.unitPriceCents,
-          lineSubtotalCents: item.lineSubtotalCents,
-          imageUrl: item.imageUrl,
-          currency: item.currency || cart.currency || "aud",
-        })),
-        currency: cart.currency || "aud",
-      };
-
-      const response = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorBody = await response.json().catch(() => null);
-        let message = "Unable to start checkout right now.";
-        if (errorBody?.error?.message) {
-          message = errorBody.error.message;
-        } else if (errorBody?.message) {
-          message = errorBody.message;
-        }
-        setCheckoutError(message);
-        return;
-      }
-
-      const data = await response.json();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        setCheckoutError("No checkout URL returned from server.");
-      }
-    } catch (err) {
-      console.error("Checkout error:", err);
-      setCheckoutError("Something went wrong. Please try again.");
-    } finally {
-      setIsCheckingOut(false);
-    }
-  };
-
-  return { isCheckingOut, checkoutError, handleCheckout };
-}
 
 export function FloatingCartButton() {
-  const { cart, isLoading, isMutating, updateItem, removeItem, ensureLoaded } =
-    useCart();
+  const {
+    cart,
+    isLoading,
+    isLoadingMore,
+    isMutating,
+    hasMore,
+    updateItem,
+    removeItem,
+    ensureLoaded,
+    loadMoreItems,
+  } = useCart();
   const [isOpen, setIsOpen] = useState(false);
-  const { isCheckingOut, checkoutError, handleCheckout } = useCheckout(cart);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -161,9 +105,32 @@ export function FloatingCartButton() {
                         <h4 className="line-clamp-1 font-medium">
                           {item.productTitle}
                         </h4>
-                        <p className="text-muted-foreground text-sm">
-                          {item.variantSku || "Variant"}
-                        </p>
+                        {item.variantOptions && item.variantOptions.length > 0 ? (
+                          <div className="flex flex-col gap-0.5">
+                            {item.variantOptions.map((opt, i) => (
+                              <p
+                                key={i}
+                                className="text-muted-foreground text-sm capitalize"
+                              >
+                                {opt.name}: {opt.value}
+                              </p>
+                            ))}
+                          </div>
+                        ) : (
+                          item.variantSku &&
+                          !item.variantSku.match(/^[\w-]+$/) && ( // Hide if it looks like a SKU code (alphanumeric+dashes, no spaces)
+                            <div className="flex flex-col gap-0.5">
+                              {item.variantSku.split(",").map((v, i) => (
+                                <p
+                                  key={i}
+                                  className="text-muted-foreground text-sm capitalize"
+                                >
+                                  {v.trim()}
+                                </p>
+                              ))}
+                            </div>
+                          )
+                        )}
                       </div>
                       <button
                         onClick={() => removeItem(item.id)}
@@ -192,6 +159,19 @@ export function FloatingCartButton() {
                   </div>
                 </div>
               ))}
+              {hasMore && (
+                <div className="pt-2">
+                  <Button
+                    variant="outline"
+                    onClick={loadMoreItems}
+                    disabled={isLoadingMore}
+                    className="w-full"
+                    size="sm"
+                  >
+                    {isLoadingMore ? "Loading..." : "Load More"}
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -205,24 +185,11 @@ export function FloatingCartButton() {
                 {subtotal.toFixed(2)}
               </span>
             </div>
-            {checkoutError && (
-              <p className="mb-2 text-center text-sm text-red-500">
-                {checkoutError}
-              </p>
-            )}
             <div className="grid gap-2">
               <Button
-                onClick={handleCheckout}
-                disabled={isCheckingOut}
-                className="w-full"
-                size="lg"
-              >
-                {isCheckingOut ? "Processing..." : "Checkout"}
-              </Button>
-              <Button
-                variant="outline"
+                variant="default"
                 asChild
-                className="w-full"
+                className="bg-primary-navy w-full text-white hover:bg-primary-navy/90"
                 onClick={() => setIsOpen(false)}
               >
                 <Link href="/cart">View Cart</Link>

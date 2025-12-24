@@ -15,11 +15,14 @@ export function CartPage() {
   const {
     cart,
     isLoading,
+    isLoadingMore,
     isMutating,
     error,
+    hasMore,
     updateItem,
     removeItem,
     ensureLoaded,
+    loadMoreItems,
   } = useCart();
 
   useEffect(() => {
@@ -123,6 +126,7 @@ export function CartPage() {
                   id={item.id}
                   title={item.productTitle}
                   variant={item.variantSku || undefined}
+                  variantOptions={item.variantOptions}
                   price={item.unitPriceCents / 100}
                   image={item.imageUrl}
                   quantity={item.quantity}
@@ -135,6 +139,18 @@ export function CartPage() {
                 />
               ))}
             </AnimatePresence>
+            {hasMore && (
+              <div className="py-4 text-center">
+                <Button
+                  variant="outline"
+                  onClick={loadMoreItems}
+                  disabled={isLoadingMore}
+                  className="w-full"
+                >
+                  {isLoadingMore ? "Loading..." : "Load More"}
+                </Button>
+              </div>
+            )}
           </div>
 
           {/* Related Products Section - Shown below cart items on mobile/desktop */}
