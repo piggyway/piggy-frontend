@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowUpRight, BookOpen, Heart, Shield } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
@@ -21,6 +22,7 @@ const CARE_TOPICS = [
     title: "Diet & Nutrition 101",
     description:
       "Understanding the essential balance of hay, pellets, and fresh veggies for your small pet's digestive health.",
+    href: "/pet-care/guinea-pig-diet-guide",
     icon: (
       <Image
         src="/pet-care-tips/default1.png"
@@ -37,6 +39,7 @@ const CARE_TOPICS = [
     title: "Housing Essentials",
     description:
       "How to set up the perfect habitat, choosing the right bedding, and maintaining a clean environment.",
+    href: "/pet-care/habitat-setup-tips",
     icon: (
       <Image
         src="/pet-care-tips/default1.png"
@@ -53,6 +56,7 @@ const CARE_TOPICS = [
     title: "Health & Wellness",
     description:
       "Recognizing common ailments, grooming tips, and when to see a vet for your guinea pig or rabbit.",
+    href: "/pet-care/health-and-wellness",
     icon: (
       <Image
         src="/pet-care-tips/default1.png"
@@ -69,6 +73,7 @@ const CARE_TOPICS = [
     title: "Bonding & Behavior",
     description:
       "Tips for taming, handling, and understanding the social needs of your furry friends.",
+    href: "/pet-care/bonding-with-your-pet",
     icon: (
       <Image
         src="/pet-care-tips/default1.png"
@@ -131,39 +136,46 @@ export default function PetCarePage() {
             {CARE_TOPICS.map((topic, index) => (
               <AnimatedSection
                 key={index}
-                className={`relative flex min-h-[320px] flex-col justify-between overflow-hidden rounded-[32px] p-8 shadow-sm transition-transform hover:scale-[1.02] ${topic.color}`}
+                className="group transition-transform hover:scale-[1.02]"
               >
-                {/* Background Decor */}
-                <div
-                  className={`absolute top-0 right-0 h-40 w-40 rounded-full opacity-20 blur-3xl ${topic.accentColor}`}
-                />
+                <Link
+                  href={topic.href}
+                  className={`relative flex min-h-[320px] h-full flex-col justify-between overflow-hidden rounded-[32px] p-8 shadow-sm ${topic.color}`}
+                >
+                  {/* Background Decor */}
+                  <div
+                    className={`absolute top-0 right-0 h-40 w-40 rounded-full opacity-20 blur-3xl ${topic.accentColor}`}
+                  />
 
-                <div className="relative z-10">
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-3 shadow-sm">
-                    {topic.icon}
+                  <div className="relative z-10">
+                    <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white p-3 shadow-sm">
+                      {topic.icon}
+                    </div>
+                    <h3
+                      className={`mb-3 text-2xl font-bold ${topic.textColor}`}
+                    >
+                      {topic.title}
+                    </h3>
+                    <p
+                      className={`max-w-md text-lg ${
+                        topic.textColor === "text-white"
+                          ? "text-white/90"
+                          : "text-gray-600"
+                      }`}
+                    >
+                      {topic.description}
+                    </p>
                   </div>
-                  <h3 className={`mb-3 text-2xl font-bold ${topic.textColor}`}>
-                    {topic.title}
-                  </h3>
-                  <p
-                    className={`max-w-md text-lg ${
-                      topic.textColor === "text-white"
-                        ? "text-white/90"
-                        : "text-gray-600"
-                    }`}
-                  >
-                    {topic.description}
-                  </p>
-                </div>
 
-                <div className="relative z-10 mt-8 flex items-center justify-end">
-                  <button
-                    className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm transition-colors hover:bg-gray-50"
-                    aria-label={`Read more about ${topic.title}`}
-                  >
-                    <ArrowUpRight className="text-primary-navy h-5 w-5" />
-                  </button>
-                </div>
+                  <div className="relative z-10 mt-8 flex items-center justify-end">
+                    <div
+                      className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm transition-colors group-hover:bg-gray-50"
+                      aria-label={`Read more about ${topic.title}`}
+                    >
+                      <ArrowUpRight className="text-primary-navy h-5 w-5" />
+                    </div>
+                  </div>
+                </Link>
               </AnimatedSection>
             ))}
           </div>

@@ -7,11 +7,13 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { cn } from "@/lib/utils";
+import { VariantOption } from "@/lib/types/cart";
 
 export interface CartItemProps {
   id: string;
   title: string;
   variant?: string;
+  variantOptions?: VariantOption[];
   price: number;
   image: string;
   quantity: number;
@@ -27,6 +29,7 @@ export function CartItem({
   id: _id,
   title,
   variant,
+  variantOptions,
   price,
   image,
   quantity,
@@ -63,7 +66,26 @@ export function CartItem({
       <div className="flex flex-1 flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex flex-col gap-1">
           <h3 className="text-primary-navy text-lg font-medium">{title}</h3>
-          {variant && <p className="text-sm text-slate-500">{variant}</p>}
+          {variantOptions && variantOptions.length > 0 ? (
+            <div className="flex flex-wrap gap-x-3 gap-y-1">
+              {variantOptions.map((opt, i) => (
+                <p key={i} className="text-sm text-slate-500">
+                  <span className="text-slate-400">{opt.name}:</span> {opt.value}
+                </p>
+              ))}
+            </div>
+          ) : (
+            variant &&
+            !variant.match(/^[\w-]+$/) && ( // Hide if it looks like a SKU code
+              <div className="flex flex-col gap-1">
+                {variant.split(",").map((v, i) => (
+                  <p key={i} className="text-sm text-slate-500 capitalize">
+                    {v.trim()}
+                  </p>
+                ))}
+              </div>
+            )
+          )}
           <p className="text-primary-navy font-medium sm:hidden">
             {currencySymbol}
             {price.toFixed(2)}

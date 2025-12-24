@@ -65,6 +65,7 @@ export function CheckoutPage() {
             variantRid: item.variantRid,
             productTitle: item.productTitle,
             variantSku: item.variantSku,
+            variantOptions: item.variantOptions,
             quantity: item.quantity,
             unitPriceCents: item.unitPriceCents,
             lineSubtotalCents: item.lineSubtotalCents,

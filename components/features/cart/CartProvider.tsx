@@ -25,10 +25,13 @@ import {
 interface CartContextValue {
   cart: Cart | null;
   isLoading: boolean;
+  isLoadingMore: boolean;
   isMutating: boolean;
   error: string | null;
+  hasMore: boolean;
   ensureLoaded: () => Promise<void>;
   refresh: () => Promise<void>;
+  loadMoreItems: () => Promise<void>;
   clearCart: () => void;
   addItem: (
     variantRid: number,
@@ -53,6 +56,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [cart, setCart] = useState<Cart | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [isMutating, setIsMutating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const isLoadingRef = useRef(false);
@@ -104,6 +108,35 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (cart) return;
     await loadCart();
   }, [cart, loadCart]);
+
+  const loadMoreItems = useCallback(async () => {
+    if (!cart || !cart.pagination.hasMore || isLoadingMore) {
+      return;
+    }
+
+    setIsLoadingMore(true);
+    try {
+      const nextCart = await CartService.loadMoreItems(
+        cart.pagination.nextCursor!,
+        cart.pagination.pageSize
+      );
+      if (nextCart) {
+        // Append new items to existing cart
+        setCart({
+          ...nextCart,
+          items: [...cart.items, ...nextCart.items],
+        });
+        setError(null);
+      } else {
+        setError("Unable to load more items");
+      }
+    } catch (err) {
+      console.error("Failed to load more items:", err);
+      setError("Failed to load more items");
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [cart, isLoadingMore]);
 
   const clearCart = useCallback(() => {
     setCart(null);
@@ -306,14 +339,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
   }, [loadCart, requireAuth]);
 
+  const hasMore = cart?.pagination.hasMore ?? false;
+
   const value = useMemo(
     () => ({
       cart,
       isLoading,
+      isLoadingMore,
       isMutating,
       error,
+      hasMore,
       ensureLoaded,
       refresh: loadCart,
+      loadMoreItems,
       clearCart,
       addItem,
       updateItem,
@@ -328,9 +366,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       clearCart,
       error,
       ensureLoaded,
+      hasMore,
       isLoading,
+      isLoadingMore,
       isMutating,
       loadCart,
+      loadMoreItems,
       removeItem,
       removePromoCode,
       updateItem,
