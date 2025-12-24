@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { ShoppingCart, ChevronDown, Search, Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { UserButton } from "@/components/common/UserButton";
 import {
@@ -45,6 +46,7 @@ export function Header() {
   // Removed useSearchParams from here
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   // Handle search form submission
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -115,11 +117,29 @@ export function Header() {
             className="text-primary-navy hover:bg-primary-purple/20 flex h-10 w-10 items-center justify-center rounded-full transition-colors lg:hidden"
             aria-label="Toggle menu"
           >
-            {mobileMenuOpen ? (
-              <X className="h-6 w-6" />
-            ) : (
-              <Menu className="h-6 w-6" />
-            )}
+            <AnimatePresence mode="wait" initial={false}>
+              {mobileMenuOpen ? (
+                <motion.div
+                  key="close"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <X className="h-6 w-6" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="menu"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Menu className="h-6 w-6" />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </button>
 
           {/* Logo */}
@@ -223,23 +243,61 @@ export function Header() {
 
           {/* Mobile Right Side Actions */}
           <div className="ml-auto flex items-center gap-2 lg:hidden">
-            {/* Mobile Search Button */}
-            <button
-              type="button"
-              onClick={() => {
-                // Toggle search on mobile - could show search bar
-                const searchInput = document.querySelector(
-                  'input[type="search"]'
-                ) as HTMLInputElement;
-                if (searchInput) {
-                  searchInput.focus();
-                }
-              }}
-              className="text-primary-navy hover:bg-primary-purple/20 flex h-10 w-10 items-center justify-center rounded-full transition-colors"
-              aria-label="Search"
-            >
-              <Search className="h-5 w-5" />
-            </button>
+            <AnimatePresence mode="wait">
+              {!mobileSearchOpen ? (
+                <motion.button
+                  key="search-trigger"
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  type="button"
+                  onClick={() => {
+                    setMobileSearchOpen(true);
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-primary-navy hover:bg-primary-purple/20 flex h-10 w-10 items-center justify-center rounded-full transition-colors"
+                  aria-label="Toggle search"
+                >
+                  <Search className="h-5 w-5" />
+                </motion.button>
+              ) : (
+                <motion.form
+                  key="search-input"
+                  initial={{ width: 40, opacity: 0 }}
+                  animate={{ width: 150, opacity: 1 }}
+                  exit={{ width: 40, opacity: 0 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  onSubmit={handleSearchSubmit}
+                  className="relative flex items-center overflow-hidden"
+                >
+                  <Input
+                    name="mobile-search"
+                    type="search"
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={handleInputChange}
+                    onKeyDown={handleSearchKeyDown}
+                    onBlur={() => {
+                      if (!searchQuery) {
+                        setMobileSearchOpen(false);
+                      }
+                    }}
+                    className="focus-visible:ring-0 focus-visible:ring-offset-0 h-9 w-full rounded-[20px] border-slate-300 bg-white py-1 pr-8 pl-3 text-sm placeholder:text-slate-400"
+                    autoFocus
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setMobileSearchOpen(false)}
+                    className="hover:text-primary-navy absolute top-1/2 right-2 -translate-y-1/2 text-slate-400 transition-colors"
+                    aria-label="Close search"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </motion.form>
+              )}
+            </AnimatePresence>
+
             <Link
               href="/cart"
               className="bg-primary-navy hover:bg-primary-navy-light flex h-10 w-10 items-center justify-center rounded-full text-white transition-colors"
@@ -254,27 +312,6 @@ export function Header() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="border-neutral-stroke mt-4 border-t pt-4 lg:hidden">
-            {/* Mobile Search Bar */}
-            <form onSubmit={handleSearchSubmit} className="mb-4">
-              <div className="relative">
-                <Input
-                  type="search"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={handleInputChange}
-                  onKeyDown={handleSearchKeyDown}
-                  className="h-10 w-full rounded-[20px] border-slate-300 bg-white py-2 pr-10 pl-3 text-sm placeholder:text-slate-400"
-                />
-                <button
-                  type="submit"
-                  className="hover:text-primary-navy absolute top-1/2 right-2 -translate-y-1/2 text-slate-400 transition-colors"
-                  aria-label="Search"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
-              </div>
-            </form>
-
             {/* Mobile Navigation Links */}
             <nav className="flex flex-col gap-2">
               {headerNavigation.map((item) => {

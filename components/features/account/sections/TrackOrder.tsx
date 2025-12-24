@@ -72,15 +72,29 @@ export function TrackOrder() {
     const isPickup = deliveryMethod === "pickup";
 
     const steps = [
-      { key: "paid", label: "Order Placed" },
-      { key: "processing", label: "Processing" },
+      {
+        key: "paid",
+        label: "Order Placed",
+        description: "We have received your order and payment.",
+      },
+      {
+        key: "processing",
+        label: "Processing",
+        description: "We are currently packing your items with care.",
+      },
       {
         key: "shipped",
         label: isPickup ? "Ready for Pickup" : "Shipped",
+        description: isPickup
+          ? "Your order is ready for collection at our store."
+          : "Your order is on the way to you.",
       },
       {
         key: "completed",
         label: isPickup ? "Picked Up" : "Delivered",
+        description: isPickup
+          ? "You have successfully picked up your order."
+          : "Your package has been safely delivered.",
       },
     ];
 
@@ -241,8 +255,11 @@ export function TrackOrder() {
                         >
                           {step.label}
                         </p>
+                        <p className="mt-0.5 text-sm text-gray-500">
+                          {step.description}
+                        </p>
                         {step.key === "shipped" && trackingData.shipped_at && (
-                          <p className="text-sm text-gray-500">
+                          <p className="mt-1 text-sm text-gray-500">
                             {new Date(
                               trackingData.shipped_at
                             ).toLocaleDateString()}{" "}

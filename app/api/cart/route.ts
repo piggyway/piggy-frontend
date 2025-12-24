@@ -31,7 +31,14 @@ export async function GET(request: NextRequest) {
       console.warn("⚠️ [Cart API Route] No authorization header found");
     }
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/cart`, {
+    // Forward query parameters (cursor, limit) to backend
+    const { searchParams } = new URL(request.url);
+    const queryString = searchParams.toString();
+    const backendUrl = queryString
+      ? `${API_BASE_URL}/api/v1/cart?${queryString}`
+      : `${API_BASE_URL}/api/v1/cart`;
+
+    const res = await fetch(backendUrl, {
       headers,
     });
 

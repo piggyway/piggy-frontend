@@ -12,6 +12,7 @@ import type {
   CartFromAPI,
   CartItem,
   CartItemFromAPI,
+  CartPaginationFromAPI,
   CartResponseFromAPI,
   CartTotals,
   CartTotalsFromAPI,
@@ -22,13 +23,27 @@ const FALLBACK_IMAGE = "/default-product-image.png";
 
 export class CartService {
   /**
-   * Fetch active cart
+   * Fetch active cart with pagination support
    */
-  static async getCart(): Promise<Cart | null> {
+  static async getCart(
+    pagination?: { cursor?: number; limit?: number }
+  ): Promise<Cart | null> {
     try {
-      console.log("🟡 [CartService] Fetching cart from:", API_ENDPOINTS.CART);
+      const params = new URLSearchParams();
+      if (pagination?.cursor) {
+        params.append("cursor", String(pagination.cursor));
+      }
+      if (pagination?.limit) {
+        params.append("limit", String(pagination.limit));
+      }
+      const queryString = params.toString();
+      const url = queryString
+        ? `${API_ENDPOINTS.CART}?${queryString}`
+        : API_ENDPOINTS.CART;
 
-      const response = await fetchWithAuth(API_ENDPOINTS.CART, {
+      console.log("🟡 [CartService] Fetching cart from:", url);
+
+      const response = await fetchWithAuth(url, {
         method: "GET",
       });
 
@@ -50,6 +65,7 @@ export class CartService {
         subtotal: transformedCart.totals.formattedSubtotal,
         discount: transformedCart.totals.formattedDiscount,
         grandTotal: transformedCart.totals.formattedGrandTotal,
+        hasMore: transformedCart.pagination.hasMore,
       });
 
       return transformedCart;
@@ -57,6 +73,16 @@ export class CartService {
       console.error("[CartService] Failed to fetch cart:", error);
       return null;
     }
+  }
+
+  /**
+   * Load more cart items (for pagination)
+   */
+  static async loadMoreItems(
+    cursor: number,
+    limit: number = 5
+  ): Promise<Cart | null> {
+    return this.getCart({ cursor, limit });
   }
 
   /**
@@ -183,6 +209,11 @@ export class CartService {
       appliedCouponCode: cart.applied_coupon_code,
       items: cart.items.map((item) => this.transformCartItem(item, cart)),
       totals: this.transformTotals(cart.totals),
+      pagination: {
+        nextCursor: cart.pagination.next_cursor,
+        hasMore: cart.pagination.has_more,
+        pageSize: cart.pagination.page_size,
+      },
     };
   }
 
@@ -212,6 +243,7 @@ export class CartService {
       isAvailable: item.is_available,
       stockQuantity: item.stock_quantity,
       variantSku: item.variant_sku,
+      variantOptions: item.variant_options || [],
       notes: item.notes,
       formattedUnitPrice: this.formatAmount(unitPriceCents, cart.currency),
       formattedLineSubtotal: this.formatAmount(

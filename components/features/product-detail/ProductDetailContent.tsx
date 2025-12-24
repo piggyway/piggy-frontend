@@ -4,6 +4,7 @@ import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, HelpCircle, Minus, Plus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -308,14 +309,27 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
         {/* Main Image */}
         <div className="bg-neutral-stroke relative aspect-[4/3] w-full overflow-hidden rounded-[20px] sm:rounded-[28px]">
-          <Image
-            src={allImages[selectedImageIndex] || "/default-product-image.png"}
-            alt={product.title}
-            fill
-            className="object-contain"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
-            priority
-          />
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={allImages[selectedImageIndex] || "default"}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="relative h-full w-full"
+            >
+              <Image
+                src={
+                  allImages[selectedImageIndex] || "/default-product-image.png"
+                }
+                alt={product.title}
+                fill
+                className="object-contain"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 50vw"
+                priority
+              />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </section>
 
@@ -493,19 +507,21 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           {/* Quantity Selector */}
           <div className="flex items-center justify-center gap-3 sm:justify-start">
-            <button
+            <motion.button
+              whileTap={{ scale: 0.85 }}
               onClick={decrementQuantity}
               className="bg-primary-navy hover:bg-primary-navy-light flex h-11 w-11 items-center justify-center rounded-full text-white transition-colors sm:h-12 sm:w-12"
               aria-label="Decrease quantity"
             >
               <Minus className="h-5 w-5" />
-            </button>
+            </motion.button>
 
             <span className="text-primary-navy w-12 text-center text-lg font-medium sm:text-xl">
               {quantity}
             </span>
 
-            <button
+            <motion.button
+              whileTap={{ scale: 0.85 }}
               onClick={incrementQuantity}
               disabled={
                 selectedVariant
@@ -516,7 +532,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
               aria-label="Increase quantity"
             >
               <Plus className="h-5 w-5" />
-            </button>
+            </motion.button>
           </div>
 
           {/* Add to Cart Button */}

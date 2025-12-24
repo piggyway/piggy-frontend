@@ -16,6 +16,7 @@ type CartItemPayload = {
   variantRid?: number | null;
   productTitle: string;
   variantSku: string | null;
+  variantOptions?: { name: string; value: string }[];
   quantity: number;
   unitPriceCents: number;
   lineSubtotalCents: number;
@@ -64,6 +65,7 @@ export async function POST(request: NextRequest) {
             : Number.parseInt(String(item.variantRid), 10),
         product_title: item.productTitle,
         variant_sku: item.variantSku,
+        variant_options: item.variantOptions,
         quantity: item.quantity,
         unit_price_cents: item.unitPriceCents,
         line_subtotal_cents: item.lineSubtotalCents,

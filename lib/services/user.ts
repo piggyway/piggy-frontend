@@ -53,7 +53,10 @@ export class UserService {
    */
   static async getProfile(): Promise<UserProfile | null> {
     try {
-      const response = await fetchWithAuth("/api/users/me", { method: "GET" });
+      const response = await fetchWithAuth("/api/users/me", {
+        method: "GET",
+        redirectOnAuthError: false,
+      });
 
       if (!response.ok) {
         throw new Error("Failed to get user profile");
