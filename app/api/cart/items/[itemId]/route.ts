@@ -19,6 +19,7 @@ export async function PATCH(
 
     const { itemId } = await params;
     const token = request.headers.get("authorization") || undefined;
+    const sessionId = request.headers.get("x-session-id") || undefined;
     const body = await request.json();
 
     const res = await fetch(`${API_BASE_URL}/api/v1/cart/items/${itemId}`, {
@@ -26,6 +27,7 @@ export async function PATCH(
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: token } : {}),
+        ...(sessionId ? { "X-Session-Id": sessionId } : {}),
       },
       body: JSON.stringify(body),
     });
@@ -52,10 +54,14 @@ export async function DELETE(
 
     const { itemId } = await params;
     const token = request.headers.get("authorization") || undefined;
+    const sessionId = request.headers.get("x-session-id") || undefined;
 
     const res = await fetch(`${API_BASE_URL}/api/v1/cart/items/${itemId}`, {
       method: "DELETE",
-      headers: token ? { Authorization: token } : undefined,
+      headers: {
+        ...(token ? { Authorization: token } : {}),
+        ...(sessionId ? { "X-Session-Id": sessionId } : {}),
+      },
     });
 
     const data = await res.json();

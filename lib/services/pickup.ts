@@ -36,7 +36,7 @@ export class PickupService {
 
   /**
    * Fetch pickup slots by location and date
-   * @param locationId 
+   * @param locationId
    * @param date YYYY-MM-DD
    */
   static async getSlotsByDate(
@@ -44,8 +44,10 @@ export class PickupService {
     date: string
   ): Promise<PickupSlot[]> {
     try {
-      console.log(`[PickupService] Fetching slots for location ${locationId} on ${date}`);
-      
+      console.log(
+        `[PickupService] Fetching slots for location ${locationId} on ${date}`
+      );
+
       const response = await fetchWithAuth(API_ENDPOINTS.PICKUP_SLOTS_BY_DATE, {
         method: "GET",
         params: {
@@ -68,8 +70,37 @@ export class PickupService {
       return data.data;
     } catch (error) {
       console.error("[PickupService] Failed to fetch slots:", error);
-      // Re-throw to let the component handle empty state if needed, 
+      // Re-throw to let the component handle empty state if needed,
       // or just return empty array but log the error
+      return [];
+    }
+  }
+
+  /**
+   * Fetch available dates for a location
+   * @param locationId
+   */
+  static async getAvailableDates(locationId: number): Promise<string[]> {
+    try {
+      const response = await fetchWithAuth(
+        API_ENDPOINTS.PICKUP_AVAILABLE_DATES,
+        {
+          method: "GET",
+          params: {
+            location_id: locationId,
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!data.success || !data.data) {
+        throw new Error(data.error || "Failed to fetch available dates");
+      }
+
+      return data.data;
+    } catch (error) {
+      console.error("[PickupService] Failed to fetch available dates:", error);
       return [];
     }
   }

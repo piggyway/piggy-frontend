@@ -8,6 +8,9 @@ export const API_ENDPOINTS = {
   PRODUCTS: "/api/products",
   PRODUCT_BY_ID: (id: string | number) => `/api/products/${id}`,
 
+  // Variants
+  VARIANTS: "/api/variants",
+
   // Categories
   CATEGORIES: "/api/categories",
   CATEGORY_BY_ID: (id: string | number) => `/api/categories/${id}`,
@@ -39,4 +42,5 @@ export const API_ENDPOINTS = {
   // Pickup
   PICKUP_LOCATIONS: "/api/pickup/locations",
   PICKUP_SLOTS_BY_DATE: "/api/pickup/slots",
+  PICKUP_AVAILABLE_DATES: "/api/pickup/available-dates",
 } as const;

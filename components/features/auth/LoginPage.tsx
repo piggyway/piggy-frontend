@@ -14,6 +14,8 @@ interface LoginPageProps {
   error?: string;
 }
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export function LoginPage({ error }: LoginPageProps) {
   const router = useRouter();
   const hasShownUrlErrorToast = useRef(false);
@@ -31,6 +33,10 @@ export function LoginPage({ error }: LoginPageProps) {
 
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL;
   const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+  const trimmedEmailForUi = email.trim();
+  const isEmailValidForUi =
+    !!trimmedEmailForUi && emailRegex.test(trimmedEmailForUi);
 
   // 确保只在客户端渲染 Turnstile，避免 hydration 不匹配
   useEffect(() => {
@@ -82,7 +88,13 @@ export function LoginPage({ error }: LoginPageProps) {
 
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      setFormError("Please enter your email.");
+      setFormError("请输入邮箱 / Please enter your email.");
+      return;
+    }
+
+    if (!emailRegex.test(trimmedEmail)) {
+      // 邮箱格式不合法时，不应触发 Turnstile/后端校验（避免暴露 turnstile_action_mismatch 等错误）
+      setFormError("邮箱格式不正确 / Invalid email format.");
       return;
     }
 
@@ -160,6 +172,11 @@ export function LoginPage({ error }: LoginPageProps) {
 
     if (!trimmedEmail || !trimmedCode) {
       setFormError("Please enter both email and verification code.");
+      return;
+    }
+
+    if (!emailRegex.test(trimmedEmail)) {
+      setFormError("邮箱格式不正确 / Invalid email format.");
       return;
     }
 
@@ -298,8 +315,14 @@ export function LoginPage({ error }: LoginPageProps) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="name@example.com"
+                    aria-invalid={!!trimmedEmailForUi && !isEmailValidForUi}
                     className="bg-background ring-offset-background focus:border-primary-navy focus:ring-primary-navy/40 flex h-10 w-full rounded-full border border-slate-300 px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:ring-2"
                   />
+                  {!!trimmedEmailForUi && !isEmailValidForUi && (
+                    <p className="text-xs text-red-600">
+                      邮箱格式不正确 / Invalid email format.
+                    </p>
+                  )}
                 </div>
 
                 {/* 只在客户端渲染 Turnstile，避免 hydration 不匹配 */}
@@ -327,7 +350,11 @@ export function LoginPage({ error }: LoginPageProps) {
                 <button
                   type="submit"
                   disabled={
-                    loading || !mounted || !turnstileSiteKey || !turnstileToken
+                    loading ||
+                    !mounted ||
+                    !turnstileSiteKey ||
+                    !turnstileToken ||
+                    !isEmailValidForUi
                   }
                   className="bg-primary-navy hover:bg-primary-navy-light inline-flex w-full items-center justify-center rounded-full px-4 py-2 text-sm font-medium text-white transition-colors disabled:opacity-60"
                 >

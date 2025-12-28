@@ -16,6 +16,10 @@ import type {
   ProductDetail,
   ProductOption,
   ProductVariant,
+  VariantListParams,
+  VariantListItemFromAPI,
+  VariantListItem,
+  VariantListResponse,
 } from "@/lib/types/product";
 
 /**
@@ -269,5 +273,132 @@ export class ProductService {
 
     const symbol = currencySymbols[currencySlug.toUpperCase()] || "$";
     return `${symbol}${price.toFixed(2)}`;
+  }
+
+  /**
+   * Get paginated list of variants with filters
+   */
+  static async getVariants(
+    params?: VariantListParams
+  ): Promise<VariantListResponse> {
+    try {
+      const cleanParams: Record<string, string | number | boolean> = {};
+      if (params) {
+        Object.entries(params).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== "") {
+            cleanParams[key] = value;
+          }
+        });
+      }
+
+      const response = await apiClient.get<{
+        data: VariantListItemFromAPI[];
+        pagination: {
+          page: number;
+          page_size: number;
+          total: number;
+          total_pages: number;
+        };
+      }>(API_ENDPOINTS.VARIANTS, { params: cleanParams });
+
+      if (!response.data || !response.pagination) {
+        throw new Error("Invalid API response format");
+      }
+
+      return this.transformVariantListResponse(response);
+    } catch (error) {
+      console.error("[ProductService] Failed to fetch variants:", error);
+      return {
+        data: [],
+        pagination: {
+          page: params?.page || 1,
+          pageSize: params?.page_size || 10,
+          total: 0,
+          totalPages: 0,
+        },
+      };
+    }
+  }
+
+  /**
+   * Transform variant list response
+   */
+  private static transformVariantListResponse(response: {
+    data: VariantListItemFromAPI[];
+    pagination: {
+      page: number;
+      page_size: number;
+      total: number;
+      total_pages: number;
+    };
+  }): VariantListResponse {
+    return {
+      data: response.data.map((v) => this.transformVariantListItem(v)),
+      pagination: {
+        page: response.pagination.page,
+        pageSize: response.pagination.page_size,
+        total: response.pagination.total,
+        totalPages: response.pagination.total_pages,
+      },
+    };
+  }
+
+  /**
+   * Transform variant list item
+   */
+  private static transformVariantListItem(
+    variant: VariantListItemFromAPI
+  ): VariantListItem {
+    const currencySlug = variant.currency?.slug || "AUD";
+    const originalPrice = variant.original_price;
+    const discountedPrice = variant.discounted_price;
+
+    let formattedOriginalPrice: string | null = null;
+    let formattedDiscountedPrice: string | null = null;
+    let discountPercentage: string | null = null;
+
+    if (originalPrice !== null) {
+      formattedOriginalPrice = this.formatPrice(originalPrice, currencySlug);
+    }
+    if (discountedPrice !== null) {
+      formattedDiscountedPrice = this.formatPrice(
+        discountedPrice,
+        currencySlug
+      );
+    }
+
+    // Calculate discount percentage
+    if (
+      originalPrice !== null &&
+      discountedPrice !== null &&
+      discountedPrice < originalPrice
+    ) {
+      const percent = Math.round(
+        ((originalPrice - discountedPrice) / originalPrice) * 100
+      );
+      discountPercentage = `${percent}% OFF`;
+    }
+
+    return {
+      variantId: variant.variant_id,
+      productId: variant.product_id,
+      productTitle: variant.product_title || "Untitled Product",
+      productSlug: variant.product_slug || `product-${variant.product_id}`,
+      category: variant.category,
+      originalPrice,
+      discountedPrice,
+      formattedOriginalPrice,
+      formattedDiscountedPrice,
+      discountPercentage,
+      currency: variant.currency,
+      imageUrl: normalizeImageUrl(variant.image_url) || DEFAULT_PRODUCT_IMAGE,
+      stockQuantity: variant.stock_quantity,
+      isAvailable: variant.is_available,
+      optionValues: variant.option_values.map((ov) => ({
+        optionName: ov.option_name,
+        optionSlug: ov.option_slug,
+        value: ov.value,
+      })),
+    };
   }
 }

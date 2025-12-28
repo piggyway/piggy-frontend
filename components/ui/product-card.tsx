@@ -13,6 +13,8 @@ export interface ProductCardProps {
   title: string;
   subtitle?: string;
   price: string;
+  originalPrice?: string;
+  discountPercentage?: string;
   href?: string;
   onAddToCart?: () => void;
   disabled?: boolean;
@@ -27,6 +29,8 @@ export function ProductCard({
   title,
   subtitle,
   price,
+  originalPrice,
+  discountPercentage,
   href,
   onAddToCart,
   disabled = false,
@@ -62,10 +66,24 @@ export function ProductCard({
         </div>
       </div>
 
-      {/* Price */}
-      <p className="text-primary-navy w-full text-lg leading-6 font-medium sm:text-xl">
-        {price}
-      </p>
+      {/* Price Section */}
+      <div className="flex flex-col gap-1">
+        <div className="flex items-center gap-2">
+          <p className="text-primary-navy w-auto text-lg leading-6 font-medium sm:text-xl">
+            {price}
+          </p>
+          {originalPrice && (
+            <p className="text-sm text-neutral-400 line-through decoration-neutral-400/80">
+              {originalPrice}
+            </p>
+          )}
+        </div>
+        {discountPercentage && (
+          <span className="w-fit rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 text-xs font-medium text-[#FF4D4F]">
+            {discountPercentage}
+          </span>
+        )}
+      </div>
 
       {/* Add to Cart Button - gap-4 */}
       <div className="flex w-full flex-col items-start gap-3 sm:gap-4">

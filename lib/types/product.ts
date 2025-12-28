@@ -131,6 +131,85 @@ export interface ProductListResponse {
   };
 }
 
+// ==================== Variant List Types ====================
+
+/**
+ * Variant option display (for showing in cards)
+ */
+export interface VariantOptionDisplay {
+  optionName: string | null;
+  optionSlug: string | null;
+  value: string | null;
+}
+
+/**
+ * Variant list item from API (snake_case)
+ */
+export interface VariantListItemFromAPI {
+  variant_id: number;
+  product_id: number;
+  product_title: string | null;
+  product_slug: string | null;
+  category: CategoryInfo | null;
+  original_price: number | null;
+  discounted_price: number | null;
+  currency: CurrencyInfo | null;
+  image_url: string | null;
+  stock_quantity: number;
+  is_available: boolean;
+  option_values: Array<{
+    option_name: string | null;
+    option_slug: string | null;
+    value: string | null;
+  }>;
+}
+
+/**
+ * Variant list item for frontend (camelCase)
+ */
+export interface VariantListItem {
+  variantId: number;
+  productId: number;
+  productTitle: string;
+  productSlug: string;
+  category: CategoryInfo | null;
+  originalPrice: number | null;
+  discountedPrice: number | null;
+  formattedOriginalPrice: string | null;
+  formattedDiscountedPrice: string | null;
+  discountPercentage: string | null;
+  currency: CurrencyInfo | null;
+  imageUrl: string;
+  stockQuantity: number;
+  isAvailable: boolean;
+  optionValues: VariantOptionDisplay[];
+}
+
+/**
+ * Variant list params
+ */
+export interface VariantListParams {
+  page?: number;
+  page_size?: number;
+  category?: string;
+  q?: string;
+  in_stock?: "true" | "false";
+  sort?: string;
+}
+
+/**
+ * Paginated variant list response for frontend
+ */
+export interface VariantListResponse {
+  data: VariantListItem[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 // ==================== Product Detail Types ====================
 
 /**
