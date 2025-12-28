@@ -57,6 +57,10 @@ export function ShopAllContent() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleClearFilters = () => {
+    updateSearchParams({ category: null, q: null, page: "1" });
+  };
+
   return (
     <>
       {/* Category Filter */}
@@ -74,6 +78,7 @@ export function ShopAllContent() {
         q={q}
         onSortChange={handleSortChange}
         onPageChange={handlePageChange}
+        onClearFilters={handleClearFilters}
       />
     </>
   );

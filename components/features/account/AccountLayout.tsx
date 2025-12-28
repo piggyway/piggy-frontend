@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { AccountSidebar, AccountSection } from "./AccountSidebar";
 import { ProfileInfo } from "./sections/ProfileInfo";
@@ -10,9 +10,11 @@ import { OrderDetails } from "./sections/OrderDetails";
 import { TrackOrder } from "./sections/TrackOrder";
 import { FirstLoginBanner } from "./FirstLoginBanner";
 import { useUser } from "@/contexts/UserContext";
+import { Loader2 } from "lucide-react";
 
 export function AccountLayout() {
   const { isFirstLogin, clearUser } = useUser();
+  const { status } = useSession();
   const router = useRouter();
   const [currentSection, setCurrentSection] =
     useState<AccountSection>("profile");
@@ -23,6 +25,27 @@ export function AccountLayout() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const hasCheckedRef = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  // Protect route
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    }
+  }, [status, router]);
+
+  // Show loading state while checking session
+  if (status === "loading") {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="text-primary-navy h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
+
+  // Prevent flash content
+  if (status === "unauthenticated") {
+    return null;
+  }
 
   // Detect first-time login
   useEffect(() => {

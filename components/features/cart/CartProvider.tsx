@@ -226,7 +226,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addItem = useCallback(
     async (variantRid: number, quantity = 1, notes?: string) => {
-      if (!requireAuth("add items")) return;
       await runMutation(
         () =>
           CartService.addItem({
@@ -249,12 +248,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
       );
     },
-    [requireAuth, runMutation]
+    [runMutation]
   );
 
   const updateItem = useCallback(
     async (itemId: string, quantity: number, notes?: string | null) => {
-      if (!requireAuth("update items")) return;
       const itemToUpdate = cart?.items.find((item) => item.id === itemId);
       const productName = itemToUpdate?.productTitle || "Item";
 
@@ -270,12 +268,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         }
       );
     },
-    [cart, requireAuth, runMutation]
+    [cart, runMutation]
   );
 
   const removeItem = useCallback(
     async (itemId: string) => {
-      if (!requireAuth("remove items")) return;
       // Get the item name before removing
       const itemToRemove = cart?.items.find((item) => item.id === itemId);
       const productName = itemToRemove?.productTitle || "Item";
@@ -285,12 +282,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         errorMessage: "Failed to remove item",
       });
     },
-    [cart, requireAuth, runMutation]
+    [cart, runMutation]
   );
 
   const applyPromoCode = useCallback(
     async (code: string) => {
-      if (!requireAuth("apply promo codes")) return;
       setIsMutating(true);
 
       try {
@@ -312,11 +308,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsMutating(false);
       }
     },
-    [cart, loadCart, requireAuth]
+    [loadCart]
   );
 
   const removePromoCode = useCallback(async () => {
-    if (!requireAuth("remove promo codes")) return;
     setIsMutating(true);
     try {
       const result = await PromoService.removePromoCode();
@@ -337,7 +332,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsMutating(false);
     }
-  }, [loadCart, requireAuth]);
+  }, [loadCart]);
 
   const hasMore = cart?.pagination.hasMore ?? false;
 

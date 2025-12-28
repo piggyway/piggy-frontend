@@ -10,6 +10,11 @@ import {
   Truck,
   MapPin,
   Search,
+  CreditCard,
+  XCircle,
+  RotateCcw,
+  AlertCircle,
+  Wallet,
 } from "lucide-react";
 import { OrderService } from "@/lib/services/order";
 import type { OrderStatus } from "@/lib/types/order";
@@ -55,14 +60,18 @@ export function TrackOrder() {
     OrderStatus,
     { label: string; color: string; icon: any }
   > = {
-    pending_payment: { label: "Pending Payment", color: "yellow", icon: Clock },
-    paid: { label: "Payment Received", color: "green", icon: CheckCircle2 },
+    pending_payment: {
+      label: "Pending Payment",
+      color: "yellow",
+      icon: CreditCard,
+    },
+    paid: { label: "Payment Received", color: "green", icon: Wallet },
     processing: { label: "Processing Order", color: "blue", icon: Package },
     shipped: { label: "Shipped", color: "purple", icon: Truck },
     completed: { label: "Delivered", color: "green", icon: CheckCircle2 },
-    cancelled: { label: "Cancelled", color: "red", icon: Clock },
-    refunded: { label: "Refunded", color: "gray", icon: Clock },
-    disputed: { label: "Disputed", color: "orange", icon: Clock },
+    cancelled: { label: "Cancelled", color: "red", icon: XCircle },
+    refunded: { label: "Refunded", color: "gray", icon: RotateCcw },
+    disputed: { label: "Disputed", color: "orange", icon: AlertCircle },
   };
 
   const getStatusTimeline = (
@@ -207,14 +216,24 @@ export function TrackOrder() {
                               : "bg-gray-100 text-gray-700"
                   }`}
                 >
-                  {/* Custom logic for status label in the header */}
-                  {trackingData.delivery_method === "pickup"
-                    ? trackingData.status === "shipped"
-                      ? "Ready for Pickup"
-                      : trackingData.status === "completed"
-                        ? "Picked Up"
-                        : statusConfig[trackingData.status].label
-                    : statusConfig[trackingData.status].label}
+                  {(() => {
+                    const config = statusConfig[trackingData.status];
+                    const StatusIcon = config.icon;
+                    return (
+                      <div className="flex items-center gap-2">
+                        <StatusIcon className="h-4 w-4" />
+                        <span>
+                          {trackingData.delivery_method === "pickup"
+                            ? trackingData.status === "shipped"
+                              ? "Ready for Pickup"
+                              : trackingData.status === "completed"
+                                ? "Picked Up"
+                                : config.label
+                            : config.label}
+                        </span>
+                      </div>
+                    );
+                  })()}
                 </span>
               </div>
 

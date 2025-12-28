@@ -91,7 +91,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
     hasEnsuredCartRef.current = true;
 
     // Trigger cart creation on backend if it doesn't exist yet
-    fetchWithAuth("/api/cart", { method: "GET" }).catch((err) => {
+    fetchWithAuth("/api/cart", {
+      method: "GET",
+      redirectOnAuthError: false,
+    }).catch((err) => {
       console.warn("[UserContext] Failed to ensure default cart:", err);
     });
   }, [status, (session as any)?.accessToken, user]);

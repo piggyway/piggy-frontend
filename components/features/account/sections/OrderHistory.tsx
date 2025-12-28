@@ -6,32 +6,68 @@ import { Button } from "@/components/ui/button";
 import { Pagination, PaginationInfo } from "@/components/ui/pagination";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { Package, Truck, Store, Copy } from "lucide-react";
+import {
+  Package,
+  Truck,
+  Store,
+  Copy,
+  CreditCard,
+  Wallet,
+  CheckCircle2,
+  XCircle,
+  RotateCcw,
+  AlertCircle,
+  Clock,
+} from "lucide-react";
 import { OrderService } from "@/lib/services/order";
 import type { OrderWithItems, OrderStatus } from "@/lib/types/order";
 import { normalizeImageUrl } from "@/lib/utils/images";
 import { motion, AnimatePresence } from "framer-motion";
 
-const statusLabel: Record<OrderStatus, string> = {
-  pending_payment: "Pending payment",
-  paid: "Paid",
-  processing: "Processing",
-  shipped: "Shipped",
-  completed: "Completed",
-  cancelled: "Cancelled",
-  refunded: "Refunded",
-  disputed: "Disputed",
-};
-
-const statusColors: Record<OrderStatus, string> = {
-  pending_payment: "bg-yellow-100 text-yellow-800",
-  paid: "bg-green-100 text-green-700",
-  processing: "bg-blue-100 text-blue-700",
-  shipped: "bg-purple-100 text-purple-700",
-  completed: "bg-green-100 text-green-700",
-  cancelled: "bg-red-100 text-red-700",
-  refunded: "bg-slate-100 text-slate-700",
-  disputed: "bg-orange-100 text-orange-700",
+const statusConfig: Record<
+  OrderStatus,
+  { label: string; color: string; icon: any }
+> = {
+  pending_payment: {
+    label: "Pending payment",
+    color: "bg-yellow-100 text-yellow-800",
+    icon: CreditCard,
+  },
+  paid: {
+    label: "Paid",
+    color: "bg-green-100 text-green-700",
+    icon: Wallet,
+  },
+  processing: {
+    label: "Processing",
+    color: "bg-blue-100 text-blue-700",
+    icon: Package,
+  },
+  shipped: {
+    label: "Shipped",
+    color: "bg-purple-100 text-purple-700",
+    icon: Truck,
+  },
+  completed: {
+    label: "Completed",
+    color: "bg-green-100 text-green-700",
+    icon: CheckCircle2,
+  },
+  cancelled: {
+    label: "Cancelled",
+    color: "bg-red-100 text-red-700",
+    icon: XCircle,
+  },
+  refunded: {
+    label: "Refunded",
+    color: "bg-slate-100 text-slate-700",
+    icon: RotateCcw,
+  },
+  disputed: {
+    label: "Disputed",
+    color: "bg-orange-100 text-orange-700",
+    icon: AlertCircle,
+  },
 };
 
 const FALLBACK_IMAGE = "/default-product-image.png";
@@ -199,7 +235,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
           {orders.map((order) => {
             // Determine active status display logic (including Pickup vs Shipping)
             const isPickup = order.delivery_method === "pickup";
-            let displayStatus = statusLabel[order.status];
+            let displayStatus = statusConfig[order.status].label;
             if (isPickup) {
               if (order.status === "shipped")
                 displayStatus = "Ready for Pickup";
@@ -247,14 +283,21 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                     )}
                   </div>
 
-                  <span
-                    className={cn(
-                      "rounded-full px-3 py-1 text-xs font-medium",
-                      statusColors[order.status]
-                    )}
-                  >
-                    {displayStatus}
-                  </span>
+                  {(() => {
+                    const config = statusConfig[order.status];
+                    const StatusIcon = config.icon;
+                    return (
+                      <span
+                        className={cn(
+                          "flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-medium",
+                          config.color
+                        )}
+                      >
+                        <StatusIcon className="h-3.5 w-3.5" />
+                        {displayStatus}
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 {/* Items List */}

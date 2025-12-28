@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     const token = request.headers.get("authorization") || undefined;
+    const sessionId = request.headers.get("x-session-id") || undefined;
     const body = await request.json();
 
     const res = await fetch(`${API_BASE_URL}/api/v1/cart/items`, {
@@ -22,6 +23,7 @@ export async function POST(request: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: token } : {}),
+        ...(sessionId ? { "X-Session-Id": sessionId } : {}),
       },
       body: JSON.stringify(body),
     });

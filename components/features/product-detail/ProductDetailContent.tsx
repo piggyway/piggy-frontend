@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { ChevronRight, HelpCircle, Minus, Plus } from "lucide-react";
@@ -29,12 +30,29 @@ interface ProductDetailContentProps {
 
 export function ProductDetailContent({ product }: ProductDetailContentProps) {
   const { addItem, isMutating } = useCart();
+  const searchParams = useSearchParams();
   const [addError, setAddError] = useState<string | null>(null);
+
+  // Check for variant ID in URL params
+  const variantIdFromUrl = searchParams?.get("variant");
+
   // State for selected options
   const [selectedOptions, setSelectedOptions] = useState<
     Record<number, number>
   >(() => {
-    // Initialize with first available value for each option
+    // If variant ID is provided in URL, find that variant and use its options
+    if (variantIdFromUrl) {
+      const variantId = parseInt(variantIdFromUrl, 10);
+      const variant = product.variants.find((v) => v.id === variantId);
+      if (variant) {
+        const initial: Record<number, number> = {};
+        variant.optionValues.forEach((ov) => {
+          initial[ov.optionId] = ov.valueId;
+        });
+        return initial;
+      }
+    }
+    // Otherwise initialize with first available value for each option
     const initial: Record<number, number> = {};
     product.options.forEach((option) => {
       if (option.values.length > 0) {
@@ -72,15 +90,30 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     return found;
   }, [product.variants, selectedOptions]);
 
-  // Get current price based on selected variant
+  // Get current price info based on selected variant
   const currentPrice = useMemo(() => {
     if (!selectedVariant) {
-      return product.formattedPrice;
+      return {
+        displayPrice: product.formattedPrice,
+        originalPrice: null,
+        discountPercentage: null,
+      };
     }
 
     const price =
       selectedVariant.discountedPrice ?? selectedVariant.originalPrice;
-    if (price === null) return product.formattedPrice;
+    const originalPriceRaw = selectedVariant.originalPrice;
+
+    // Determine which price to show as the main price
+    const mainPrice = price;
+
+    if (mainPrice === null) {
+      return {
+        displayPrice: product.formattedPrice,
+        originalPrice: null,
+        discountPercentage: null,
+      };
+    }
 
     const currencySlug =
       selectedVariant.currency?.slug || product.currency?.slug || "AUD";
@@ -91,7 +124,30 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
       GBP: "£",
     };
     const symbol = currencySymbols[currencySlug.toUpperCase()] || "$";
-    return `${symbol}${price.toFixed(2)}`;
+
+    let displayOriginalPrice: string | null = null;
+    let discountPercentage: string | null = null;
+
+    // Calculate discount if applicable
+    if (
+      selectedVariant.discountedPrice !== null &&
+      selectedVariant.originalPrice !== null &&
+      selectedVariant.discountedPrice < selectedVariant.originalPrice
+    ) {
+      displayOriginalPrice = `${symbol}${selectedVariant.originalPrice.toFixed(2)}`;
+      const percent = Math.round(
+        ((selectedVariant.originalPrice - selectedVariant.discountedPrice) /
+          selectedVariant.originalPrice) *
+          100
+      );
+      discountPercentage = `${percent}% OFF`;
+    }
+
+    return {
+      displayPrice: `${symbol}${mainPrice.toFixed(2)}`,
+      originalPrice: displayOriginalPrice,
+      discountPercentage,
+    };
   }, [selectedVariant, product]);
 
   // Check if current variant is in stock
@@ -371,9 +427,23 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
         {/* Price */}
         <div className="flex items-center gap-3">
-          <p className="text-primary-navy text-2xl font-semibold">
-            {currentPrice}
-          </p>
+          <div className="flex flex-col">
+            <div className="flex items-center gap-3">
+              <p className="text-primary-navy text-2xl font-semibold">
+                {currentPrice.displayPrice}
+              </p>
+              {currentPrice.originalPrice && (
+                <p className="text-lg text-neutral-400 line-through decoration-neutral-400/80">
+                  {currentPrice.originalPrice}
+                </p>
+              )}
+            </div>
+            {currentPrice.discountPercentage && (
+              <span className="mt-1 w-fit rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 text-sm font-medium text-[#FF4D4F]">
+                {currentPrice.discountPercentage}
+              </span>
+            )}
+          </div>
           {/* Stock Status */}
           {selectedVariant && (
             <span
