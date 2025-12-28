@@ -11,6 +11,28 @@ interface RequestOptions extends RequestInit {
   redirectOnAuthError?: boolean;
 }
 
+const PROTECTED_AUTH_PATHS = ["/account", "/checkout", "/cart"];
+
+function shouldRedirectToLogin(redirectOnAuthError?: boolean): boolean {
+  if (!redirectOnAuthError) return false;
+  if (typeof window === "undefined") return redirectOnAuthError;
+
+  const pathname = window.location.pathname || "/";
+  return PROTECTED_AUTH_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`)
+  );
+}
+
+function handleAuthSignOut(redirectOnAuthError?: boolean) {
+  if (typeof window === "undefined") return;
+  const allowRedirect = shouldRedirectToLogin(redirectOnAuthError);
+  if (allowRedirect) {
+    signOut({ callbackUrl: "/login" });
+  } else {
+    signOut({ redirect: false });
+  }
+}
+
 /**
  * Get base URL for API requests
  * In server-side context, we need absolute URL
@@ -70,14 +92,39 @@ async function apiFetch<T>(
 }
 
 /**
+ * Get or create a session ID for guest cart operations.
+ * Stored in localStorage to persist across page refreshes.
+ */
+function getOrCreateSessionId(): string {
+  if (typeof window === "undefined") return "";
+
+  const STORAGE_KEY = "guest_session_id";
+  let sessionId = localStorage.getItem(STORAGE_KEY);
+
+  if (!sessionId) {
+    // Generate a UUID v4
+    sessionId = crypto.randomUUID();
+    localStorage.setItem(STORAGE_KEY, sessionId);
+  }
+
+  return sessionId;
+}
+
+/**
  * Fetch wrapper for client-side calls that require Authorization.
  * If the request returns 401, it will attempt a refresh and retry once.
+ * For unauthenticated users, includes X-Session-Id header for guest cart support.
  */
 export async function fetchWithAuth(
   endpoint: string,
   options: RequestOptions = {}
 ): Promise<Response> {
-  const { params, redirectOnAuthError = true, headers: initialHeaders, ...fetchOptions } = options;
+  const {
+    params,
+    redirectOnAuthError = true,
+    headers: initialHeaders,
+    ...fetchOptions
+  } = options;
   const headers = new Headers(initialHeaders);
 
   if (typeof window !== "undefined") {
@@ -87,6 +134,12 @@ export async function fetchWithAuth(
         "Authorization",
         token.startsWith("Bearer") ? token : `Bearer ${token}`
       );
+    }
+
+    // Always include session ID for guest cart support
+    const sessionId = getOrCreateSessionId();
+    if (sessionId && !headers.has("X-Session-Id")) {
+      headers.set("X-Session-Id", sessionId);
     }
   }
 
@@ -112,15 +165,7 @@ export async function fetchWithAuth(
   const refreshed = await refreshTokens();
   if (!refreshed?.accessToken || typeof window === "undefined") {
     // Refresh failed or we are on server -> if client, force logout
-    if (typeof window !== "undefined") {
-      // Use window.location as fallback if signOut fails or to ensure hard redirect
-      // But signOut is better for clearing cookies
-      if (redirectOnAuthError) {
-        signOut({ callbackUrl: "/login" });
-      } else {
-        signOut({ redirect: false });
-      }
-    }
+    handleAuthSignOut(redirectOnAuthError);
     return res;
   }
 
@@ -134,11 +179,7 @@ export async function fetchWithAuth(
 
   // If still 401 after refresh, token is invalid -> force logout
   if (res.status === 401 && typeof window !== "undefined") {
-    if (redirectOnAuthError) {
-      signOut({ callbackUrl: "/login" });
-    } else {
-      signOut({ redirect: false });
-    }
+    handleAuthSignOut(redirectOnAuthError);
   }
 
   return res;
