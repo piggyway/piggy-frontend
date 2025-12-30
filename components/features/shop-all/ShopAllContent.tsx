@@ -6,6 +6,10 @@ import { CategoryFilterBar } from "@/components/features/shop-all/CategoryFilter
 import { ProductsSection } from "@/components/features/shop-all/ProductsSection";
 import type { SortOption } from "@/lib/types/product";
 
+// choose grid or list
+type ViewMode = "grid" | "list";
+
+
 export function ShopAllContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -17,6 +21,8 @@ export function ShopAllContent() {
   const page = parseInt(searchParams.get("page") || "1", 10);
   const pageSize = parseInt(searchParams.get("page_size") || "9", 10);
   const q = searchParams.get("q") || undefined;
+
+  const view = (searchParams.get("view") as ViewMode) || "grid";
 
   // Update URL with new params
   const updateSearchParams = useCallback(
@@ -60,7 +66,10 @@ export function ShopAllContent() {
   const handleClearFilters = () => {
     updateSearchParams({ category: null, q: null, page: "1" });
   };
-
+  // view change 
+  const handleViewChange = (newView: ViewMode) => {
+    updateSearchParams({ view: newView });
+  };
   return (
     <>
       {/* Category Filter */}
@@ -79,6 +88,9 @@ export function ShopAllContent() {
         onSortChange={handleSortChange}
         onPageChange={handlePageChange}
         onClearFilters={handleClearFilters}
+
+        view={view}
+        onViewChange={handleViewChange}
       />
     </>
   );
