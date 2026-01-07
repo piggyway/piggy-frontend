@@ -12,11 +12,12 @@ import { useCart } from "@/components/features/cart/CartProvider";
 interface VariantCardProps {
   variant: VariantListItem;
   className?: string;
+  layout?: "grid" | "list";
 }
 
 const FALLBACK_IMAGE = "/default-product-image.png";
 
-export function VariantCard({ variant, className }: VariantCardProps) {
+export function VariantCard({ variant, className , layout = "grid"}: VariantCardProps) {
   const { addItem, isMutating } = useCart();
   const [isAdding, setIsAdding] = React.useState(false);
 
@@ -49,7 +50,13 @@ export function VariantCard({ variant, className }: VariantCardProps) {
     <>
       {/* Image Container */}
       <div className="flex w-full flex-col items-start gap-3.5">
-        <div className="bg-neutral-stroke relative h-[160px] w-full overflow-hidden rounded-[24px] sm:h-[180px] sm:rounded-[28px] lg:h-[200px] lg:rounded-[33px]">
+        <div className={cn(
+            "bg-neutral-stroke relative overflow-hidden",
+            layout === "list"
+              ? "h-[120px] w-[160px] shrink-0 rounded-[20px] sm:h-[140px] sm:w-[200px]"
+              : "h-[160px] w-full rounded-[24px] sm:h-[180px] sm:rounded-[28px] lg:h-[200px] lg:rounded-[33px]"
+          )}
+        >
           <Image
             src={displayImage}
             alt={variant.productTitle}
@@ -111,7 +118,10 @@ export function VariantCard({ variant, className }: VariantCardProps) {
     <Link
       href={href}
       className={cn(
-        "flex h-full w-full cursor-pointer flex-col justify-between gap-5 rounded-[28px] bg-white p-6 transition-shadow hover:shadow-lg",
+        "flex w-full cursor-pointer rounded-[28px] bg-white p-6 transition-shadow hover:shadow-lg",
+        layout === "list"
+          ? "flex-row items-center justify-between gap-6"
+          : "h-full flex-col justify-between gap-5",
         className
       )}
     >

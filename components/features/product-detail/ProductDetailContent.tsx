@@ -280,16 +280,26 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
       [optionId]: valueId,
     }));
   };
+  // qty can be changed via +/- buttons or input
+  const getMaxQty = () =>
+  selectedVariant?.stockQuantity ? selectedVariant.stockQuantity : Infinity;
 
-  const incrementQuantity = () => {
-    if (selectedVariant && quantity < selectedVariant.stockQuantity) {
-      setQuantity((prev) => prev + 1);
-    } else if (!selectedVariant) {
-      setQuantity((prev) => prev + 1);
-    }
+  const clampQty = (n: number) => {
+    const max = getMaxQty();
+    return Math.max(1, Math.min(n, max));
   };
 
-  const decrementQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
+  const setQuantitySafe = (n: number) => {
+    setQuantity(clampQty(n));
+  };
+  
+  const incrementQuantity = () => {
+  setQuantity((prev) => clampQty(prev + 1));
+};
+
+  const decrementQuantity = () => {
+    setQuantity((prev) => clampQty(prev - 1));
+  };
 
   const handleAddToCart = async () => {
     if (!selectedVariant) {
@@ -585,10 +595,34 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             >
               <Minus className="h-5 w-5" />
             </motion.button>
+          
+           <input
+              type="number"
+              inputMode="numeric"
+              min={1}
+              
+              max={selectedVariant?.stockQuantity ?? undefined}
+              value={quantity}
+              onChange={(e) => {
+                const raw = e.target.value;
 
-            <span className="text-primary-navy w-12 text-center text-lg font-medium sm:text-xl">
-              {quantity}
-            </span>
+                // 允许输入过程中暂时清空
+                if (raw === "") return;
+
+                const n = Number(raw);
+                if (Number.isNaN(n)) return;
+
+                const max = selectedVariant?.stockQuantity ?? Infinity;
+                setQuantity(Math.max(1, Math.min(n, max)));
+              }}
+              onBlur={(e) => {
+                const n = Number(e.target.value);
+                const max = selectedVariant?.stockQuantity ?? Infinity;
+                setQuantity(Math.max(1, Math.min(Number.isNaN(n) ? 1 : n, max)));
+              }}
+              className="text-primary-navy w-12 rounded-md border border-neutral-stroke bg-white text-center text-lg font-medium sm:text-xl"
+            />
+
 
             <motion.button
               whileTap={{ scale: 0.85 }}
