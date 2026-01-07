@@ -88,6 +88,8 @@ export async function generateMetadata({
 }
 
 export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
+
+
   return (
     <div className="bg-neutral-background-light relative min-h-screen">
       <BackgroundBlobs variant={3} />

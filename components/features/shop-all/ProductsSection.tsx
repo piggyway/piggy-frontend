@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { X, LayoutGrid, List  } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 import { Pagination, PaginationInfo } from "@/components/ui/pagination";
 import { ProductGridSkeleton } from "@/components/ui/skeleton";
@@ -10,6 +10,10 @@ import { ProductService } from "@/lib/services/products";
 import type { VariantListItem, SortOption } from "@/lib/types/product";
 import { SORT_OPTIONS } from "@/lib/types/product";
 import { VariantCard } from "@/components/features/shop-all/VariantCard";
+
+
+// grid or list
+type ViewMode = "grid" | "list";
 
 interface ProductsSectionProps {
   category?: string;
@@ -20,6 +24,8 @@ interface ProductsSectionProps {
   onSortChange?: (sort: SortOption) => void;
   onPageChange?: (page: number) => void;
   onClearFilters?: () => void;
+  view?: ViewMode;
+  onViewChange?: (view: ViewMode) => void;
 }
 
 const productBackgrounds = [
@@ -43,6 +49,8 @@ export function ProductsSection({
   onSortChange,
   onPageChange,
   onClearFilters,
+  view = "grid",
+  onViewChange,
 }: ProductsSectionProps) {
   const [variants, setVariants] = useState<VariantListItem[]>([]);
   const [totalItems, setTotalItems] = useState(0);
@@ -118,6 +126,43 @@ export function ProductsSection({
           )}
 
           {/* Sort Dropdown */}
+          {/* View Toggle */}
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => onViewChange?.("grid")}
+              className={cn(
+                "rounded-full px-3 py-2 text-xs font-medium transition-colors sm:text-sm",
+                view === "grid"
+                  ? "bg-primary-purple text-primary-navy"
+                  : "text-primary-navy hover:bg-neutral-background"
+              )}
+              aria-pressed={view === "grid"}
+            >
+              <span className="inline-flex items-center gap-2">
+                <LayoutGrid className="h-4 w-4" />
+                Grid
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => onViewChange?.("list")}
+              className={cn(
+                "rounded-full px-3 py-2 text-xs font-medium transition-colors sm:text-sm",
+                view === "list"
+                  ? "bg-primary-purple text-primary-navy"
+                  : "text-primary-navy hover:bg-neutral-background"
+              )}
+              aria-pressed={view === "list"}
+            >
+              <span className="inline-flex items-center gap-2">
+                <List className="h-4 w-4" />
+                List
+              </span>
+            </button>
+          </div>
+
           <div className="relative">
             <div className="bg-primary-purple flex items-center gap-2 rounded-full px-3 py-2 sm:px-4">
               <button
