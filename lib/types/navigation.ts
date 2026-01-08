@@ -62,16 +62,16 @@ export const footerLinks: FooterLinkGroup[] = [
       { label: "Bedding", href: "/shop-all?category=bedding" },
       { label: "Food & Treats", href: "/shop-all?category=food-treats" },
       { label: "C&C Cage & Housing", href: "/shop-all?category=housing" },
-      { label: "Merch", href: "/shop-all?category=merch" },
+      // { label: "Merch", href: "/shop-all?category=merch" },
     ],
   },
   {
     title: "Helps",
     links: [
       { label: "My account", href: "/account" },
-      { label: "Shipping & Delivery", href: "/shipping-delivery" },
+      { label: "Shipping & Delivery", href: "#" },
       { label: "Returns Policy", href: "#" },
-      { label: "FAQs", href: "/faqs" },
+      { label: "FAQs", href: "#" },
     ],
   },
   {
