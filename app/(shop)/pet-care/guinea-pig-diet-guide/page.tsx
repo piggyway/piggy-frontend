@@ -136,10 +136,9 @@ export default function DietGuidePage() {
           <ul>
             <li>Romaine lettuce (never iceberg)</li>
             <li>Green or red leaf lettuce</li>
-            <li>Bell peppers (excellent source of Vitamin C!)</li>
-            <li>Cilantro</li>
+            <li>Capsicum (excellent source of Vitamin C!)</li>
+            <li>Cos heart lettuce</li>
             <li>Cucumber</li>
-            <li>Zucchini</li>
           </ul>
 
           <div className="my-8 rounded-r-lg border-l-4 border-blue-500 bg-blue-50 p-6">
@@ -149,7 +148,7 @@ export default function DietGuidePage() {
             <p className="mb-0 text-sm text-blue-800">
               Guinea pigs cannot produce their own Vitamin C (just like
               humans!). Scurvy is a real risk, so ensure they get plenty of
-              Vitamin C-rich foods like bell peppers daily.
+              Vitamin C-rich foods like capsicum daily.
             </p>
           </div>
 
@@ -160,7 +159,7 @@ export default function DietGuidePage() {
             bits—these are choking hazards and are high in sugar/fat.
           </p>
           <p>
-            <strong>Amount:</strong> About 1/8 cup per adult guinea pig per day
+            <strong>Amount:</strong> About 15g per adult guinea pig per day
             is sufficient.
           </p>
 

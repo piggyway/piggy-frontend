@@ -17,11 +17,11 @@ export default function Home() {
       {/* <WelcomeMessage /> */}
       <HeroSection />
       <ShopByCategorySection />
-      <PetCareTipsSection />
-      <StarterKitsSection />
+      {/* <PetCareTipsSection /> */}
+      {/* <StarterKitsSection /> */}
       <TestimonialsSection />
       <WhyShopSection />
-      <OurStorySection />
+      {/* <OurStorySection /> */}
     </div>
   );
 }
