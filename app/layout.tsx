@@ -15,6 +15,21 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Piggy Way Crossing",
   description: "Guinea Pig & Rabbit Essentials",
+  openGraph: {
+    title: "Piggy Way Crossing",
+    description: "Guinea Pig & Rabbit Essentials",
+    images: [
+      {
+        url: 'https://res.cloudinary.com/davy7cgyi/image/upload/v1767875655/og_image_yjdd1w.png',
+        width: 1200,
+        height: 630,
+        alt: 'Piggy Way Crossing - Guinea Pig & Rabbit Essentials',
+      }
+    ],,
+    siteName: "Piggy Way Crossing",
+    type: "website",
+    locale: "en_AU",
+  },
 };
 
 export const viewport: Viewport = {
