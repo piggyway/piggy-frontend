@@ -38,10 +38,10 @@ export default function ContactPage() {
                     <div>
                       <p className="mb-1 font-medium text-white/60">Email Us</p>
                       <a
-                        href="mailto:hello@piggyway.com"
+                        href="mailto:hello@piggyway.com.au"
                         className="hover:text-primary-gold text-lg font-semibold"
                       >
-                        hello@piggyway.com
+                        hello@piggyway.com.au
                       </a>
                     </div>
                   </div>

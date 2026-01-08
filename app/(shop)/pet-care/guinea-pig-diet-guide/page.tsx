@@ -24,18 +24,18 @@ export default function DietGuidePage() {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: "Guinea Pig Diet Guide: What to Feed Your Piggy",
-    image: "https://piggywaycrossing.com/pet-care-tips/default1.png",
+    image: "https://piggyway.com.au/pet-care-tips/default1.png",
     author: {
       "@type": "Organization",
       name: "Piggy Way Crossing Team",
-      url: "https://piggywaycrossing.com",
+      url: "https://piggyway.com.au",
     },
     publisher: {
       "@type": "Organization",
       name: "Piggy Way Crossing",
       logo: {
         "@type": "ImageObject",
-        url: "https://piggywaycrossing.com/header-logo.png",
+        url: "https://piggyway.com.au/header-logo.png",
       },
     },
     datePublished: "2024-03-20",

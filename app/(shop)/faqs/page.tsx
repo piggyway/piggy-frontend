@@ -40,7 +40,7 @@ const FAQS = [
       },
       {
         q: "Can I change my order after placing it?",
-        a: "We process orders quickly! Please contact us immediately at sales@piggyway.com. If your order hasn't been packed yet, we'll do our best to help.",
+        a: "We process orders quickly! Please contact us immediately. If your order hasn't been packed yet, we'll do our best to help.",
       },
     ],
   },

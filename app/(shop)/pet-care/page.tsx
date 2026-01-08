@@ -100,7 +100,7 @@ export default function PetCarePage() {
       name: "Piggy Way Crossing",
       logo: {
         "@type": "ImageObject",
-        url: "https://piggywaycrossing.com/header-logo.png",
+        url: "https://piggyway.com.au/header-logo.png",
       },
     },
   };
