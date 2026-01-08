@@ -282,7 +282,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   };
   // qty can be changed via +/- buttons or input
   const getMaxQty = () =>
-  selectedVariant?.stockQuantity ? selectedVariant.stockQuantity : Infinity;
+    selectedVariant?.stockQuantity ? selectedVariant.stockQuantity : Infinity;
 
   const clampQty = (n: number) => {
     const max = getMaxQty();
@@ -292,10 +292,10 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   const setQuantitySafe = (n: number) => {
     setQuantity(clampQty(n));
   };
-  
+
   const incrementQuantity = () => {
-  setQuantity((prev) => clampQty(prev + 1));
-};
+    setQuantity((prev) => clampQty(prev + 1));
+  };
 
   const decrementQuantity = () => {
     setQuantity((prev) => clampQty(prev - 1));
@@ -436,24 +436,20 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         </header>
 
         {/* Price */}
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col">
-            <div className="flex items-center gap-3">
-              <p className="text-primary-navy text-2xl font-semibold">
-                {currentPrice.displayPrice}
-              </p>
-              {currentPrice.originalPrice && (
-                <p className="text-lg text-neutral-400 line-through decoration-neutral-400/80">
-                  {currentPrice.originalPrice}
-                </p>
-              )}
-            </div>
-            {currentPrice.discountPercentage && (
-              <span className="mt-1 w-fit rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 text-sm font-medium text-[#FF4D4F]">
-                {currentPrice.discountPercentage}
-              </span>
-            )}
-          </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <p className="text-primary-navy text-2xl font-semibold">
+            {currentPrice.displayPrice}
+          </p>
+          {currentPrice.originalPrice && (
+            <p className="text-lg text-neutral-400 line-through decoration-neutral-400/80">
+              {currentPrice.originalPrice}
+            </p>
+          )}
+          {currentPrice.discountPercentage && (
+            <span className="rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 text-sm font-medium text-[#FF4D4F]">
+              {currentPrice.discountPercentage}
+            </span>
+          )}
           {/* Stock Status */}
           {selectedVariant && (
             <span
@@ -595,12 +591,11 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             >
               <Minus className="h-5 w-5" />
             </motion.button>
-          
-           <input
+
+            <input
               type="number"
               inputMode="numeric"
               min={1}
-              
               max={selectedVariant?.stockQuantity ?? undefined}
               value={quantity}
               onChange={(e) => {
@@ -618,11 +613,12 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
               onBlur={(e) => {
                 const n = Number(e.target.value);
                 const max = selectedVariant?.stockQuantity ?? Infinity;
-                setQuantity(Math.max(1, Math.min(Number.isNaN(n) ? 1 : n, max)));
+                setQuantity(
+                  Math.max(1, Math.min(Number.isNaN(n) ? 1 : n, max))
+                );
               }}
-              className="text-primary-navy w-12 rounded-md border border-neutral-stroke bg-white text-center text-lg font-medium sm:text-xl"
+              className="text-primary-navy border-neutral-stroke w-12 rounded-md border bg-white text-center text-lg font-medium sm:text-xl"
             />
-
 
             <motion.button
               whileTap={{ scale: 0.85 }}

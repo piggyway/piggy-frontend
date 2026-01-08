@@ -172,10 +172,24 @@
 }
 
 @layer base {
+  html {
+    font-size: 20px; /* Increased from default 16px for larger overall text */
+  }
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
+  }
+  /* Footer text size adjustment - need to override Tailwind utilities */
+  footer,
+  footer p,
+  footer span,
+  footer a,
+  footer h3 {
+    font-size: 16px !important;
+  }
+  footer h3 {
+    font-size: 18px !important;
   }
 }
