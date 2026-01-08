@@ -25,7 +25,7 @@ export const metadata: Metadata = {
         height: 630,
         alt: 'Piggy Way Crossing - Guinea Pig & Rabbit Essentials',
       }
-    ],,
+    ],
     siteName: "Piggy Way Crossing",
     type: "website",
     locale: "en_AU",
