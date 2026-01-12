@@ -57,7 +57,7 @@ export default function PrivacyPage() {
             <h3>6. Your Rights</h3>
             <p>
               You have the right to access, correct, or delete your personal
-              information. Contact us at privacy@piggyway.com for any
+              information. Contact us at privacy@piggyway.com.au for any
               privacy-related concerns.
             </p>
           </div>

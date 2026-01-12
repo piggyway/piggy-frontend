@@ -449,14 +449,14 @@ export function LoginPage({ error }: LoginPageProps) {
             <p className="px-8 text-center text-sm text-slate-500">
               By clicking continue, you agree to our{" "}
               <Link
-                href="/terms"
+                href="#"
                 className="hover:text-primary-navy underline underline-offset-4"
               >
                 Terms of Service
               </Link>{" "}
               and{" "}
               <Link
-                href="/privacy"
+                href="#"
                 className="hover:text-primary-navy underline underline-offset-4"
               >
                 Privacy Policy

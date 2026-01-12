@@ -102,7 +102,7 @@ export function Header() {
       <div className="bg-primary-purple w-full py-3">
         <div className="mx-auto max-w-[1160px] px-4 text-center">
           <p className="text-primary-navy text-sm font-medium">
-            Free shipping over $99
+            Free shipping over $199
           </p>
         </div>
       </div>
