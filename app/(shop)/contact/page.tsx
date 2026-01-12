@@ -31,37 +31,6 @@ export default function ContactPage() {
               <div className="bg-primary-navy rounded-[32px] p-8 text-white sm:p-12">
                 <h2 className="mb-6 text-2xl font-bold">Contact Information</h2>
                 <div className="space-y-6">
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10">
-                      <Mail className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="mb-1 font-medium text-white/60">Email Us</p>
-                      <a
-                        href="mailto:hello@piggyway.com"
-                        className="hover:text-primary-gold text-lg font-semibold"
-                      >
-                        hello@piggyway.com
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10">
-                      <Instagram className="h-5 w-5" />
-                    </div>
-                    <div>
-                      <p className="mb-1 font-medium text-white/60">
-                        Follow Us
-                      </p>
-                      <a
-                        href="#"
-                        className="hover:text-primary-gold text-lg font-semibold"
-                      >
-                        @piggywaycrossing
-                      </a>
-                    </div>
-                  </div>
 
                   <div className="flex items-start gap-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10">
@@ -69,7 +38,7 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="mb-1 font-medium text-white/60">Location</p>
-                      <p className="text-lg font-semibold">Sydney, Australia</p>
+                      <p className="text-lg font-semibold">Melbourne, Australia</p>
                       <p className="text-sm text-white/80">
                         (Online Store Only)
                       </p>

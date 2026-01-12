@@ -24,7 +24,7 @@ export function StarterKitsSection() {
           <div className="flex items-center gap-6 pb-4">
             {/* Card 1 - Grey with Illustration (Essentials) */}
             <Link
-              href="/guides/first-time-owner-essentials"
+              href="#"
               className="bg-neutral-stroke flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="flex flex-1 flex-col gap-[14px]">
@@ -64,7 +64,7 @@ export function StarterKitsSection() {
 
             {/* Card 2 - Navy Blue Text Card (Liners) */}
             <Link
-              href="/guides/cage-liner-benefits"
+              href="#"
               className="bg-primary-navy-light flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="flex flex-1 flex-col gap-[14px] text-white">
@@ -93,7 +93,7 @@ export function StarterKitsSection() {
 
             {/* Card 3 - Mint Text Card (Bunny) */}
             <Link
-              href="/guides/bunny-starter-kit"
+              href="#"
               className="bg-secondary-mint flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="flex flex-1 flex-col gap-[14px]">
@@ -125,7 +125,7 @@ export function StarterKitsSection() {
         {/* Mobile/Tablet Layout */}
         <div className="flex flex-col gap-6 lg:hidden">
           <Link
-            href="/guides/first-time-owner-essentials"
+            href="#"
             className="bg-neutral-stroke flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
           >
             <h3 className="text-primary-navy text-xl font-semibold">
@@ -139,7 +139,7 @@ export function StarterKitsSection() {
             </div>
           </Link>
           <Link
-            href="/guides/cage-liner-benefits"
+            href="#"
             className="bg-primary-navy-light flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
           >
             <h3 className="text-xl font-semibold text-white">
@@ -153,7 +153,7 @@ export function StarterKitsSection() {
             </div>
           </Link>
           <Link
-            href="/guides/bunny-starter-kit"
+            href="#"
             className="bg-secondary-mint flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
           >
             <h3 className="text-primary-navy-light text-xl font-semibold">

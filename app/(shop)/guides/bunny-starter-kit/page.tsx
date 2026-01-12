@@ -25,18 +25,18 @@ export default function BunnyStarterKitPage() {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: "Rabbit Starter Kit: Everything You Need for Day One",
-    image: "https://piggywaycrossing.com/shop-with-us/default.png",
+    image: "https://piggyway.com.au/shop-with-us/default.png",
     author: {
       "@type": "Organization",
       name: "Piggy Way Crossing Team",
-      url: "https://piggywaycrossing.com",
+      url: "https://piggyway.com.au",
     },
     publisher: {
       "@type": "Organization",
       name: "Piggy Way Crossing",
       logo: {
         "@type": "ImageObject",
-        url: "https://piggywaycrossing.com/header-logo.png",
+        url: "https://piggyway.com.au/header-logo.png",
       },
     },
     datePublished: "2024-03-28",

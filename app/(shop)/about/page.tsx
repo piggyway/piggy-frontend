@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     description:
       "From our herd to yours: dedicated to creating the safest, most comfortable living spaces for small pets.",
     type: "website",
-    url: "https://piggywaycrossing.com/about",
+    url: "https://piggyway.com.au/about",
     images: [
       {
         url: "/our-story/default2.png", // Assuming this exists based on previous file
@@ -97,7 +97,7 @@ export default function AboutPage() {
       name: "Piggy Way Crossing",
       logo: {
         "@type": "ImageObject",
-        url: "https://piggywaycrossing.com/header-logo.png",
+        url: "https://piggyway.com.au/header-logo.png",
       },
       foundingDate: "2024",
     },

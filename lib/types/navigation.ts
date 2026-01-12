@@ -43,8 +43,8 @@ export const headerNavigation: NavLink[] = [
       },
     ],
   },
-  { label: "Pet Care", href: "/pet-care" },
-  { label: "About us", href: "/about" },
+  { label: "Pet Care", href: "#" },
+  { label: "About us", href: "#" },
 ];
 
 export const footerLinks: FooterLinkGroup[] = [
@@ -62,23 +62,23 @@ export const footerLinks: FooterLinkGroup[] = [
       { label: "Bedding", href: "/shop-all?category=bedding" },
       { label: "Food & Treats", href: "/shop-all?category=food-treats" },
       { label: "C&C Cage & Housing", href: "/shop-all?category=housing" },
-      { label: "Merch", href: "/shop-all?category=merch" },
+      // { label: "Merch", href: "/shop-all?category=merch" },
     ],
   },
   {
     title: "Helps",
     links: [
       { label: "My account", href: "/account" },
-      { label: "Shipping & Delivery", href: "/shipping-delivery" },
-      { label: "Returns Policy", href: "/returns-policy" },
-      { label: "FAQs", href: "/faqs" },
+      { label: "Shipping & Delivery", href: "#" },
+      { label: "Returns Policy", href: "#" },
+      { label: "FAQs", href: "#" },
     ],
   },
   {
     title: "About us",
     links: [
-      { label: "Pet Care+", href: "/pet-care" },
-      { label: "Our story", href: "/about" },
+      { label: "Pet Care+", href: "#" },
+      { label: "Our story", href: "#" },
       { label: "Contact us", href: "/contact" },
     ],
   },

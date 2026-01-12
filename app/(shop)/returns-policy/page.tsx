@@ -88,7 +88,7 @@ export default function ReturnsPage() {
               <ol className="text-primary-navy list-decimal space-y-4 pl-5 font-medium">
                 <li className="pl-2">
                   <span className="block font-normal text-gray-700">
-                    Contact our support team at returns@piggyway.com with your
+                    Contact our support team at returns@piggyway.com.au with your
                     order number.
                   </span>
                 </li>

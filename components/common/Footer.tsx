@@ -68,13 +68,13 @@ export function Footer() {
               </h3>
               <div className="flex flex-col gap-0">
                 <Link
-                  href="/terms"
+                  href="#"
                   className="hover:text-primary-gold text-sm leading-6 font-normal text-white transition-colors sm:text-base"
                 >
                   Terms & conditions
                 </Link>
                 <Link
-                  href="/privacy"
+                  href="#"
                   className="hover:text-primary-gold text-sm leading-6 font-normal text-white transition-colors sm:text-base"
                 >
                   Privacy policy
