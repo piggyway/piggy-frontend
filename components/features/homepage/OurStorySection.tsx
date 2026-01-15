@@ -67,7 +67,7 @@ export function OurStorySection() {
 
               {/* Navy card with button - right side */}
               <Link
-                href="#"
+                href="/about-us"
                 className="bg-primary-navy absolute top-0 left-[201px] flex h-[300px] w-[319px] items-end justify-end rounded-[32px] p-8 transition-transform hover:scale-[1.02]"
               >
                 <div
@@ -98,7 +98,7 @@ export function OurStorySection() {
 
             {/* Simplified card for mobile */}
             <Link
-              href="#"
+              href="/about-us"
               className="bg-primary-navy flex min-h-[200px] items-end justify-end rounded-[28px] p-6 transition-transform active:scale-[0.98]"
             >
               <div className="border-neutral-stroke flex items-center justify-center rounded-full border bg-white p-3">

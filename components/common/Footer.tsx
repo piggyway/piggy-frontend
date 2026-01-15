@@ -48,9 +48,9 @@ export function Footer() {
                 )}
                 {!group.title && <div className="h-6 sm:h-8" />}
                 <div className="flex flex-col gap-0">
-                  {group.links.map((link) => (
+                  {group.links.map((link, linkIndex) => (
                     <Link
-                      key={link.href}
+                      key={`${group.title}-${link.label}-${linkIndex}`}
                       href={link.href}
                       className="hover:text-primary-gold text-sm leading-6 font-normal text-white transition-colors sm:text-base"
                     >

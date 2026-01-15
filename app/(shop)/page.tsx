@@ -18,7 +18,7 @@ export default function Home() {
       <HeroSection />
       <ShopByCategorySection />
       <PetCareTipsSection />
-      <StarterKitsSection />
+      {/* <StarterKitsSection /> */}
       <TestimonialsSection />
       <WhyShopSection />
       <OurStorySection />

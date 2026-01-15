@@ -24,7 +24,7 @@ export function StarterKitsSection() {
           <div className="flex items-center gap-6 pb-4">
             {/* Card 1 - Grey with Illustration (Essentials) */}
             <Link
-              href="#"
+              href="/guides/bunny-starter-kit"
               className="bg-neutral-stroke flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="flex flex-1 flex-col gap-[14px]">

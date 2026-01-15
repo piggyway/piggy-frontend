@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 const CARE_TOPICS = [
   {
-    title: "Diet & Nutrition 101",
+    title: "Diet & Nutrition",
     description:
       "Understanding the essential balance of hay, pellets, and fresh veggies for your small pet's digestive health.",
     href: "/pet-care/guinea-pig-diet-guide",
@@ -39,7 +39,7 @@ const CARE_TOPICS = [
     title: "Housing Essentials",
     description:
       "How to set up the perfect habitat, choosing the right bedding, and maintaining a clean environment.",
-    href: "/pet-care/habitat-setup-tips",
+    href: "#",
     icon: (
       <Image
         src="/pet-care-tips/default1.png"
@@ -56,7 +56,7 @@ const CARE_TOPICS = [
     title: "Health & Wellness",
     description:
       "Recognizing common ailments, grooming tips, and when to see a vet for your guinea pig or rabbit.",
-    href: "/pet-care/health-and-wellness",
+    href: "#",
     icon: (
       <Image
         src="/pet-care-tips/default1.png"

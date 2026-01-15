@@ -24,7 +24,7 @@ export function PetCareTipsSection() {
           <div className="flex items-center gap-6 pb-4">
             {/* Card 1 - Dark Blue with Illustration (Diet) */}
             <Link
-              href="#"
+              href="/pet-care/guinea-pig-diet-guide"
               className="bg-primary-navy flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="flex flex-1 flex-col gap-[14px]">
@@ -69,7 +69,7 @@ export function PetCareTipsSection() {
 
             {/* Card 2 - White Text Card (Housing) */}
             <Link
-              href="#"
+              href="/guides/bunny-starter-kit"
               className="relative flex h-[387px] flex-1 flex-col gap-5 overflow-hidden rounded-[28px] bg-white p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="relative z-10 flex flex-1 flex-col gap-[14px]">
@@ -116,7 +116,7 @@ export function PetCareTipsSection() {
 
             {/* Card 3 - Gold with Illustration (Bonding) */}
             <Link
-              href="#"
+              href="/pet-care/bonding-with-your-pet"
               className="bg-primary-gold flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="flex flex-1 flex-col gap-[14px]">
@@ -165,7 +165,7 @@ export function PetCareTipsSection() {
         <div className="flex flex-col gap-6 lg:hidden">
           {/* Simplified cards for mobile */}
           <Link
-            href="#"
+            href="/pet-care/guinea-pig-diet-guide"
             className="bg-primary-navy flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
           >
             <h3 className="text-xl font-semibold text-white">
@@ -180,7 +180,7 @@ export function PetCareTipsSection() {
           </Link>
 
           <Link
-            href="#"
+            href="/guides/bunny-starter-kit"
             className="flex min-h-[280px] flex-col gap-4 rounded-[28px] bg-white p-6 transition-transform active:scale-[0.98]"
           >
             <h3 className="text-primary-navy-light text-xl font-semibold">
@@ -195,7 +195,7 @@ export function PetCareTipsSection() {
           </Link>
 
           <Link
-            href="#"
+            href="/pet-care/bonding-with-your-pet"
             className="bg-primary-gold flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
           >
             <h3 className="text-xl font-semibold text-white">
