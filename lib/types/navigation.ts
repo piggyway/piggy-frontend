@@ -43,7 +43,7 @@ export const headerNavigation: NavLink[] = [
       },
     ],
   },
-  { label: "Pet Care", href: "#" },
+  { label: "Pet Care", href: "/pet-care" },
   { label: "About us", href: "/about-us" },
 ];
 
