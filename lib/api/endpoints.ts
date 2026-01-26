@@ -10,6 +10,7 @@ export const API_ENDPOINTS = {
 
   // Variants
   VARIANTS: "/api/variants",
+  VARIANTS_REVIEWS: (id: string | number) => `/api/variants/${id}/reviews`,
 
   // Categories
   CATEGORIES: "/api/categories",

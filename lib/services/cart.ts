@@ -238,6 +238,7 @@ export class CartService {
       lineSubtotalCents: item.line_subtotal_amt,
       currency: item.currency || cart.currency || "aud", // Ensure currency is never null
       productTitle: item.product_title || "Product",
+      productSubtitle: item.product_subtitle,
       productSlug: item.product_slug,
       imageUrl: normalizeImageUrl(item.image_url) || FALLBACK_IMAGE,
       isAvailable: item.is_available,

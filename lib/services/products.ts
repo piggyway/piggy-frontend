@@ -20,6 +20,7 @@ import type {
   VariantListItemFromAPI,
   VariantListItem,
   VariantListResponse,
+  VariantReviewsResponse,
 } from "@/lib/types/product";
 
 /**
@@ -150,12 +151,17 @@ export class ProductService {
   ): ProductDetail {
     const price = product.base_price || 0;
     const currencySlug = product.currency?.slug || DEFAULT_CURRENCY;
+    const options =
+      product.options.length > 0
+        ? product.options.map((option) => this.transformOption(option))
+        : this.buildOptionsFromVariants(product.variants);
 
     return {
       id: product.id,
       title: product.title || "Untitled Product",
       subtitle: product.subtitle || "",
       description: product.description || "",
+      detailInformation: product.detail_information || "",
       slug: product.slug || `product-${product.id}`,
       basePrice: price,
       formattedPrice: this.formatPrice(price, currencySlug),
@@ -169,7 +175,13 @@ export class ProductService {
               (image) => normalizeImageUrl(image) || DEFAULT_PRODUCT_IMAGE
             )
           : [DEFAULT_PRODUCT_IMAGE],
-      options: product.options.map((option) => this.transformOption(option)),
+      detailInformationFiles:
+        product.detail_information_files.length > 0
+          ? product.detail_information_files
+              .map((file) => normalizeImageUrl(file))
+              .filter((file): file is string => file !== null)
+          : [],
+      options,
       variants: product.variants.map((variant) =>
         this.transformVariant(variant)
       ),
@@ -258,6 +270,45 @@ export class ProductService {
         .map((url) => normalizeImageUrl(url))
         .filter((url): url is string => url !== null),
     };
+  }
+
+  /**
+   * Build options from variant option values when options are missing.
+   */
+  private static buildOptionsFromVariants(
+    variants: Array<{
+      id: number;
+      option_values: Array<{
+        option_id: number;
+        option_name: string | null;
+        value_id: number;
+        value: string | null;
+      }>;
+    }>
+  ): ProductOption[] {
+    const optionsMap = new Map<number, ProductOption>();
+    for (const variant of variants) {
+      for (const ov of variant.option_values) {
+        if (!optionsMap.has(ov.option_id)) {
+          optionsMap.set(ov.option_id, {
+            id: ov.option_id,
+            name: ov.option_name,
+            slug: null,
+            values: [],
+          });
+        }
+        const option = optionsMap.get(ov.option_id)!;
+        if (!option.values.some((value) => value.id === ov.value_id)) {
+          option.values.push({
+            id: ov.value_id,
+            value: ov.value,
+            colorHex: null,
+            variantIds: [],
+          });
+        }
+      }
+    }
+    return Array.from(optionsMap.values());
   }
 
   /**
@@ -400,5 +451,26 @@ export class ProductService {
         value: ov.value,
       })),
     };
+  }
+
+  /**
+   * Get reviews for a variant
+   */
+  static async getVariantReviews(
+    variantId: number
+  ): Promise<VariantReviewsResponse | null> {
+    try {
+      const response = await apiClient.get<VariantReviewsResponse>(
+        API_ENDPOINTS.VARIANTS_REVIEWS(variantId)
+      );
+
+      return response;
+    } catch (error) {
+      console.error(
+        `[ProductService] Failed to fetch reviews for variant ${variantId}:`,
+        error
+      );
+      return null;
+    }
   }
 }

@@ -104,6 +104,11 @@ export function FloatingCartButton() {
                       <div>
                         <h4 className="line-clamp-1 font-medium">
                           {item.productTitle}
+                          {item.productSubtitle && (
+                            <span className="text-muted-foreground ml-1 font-normal">
+                              | {item.productSubtitle}
+                            </span>
+                          )}
                         </h4>
                         {item.variantOptions && item.variantOptions.length > 0 ? (
                           <div className="flex flex-col gap-0.5">

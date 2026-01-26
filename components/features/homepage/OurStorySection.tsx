@@ -71,11 +71,11 @@ export function OurStorySection() {
                 className="bg-primary-navy absolute top-0 left-[201px] flex h-[300px] w-[319px] items-end justify-end rounded-[32px] p-8 transition-transform hover:scale-[1.02]"
               >
                 <div
-                  className="border-neutral-stroke flex size-[40px] shrink-0 items-center justify-center rounded-full border bg-white p-3"
+                  className="border-neutral-stroke flex size-[48px] shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Learn more"
                 >
                   <ArrowUpRight
-                    className="text-primary-navy h-[11px] w-[11px]"
+                    className="text-primary-navy h-6 w-6"
                     strokeWidth={2}
                   />
                 </div>

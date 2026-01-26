@@ -1,155 +1,169 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { useMemo } from "react";
+import Image from "next/image";
+import createDOMPurify from "dompurify";
 import { AnimatedSection } from "../homepage/AnimatedSection";
-import { cn } from "@/lib/utils";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-const productFeatures = [
-  {
-    title: "Washable & reusable liner",
-    description: "Easy to clean, eco-friendly, and cost-saving",
-  },
-  {
-    title: "Soft & comfy surface",
-    description: "Gentle on guinea pig & rabbit paws, adds daily comfort",
-  },
-  {
-    title: "Multi-layer absorbent",
-    description: "Keeps cages dry, reduces cleaning time",
-  },
-  {
-    title: "Washable & reusable liner",
-    description: "easy to clean, eco-friendly, and cost-saving",
-  },
-  {
-    title: "Perfect fit for C&C cages",
-    description: "Designed for guinea pig & rabbit housing systems",
-  },
-  {
-    title: "Eco-conscious alternative",
-    description: "Reduces disposable bedding waste and saves money",
-  },
-];
-
-interface CollapsibleSectionProps {
-  title: string;
-  children: React.ReactNode;
-  defaultOpen?: boolean;
+interface ProductInformationSectionProps {
+  detailInformation: string;
+  detailInformationFiles: string[];
 }
 
-function CollapsibleSection({
-  title,
-  children,
-  defaultOpen = false,
-}: CollapsibleSectionProps) {
-  const [isOpen, setIsOpen] = useState(defaultOpen);
+export function ProductInformationSection({
+  detailInformation,
+  detailInformationFiles,
+}: ProductInformationSectionProps) {
+  const sanitizedDetailInformation = useMemo(() => {
+    if (!detailInformation) return "";
+    if (typeof window === "undefined") return detailInformation;
 
-  return (
-    <div className="border-b border-white/20 last:border-0">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="-mx-4 flex w-full items-center justify-between rounded-lg px-4 py-4 text-left transition-colors hover:bg-white/5 sm:py-6"
-      >
-        <h3 className="text-lg font-semibold text-white sm:text-xl">{title}</h3>
-        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white sm:h-8 sm:w-8">
-          {isOpen ? (
-            <ChevronUp className="text-primary-navy h-4 w-4 sm:h-5 sm:w-5" />
-          ) : (
-            <ChevronDown className="text-primary-navy h-4 w-4 sm:h-5 sm:w-5" />
-          )}
-        </div>
-      </button>
+    const DOMPurify = createDOMPurify(window);
+    return DOMPurify.sanitize(detailInformation);
+  }, [detailInformation]);
+  const hasDetailInformation = sanitizedDetailInformation.trim().length > 0;
+  const hasDetailInformationFiles = detailInformationFiles.length > 0;
+  const carouselImages = hasDetailInformationFiles
+    ? detailInformationFiles
+    : ["/default-product-image.png"];
+  const accordionItems = useMemo(() => {
+    if (!sanitizedDetailInformation) return [];
 
-      <div
-        className={cn(
-          "overflow-hidden transition-all duration-300",
-          isOpen ? "max-h-[1000px] pb-6 opacity-100" : "max-h-0 opacity-0"
-        )}
-      >
-        <div className="space-y-4 text-white/90">{children}</div>
-      </div>
-    </div>
-  );
-}
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(sanitizedDetailInformation, "text/html");
+    const body = doc.body;
+    const sections: Array<{ id: string; title: string; content: string }> = [];
+    let currentSection: { title: string; nodes: string[] } | null = null;
+    let autoIndex = 1;
 
-export function ProductInformationSection() {
+    Array.from(body.childNodes).forEach((node) => {
+      if (node.nodeType === Node.ELEMENT_NODE) {
+        const element = node as HTMLElement;
+        if (element.tagName.toLowerCase() === "h1") {
+          if (currentSection) {
+            sections.push({
+              id: `detail-${sections.length}`,
+              title: currentSection.title || `Section ${autoIndex}`,
+              content: currentSection.nodes.join(""),
+            });
+            autoIndex += 1;
+          }
+          currentSection = {
+            title: element.textContent?.trim() || `Section ${autoIndex}`,
+            nodes: [],
+          };
+          return;
+        }
+      }
+
+      if (!currentSection) {
+        currentSection = { title: `Section ${autoIndex}`, nodes: [] };
+      }
+      currentSection.nodes.push(
+        node.nodeType === Node.ELEMENT_NODE
+          ? (node as HTMLElement).outerHTML
+          : node.textContent || ""
+      );
+    });
+
+    if (currentSection !== null) {
+      const section = currentSection as { title: string; nodes: string[] };
+      sections.push({
+        id: `detail-${sections.length}`,
+        title: section.title || `Section ${autoIndex}`,
+        content: section.nodes.join(""),
+      });
+    }
+
+    return sections;
+  }, [sanitizedDetailInformation]);
+
   return (
     <AnimatedSection className="w-full py-8 sm:py-12 md:py-16 lg:py-20">
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Rounded Navy Container */}
-        <div className="bg-primary-navy flex h-[560px] flex-col overflow-hidden rounded-[20px] p-6 sm:h-[609px] sm:rounded-[28px] sm:p-8 md:p-10 lg:p-12">
-          <h2 className="text-primary-gold mb-6 text-[24px] font-semibold sm:mb-8 sm:text-[28px] lg:text-[32px]">
+        <div className="bg-primary-navy flex flex-col gap-8 overflow-hidden rounded-[20px] p-6 sm:rounded-[28px] sm:p-8 md:p-10 lg:p-12">
+          <h2 className="text-primary-gold text-[24px] font-semibold sm:text-[28px] lg:text-[32px]">
             Product Information
           </h2>
 
-          <div className="grid flex-1 grid-cols-1 gap-8 overflow-y-auto pr-1 lg:grid-cols-2 lg:gap-12">
-            {/* Left: Collapsible Sections */}
-            <div className="space-y-2">
-              <CollapsibleSection title="Product Features" defaultOpen>
-                <div className="space-y-4">
-                  {productFeatures.map((feature, index) => (
-                    <div key={index}>
-                      <h4 className="mb-1 font-semibold text-white">
-                        {feature.title}
-                      </h4>
-                      <p className="text-sm text-white/80">
-                        {feature.description}
-                      </p>
-                    </div>
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+            {/* Left: Detail Information */}
+            <div className="space-y-4">
+              {hasDetailInformation && accordionItems.length > 0 ? (
+                <Accordion type="single" collapsible defaultValue="detail-0">
+                  {accordionItems.map((item) => (
+                    <AccordionItem
+                      key={item.id}
+                      value={item.id}
+                      className="border-white/20"
+                    >
+                      <AccordionTrigger className="w-full text-left text-white [&>svg]:ml-auto">
+                        <h1 className="text-xl font-semibold sm:text-2xl">
+                          {item.title}
+                        </h1>
+                      </AccordionTrigger>
+                      <AccordionContent>
+                        <div
+                          className="text-sm leading-relaxed text-white/90 sm:text-base [&_a]:underline [&_a]:underline-offset-4 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-white [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
+                          dangerouslySetInnerHTML={{
+                            __html: item.content,
+                          }}
+                        />
+                      </AccordionContent>
+                    </AccordionItem>
                   ))}
-                </div>
-              </CollapsibleSection>
-
-              <CollapsibleSection title="Specifications">
-                <div className="space-y-2 text-sm">
-                  <p>
-                    <strong>Material:</strong> Soft fleece top layer, absorbent
-                    core, waterproof base
-                  </p>
-                  <p>
-                    <strong>Sizes Available:</strong> Small, Medium, Large
-                  </p>
-                  <p>
-                    <strong>Care Instructions:</strong> Machine washable, tumble
-                    dry low
-                  </p>
-                  <p>
-                    <strong>Colors:</strong> Mint, Piggy Party, Baby Blue, Navy
-                  </p>
-                </div>
-              </CollapsibleSection>
-
-              <CollapsibleSection title="How to Use / Care Instructions">
-                <div className="space-y-2 text-sm">
-                  <p>
-                    <strong>Installation:</strong> Place liner in cage, smooth
-                    out wrinkles
-                  </p>
-                  <p>
-                    <strong>Daily Care:</strong> Spot clean as needed, shake off
-                    debris
-                  </p>
-                  <p>
-                    <strong>Washing:</strong> Machine wash cold, mild detergent,
-                    no fabric softener
-                  </p>
-                  <p>
-                    <strong>Drying:</strong> Tumble dry on low or hang to dry
-                  </p>
-                  <p>
-                    <strong>Storage:</strong> Store clean and dry when not in
-                    use
-                  </p>
-                </div>
-              </CollapsibleSection>
+                </Accordion>
+              ) : (
+                <p className="text-sm text-white/80 sm:text-base">
+                  Product details are being prepared.
+                </p>
+              )}
             </div>
 
-            {/* Right: Image Placeholder */}
-            <div className="hidden lg:block">
-              <div className="bg-secondary-mint flex aspect-square w-full items-center justify-center rounded-[28px]">
-                <div className="h-32 w-32 rounded-lg bg-white/30" />
-              </div>
+            {/* Right: Detail Information Carousel */}
+            <div className="relative">
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {carouselImages.map((image, index) => (
+                    <CarouselItem key={`${image}-${index}`}>
+                      <div className="bg-secondary-mint relative aspect-[4/3] overflow-hidden rounded-[20px] sm:rounded-[28px]">
+                        <Image
+                          src={image}
+                          alt={`Detail information ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 1024px) 100vw, 460px"
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                {carouselImages.length > 1 && (
+                  <>
+                    <CarouselPrevious className="text-primary-navy border-white/40 bg-white/90 hover:bg-white" />
+                    <CarouselNext className="text-primary-navy border-white/40 bg-white/90 hover:bg-white" />
+                  </>
+                )}
+              </Carousel>
+              {!hasDetailInformationFiles && (
+                <p className="mt-3 text-xs text-white/70">
+                  Detail images are being prepared.
+                </p>
+              )}
             </div>
           </div>
         </div>

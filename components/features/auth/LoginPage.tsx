@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Turnstile } from "@marsidev/react-turnstile";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
@@ -62,8 +62,9 @@ export function LoginPage({ error }: LoginPageProps) {
       return;
     }
 
-    toast.error("Login error", {
-      description: error,
+    // Generic error for other cases to avoid exposing backend errors
+    toast.error("Login failed", {
+      description: "An unexpected error occurred. Please try again.",
     });
   }, [error]);
 
@@ -132,9 +133,8 @@ export function LoginPage({ error }: LoginPageProps) {
         } catch {
           // ignore
         }
-        setFormError(
-          data?.error ?? "Failed to send verification code. Please try again."
-        );
+        // Don't show backend error directly
+        setFormError("Failed to send verification code. Please try again.");
         return;
       }
 
@@ -197,7 +197,8 @@ export function LoginPage({ error }: LoginPageProps) {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setFormError(data?.error ?? "Invalid code or email. Please try again.");
+        // Don't show backend error directly
+        setFormError("Invalid code or email. Please check and try again.");
         return;
       }
 
@@ -281,19 +282,23 @@ export function LoginPage({ error }: LoginPageProps) {
 
               {/* URL 带过来的错误（比如 Google SSO 出错） */}
               {error && (
-                <div className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                  {error === "email_only_account"
-                    ? "This email was previously registered using email login. Please sign in with email instead."
-                    : error === "sso_failed"
-                      ? "Google login failed. Please try again."
-                      : `Login error: ${error}`}
+                <div className="bg-destructive/10 text-destructive mt-2 flex items-center gap-2 rounded-lg border border-red-200 p-3 text-sm">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>
+                    {error === "email_only_account"
+                      ? "This email was previously registered using email login. Please sign in with email instead."
+                      : error === "sso_failed"
+                        ? "Google login failed. Please try again."
+                        : "An unexpected error occurred. Please try again."}
+                  </span>
                 </div>
               )}
 
               {/* 本地表单错误 */}
               {formError && (
-                <div className="mt-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
-                  {formError}
+                <div className="bg-destructive/10 text-destructive mt-2 flex items-center gap-2 rounded-lg border border-red-200 p-3 text-sm">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{formError}</span>
                 </div>
               )}
 

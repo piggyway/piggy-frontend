@@ -22,6 +22,7 @@ export interface CartItemFromAPI {
   variant_sku: string | null;
   variant_options?: VariantOption[];
   product_title: string | null;
+  product_subtitle: string | null;
   product_slug: string | null;
   image_url: string | null;
   is_available: boolean | null;
@@ -73,6 +74,7 @@ export interface CartItem {
   lineSubtotalCents: number;
   currency: string;
   productTitle: string;
+  productSubtitle: string | null;
   productSlug: string | null;
   imageUrl: string;
   isAvailable: boolean | null;

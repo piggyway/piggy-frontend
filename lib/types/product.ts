@@ -274,6 +274,7 @@ export interface ProductDetailFromAPI {
   title: string | null;
   subtitle: string | null;
   description: string | null;
+  detail_information: string | null;
   slug: string | null;
   base_price: number | null;
   currency: CurrencyInfo | null;
@@ -281,6 +282,7 @@ export interface ProductDetailFromAPI {
   category: CategoryInfo | null;
   species: SpeciesInfo[];
   images: string[];
+  detail_information_files: string[];
   options: Array<{
     id: number;
     name: string | null;
@@ -327,6 +329,7 @@ export interface ProductDetail {
   title: string;
   subtitle: string;
   description: string;
+  detailInformation: string;
   slug: string;
   basePrice: number;
   formattedPrice: string;
@@ -335,8 +338,32 @@ export interface ProductDetail {
   category: CategoryInfo | null;
   species: SpeciesInfo[];
   images: string[];
+  detailInformationFiles: string[];
   options: ProductOption[];
   variants: ProductVariant[];
+}
+
+// ==================== Review Types ====================
+
+/**
+ * Variant review item
+ */
+export interface VariantReview {
+  id: number;
+  uuid: string | null;
+  customer_name: string | null;
+  content: string | null;
+  image_url: string | null;
+  date_created: string | null;
+}
+
+/**
+ * Variant reviews response
+ */
+export interface VariantReviewsResponse {
+  variant_id: number;
+  reviews: VariantReview[];
+  total: number;
 }
 
 // ==================== Sort Options ====================

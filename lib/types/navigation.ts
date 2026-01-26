@@ -51,7 +51,7 @@ export const footerLinks: FooterLinkGroup[] = [
   {
     title: "Shop",
     links: [
-      { label: "SALE", href: "/shop-all?category=sale" },
+      { label: "SALE", href: "/shop-all" },
       { label: "for Guinea pigs", href: "/shop-all?category=guinea-pig" },
       { label: "for Rabbit", href: "/shop-all?category=rabbit" },
     ],
@@ -77,7 +77,7 @@ export const footerLinks: FooterLinkGroup[] = [
   {
     title: "About us",
     links: [
-      { label: "Pet Care+", href: "#" },
+      { label: "Pet Care+", href: "/pet-care" },
       { label: "Our story", href: "/about-us" },
       { label: "Contact us", href: "/contact" },
     ],
@@ -85,10 +85,10 @@ export const footerLinks: FooterLinkGroup[] = [
 ];
 
 export const socialMediaLinks = [
-  { name: "Instagram", icon: "/instagram.svg", href: "#" },
-  { name: "TikTok", icon: "/tiktok.svg", href: "#" },
-  { name: "YouTube", icon: "/youtube.svg", href: "#" },
-  { name: "Facebook", icon: "/facebook 1.svg", href: "#" },
+  { name: "Instagram", icon: "/instagram.svg", href: "https://www.instagram.com/piggyway_crossing?igsh=MW82azZrM3dqb3cxbQ%3D%3D&utm_source=qr" },
+  // { name: "TikTok", icon: "/tiktok.svg", href: "#" },
+  // { name: "YouTube", icon: "/youtube.svg", href: "#" },
+  // { name: "Facebook", icon: "/facebook 1.svg", href: "#" },
 ];
 
 export const paymentMethods = [

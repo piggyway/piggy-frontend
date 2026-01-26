@@ -26,7 +26,6 @@ export async function generateMetadata({
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
   const product = await ProductService.getProductBySlug(slug);
-
   if (!product) {
     return {
       title: "Product not found | Piggy Way Crossing",
@@ -151,6 +150,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ],
   };
 
+  // Fetch reviews for the first variant (default)
+  // This is server-side fetching directly from backend service
+  const firstVariantId = product.variants?.[0]?.id;
+  const reviewsResponse = firstVariantId
+    ? await ProductService.getVariantReviews(firstVariantId)
+    : null;
+  const reviews = reviewsResponse?.reviews || [];
+
   return (
     <div className="bg-neutral-background-light min-h-screen">
       {/* Structured Data */}
@@ -175,13 +182,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
       </div>
 
       {/* Product Information - hardcoded for now */}
-      <ProductInformationSection />
+      <ProductInformationSection
+        detailInformation={product.detailInformation}
+        detailInformationFiles={product.detailInformationFiles}
+      />
 
       {/* Pet Icons - based on product species */}
       <PetIconsSection species={product.species} />
 
-      {/* Testimonials - hardcoded for now */}
-      <TestimonialsSection />
+      {/* Testimonials - specific to product variant */}
+      <TestimonialsSection reviews={reviews} />
 
       {/* Related Products */}
       <Suspense fallback={<div className="h-[400px]" />}>

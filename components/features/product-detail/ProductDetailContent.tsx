@@ -32,7 +32,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   const { addItem, isMutating } = useCart();
   const searchParams = useSearchParams();
   const [addError, setAddError] = useState<string | null>(null);
-
+  console.log(searchParams);
   // Check for variant ID in URL params
   const variantIdFromUrl = searchParams?.get("variant");
 
@@ -61,6 +61,21 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     });
     return initial;
   });
+
+  useEffect(() => {
+    if (!variantIdFromUrl) return;
+    const variantId = Number.parseInt(variantIdFromUrl, 10);
+    if (Number.isNaN(variantId)) return;
+    const variant = product.variants.find((v) => v.id === variantId);
+    if (!variant) return;
+    setSelectedOptions((prev) => {
+      const next: Record<number, number> = { ...prev };
+      for (const ov of variant.optionValues) {
+        next[ov.optionId] = ov.valueId;
+      }
+      return next;
+    });
+  }, [product.variants, variantIdFromUrl]);
 
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
