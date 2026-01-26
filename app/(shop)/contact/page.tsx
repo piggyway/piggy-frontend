@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { Mail, MapPin, Instagram } from "lucide-react";
+import { Mail, Instagram, ArrowUpRight } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 import { ContactForm } from "@/components/features/contact/ContactForm";
 
@@ -19,7 +19,7 @@ export default function ContactPage() {
               Get in Touch
             </h1>
             <p className="mx-auto max-w-2xl text-lg text-gray-600">
-              We love hearing from fellow pet parents! whether you have a
+              We love hearing from fellow pet parents! Whether you have a
               question about a product or just want to share a cute photo of
               your piggy.
             </p>
@@ -28,45 +28,64 @@ export default function ContactPage() {
           <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
             {/* Contact Info */}
             <div className="flex flex-col gap-6">
-              <div className="bg-primary-navy rounded-[32px] p-8 text-white sm:p-12">
-                <h2 className="mb-6 text-2xl font-bold">Contact Information</h2>
-                <div className="space-y-6">
-
-                  <div className="flex items-start gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10">
-                      <MapPin className="h-5 w-5" />
+              <div className="bg-primary-navy flex h-full flex-col justify-between rounded-[32px] p-8 text-white sm:p-12">
+                <div>
+                  <h2 className="mb-8 text-3xl font-bold">Contact Us</h2>
+                  <div className="space-y-8">
+                    {/* Email */}
+                    <div className="flex items-start gap-4">
+                      <div className="bg-white/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
+                        <Mail className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <p className="mb-1 font-medium text-white/60">
+                          Email Support
+                        </p>
+                        <a
+                          href="mailto:support@piggyway.com.au"
+                          className="hover:text-secondary-mint text-xl font-semibold transition-colors"
+                        >
+                          support@piggyway.com.au
+                        </a>
+                        <p className="mt-1 text-sm text-white/80">
+                          We&apos;ll get back to you within 24 hours
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="mb-1 font-medium text-white/60">Location</p>
-                      <p className="text-lg font-semibold">Melbourne, Australia</p>
-                      <p className="text-sm text-white/80">
-                        (Online Store Only)
-                      </p>
+
+                    {/* Instagram */}
+                    <div className="flex items-start gap-4">
+                      <div className="bg-white/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
+                        <Instagram className="h-6 w-6" />
+                      </div>
+                      <div>
+                        <p className="mb-1 font-medium text-white/60">
+                          Follow Us
+                        </p>
+                        <a
+                          href="https://www.instagram.com/piggyway_crossing?igsh=MW82azZrM3dqb3cxbQ%3D%3D&utm_source=qr"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group flex items-center gap-2 text-xl font-semibold transition-colors hover:text-[#E1306C]"
+                        >
+                          @piggyway_crossing
+                          <ArrowUpRight className="h-5 w-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                        </a>
+                        <p className="mt-1 text-sm text-white/80">
+                          Join our community for cute updates
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="rounded-[32px] bg-white p-8">
-                <h3 className="text-primary-navy mb-2 text-xl font-bold">
-                  Business Hours
-                </h3>
-                <p className="mb-4 text-gray-600">
-                  Our support team is available:
-                </p>
-                <div className="space-y-2">
-                  <div className="flex justify-between border-b border-gray-100 pb-2">
-                    <span className="font-medium">Monday - Friday</span>
-                    <span className="text-gray-600">9:00 AM - 5:00 PM</span>
-                  </div>
-                  <div className="flex justify-between border-b border-gray-100 pb-2">
-                    <span className="font-medium">Saturday</span>
-                    <span className="text-gray-600">10:00 AM - 2:00 PM</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Sunday</span>
-                    <span className="text-gray-600">Closed</span>
-                  </div>
+                {/* Additional Text */}
+                <div className="mt-12 hidden sm:block">
+                  <p className="text-white/80 leading-relaxed">
+                    Connect with us on social media or send us an email. We are
+                    always happy to help with any questions regarding our
+                    products or just to chat about small pets!
+                  </p>
                 </div>
               </div>
             </div>
