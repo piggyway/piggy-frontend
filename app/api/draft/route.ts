@@ -8,6 +8,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Secret token for validating preview requests from Directus
 const PREVIEW_SECRET = process.env.PREVIEW_SECRET || "piggyway-preview-secret";
+
+// Public URL for redirects (Railway internal URL differs from public domain)
+const PUBLIC_URL = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL;
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const secret = searchParams.get("secret");
@@ -91,7 +95,9 @@ export async function GET(request: NextRequest) {
     }
 
     // Redirect to the preview page
-    return NextResponse.redirect(new URL(redirectPath, request.url));
+    // Use PUBLIC_URL to avoid Railway internal URL (0.0.0.0:3000) in redirects
+    const baseUrl = PUBLIC_URL || request.url;
+    return NextResponse.redirect(new URL(redirectPath, baseUrl));
   } catch (error) {
     console.error("[Draft Mode Error]", error);
     return NextResponse.json(
