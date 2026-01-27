@@ -3,6 +3,7 @@
  * Fetches product detail by slug from backend
  */
 
+import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL =
@@ -19,10 +20,19 @@ export async function GET(
   try {
     const { slug } = await params;
     const token = request.headers.get("authorization");
+    const previewSecret = process.env.PREVIEW_SECRET;
+    const { isEnabled: isDraftMode } = await draftMode();
+    const allowDraft = Boolean(isDraftMode && previewSecret);
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/products/${slug}`, {
+    const url = new URL(`${API_BASE_URL}/api/v1/products/${slug}`);
+    if (allowDraft) {
+      url.searchParams.set("include_draft", "true");
+    }
+
+    const res = await fetch(url.toString(), {
       headers: {
         Authorization: token || "",
+        ...(allowDraft ? { "x-preview-secret": previewSecret as string } : {}),
       },
     });
 
