@@ -21,19 +21,30 @@ export async function GET(
     const { slug } = await params;
     const token = request.headers.get("authorization");
     const previewSecret = process.env.PREVIEW_SECRET;
+    
+    // Check draft mode from cookies
     const { isEnabled: isDraftMode } = await draftMode();
-    const allowDraft = Boolean(isDraftMode && previewSecret);
+    
+    // Also check if include_draft is passed as query param (for server-side rendering)
+    const includeDraftParam = request.nextUrl.searchParams.get("include_draft") === "true";
+
+    // Allow draft when: draft mode enabled via cookies OR include_draft param passed with valid secret
+    const allowDraft = (isDraftMode || includeDraftParam) && previewSecret;
 
     const url = new URL(`${API_BASE_URL}/api/v1/products/${slug}`);
     if (allowDraft) {
       url.searchParams.set("include_draft", "true");
     }
 
+    const fetchHeaders: Record<string, string> = {
+      Authorization: token || "",
+    };
+    if (allowDraft) {
+      fetchHeaders["x-preview-secret"] = previewSecret as string;
+    }
+
     const res = await fetch(url.toString(), {
-      headers: {
-        Authorization: token || "",
-        ...(allowDraft ? { "x-preview-secret": previewSecret as string } : {}),
-      },
+      headers: fetchHeaders,
     });
 
     if (!res.ok) {

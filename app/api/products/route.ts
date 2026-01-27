@@ -3,6 +3,7 @@
  * Acts as a proxy layer between frontend and Railway backend
  */
 
+import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL =
@@ -15,6 +16,12 @@ const API_BASE_URL =
 export async function GET(request: NextRequest) {
   try {
     const token = request.headers.get("authorization");
+    const previewSecret = process.env.PREVIEW_SECRET;
+    const { isEnabled: isDraftMode } = await draftMode();
+
+    // Only allow draft products when draft mode is explicitly enabled
+    // This ensures draft products are only visible in preview mode
+    const allowDraft = isDraftMode && previewSecret;
 
     // Build URL with query params
     const searchParams = request.nextUrl.searchParams;
@@ -23,9 +30,14 @@ export async function GET(request: NextRequest) {
       url.searchParams.append(key, value);
     });
 
+    if (allowDraft) {
+      url.searchParams.set("include_draft", "true");
+    }
+
     const res = await fetch(url.toString(), {
       headers: {
         Authorization: token || "",
+        ...(allowDraft ? { "x-preview-secret": previewSecret as string } : {}),
       },
     });
 

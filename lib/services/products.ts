@@ -81,11 +81,23 @@ export class ProductService {
 
   /**
    * Get product detail by slug
+   * @param slug - Product slug
+   * @param options - Optional parameters
+   * @param options.includeDraft - Include draft products (for preview mode)
    */
-  static async getProductBySlug(slug: string): Promise<ProductDetail | null> {
+  static async getProductBySlug(
+    slug: string,
+    options?: { includeDraft?: boolean }
+  ): Promise<ProductDetail | null> {
     try {
+      const params: Record<string, string | number | boolean> = {};
+      if (options?.includeDraft) {
+        params.include_draft = true;
+      }
+
       const response = await apiClient.get<ProductDetailFromAPI>(
-        API_ENDPOINTS.PRODUCT_BY_ID(slug)
+        API_ENDPOINTS.PRODUCT_BY_ID(slug),
+        { params: Object.keys(params).length > 0 ? params : undefined }
       );
 
       if (!response.id) {

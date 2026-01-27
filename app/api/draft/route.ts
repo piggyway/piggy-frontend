@@ -5,19 +5,14 @@
 
 import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { ProductService } from "@/lib/services/products";
 
 // Secret token for validating preview requests from Directus
 const PREVIEW_SECRET = process.env.PREVIEW_SECRET || "piggyway-preview-secret";
-console.log("PREVIEW_SECRET", PREVIEW_SECRET);
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const secret = searchParams.get("secret");
   const collection = searchParams.get("collection");
   const slug = searchParams.get("slug");
-  console.log("secret", secret);
-  console.log("collection", collection);
-  console.log("slug", slug);
   // Validate secret token
   if (secret !== PREVIEW_SECRET) {
     return NextResponse.json({ error: "Invalid token" }, { status: 401 });
@@ -43,14 +38,41 @@ export async function GET(request: NextRequest) {
     switch (collection) {
       case "product_info": {
         // For products, we need to get the product to find its category and slug
+        // Since we're in a server-side API route, we need to directly call the backend
+        // with draft mode enabled, rather than going through the frontend API route
         const productSlug = slug;
         if (productSlug) {
-          const product = await ProductService.getProductBySlug(productSlug);
-          if (product && product.category?.slug) {
-            redirectPath = `/shop/${product.category.slug}/${product.slug}`;
-          } else if (product) {
-            // Fallback if no category
-            redirectPath = `/shop/all/${product.slug}`;
+          const API_BASE_URL =
+            process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
+          const previewSecret = process.env.PREVIEW_SECRET;
+          
+          // Directly call backend API with draft mode enabled
+          const backendUrl = new URL(
+            `${API_BASE_URL}/api/v1/products/${productSlug}`
+          );
+          backendUrl.searchParams.set("include_draft", "true");
+          
+          const res = await fetch(backendUrl.toString(), {
+            headers: {
+              ...(previewSecret
+                ? { "x-preview-secret": previewSecret }
+                : {}),
+            },
+          });
+          
+          if (res.ok) {
+            const product = await res.json();
+            if (product && product.category?.slug) {
+              redirectPath = `/shop/${product.category.slug}/${product.slug}`;
+            } else if (product) {
+              // Fallback if no category
+              redirectPath = `/shop/all/${product.slug}`;
+            } else {
+              return NextResponse.json(
+                { error: "Product not found" },
+                { status: 404 }
+              );
+            }
           } else {
             return NextResponse.json(
               { error: "Product not found" },

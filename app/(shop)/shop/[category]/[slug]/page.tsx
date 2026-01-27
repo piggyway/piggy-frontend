@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Script from "next/script";
+import { draftMode } from "next/headers";
 import { ProductDetailContent } from "@/components/features/product-detail/ProductDetailContent";
 import { ProductInformationSection } from "@/components/features/product-detail/ProductInformationSection";
 import { PetIconsSection } from "@/components/features/product-detail/PetIconsSection";
@@ -25,7 +26,12 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await ProductService.getProductBySlug(slug);
+  
+  // Check draft mode and pass to service
+  const draftModeResult = await draftMode();
+  const isDraftMode = draftModeResult.isEnabled;
+  
+  const product = await ProductService.getProductBySlug(slug, { includeDraft: isDraftMode });
   if (!product) {
     return {
       title: "Product not found | Piggy Way Crossing",
@@ -75,9 +81,13 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
+  
+  // Check draft mode and pass to service
+  const draftModeResult = await draftMode();
+  const isDraftMode = draftModeResult.isEnabled;
 
-  // Fetch product data from API
-  const product = await ProductService.getProductBySlug(slug);
+  // Fetch product data from API with draft mode support
+  const product = await ProductService.getProductBySlug(slug, { includeDraft: isDraftMode });
 
   // If product not found, show 404 page
   if (!product) {
