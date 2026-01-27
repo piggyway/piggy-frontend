@@ -98,8 +98,7 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Title */}
         <h2 className="text-primary-navy-light mb-8 text-center text-[28px] font-semibold sm:text-[32px]">
-          Suitable for {displayPets.map((p) => p.name).join(" & ")}{" "}
-          {emojiString}
+          Suitable for small pets and more 🐰🐹
         </h2>
 
         {/* Pet Icons */}

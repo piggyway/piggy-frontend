@@ -275,6 +275,9 @@ export interface ProductDetailFromAPI {
   subtitle: string | null;
   description: string | null;
   detail_information: string | null;
+  product_features: string | null;
+  specifications: string | null;
+  care_instructions: string | null;
   slug: string | null;
   base_price: number | null;
   currency: CurrencyInfo | null;
@@ -330,6 +333,9 @@ export interface ProductDetail {
   subtitle: string;
   description: string;
   detailInformation: string;
+  productFeatures: string;
+  specifications: string;
+  careInstructions: string;
   slug: string;
   basePrice: number;
   formattedPrice: string;

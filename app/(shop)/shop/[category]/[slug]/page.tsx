@@ -183,7 +183,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
       {/* Product Information - hardcoded for now */}
       <ProductInformationSection
-        detailInformation={product.detailInformation}
+        productFeatures={product.productFeatures}
+        specifications={product.specifications}
+        careInstructions={product.careInstructions}
         detailInformationFiles={product.detailInformationFiles}
       />
 
