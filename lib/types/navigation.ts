@@ -44,6 +44,7 @@ export const headerNavigation: NavLink[] = [
     ],
   },
   { label: "Pet Care", href: "/pet-care" },
+  { label: "Boarding", href: "/piggyway-boarding" },
   { label: "About us", href: "/about-us" },
 ];
 
@@ -78,6 +79,7 @@ export const footerLinks: FooterLinkGroup[] = [
     title: "About us",
     links: [
       { label: "Pet Care+", href: "/pet-care" },
+      { label: "Boarding", href: "/piggyway-boarding" },
       { label: "Our story", href: "/about-us" },
       { label: "Contact us", href: "/contact" },
     ],

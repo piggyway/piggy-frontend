@@ -1,4 +1,5 @@
 import { HeroSection } from "@/components/features/homepage/HeroSection";
+import { BoardingBannerSection } from "@/components/features/homepage/BoardingBannerSection";
 import { ShopByCategorySection } from "@/components/features/homepage/ShopByCategorySection";
 import { PetCareTipsSection } from "@/components/features/homepage/PetCareTipsSection";
 import { StarterKitsSection } from "@/components/features/homepage/StarterKitsSection";
@@ -16,6 +17,7 @@ export default function Home() {
       <BackgroundBlobs variant={1} />
       {/* <WelcomeMessage /> */}
       <HeroSection />
+      <BoardingBannerSection />
       <ShopByCategorySection />
       <PetCareTipsSection />
       {/* <StarterKitsSection /> */}
