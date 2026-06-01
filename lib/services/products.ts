@@ -15,6 +15,7 @@ import type {
   ProductDetailFromAPI,
   ProductDetail,
   StoryBlock,
+  FeatureCard,
   ProductOption,
   ProductVariant,
   VariantListParams,
@@ -178,6 +179,9 @@ export class ProductService {
       productFeatures: product.product_features || "",
       specifications: product.specifications || "",
       careInstructions: product.care_instructions || "",
+      featureSectionTitle: product.feature_section_title || "",
+      featureSectionSubtitle: product.feature_section_subtitle || "",
+      featureBannerText: product.feature_banner_text || "",
       slug: product.slug || `product-${product.id}`,
       basePrice: price,
       formattedPrice: this.formatPrice(price, currencySlug),
@@ -207,6 +211,15 @@ export class ProductService {
         .filter(
           (block): block is StoryBlock =>
             block.imageUrl !== null && block.title !== ""
+        ),
+      featureCards: (product.feature_cards ?? [])
+        .map((card) => ({
+          icon: card.icon || "",
+          label: card.label || "",
+          background: card.background || "",
+        }))
+        .filter(
+          (card): card is FeatureCard => card.icon !== "" && card.label !== ""
         ),
       options,
       variants: product.variants.map((variant) =>

@@ -210,6 +210,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
       {/* Product Features story - image/text blocks from CMS */}
       <ProductFeaturesSection
         productName={product.title}
+        subtitle={product.subtitle}
+        description={product.description}
+        featureSectionTitle={product.featureSectionTitle}
+        featureSectionSubtitle={product.featureSectionSubtitle}
+        featureBannerText={product.featureBannerText}
+        featureCards={product.featureCards}
         storyBlocks={product.storyBlocks}
       />
 

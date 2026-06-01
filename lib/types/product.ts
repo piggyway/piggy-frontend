@@ -288,6 +288,25 @@ export interface StoryBlock {
 }
 
 /**
+ * Feature card item from API (snake_case)
+ */
+export interface FeatureCardFromAPI {
+  icon: string | null;
+  label: string | null;
+  background: string | null;
+  sort: number | null;
+}
+
+/**
+ * Feature card for frontend (camelCase)
+ */
+export interface FeatureCard {
+  icon: string;
+  label: string;
+  background: string;
+}
+
+/**
  * Product detail from API (snake_case)
  */
 export interface ProductDetailFromAPI {
@@ -299,6 +318,9 @@ export interface ProductDetailFromAPI {
   product_features: string | null;
   specifications: string | null;
   care_instructions: string | null;
+  feature_section_title: string | null;
+  feature_section_subtitle: string | null;
+  feature_banner_text: string | null;
   slug: string | null;
   base_price: number | null;
   currency: CurrencyInfo | null;
@@ -308,6 +330,7 @@ export interface ProductDetailFromAPI {
   images: string[];
   detail_information_files: string[];
   story_blocks: StoryBlockFromAPI[];
+  feature_cards: FeatureCardFromAPI[];
   options: Array<{
     id: number;
     name: string | null;
@@ -358,6 +381,9 @@ export interface ProductDetail {
   productFeatures: string;
   specifications: string;
   careInstructions: string;
+  featureSectionTitle: string;
+  featureSectionSubtitle: string;
+  featureBannerText: string;
   slug: string;
   basePrice: number;
   formattedPrice: string;
@@ -368,6 +394,7 @@ export interface ProductDetail {
   images: string[];
   detailInformationFiles: string[];
   storyBlocks: StoryBlock[];
+  featureCards: FeatureCard[];
   options: ProductOption[];
   variants: ProductVariant[];
 }

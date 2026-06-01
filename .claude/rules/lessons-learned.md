@@ -211,3 +211,36 @@ export interface ProductCardProps {
 - "Grep and skim" is not verification. Read each result.
 - If there are many consumers, check them all — not just the first few
 - When in doubt, tell the user which files you checked and let them confirm before proceeding
+
+## Keep CMS Enum Fields and Frontend Lookup Maps in Sync
+
+**Problem**: A CMS field stores a string that the frontend resolves through a lookup map (e.g. an icon name → React component, or a token key → Tailwind class). If the CMS lets editors type a free value, or a new option is added on only one side, the frontend silently falls back to a default and the chosen value never renders.
+
+**Solution**: Make the CMS field a **strict dropdown** (`allowOther: false`) whose choices are exactly the keys of the frontend map. The CMS is the editor-facing picker; the frontend map is the renderer. Adding or removing an option is always a **two-side change** — update both together.
+
+**Example** — `product_info_feature_cards.icon` ↔ `ProductFeaturesSection`'s `ICON_MAP`:
+
+```tsx
+// Frontend: keys MUST equal the CMS `icon` dropdown choices
+const ICON_MAP: Record<string, LucideIcon> = {
+  WashingMachine,
+  PiggyBank,
+  Sparkles,
+  Leaf,
+};
+const Icon = ICON_MAP[card.icon] ?? Sparkles; // fallback is defensive only — should never fire
+```
+
+```
+CMS field `icon`: select-dropdown, allowOther: false,
+choices = ["WashingMachine", "PiggyBank", "Sparkles", "Leaf"]  // == ICON_MAP keys
+```
+
+**Key points**:
+
+- A React component (or any non-serializable value) can never live in the DB — store a **string key** and resolve it through a frontend map.
+- The CMS dropdown must be constrained (`allowOther: false`); free text lets editors pick values the map can't resolve.
+- To add an option: add it to the frontend map (with its import) **and** the CMS dropdown choices — never just one.
+- Document the link with a one-line comment on the map pointing at the CMS field, so the next editor knows both must move together.
+- The same applies to background/color token keys, status badges, or any "pick from a list, render via map" field.
+- Apply the schema change to **every** CMS environment (local and production), not just the one you tested against.

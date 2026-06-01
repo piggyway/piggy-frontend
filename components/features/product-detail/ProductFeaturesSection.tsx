@@ -1,39 +1,52 @@
 import Image from "next/image";
-import { WashingMachine, PiggyBank, Sparkles, Leaf } from "lucide-react";
+import {
+  WashingMachine,
+  PiggyBank,
+  Sparkles,
+  Leaf,
+  type LucideIcon,
+} from "lucide-react";
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import { cn } from "@/lib/utils";
-import type { StoryBlock } from "@/lib/types/product";
+import type { FeatureCard, StoryBlock } from "@/lib/types/product";
 
 interface ProductFeaturesSectionProps {
   productName?: string;
+  subtitle?: string;
+  description?: string;
+  featureSectionTitle?: string;
+  featureSectionSubtitle?: string;
+  featureBannerText?: string;
+  featureCards?: FeatureCard[];
   storyBlocks?: StoryBlock[];
 }
 
-const FEATURE_CARDS = [
-  {
-    icon: WashingMachine,
-    label: "Machine Wash & Tumble Dry",
-    bg: "bg-secondary-mint",
-  },
-  {
-    icon: PiggyBank,
-    label: "Saves Money & Reduces Waste",
-    bg: "bg-primary-light-gold",
-  },
-  {
-    icon: Sparkles,
-    label: "Shake it clean, less effort",
-    bg: "bg-neutral-pink-background",
-  },
-  {
-    icon: Leaf,
-    label: "Eco-Friendly Choice",
-    bg: "bg-primary-purple",
-  },
-];
+// Keys must match the `icon` dropdown choices in the CMS
+// (product_info_feature_cards.icon). Add an icon here and in the CMS together.
+const ICON_MAP: Record<string, LucideIcon> = {
+  WashingMachine,
+  PiggyBank,
+  Sparkles,
+  Leaf,
+};
+
+// Keys must match the `background` dropdown choices in the CMS
+// (product_info_feature_cards.background).
+const BACKGROUND_MAP: Record<string, string> = {
+  "secondary-mint": "bg-secondary-mint",
+  "primary-light-gold": "bg-primary-light-gold",
+  "neutral-pink-background": "bg-neutral-pink-background",
+  "primary-purple": "bg-primary-purple",
+};
 
 export function ProductFeaturesSection({
-  productName = "Comfy Base Liner",
+  productName = "",
+  subtitle = "",
+  description = "",
+  featureSectionTitle = "",
+  featureSectionSubtitle = "",
+  featureBannerText = "",
+  featureCards = [],
   storyBlocks = [],
 }: ProductFeaturesSectionProps) {
   return (
@@ -58,61 +71,80 @@ export function ProductFeaturesSection({
                   className="object-contain"
                 />
               </div>
-              <h2 className="text-primary-navy-light text-[28px] font-semibold sm:text-[32px]">
-                {productName}
-              </h2>
-              <p className="text-primary-navy text-lg font-semibold">
-                Reusable guinea pig cage liner designed for comfort,
-                cleanliness, and long-term use.
-              </p>
-              <p className="max-w-2xl text-base leading-6 text-slate-400">
-                Soft, absorbent, and easy to clean, this liner keeps your
-                pet&apos;s space dry and comfortable while reducing waste.
-                Designed to fit C&amp;C cages and flexible for different setups.
-              </p>
-            </div>
-
-            {/* Divider */}
-            <div className="flex justify-center">
-              <div className="relative h-[26px] w-[45px]">
-                <Image src="/baba.svg" alt="" fill className="object-contain" />
-              </div>
+              {productName && (
+                <h2 className="text-primary-navy-light text-[28px] font-semibold sm:text-[32px]">
+                  {productName}
+                </h2>
+              )}
+              {subtitle && (
+                <p className="text-primary-navy text-lg font-semibold">
+                  {subtitle}
+                </p>
+              )}
+              {description && (
+                <p className="max-w-2xl text-base leading-6 text-slate-400">
+                  {description}
+                </p>
+              )}
             </div>
 
             {/* Feature cards */}
-            <div className="bg-primary-navy flex flex-col gap-8 rounded-[28px] p-6 sm:p-8 md:p-10">
-              <div className="flex flex-col gap-2">
-                <h3 className="text-2xl font-semibold text-white">
-                  Reusable, Eco-Friendly &amp; Budget-Friendly
-                </h3>
-                <p className="text-base leading-6 text-white/80">
-                  Simple to clean and designed for long-term use, helping you
-                  cut down on waste and ongoing bedding costs.
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-                {FEATURE_CARDS.map((card) => {
-                  const Icon = card.icon;
-                  return (
-                    <div
-                      key={card.label}
-                      className={cn(
-                        "flex flex-col items-center gap-4 rounded-[20px] p-6",
-                        card.bg
+            {featureCards.length > 0 && (
+              <>
+                {/* Divider */}
+                <div className="flex justify-center">
+                  <div className="relative h-[26px] w-[45px]">
+                    <Image
+                      src="/baba.svg"
+                      alt=""
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </div>
+
+                <div className="bg-primary-navy flex flex-col gap-8 rounded-[28px] p-6 sm:p-8 md:p-10">
+                  {(featureSectionTitle || featureSectionSubtitle) && (
+                    <div className="flex flex-col gap-2">
+                      {featureSectionTitle && (
+                        <h3 className="text-2xl font-semibold text-white">
+                          {featureSectionTitle}
+                        </h3>
                       )}
-                    >
-                      <Icon
-                        className="text-primary-navy size-12"
-                        strokeWidth={1.5}
-                      />
-                      <p className="text-primary-navy text-center text-sm font-semibold">
-                        {card.label}
-                      </p>
+                      {featureSectionSubtitle && (
+                        <p className="text-base leading-6 text-white/80">
+                          {featureSectionSubtitle}
+                        </p>
+                      )}
                     </div>
-                  );
-                })}
-              </div>
-            </div>
+                  )}
+                  <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                    {featureCards.map((card, index) => {
+                      const Icon = ICON_MAP[card.icon] ?? Sparkles;
+                      const bgClass =
+                        BACKGROUND_MAP[card.background] ?? "bg-secondary-mint";
+                      return (
+                        <div
+                          key={`${card.label}-${index}`}
+                          className={cn(
+                            "flex flex-col items-center gap-4 rounded-[20px] p-6",
+                            bgClass
+                          )}
+                        >
+                          <Icon
+                            className="text-primary-navy size-12"
+                            strokeWidth={1.5}
+                          />
+                          <p className="text-primary-navy text-center text-sm font-semibold">
+                            {card.label}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Story blocks - alternating image / text (from CMS) */}
             {storyBlocks.length > 0 && (
@@ -171,19 +203,21 @@ export function ProductFeaturesSection({
         </div>
 
         {/* Mess happens banner */}
-        <div className="flex items-center justify-center gap-6">
-          <h2 className="text-primary-navy-light text-center text-[28px] font-semibold sm:text-[32px]">
-            Mess happens. We absorb it.
-          </h2>
-          <div className="relative hidden h-[75px] w-[150px] shrink-0 sm:block sm:h-[107px] sm:w-[214px]">
-            <Image
-              src="/Group 367.svg"
-              alt=""
-              fill
-              className="object-contain"
-            />
+        {featureBannerText && (
+          <div className="flex items-center justify-center gap-6">
+            <h2 className="text-primary-navy-light text-center text-[28px] font-semibold sm:text-[32px]">
+              {featureBannerText}
+            </h2>
+            <div className="relative hidden h-[75px] w-[150px] shrink-0 sm:block sm:h-[107px] sm:w-[214px]">
+              <Image
+                src="/Group 367.svg"
+                alt=""
+                fill
+                className="object-contain"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </AnimatedSection>
   );
