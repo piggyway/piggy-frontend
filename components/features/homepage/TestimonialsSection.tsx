@@ -23,7 +23,7 @@ export function TestimonialsSection() {
       id: 3,
       quote:
         "My piggies love it – super soft and easy to keep clean. One shake and the hay's gone, too easy!",
-      author: "Eve R., Brisbane",
+      author: "Eve R., Melbourne",
       bgColor: "bg-neutral-pink-background",
     },
   ];

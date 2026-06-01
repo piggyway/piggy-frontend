@@ -11,6 +11,8 @@ export interface QuantitySelectorProps {
   max?: number;
   onValueChange?: (value: number) => void;
   disabled?: boolean;
+  showLabel?: boolean;
+  fullWidth?: boolean;
   className?: string;
 }
 
@@ -20,6 +22,8 @@ export function QuantitySelector({
   max = 99,
   onValueChange,
   disabled = false,
+  showLabel = true,
+  fullWidth = false,
   className,
 }: QuantitySelectorProps) {
   const handleDecrease = () => {
@@ -36,10 +40,17 @@ export function QuantitySelector({
 
   return (
     <div className={cn("flex items-center gap-2", className)}>
-      <label className="text-primary-navy text-base leading-6 font-medium">
-        Quantity
-      </label>
-      <div className="border-neutral-stroke flex items-center gap-2 rounded-md border bg-white">
+      {showLabel && (
+        <label className="text-primary-navy text-base leading-6 font-medium">
+          Quantity
+        </label>
+      )}
+      <div
+        className={cn(
+          "border-neutral-stroke flex items-center gap-2 rounded-md border bg-white",
+          fullWidth && "w-full justify-between"
+        )}
+      >
         <Button
           type="button"
           variant="ghost"

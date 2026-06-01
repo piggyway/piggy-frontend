@@ -6,23 +6,23 @@ Prettier (`.prettierrc`) and ESLint (`eslint.config.mjs`) are the source of trut
 
 ## Functions
 
-- Use **function declarations** for all exported/public functions — components, server actions, utilities, cached wrappers, etc.
+- Use **function declarations** for all exported/public functions — components, services, utilities, hooks, etc.
 - Arrow functions are only for **private/internal use**: event handlers, callbacks, inline functions inside a component or module.
 - **Inside `useEffect`**: named functions must use function declarations, not arrow functions.
-- **Naming**: Non-component functions use **camelCase** (`getArticleBySlug`, `handleClick`, `formatDate`). Components use **PascalCase** (covered in the Components section below).
+- **Naming**: Non-component functions use **camelCase** (`getProducts`, `handleClick`, `formatPrice`). Components use **PascalCase** (covered in the Components section below).
 
   ```tsx
   // Do — exported functions use function declarations
-  export function getArticleBySlugFromCache(slug: string) { ... }
-  export default function Card({ children }: CardProps) { ... }
+  export function getProducts() { ... }
+  export function HeroSection() { ... }
 
   // Do — private functions inside a component use arrow functions
   const handleClick = () => { ... };
-  const formatDate = (date: Date) => date.toISOString();
+  const formatPrice = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
   // Don't — exported functions should not be arrow functions
-  export const getArticleBySlugFromCache = (slug: string) => { ... };
-  export const Card = ({ children }: CardProps) => { ... };
+  export const getProducts = () => { ... };
+  export const HeroSection = () => { ... };
 
   // Do — function declarations inside useEffect
   useEffect(() => {
@@ -40,6 +40,7 @@ Prettier (`.prettierrc`) and ESLint (`eslint.config.mjs`) are the source of trut
 ## Components
 
 - Always use **function declarations**, not arrow function variables (follows the rule above):
+
   ```tsx
   // Do
   function Card({ children }: CardProps) {}
@@ -48,42 +49,46 @@ Prettier (`.prettierrc`) and ESLint (`eslint.config.mjs`) are the source of trut
   const Card = ({ children }: CardProps) => {};
   ```
 
-- **Single component file** (only one component, or main + private helpers):
-  Use `export default` on the main component. Private helpers are not exported.
+- **Use named exports for components** — this is the repo-wide convention (`export function Header()`, `export function CartPage()`). `components/ui/` primitives are re-exported at the bottom of the file (`export { Button, buttonVariants }`). Private helper components in the same file stay unexported.
+
   ```tsx
-  function CardHeader({ title }: CardHeaderProps) {
-    return <div>{title}</div>;
+  // Do
+  export function CartSummary({ items }: CartSummaryProps) {
+    return <div>...</div>;
   }
 
-  export default function Card({ children }: CardProps) {
-    return <div><CardHeader title="..." />{children}</div>;
-  }
+  // Don't — components do not use default export
+  export default function CartSummary({ items }: CartSummaryProps) {}
   ```
 
-- **Multiple shared components in one file**:
-  Use named exports for all — no default export.
-  ```tsx
-  export function CardHeader({ title }: CardHeaderProps) {
-    return <div>{title}</div>;
-  }
-
-  export function Card({ children }: CardProps) {
-    return <div><CardHeader title="..." />{children}</div>;
-  }
-  ```
+- **Default export is only for framework-required files**: Next.js route files under `app/` (`page.tsx`, `layout.tsx`, `error.tsx`, `not-found.tsx`, …) and Storybook `*.stories.tsx` (the `meta` default export). Do not use default export for anything else.
 
 ## File & Folder Naming
 
-### `docs/` folder
-- All `.md` files use `UPPERCASE_WITH_UNDERSCORE.md`
-- Examples: `DEV_SCRIPTS.md`, `SERVER_ACTIONS.md`
+There is **no `src/`** — `@/*` aliases the repo root (`tsconfig.json` → `"@/*": ["./*"]`). All paths below are written from the root.
 
-### Component folders (`src/components/`, `src/templates/`, `src/layouts/`)
-- **Folder names**: PascalCase (`Card`, `MainHome`, `Header`)
-- **`.tsx` files**: PascalCase (`CardHeader.tsx`, `Featured.tsx`) — except `index.tsx`
-- **`.ts` files**: kebab-case (`api-mapper-v2.ts`, `types.ts`)
-- **Exception — `src/components/ui/`**: kebab-case for everything (shadcn convention, e.g., `dropdown-menu.tsx`, `badge.tsx`)
+### `docs/`
 
-### Everything else (`src/lib/`, `src/utils/`, `src/server-actions/`, `src/app/`, etc.)
-- kebab-case for both folders and files (`date-helper.ts`, `city-homepage/`)
-- **Exception — `src/app/`**: Next.js routing conventions are allowed on top of kebab-case (`[slug]`, `(group)`, `@parallel`, `_private`)
+- kebab-case `.md` files: `homepage.md`, `product-detail.md`, `shop-all.md`.
+
+### `components/`
+
+- **`components/common/`** (Header, Footer, UserButton) and **`components/icons/`**: PascalCase `.tsx` files (`Header.tsx`, `UserButton.tsx`, `PetIcons.tsx`).
+- **`components/features/<domain>/`**: the **domain folder is kebab-case** (`product-detail/`, `pet-care/`, `shop-all/`); component **`.tsx` files inside are PascalCase** (`HeroSection.tsx`, `CartPage.tsx`, `ProductImageGallery.tsx`); non-component data/helper **`.ts` files are kebab-case** (`cart-data.ts`).
+- **`components/ui/`** (shadcn primitives): kebab-case for everything (`button.tsx`, `product-card.tsx`, `navigation-menu-content.tsx`), including their `*.stories.tsx`.
+
+### `contexts/` and `hooks/`
+
+- Context files are PascalCase (`UserContext.tsx`). Hook files are camelCase matching the hook name (`useSessionRefresh.ts`).
+
+### `lib/` (api, services, types, utils, validators, constants, design-tokens, mock)
+
+- kebab-case for both folders and files (`design-tokens/`, `auth.ts`, `products.ts`, `images.ts`).
+
+### `app/`
+
+- kebab-case plus Next.js routing conventions: `[slug]` dynamic segments, `(shop)` route groups, `route.ts` handlers, `page.tsx` / `layout.tsx`.
+
+### `types/` (root)
+
+- Ambient declaration files keep their required names (`next-auth.d.ts`).

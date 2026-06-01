@@ -267,6 +267,27 @@ export interface ProductVariant {
 }
 
 /**
+ * Story block item from API (snake_case)
+ */
+export interface StoryBlockFromAPI {
+  title: string | null;
+  description: string | null;
+  image_url: string | null;
+  image_left: boolean;
+  sort: number | null;
+}
+
+/**
+ * Story block for frontend (camelCase)
+ */
+export interface StoryBlock {
+  title: string;
+  description: string;
+  imageUrl: string;
+  imageLeft: boolean;
+}
+
+/**
  * Product detail from API (snake_case)
  */
 export interface ProductDetailFromAPI {
@@ -286,6 +307,7 @@ export interface ProductDetailFromAPI {
   species: SpeciesInfo[];
   images: string[];
   detail_information_files: string[];
+  story_blocks: StoryBlockFromAPI[];
   options: Array<{
     id: number;
     name: string | null;
@@ -345,6 +367,7 @@ export interface ProductDetail {
   species: SpeciesInfo[];
   images: string[];
   detailInformationFiles: string[];
+  storyBlocks: StoryBlock[];
   options: ProductOption[];
   variants: ProductVariant[];
 }

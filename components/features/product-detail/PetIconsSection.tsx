@@ -108,11 +108,11 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
             return (
               <div
                 key={pet.id}
-                className={`${pet.bgColor} flex h-20 w-20 items-center justify-center rounded-full sm:h-24 sm:w-24`}
+                className={`${pet.bgColor} flex h-20 w-20 items-center justify-center rounded-[24px] sm:h-[90px] sm:w-[90px]`}
                 title={pet.name}
               >
                 <Icon
-                  className="text-primary-navy h-10 w-10 sm:h-12 sm:w-12"
+                  className="text-primary-navy h-10 w-10 sm:h-11 sm:w-11"
                   strokeWidth={1.5}
                 />
               </div>

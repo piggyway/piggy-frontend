@@ -6,6 +6,7 @@ import { draftMode } from "next/headers";
 import { ProductDetailContent } from "@/components/features/product-detail/ProductDetailContent";
 import { ProductInformationSection } from "@/components/features/product-detail/ProductInformationSection";
 import { PetIconsSection } from "@/components/features/product-detail/PetIconsSection";
+import { ProductFeaturesSection } from "@/components/features/product-detail/ProductFeaturesSection";
 import { TestimonialsSection } from "@/components/features/shop/TestimonialsSection";
 import { RelatedProductsSection } from "@/components/features/product-detail/RelatedProductsSection";
 import { ProductService } from "@/lib/services/products";
@@ -26,12 +27,14 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  
+
   // Check draft mode and pass to service
   const draftModeResult = await draftMode();
   const isDraftMode = draftModeResult.isEnabled;
-  
-  const product = await ProductService.getProductBySlug(slug, { includeDraft: isDraftMode });
+
+  const product = await ProductService.getProductBySlug(slug, {
+    includeDraft: isDraftMode,
+  });
   if (!product) {
     return {
       title: "Product not found | Piggy Way Crossing",
@@ -81,13 +84,15 @@ export async function generateMetadata({
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
-  
+
   // Check draft mode and pass to service
   const draftModeResult = await draftMode();
   const isDraftMode = draftModeResult.isEnabled;
 
   // Fetch product data from API with draft mode support
-  const product = await ProductService.getProductBySlug(slug, { includeDraft: isDraftMode });
+  const product = await ProductService.getProductBySlug(slug, {
+    includeDraft: isDraftMode,
+  });
 
   // If product not found, show 404 page
   if (!product) {
@@ -191,6 +196,9 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <ProductDetailContent product={product} />
       </div>
 
+      {/* Pet Icons - based on product species */}
+      <PetIconsSection species={product.species} />
+
       {/* Product Information - hardcoded for now */}
       <ProductInformationSection
         productFeatures={product.productFeatures}
@@ -199,8 +207,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
         detailInformationFiles={product.detailInformationFiles}
       />
 
-      {/* Pet Icons - based on product species */}
-      <PetIconsSection species={product.species} />
+      {/* Product Features story - image/text blocks from CMS */}
+      <ProductFeaturesSection
+        productName={product.title}
+        storyBlocks={product.storyBlocks}
+      />
 
       {/* Testimonials - specific to product variant */}
       <TestimonialsSection reviews={reviews} />

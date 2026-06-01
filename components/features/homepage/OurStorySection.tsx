@@ -28,8 +28,9 @@ export function OurStorySection() {
                   Our Story Designed by Pet Parents, for Pet Parents
                 </p>
                 <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
-                  We're guinea pig & rabbit lovers creating products that make
-                  life easier, healthier, and happier for pets and their humans
+                  We&apos;re guinea pig &amp; rabbit lovers creating products
+                  that make life easier, healthier, and happier for pets and
+                  their humans
                 </p>
               </div>
 
@@ -68,10 +69,17 @@ export function OurStorySection() {
               {/* Navy card with button - right side */}
               <Link
                 href="/about-us"
-                className="bg-primary-navy absolute top-0 left-[201px] flex h-[300px] w-[319px] items-end justify-end rounded-[32px] p-8 transition-transform hover:scale-[1.02]"
+                className="bg-primary-navy absolute top-0 left-[201px] flex h-[300px] w-[319px] items-end justify-end overflow-hidden rounded-[32px] p-8 transition-transform hover:scale-[1.02]"
               >
+                <Image
+                  src="https://res.cloudinary.com/davy7cgyi/image/upload/v1780289236/709e9afff06075a1e2577fb7c0eb39ca8ed4ced6_l9smol.png"
+                  alt=""
+                  fill
+                  className="object-cover"
+                  sizes="319px"
+                />
                 <div
-                  className="border-neutral-stroke flex size-[48px] shrink-0 items-center justify-center rounded-full border bg-white p-3"
+                  className="border-neutral-stroke relative z-10 flex size-[48px] shrink-0 items-center justify-center rounded-full border bg-white p-3"
                   aria-label="Learn more"
                 >
                   <ArrowUpRight
@@ -92,16 +100,23 @@ export function OurStorySection() {
               Our Story Designed by Pet Parents, for Pet Parents
             </p>
             <p className="text-primary-navy text-base leading-[24px] font-medium sm:text-[20px]">
-              We're guinea pig & rabbit lovers creating products that make life
-              easier, healthier, and happier for pets and their humans
+              We&apos;re guinea pig &amp; rabbit lovers creating products that
+              make life easier, healthier, and happier for pets and their humans
             </p>
 
             {/* Simplified card for mobile */}
             <Link
               href="/about-us"
-              className="bg-primary-navy flex min-h-[200px] items-end justify-end rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+              className="bg-primary-navy relative flex min-h-[200px] items-end justify-end overflow-hidden rounded-[32px] p-6 transition-transform active:scale-[0.98]"
             >
-              <div className="border-neutral-stroke flex items-center justify-center rounded-full border bg-white p-3">
+              <Image
+                src="https://res.cloudinary.com/davy7cgyi/image/upload/v1780289236/709e9afff06075a1e2577fb7c0eb39ca8ed4ced6_l9smol.png"
+                alt=""
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 319px"
+              />
+              <div className="border-neutral-stroke relative z-10 flex items-center justify-center rounded-full border bg-white p-3">
                 <ArrowUpRight className="text-primary-navy h-4 w-4" />
               </div>
             </Link>

@@ -14,6 +14,7 @@ import type {
   ProductListItemFromAPI,
   ProductDetailFromAPI,
   ProductDetail,
+  StoryBlock,
   ProductOption,
   ProductVariant,
   VariantListParams,
@@ -196,6 +197,17 @@ export class ProductService {
               .map((file) => normalizeImageUrl(file))
               .filter((file): file is string => file !== null)
           : [],
+      storyBlocks: (product.story_blocks ?? [])
+        .map((block) => ({
+          title: block.title || "",
+          description: block.description || "",
+          imageUrl: normalizeImageUrl(block.image_url),
+          imageLeft: block.image_left,
+        }))
+        .filter(
+          (block): block is StoryBlock =>
+            block.imageUrl !== null && block.title !== ""
+        ),
       options,
       variants: product.variants.map((variant) =>
         this.transformVariant(variant)

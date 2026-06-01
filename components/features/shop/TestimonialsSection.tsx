@@ -34,71 +34,75 @@ export function TestimonialsSection({
   return (
     <AnimatedSection className="w-full">
       <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
-        {/* Title and Mascot Header */}
-        <div className="mb-8 flex items-start justify-between gap-8 sm:mb-12">
-          <div className="flex-1">
-            <p className="text-primary-navy mb-1 text-lg leading-relaxed font-medium sm:text-xl">
-              Trusted by Parents
-            </p>
-            <h2 className="text-primary-navy-light text-[32px] leading-tight font-bold sm:text-[42px]">
-              Loved by Piggies
-            </h2>
-          </div>
-          {/* Decorative Piggy Icon */}
-          <div className="ml-8 hidden lg:block">
-            <div className="relative h-24 w-24">
-              <Image
-                src="/pet-care-tips/default1-2.png"
-                alt="Piggy mascot"
-                width={96}
-                height={96}
-                className="object-contain"
-              />
+        {/* White rounded container */}
+        <div className="rounded-[28px] bg-white p-6 sm:p-8 lg:p-10">
+          {/* Title and Mascot Header */}
+          <div className="mb-8 flex items-start justify-between gap-8 sm:mb-12">
+            <div className="flex-1">
+              <p className="text-primary-navy mb-1 text-lg leading-relaxed font-medium sm:text-xl">
+                Trusted by Parents
+              </p>
+              <h2 className="text-primary-navy-light text-[32px] leading-tight font-bold sm:text-[42px]">
+                Loved by Piggies
+              </h2>
             </div>
-          </div>
-        </div>
-
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-          {displayReviews.map((testimonial) => (
-            <div
-              key={testimonial.id}
-              className={`${testimonial.bgColor} flex flex-col gap-6 rounded-[28px] p-6 md:flex-row md:items-stretch`}
-            >
-              {/* Image Section */}
-              <div className="relative h-[160px] w-full shrink-0 overflow-hidden rounded-[20px] md:h-auto md:w-[140px] lg:w-[160px]">
+            {/* Decorative Piggy Icon */}
+            <div className="ml-8 hidden lg:block">
+              <div className="relative h-24 w-24">
                 <Image
-                  src={testimonial.imageUrl}
-                  alt={testimonial.imageAlt}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 200px"
+                  src="/image 105.svg"
+                  alt="Piggy mascot"
+                  width={96}
+                  height={96}
+                  className="object-contain"
                 />
               </div>
+            </div>
+          </div>
 
-              {/* Content Section */}
-              <div className="flex flex-1 flex-col justify-between py-2">
-                {/* Quote Block */}
-                <div className="text-primary-navy relative">
-                  <span className="absolute -top-2 -left-2 text-4xl leading-none font-bold opacity-30">
-                    “
-                  </span>
-                  <p className="text-lg leading-relaxed font-bold md:text-[19px]">
-                    <span className="inline-block px-4">
-                      “{testimonial.quote}”
-                    </span>
-                  </p>
+          {/* Testimonials Grid */}
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            {displayReviews.map((testimonial) => (
+              <div
+                key={testimonial.id}
+                className={`${testimonial.bgColor} flex flex-col gap-6 rounded-[28px] p-6 md:h-[279px] md:flex-row`}
+              >
+                {/* Image Section - square with rounded corners */}
+                <div className="relative aspect-square w-full shrink-0 overflow-hidden rounded-[20px] md:aspect-auto md:size-[231px]">
+                  <Image
+                    src={testimonial.imageUrl}
+                    alt={testimonial.imageAlt}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 231px"
+                  />
                 </div>
 
-                {/* Author */}
-                <div className="mt-4">
-                  <p className="text-primary-navy text-lg font-bold">
-                    {testimonial.author}
-                  </p>
+                {/* Content Section */}
+                <div className="flex min-h-0 flex-1 flex-col">
+                  {/* Quote Block - scrolls when it overflows the fixed height */}
+                  <div className="text-primary-navy min-h-0 flex-1 overflow-y-auto pr-1">
+                    <p className="text-base leading-relaxed font-medium md:text-[17px]">
+                      <span className="text-primary-navy-light pr-1 align-top text-2xl font-bold">
+                        “
+                      </span>
+                      {testimonial.quote}
+                      <span className="text-primary-navy-light pl-1 align-bottom text-2xl font-bold">
+                        ”
+                      </span>
+                    </p>
+                  </div>
+
+                  {/* Author */}
+                  <div className="mt-4 shrink-0">
+                    <p className="text-primary-navy text-lg font-bold">
+                      {testimonial.author}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </AnimatedSection>
