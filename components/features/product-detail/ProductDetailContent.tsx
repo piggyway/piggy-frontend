@@ -431,19 +431,19 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         >
           {/* Product Name and Description */}
           <header className="flex flex-col gap-3.5">
-            <h1 className="text-primary-navy text-2xl leading-8 font-semibold">
+            <h1 className="text-primary-navy-light text-[24px] leading-8 font-semibold">
               {product.title}
               {product.subtitle ? ` ${product.subtitle}` : ""}
             </h1>
             {product.description && (
-              <p className="text-primary-navy text-base leading-6 font-normal">
+              <p className="text-primary-navy text-[16px] leading-6 font-normal">
                 {product.description}
               </p>
             )}
 
             {/* Price */}
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-primary-navy text-xl leading-6 font-medium">
+              <p className="text-primary-navy text-[20px] leading-6 font-medium">
                 {priceHasRange ? "From " : ""}
                 {currentPrice.displayPrice}
               </p>
@@ -531,7 +531,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                 className="flex-1"
               />
               <Button
-                className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 h-auto flex-1 rounded-full px-6 py-3 text-base font-semibold disabled:opacity-50"
+                className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 h-auto flex-1 rounded-full px-6 py-3 text-[14px] font-semibold disabled:opacity-50"
                 onClick={handleAddToCart}
                 disabled={!isInStock || isMutating}
               >

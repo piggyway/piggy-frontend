@@ -33,16 +33,16 @@ export function TestimonialsSection({
 
   return (
     <AnimatedSection className="w-full">
-      <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
+      <div className="container mx-auto max-w-[1160px] px-4">
         {/* White rounded container */}
         <div className="rounded-[28px] bg-white p-6 sm:p-8 lg:p-10">
           {/* Title and Mascot Header */}
           <div className="mb-8 flex items-start justify-between gap-8 sm:mb-12">
             <div className="flex-1">
-              <p className="text-primary-navy mb-1 text-lg leading-relaxed font-medium sm:text-xl">
+              <p className="text-primary-navy mb-1 text-[24px] leading-8 font-normal">
                 Trusted by Parents
               </p>
-              <h2 className="text-primary-navy-light text-[32px] leading-tight font-bold sm:text-[42px]">
+              <h2 className="text-primary-navy-light text-[42px] leading-[42px] font-semibold tracking-[-0.21px]">
                 Loved by Piggies
               </h2>
             </div>
@@ -82,12 +82,12 @@ export function TestimonialsSection({
                 <div className="flex min-h-0 flex-1 flex-col">
                   {/* Quote Block - scrolls when it overflows the fixed height */}
                   <div className="text-primary-navy min-h-0 flex-1 overflow-y-auto pr-1">
-                    <p className="text-base leading-relaxed font-medium md:text-[17px]">
-                      <span className="text-primary-navy-light pr-1 align-top text-2xl font-bold">
+                    <p className="text-[20px] leading-6 font-medium">
+                      <span className="text-primary-navy-light pr-1 align-top text-[42px] font-semibold">
                         “
                       </span>
                       {testimonial.quote}
-                      <span className="text-primary-navy-light pl-1 align-bottom text-2xl font-bold">
+                      <span className="text-primary-navy-light pl-1 align-bottom text-[42px] font-semibold">
                         ”
                       </span>
                     </p>
@@ -95,7 +95,7 @@ export function TestimonialsSection({
 
                   {/* Author */}
                   <div className="mt-4 shrink-0">
-                    <p className="text-primary-navy text-lg font-bold">
+                    <p className="text-primary-navy text-[24px] font-semibold">
                       {testimonial.author}
                     </p>
                   </div>

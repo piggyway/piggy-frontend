@@ -15,7 +15,9 @@ export default function ShopPage() {
       <BestSellingSection />
       <LimitedEditionBanner />
       <FeaturedPicksSection />
-      <TestimonialsSection />
+      <div className="py-12 sm:py-16 md:py-20">
+        <TestimonialsSection />
+      </div>
       <Suspense fallback={<div className="h-[400px]" />}>
         <StarterKitsSection />
       </Suspense>

@@ -77,7 +77,7 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
   // If no species provided or no matching species found, show default message
   if (displayPets.length === 0) {
     return (
-      <AnimatedSection className="w-full py-12 sm:py-16">
+      <AnimatedSection className="w-full">
         <div className="container mx-auto max-w-[1160px] px-4">
           <h2 className="text-primary-navy-light mb-8 text-center text-[28px] font-semibold sm:text-[32px]">
             Suitable for small pets and more 🐰🐹
@@ -94,7 +94,7 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
   const emojiString = displayPets.map((p) => p.emoji).join("");
 
   return (
-    <AnimatedSection className="w-full py-12 sm:py-16">
+    <AnimatedSection className="w-full">
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Title */}
         <h2 className="text-primary-navy-light mb-8 text-center text-[28px] font-semibold sm:text-[32px]">

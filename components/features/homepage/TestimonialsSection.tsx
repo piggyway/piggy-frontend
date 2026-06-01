@@ -35,7 +35,7 @@ export function TestimonialsSection() {
           {/* Title with Icon */}
           <div className="mb-8 flex items-start justify-between gap-8 sm:mb-10">
             <div className="flex-1">
-              <p className="text-primary-navy mb-2 text-[20px] leading-[32px] font-normal sm:text-[24px]">
+              <p className="text-primary-navy mb-2 text-[24px] leading-[32px] font-normal sm:text-[24px]">
                 Trusted by Parents
               </p>
               <h2 className="text-primary-navy-light text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">

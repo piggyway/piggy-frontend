@@ -28,7 +28,7 @@ export function ProductColorSelector({
 }: ProductColorSelectorProps) {
   return (
     <div className={cn("flex w-full flex-col items-start gap-3", className)}>
-      <label className="text-primary-navy text-base leading-6 font-medium">
+      <label className="text-primary-navy-light text-[24px] leading-8 font-semibold">
         {label}
       </label>
       <div className="flex flex-wrap items-center gap-3">
@@ -61,7 +61,7 @@ export function ProductColorSelector({
               {/* Label */}
               <span
                 className={cn(
-                  "text-sm leading-5 font-normal",
+                  "text-[14px] leading-6 font-normal",
                   isSelected ? "text-primary-navy" : "text-slate-400"
                 )}
               >

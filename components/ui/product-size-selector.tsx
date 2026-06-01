@@ -44,14 +44,14 @@ export function ProductSizeSelector({
   return (
     <div className={cn("flex w-full flex-col items-start gap-3", className)}>
       <div className="flex w-full items-center gap-2">
-        <label className="text-primary-navy text-base leading-6 font-medium">
+        <label className="text-primary-navy-light text-[24px] leading-8 font-semibold">
           {label}
         </label>
         {sizeGuideLink && (
           <button
             type="button"
             onClick={onSizeGuideClick}
-            className="text-primary-navy hover:text-primary-navy-light focus-visible:ring-primary-navy flex items-center gap-1 rounded text-sm font-normal transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+            className="text-primary-navy hover:text-primary-navy-light focus-visible:ring-primary-navy flex items-center gap-1 rounded text-[16px] font-normal transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
             aria-label="Size guide"
           >
             <HelpCircle className="size-4" />
@@ -66,7 +66,7 @@ export function ProductSizeSelector({
           type="button"
           onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "text-primary-navy flex w-full items-center justify-between gap-2 rounded-md border bg-white px-4 py-2 text-base font-normal",
+            "text-primary-navy flex w-full items-center justify-between gap-2 rounded-md border bg-white px-4 py-2 text-[16px] font-normal",
             "hover:border-primary-navy-light transition-colors",
             "focus-visible:ring-primary-navy focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
             isOpen && "border-primary-navy"
@@ -101,7 +101,7 @@ export function ProductSizeSelector({
                     onClick={() => handleSizeSelect(size.value)}
                     disabled={isDisabled}
                     className={cn(
-                      "text-primary-navy hover:bg-primary-purple/20 w-full px-4 py-2 text-left text-base font-normal transition-colors",
+                      "text-primary-navy hover:bg-primary-purple/20 w-full px-4 py-2 text-left text-[16px] font-normal transition-colors",
                       selectedSize === size.value && "bg-primary-purple/30",
                       isDisabled &&
                         "cursor-not-allowed opacity-40 hover:bg-transparent"

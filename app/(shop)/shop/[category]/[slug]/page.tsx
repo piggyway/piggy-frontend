@@ -191,44 +191,47 @@ export default async function ProductPage({ params }: ProductPageProps) {
         }}
       />
 
-      {/* Main Product Section */}
-      <div className="container mx-auto max-w-[1160px] px-4 py-6 sm:py-8">
-        <ProductDetailContent product={product} />
-      </div>
+      {/* Sections stack with a uniform 80px gap (design spec; root font-size is 20px, so gap-16 = 4rem = 80px) */}
+      <div className="flex flex-col gap-16 pb-16">
+        {/* Main Product Section */}
+        <div className="container mx-auto max-w-[1160px] px-4 pt-6 sm:pt-8">
+          <ProductDetailContent product={product} />
+        </div>
 
-      {/* Pet Icons - based on product species */}
-      <PetIconsSection species={product.species} />
+        {/* Pet Icons - based on product species */}
+        <PetIconsSection species={product.species} />
 
-      {/* Product Information - hardcoded for now */}
-      <ProductInformationSection
-        productFeatures={product.productFeatures}
-        specifications={product.specifications}
-        careInstructions={product.careInstructions}
-        detailInformationFiles={product.detailInformationFiles}
-      />
-
-      {/* Product Features story - image/text blocks from CMS */}
-      <ProductFeaturesSection
-        productName={product.title}
-        subtitle={product.subtitle}
-        description={product.description}
-        featureSectionTitle={product.featureSectionTitle}
-        featureSectionSubtitle={product.featureSectionSubtitle}
-        featureBannerText={product.featureBannerText}
-        featureCards={product.featureCards}
-        storyBlocks={product.storyBlocks}
-      />
-
-      {/* Testimonials - specific to product variant */}
-      <TestimonialsSection reviews={reviews} />
-
-      {/* Related Products */}
-      <Suspense fallback={<div className="h-[400px]" />}>
-        <RelatedProductsSection
-          categorySlug={product.category?.slug}
-          excludeProductId={product.id}
+        {/* Product Information - hardcoded for now */}
+        <ProductInformationSection
+          productFeatures={product.productFeatures}
+          specifications={product.specifications}
+          careInstructions={product.careInstructions}
+          detailInformationFiles={product.detailInformationFiles}
         />
-      </Suspense>
+
+        {/* Product Features story - image/text blocks from CMS */}
+        <ProductFeaturesSection
+          productName={product.title}
+          subtitle={product.subtitle}
+          description={product.description}
+          featureSectionTitle={product.featureSectionTitle}
+          featureSectionSubtitle={product.featureSectionSubtitle}
+          featureBannerText={product.featureBannerText}
+          featureCards={product.featureCards}
+          storyBlocks={product.storyBlocks}
+        />
+
+        {/* Testimonials - specific to product variant */}
+        <TestimonialsSection reviews={reviews} />
+
+        {/* Related Products */}
+        <Suspense fallback={<div className="h-[400px]" />}>
+          <RelatedProductsSection
+            categorySlug={product.category?.slug}
+            excludeProductId={product.id}
+          />
+        </Suspense>
+      </div>
       <FloatingCartButton />
     </div>
   );

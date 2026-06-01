@@ -155,7 +155,7 @@ export function ProductInformationSection({
   }, [carouselApi, activeItem]);
 
   return (
-    <AnimatedSection className="w-full py-8 sm:py-12 md:py-16 lg:py-20">
+    <AnimatedSection className="w-full">
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Rounded Navy Container */}
         <div className="bg-primary-navy flex flex-col gap-8 rounded-[20px] p-6 sm:rounded-[28px] sm:p-8 md:p-10 lg:p-12">
@@ -181,13 +181,13 @@ export function ProductInformationSection({
                     className="border-white/20"
                   >
                     <AccordionTrigger className="[&>svg]:text-primary-navy w-full text-left text-white [&>svg]:ml-auto [&>svg]:!h-8 [&>svg]:!w-8 [&>svg]:rounded-full [&>svg]:bg-white [&>svg]:p-2">
-                      <h1 className="text-xl font-semibold sm:text-2xl">
+                      <h1 className="text-primary-purple text-[20px] font-medium">
                         {item.title}
                       </h1>
                     </AccordionTrigger>
                     <AccordionContent>
                       <div
-                        className="text-sm leading-relaxed text-white/90 sm:text-base [&_a]:underline [&_a]:underline-offset-4 [&_h2]:text-lg [&_h2]:font-semibold [&_h2]:text-white [&_h3]:text-base [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
+                        className="text-[14px] leading-relaxed text-white/90 [&_a]:underline [&_a]:underline-offset-4 [&_h2]:text-[16px] [&_h2]:font-semibold [&_h2]:text-white [&_h3]:text-[14px] [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
                         dangerouslySetInnerHTML={{
                           __html: item.content,
                         }}

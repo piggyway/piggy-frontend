@@ -34,10 +34,10 @@ export async function RelatedProductsSection({
   }
 
   return (
-    <AnimatedSection className="w-full py-12 sm:py-16 md:py-20">
+    <AnimatedSection className="w-full">
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Title */}
-        <h2 className="text-primary-navy-light mb-8 text-[28px] font-semibold sm:text-[32px]">
+        <h2 className="text-primary-navy-light mb-8 text-[28px] font-semibold sm:text-[42px]">
           Related Products
         </h2>
 
