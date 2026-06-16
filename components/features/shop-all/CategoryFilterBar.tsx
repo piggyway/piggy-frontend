@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  ShoppingBag,
-  Home,
-  Grid3x3,
-  Cookie,
-  Package,
-  Star,
-} from "lucide-react";
+import { ShoppingBag, Home, Grid3x3, Package } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CategoryItem {
@@ -20,9 +13,7 @@ const categories: CategoryItem[] = [
   { id: "liner", label: "Liner", icon: ShoppingBag },
   { id: "hut", label: "Hut", icon: Home },
   { id: "c-c-cage", label: "C&C Cage", icon: Grid3x3 },
-  { id: "snack", label: "Snacks", icon: Cookie },
   { id: "combo", label: "Combos", icon: Package },
-  { id: "merch", label: "Merch", icon: Star },
 ];
 
 interface CategoryFilterBarProps {

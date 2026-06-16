@@ -2,13 +2,9 @@
  * Navigation types and data structures
  */
 
-import { NavigationMenuContentItemProps } from "@/components/ui/navigation-menu-content";
-
 export interface NavLink {
   label: string;
   href: string;
-  hasDropdown?: boolean;
-  dropdownItems?: NavigationMenuContentItemProps[];
 }
 
 export interface FooterLinkGroup {
@@ -17,34 +13,9 @@ export interface FooterLinkGroup {
 }
 
 export const headerNavigation: NavLink[] = [
-  {
-    label: "Shop",
-    href: "/shop",
-    hasDropdown: true,
-    dropdownItems: [
-      {
-        title: "Liners",
-        description: "Soft paws, clean floors.",
-        href: "/shop-all?category=liner",
-      },
-      {
-        title: "Hut",
-        description: "Every bunny needs a hidey.",
-        href: "/shop-all?category=hut",
-      },
-      {
-        title: "Snack",
-        description: "Nibble, crunch, repeat",
-        href: "/shop-all?category=snack",
-      },
-      {
-        title: "View all",
-        href: "/shop-all",
-      },
-    ],
-  },
-  { label: "Pet Care", href: "/pet-care" },
   { label: "Boarding", href: "/piggyway-boarding" },
+  { label: "Shop", href: "/shop-all" },
+  { label: "Pet Care", href: "/pet-care" },
   { label: "About us", href: "/about-us" },
 ];
 
@@ -87,7 +58,11 @@ export const footerLinks: FooterLinkGroup[] = [
 ];
 
 export const socialMediaLinks = [
-  { name: "Instagram", icon: "/instagram.svg", href: "https://www.instagram.com/piggyway_crossing?igsh=MW82azZrM3dqb3cxbQ%3D%3D&utm_source=qr" },
+  {
+    name: "Instagram",
+    icon: "/instagram.svg",
+    href: "https://www.instagram.com/piggyway_crossing?igsh=MW82azZrM3dqb3cxbQ%3D%3D&utm_source=qr",
+  },
   // { name: "TikTok", icon: "/tiktok.svg", href: "#" },
   // { name: "YouTube", icon: "/youtube.svg", href: "#" },
   // { name: "Facebook", icon: "/facebook 1.svg", href: "#" },

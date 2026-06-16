@@ -46,20 +46,10 @@ const CATEGORY_STYLES: Record<
     textColor: "text-white",
     image: "/homepage-essentials/cage-example.png",
   },
-  snack: {
-    bgColor: "bg-neutral-grey-background",
-    textColor: "text-primary-navy",
-    image: "/homepage-essentials/snack-example.png",
-  },
   combo: {
     bgColor: "bg-primary-gold",
     textColor: "text-primary-navy",
     image: "/homepage-essentials/combo-example.png",
-  },
-  merch: {
-    bgColor: "bg-secondary-blue",
-    textColor: "text-primary-navy",
-    image: "/homepage-essentials/merch-example.png",
   },
 };
 
@@ -171,25 +161,11 @@ export class CategoryService {
         ...CATEGORY_STYLES["c-c-cage"],
       },
       {
-        id: "snack",
-        slug: "snack",
-        name: "Snacks",
-        title: "Snacks",
-        ...CATEGORY_STYLES.snack,
-      },
-      {
         id: "combo",
         slug: "combo",
         name: "Combos",
         title: "Combos",
         ...CATEGORY_STYLES.combo,
-      },
-      {
-        id: "merch",
-        slug: "merch",
-        name: "Merch",
-        title: "Merch",
-        ...CATEGORY_STYLES.merch,
       },
     ];
   }
