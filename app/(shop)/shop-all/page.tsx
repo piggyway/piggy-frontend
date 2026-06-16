@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { BreadcrumbsNav } from "@/components/features/shop-all/BreadcrumbsNav";
 import { ShopAllContent } from "@/components/features/shop-all/ShopAllContent";
-import { StarterKitsSection } from "@/components/features/shop/StarterKitsSection";
+// import { StarterKitsSection } from "@/components/features/shop/StarterKitsSection";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 import { ProductGridSkeleton } from "@/components/ui/skeleton";
 import { CategoryService } from "@/lib/services/categories";
@@ -88,8 +88,6 @@ export async function generateMetadata({
 }
 
 export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
-
-
   return (
     <div className="bg-neutral-background-light relative min-h-screen">
       <BackgroundBlobs variant={3} />
@@ -113,9 +111,9 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
       </div>
 
       {/* Starter Kits Section */}
-      <Suspense fallback={<div className="h-[400px]" />}>
+      {/* <Suspense fallback={<div className="h-[400px]" />}>
         <StarterKitsSection />
-      </Suspense>
+      </Suspense> */}
       <FloatingCartButton />
     </div>
   );

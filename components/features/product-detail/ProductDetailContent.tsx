@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -26,6 +26,8 @@ interface ProductDetailContentProps {
 export function ProductDetailContent({ product }: ProductDetailContentProps) {
   const { addItem, isMutating } = useCart();
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [addError, setAddError] = useState<string | null>(null);
   // Check for variant ID in URL params
   const variantIdFromUrl = searchParams?.get("variant");
@@ -98,6 +100,15 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     });
     return found;
   }, [product.variants, selectedOptions]);
+
+  // Keep the URL `variant` param in sync with the selected variant
+  useEffect(() => {
+    if (!selectedVariant) return;
+    if (searchParams?.get("variant") === String(selectedVariant.id)) return;
+    const params = new URLSearchParams(searchParams?.toString() ?? "");
+    params.set("variant", String(selectedVariant.id));
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  }, [selectedVariant, searchParams, pathname, router]);
 
   // Get current price info based on selected variant
   const currentPrice = useMemo(() => {
