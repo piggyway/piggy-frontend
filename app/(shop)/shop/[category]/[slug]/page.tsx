@@ -213,7 +213,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
         <ProductFeaturesSection
           productName={product.title}
           subtitle={product.subtitle}
-          description={product.description}
+          description={product.featureSectionDescription}
           featureSectionTitle={product.featureSectionTitle}
           featureSectionSubtitle={product.featureSectionSubtitle}
           featureBannerText={product.featureBannerText}

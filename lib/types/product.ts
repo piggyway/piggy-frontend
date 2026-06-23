@@ -320,6 +320,7 @@ export interface ProductDetailFromAPI {
   care_instructions: string | null;
   feature_section_title: string | null;
   feature_section_subtitle: string | null;
+  feature_section_description: string | null;
   feature_banner_text: string | null;
   slug: string | null;
   base_price: number | null;
@@ -383,6 +384,7 @@ export interface ProductDetail {
   careInstructions: string;
   featureSectionTitle: string;
   featureSectionSubtitle: string;
+  featureSectionDescription: string;
   featureBannerText: string;
   slug: string;
   basePrice: number;

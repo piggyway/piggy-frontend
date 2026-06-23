@@ -181,6 +181,7 @@ export class ProductService {
       careInstructions: product.care_instructions || "",
       featureSectionTitle: product.feature_section_title || "",
       featureSectionSubtitle: product.feature_section_subtitle || "",
+      featureSectionDescription: product.feature_section_description || "",
       featureBannerText: product.feature_banner_text || "",
       slug: product.slug || `product-${product.id}`,
       basePrice: price,
