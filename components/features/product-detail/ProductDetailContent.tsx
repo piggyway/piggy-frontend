@@ -264,6 +264,21 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     [product.variants, selectedOptions]
   );
 
+  // Check if an option value has stock for at least one variant, ignoring the
+  // other currently selected options. Used to keep colours always selectable.
+  const isOptionValueInStockAnywhere = useCallback(
+    (optionId: number, valueId: number) =>
+      product.variants.some(
+        (variant) =>
+          variant.isAvailable &&
+          variant.stockQuantity > 0 &&
+          variant.optionValues.some(
+            (ov) => ov.optionId === optionId && ov.valueId === valueId
+          )
+      ),
+    [product.variants]
+  );
+
   // Update image when variant changes
   useEffect(() => {
     // Only proceed if variant has effectively changed (or on first run)
@@ -301,12 +316,42 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     product.images,
   ]);
 
-  // Handle option selection
+  // Handle option selection. If the new combination has no in-stock variant
+  // (e.g. picking a colour that the current size does not come in), adopt the
+  // option values of the first in-stock variant carrying the changed value so
+  // the other options auto-adjust to a valid, in-stock combination.
   const handleOptionSelect = (optionId: number, valueId: number) => {
-    setSelectedOptions((prev) => ({
-      ...prev,
-      [optionId]: valueId,
-    }));
+    setSelectedOptions((prev) => {
+      const next: Record<number, number> = { ...prev, [optionId]: valueId };
+
+      const matchesInStock = product.variants.some(
+        (variant) =>
+          variant.isAvailable &&
+          variant.stockQuantity > 0 &&
+          Object.entries(next).every(([oid, vid]) =>
+            variant.optionValues.some(
+              (ov) => ov.optionId === Number(oid) && ov.valueId === vid
+            )
+          )
+      );
+      if (matchesInStock) return next;
+
+      const fallbackVariant = product.variants.find(
+        (variant) =>
+          variant.isAvailable &&
+          variant.stockQuantity > 0 &&
+          variant.optionValues.some(
+            (ov) => ov.optionId === optionId && ov.valueId === valueId
+          )
+      );
+      if (!fallbackVariant) return next;
+
+      const adjusted: Record<number, number> = { ...next };
+      for (const ov of fallbackVariant.optionValues) {
+        adjusted[ov.optionId] = ov.valueId;
+      }
+      return adjusted;
+    });
   };
   // qty can be changed via +/- buttons or input
   const getMaxQty = () =>
@@ -485,7 +530,11 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             const selectedValue =
               selectedValueId != null ? String(selectedValueId) : undefined;
             const disabledValues = option.values
-              .filter((value) => !isOptionValueAvailable(option.id, value.id))
+              .filter((value) =>
+                isColor
+                  ? !isOptionValueInStockAnywhere(option.id, value.id)
+                  : !isOptionValueAvailable(option.id, value.id)
+              )
               .map((value) => String(value.id));
 
             if (isColor) {
