@@ -2,8 +2,9 @@ import { Metadata } from "next";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 
 export const metadata: Metadata = {
-  title: "Terms & Conditions | Piggy Way Crossing",
+  title: "Terms & Conditions",
   description: "Terms and conditions for using the Piggy Way Crossing website.",
+  alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {

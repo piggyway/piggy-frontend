@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Us | Piggy Way Crossing - Small Pet Supplies & Care",
+  title: "About Us - Small Pet Supplies & Care",
   description:
     "Piggyway was created by people who live alongside guinea pigs — not as a hobby, but as family. Learn about our story, our purpose, and the journey of McFlurry that started it all.",
   keywords: [
@@ -22,12 +22,13 @@ export const metadata: Metadata = {
     "guinea pig supplies",
     "ethical pet care",
   ],
+  alternates: { canonical: "/about-us" },
   openGraph: {
     title: "About Us | Piggy Way Crossing",
     description:
       "Piggyway was created by people who live alongside guinea pigs — not as a hobby, but as family. Learn about our story, our purpose, and the journey of McFlurry.",
     type: "website",
-    url: "https://piggyway.com.au/about",
+    url: "/about-us",
     images: [
       {
         url: "/our-story/default2.png",
@@ -102,7 +103,7 @@ export default function AboutPage() {
             Not as a hobby, but as family. Every member of our team is a guinea
             pig carer.
           </p>
-          <div className="mt-8 max-w-3xl mx-auto text-gray-600 italic">
+          <div className="mx-auto mt-8 max-w-3xl text-gray-600 italic">
             "In our hardest moments, these small, gentle animals have given us
             comfort, stability, and quiet emotional support. They’ve reminded us
             to slow down, to care deeply, and to show up every day. That
@@ -212,7 +213,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="container mx-auto px-4 pb-24 pt-12">
+      <section className="container mx-auto px-4 pt-12 pb-24">
         <AnimatedSection className="mx-auto max-w-4xl rounded-[3rem] bg-gradient-to-br from-[#E6F4F1] to-[#F0F7FF] px-6 py-16 text-center sm:px-12 sm:py-20">
           <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
             <CheckCircle2 className="text-primary-mint h-8 w-8" />

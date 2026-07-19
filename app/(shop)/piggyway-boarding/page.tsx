@@ -7,7 +7,8 @@ import { PoopHappensSection } from "@/components/features/boarding/PoopHappensSe
 import { TrustedVetSection } from "@/components/features/boarding/TrustedVetSection";
 
 export const metadata: Metadata = {
-  title: "Piggyway Boarding | Guinea Pig Boarding in Melbourne",
+  title: { absolute: "Piggyway Boarding | Guinea Pig Boarding in Melbourne" },
+  alternates: { canonical: "/piggyway-boarding" },
   description:
     "Thoughtful guinea pig boarding in Melbourne with routine-based care, gentle handling, and personalized support for every piggy.",
   keywords: [
@@ -22,7 +23,7 @@ export const metadata: Metadata = {
     description:
       "Thoughtful guinea pig boarding and care in Melbourne, designed to feel like home.",
     type: "website",
-    url: "https://piggyway.com.au/piggyway-boarding",
+    url: "/piggyway-boarding",
     images: [
       {
         url: "/Boarding Banner.png",
@@ -51,7 +52,7 @@ export default function BoardingPage() {
   };
 
   return (
-    <div className="bg-[#fffbf5] relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-[#fffbf5]">
       <BackgroundBlobs variant={1} />
       <script
         type="application/ld+json"

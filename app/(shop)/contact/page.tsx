@@ -4,9 +4,10 @@ import { AnimatedSection } from "@/components/features/homepage/AnimatedSection"
 import { ContactForm } from "@/components/features/contact/ContactForm";
 
 export const metadata: Metadata = {
-  title: "Contact Us | Piggy Way Crossing",
+  title: "Contact Us",
   description:
     "Get in touch with the Piggy Way team. We'd love to hear from you!",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {
@@ -34,7 +35,7 @@ export default function ContactPage() {
                   <div className="space-y-8">
                     {/* Email */}
                     <div className="flex items-start gap-4">
-                      <div className="bg-white/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/10">
                         <Mail className="h-6 w-6" />
                       </div>
                       <div>
@@ -55,7 +56,7 @@ export default function ContactPage() {
 
                     {/* Instagram */}
                     <div className="flex items-start gap-4">
-                      <div className="bg-white/10 flex h-12 w-12 shrink-0 items-center justify-center rounded-full">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/10">
                         <Instagram className="h-6 w-6" />
                       </div>
                       <div>
@@ -69,7 +70,7 @@ export default function ContactPage() {
                           className="group flex items-center gap-2 text-xl font-semibold transition-colors hover:text-[#E1306C]"
                         >
                           @piggyway_crossing
-                          <ArrowUpRight className="h-5 w-5 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                          <ArrowUpRight className="h-5 w-5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                         </a>
                         <p className="mt-1 text-sm text-white/80">
                           Join our community for cute updates
@@ -81,7 +82,7 @@ export default function ContactPage() {
 
                 {/* Additional Text */}
                 <div className="mt-12 hidden sm:block">
-                  <p className="text-white/80 leading-relaxed">
+                  <p className="leading-relaxed text-white/80">
                     Connect with us on social media or send us an email. We are
                     always happy to help with any questions regarding our
                     products or just to chat about small pets!

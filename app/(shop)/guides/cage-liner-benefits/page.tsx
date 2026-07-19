@@ -5,14 +5,16 @@ import { ArrowLeft, ChevronRight, Check, X } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
 export const metadata: Metadata = {
-  title: "Why Fleece Cage Liners Are a Game-Changer | Piggy Way Crossing",
+  title: "Why Fleece Cage Liners Are a Game-Changer",
   description:
     "Still using wood shavings? Discover why fleece cage liners are the cleaner, healthier, and eco-friendly choice for guinea pigs.",
+  alternates: { canonical: "/guides/cage-liner-benefits" },
   openGraph: {
     title: "Why Fleece Cage Liners Are a Game-Changer",
     description:
       "Still using wood shavings? Discover why fleece cage liners are the cleaner, healthier choice.",
     type: "article",
+    images: ["/shop-with-us/default.png"],
     publishedTime: "2024-03-18T00:00:00.000Z",
     authors: ["Piggy Way Crossing Team"],
     tags: ["Fleece Liners", "Cage Cleaning", "Sustainable Pet Care"],

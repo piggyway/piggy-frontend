@@ -7,14 +7,16 @@ import { MeetDrSupsSection } from "@/components/features/pet-care/MeetDrSupsSect
 import { CompassionTaglineSection } from "@/components/features/pet-care/CompassionTaglineSection";
 
 export const metadata: Metadata = {
-  title: "Pet Care Tips & Education | Piggy Way Crossing",
+  title: "Pet Care Tips & Education",
   description:
     "Expert care guides for guinea pigs and rabbits. Learn about proper diet, housing, bonding, and health tips to keep your small pets happy and healthy.",
+  alternates: { canonical: "/pet-care" },
   openGraph: {
-    title: "Pet Care Tips & Education | Piggy Way Crossing",
+    title: "Pet Care Tips & Education",
     description:
       "Expert care guides for guinea pigs and rabbits. Learn about proper diet, housing, bonding, and health tips.",
     type: "website",
+    images: ["/pet-care-tips/default1.png"],
   },
 };
 

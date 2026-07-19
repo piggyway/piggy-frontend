@@ -3,17 +3,19 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Everything You Need to Begin | Piggy Way Crossing",
+  title: "Everything You Need to Begin",
   description:
     "Guinea pigs have a way of stealing hearts — and they deserve thoughtful care in return. Learn about the commitment, daily care, and philosophy of keeping guinea pigs.",
+  alternates: { canonical: "/guides/bunny-starter-kit" },
   openGraph: {
-    title: "Everything You Need to Begin | Piggy Way Crossing",
+    title: "Everything You Need to Begin",
     description:
       "Guinea pigs have a way of stealing hearts — and they deserve thoughtful care in return. Learn about the commitment, daily care, and philosophy of keeping guinea pigs.",
     type: "article",
     publishedTime: "2024-03-28T00:00:00.000Z",
     authors: ["Piggy Way Crossing Team"],
     tags: ["Guinea Pig Care", "Beginner Guide", "Philosophy"],
+    images: ["/shop-with-us/default.png"],
   },
 };
 
@@ -37,7 +39,7 @@ export default function BeginnerGuidePage() {
       },
     },
     datePublished: "2024-03-28",
-    dateModified: new Date().toISOString().split("T")[0],
+    dateModified: "2024-03-28",
     description:
       "Guinea pigs have a way of stealing hearts — and they deserve thoughtful care in return.",
   };
@@ -54,16 +56,16 @@ export default function BeginnerGuidePage() {
         <nav className="mb-12">
           <Link
             href="/"
-            className="text-gray-500 hover:text-gray-900 transition-colors inline-flex items-center gap-2 text-sm font-medium"
+            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="h-4 w-4" />
             Back to Home
           </Link>
         </nav>
 
         {/* Header */}
         <header className="mb-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8 text-gray-900 leading-[1.1]">
+          <h1 className="mb-8 text-3xl leading-[1.1] font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
             Everything You Need to Begin
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
@@ -82,8 +84,8 @@ export default function BeginnerGuidePage() {
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-gray max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900">
-          <p className="text-xl leading-relaxed text-gray-600 mb-10 font-normal">
+        <article className="prose prose-lg prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
+          <p className="mb-10 text-xl leading-relaxed font-normal text-gray-600">
             Guinea pigs have a way of stealing hearts — and they deserve
             thoughtful care in return.
           </p>
@@ -105,7 +107,7 @@ export default function BeginnerGuidePage() {
 
           <hr className="my-12 border-gray-100" />
 
-          <h2 className="text-2xl font-bold mt-12 mb-6 text-gray-900">
+          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
             A Gentle Nature Comes With Real Responsibility
           </h2>
           <p>
@@ -124,10 +126,10 @@ export default function BeginnerGuidePage() {
             .
           </p>
 
-          <h2 className="text-2xl font-bold mt-12 mb-6 text-gray-900">
+          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
             What Caring for Guinea Pigs Looks Like Day to Day
           </h2>
-          <ul className="list-none pl-0 space-y-3">
+          <ul className="list-none space-y-3 pl-0">
             {[
               "Fresh vegetables prepared daily",
               "Hay available at all times",
@@ -136,8 +138,8 @@ export default function BeginnerGuidePage() {
               "Awareness of temperature changes, especially during warmer months",
               "Routine health checks",
             ].map((item, i) => (
-              <li key={i} className="flex items-start gap-3 relative pl-0">
-                <span className="text-gray-400 select-none text-xl leading-none mt-1">
+              <li key={i} className="relative flex items-start gap-3 pl-0">
+                <span className="mt-1 text-xl leading-none text-gray-400 select-none">
                   •
                 </span>
                 <span>{item}</span>
@@ -149,12 +151,10 @@ export default function BeginnerGuidePage() {
             with an <strong>annual body check recommended</strong>.
           </p>
 
-          <h2 className="text-2xl font-bold mt-12 mb-6 text-gray-900">
+          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
             Thinking Ahead Matters
           </h2>
-          <p>
-            Life happens — holidays, work, the unexpected.
-          </p>
+          <p>Life happens — holidays, work, the unexpected.</p>
           <p>
             🐾 Guinea pigs need proper boarding or dedicated pet care when
             you’re away.
@@ -170,14 +170,14 @@ export default function BeginnerGuidePage() {
             all the difference.
           </p>
 
-          <h2 className="text-2xl font-bold mt-12 mb-6 text-gray-900">
+          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
             Our Philosophy
           </h2>
           <p>
             At <strong>Piggyway_Crossing</strong>, we believe the relationship
             goes both ways.
           </p>
-          <p className="text-xl font-medium text-gray-900 my-8">
+          <p className="my-8 text-xl font-medium text-gray-900">
             It’s not just that guinea pigs need us —<br />
             we need them too.
           </p>
@@ -205,11 +205,11 @@ export default function BeginnerGuidePage() {
             wholehearted love. 🤍
           </p>
 
-          <div className="mt-12 p-8 bg-gray-50 rounded-2xl text-center">
-            <p className="text-lg font-medium text-gray-900 m-0">
+          <div className="mt-12 rounded-2xl bg-gray-50 p-8 text-center">
+            <p className="m-0 text-lg font-medium text-gray-900">
               If you’re ready to begin,
               <br />
-              <span className="text-gray-600 font-normal">
+              <span className="font-normal text-gray-600">
                 we’re here to support you every step of the way. 🤍
               </span>
             </p>

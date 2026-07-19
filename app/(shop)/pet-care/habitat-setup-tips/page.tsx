@@ -5,14 +5,16 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
 export const metadata: Metadata = {
-  title: "Setting Up the Perfect Habitat for Small Pets | Piggy Way Crossing",
+  title: "Setting Up the Perfect Habitat for Small Pets",
   description:
     "Learn how to create a safe, comfortable, and enriching environment for your guinea pigs or rabbits. From cage size to bedding choices.",
+  alternates: { canonical: "/pet-care/habitat-setup-tips" },
   openGraph: {
     title: "Setting Up the Perfect Habitat for Small Pets",
     description:
       "Learn how to create a safe, comfortable, and enriching environment for your guinea pigs or rabbits.",
     type: "article",
+    images: ["/pet-care-tips/default1.png"],
     publishedTime: "2024-03-22T00:00:00.000Z",
     authors: ["Piggy Way Crossing Team"],
     tags: ["Habitat Setup", "Cage Ideas", "Small Animal Care"],
