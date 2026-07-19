@@ -2,8 +2,9 @@ import { Metadata } from "next";
 import { LoginPage } from "@/components/features/auth/LoginPage";
 
 export const metadata: Metadata = {
-  title: "Login | Piggy Way Crossing",
+  title: "Login",
   description: "Login to your account",
+  robots: { index: false, follow: false },
 };
 
 // Next 16: searchParams 可能是 Promise
