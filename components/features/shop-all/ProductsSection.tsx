@@ -1,31 +1,39 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { X, LayoutGrid, List  } from "lucide-react";
+import { useState } from "react";
+import { X, LayoutGrid, AlignJustify } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 import { Pagination, PaginationInfo } from "@/components/ui/pagination";
 import { ProductGridSkeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { ProductService } from "@/lib/services/products";
 import type { VariantListItem, SortOption } from "@/lib/types/product";
 import { SORT_OPTIONS } from "@/lib/types/product";
 import { VariantCard } from "@/components/features/shop-all/VariantCard";
 
-
 // grid or list
 type ViewMode = "grid" | "list";
 
+/**
+ * Presentational section for the shop-all grid. Data is fetched server-side
+ * in app/(shop)/shop-all/page.tsx so product links exist in the initial HTML;
+ * this component only renders it and forwards filter interactions upward.
+ */
 interface ProductsSectionProps {
+  variants: VariantListItem[];
+  totalItems: number;
+  totalPages: number;
+  /** True while a filter/page navigation is in flight (useTransition). */
+  isPending?: boolean;
   category?: string;
   sort?: SortOption;
   page?: number;
   pageSize?: number;
   q?: string;
   onSortChange?: (sort: SortOption) => void;
-  onPageChange?: (page: number) => void;
   onClearFilters?: () => void;
   view?: ViewMode;
   onViewChange?: (view: ViewMode) => void;
+  getPageHref: (page: number) => string;
 }
 
 const productBackgrounds = [
@@ -40,52 +48,30 @@ const productBackgrounds = [
   "bg-[#e8eef7]", // light blue-gray
 ];
 
+// Image container backgrounds for list view (rotating pastel tones from the design)
+const listImageBackgrounds = [
+  "bg-primary-purple-light",
+  "bg-secondary-mint",
+  "bg-secondary-pink/45",
+];
+
 export function ProductsSection({
+  variants,
+  totalItems,
+  totalPages,
+  isPending = false,
   category,
   sort = "-date_created",
   page = 1,
   pageSize = 9,
   q,
   onSortChange,
-  onPageChange,
   onClearFilters,
   view = "grid",
   onViewChange,
+  getPageHref,
 }: ProductsSectionProps) {
-  const [variants, setVariants] = useState<VariantListItem[]>([]);
-  const [totalItems, setTotalItems] = useState(0);
-  const [totalPages, setTotalPages] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [showDropdown, setShowDropdown] = useState(false);
-
-  // Fetch variants when filters change
-  useEffect(() => {
-    const fetchVariants = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const response = await ProductService.getVariants({
-          page,
-          page_size: pageSize,
-          category: category || undefined,
-          q: q || undefined,
-          in_stock: "true",
-        });
-        setVariants(response.data);
-        setTotalItems(response.pagination.total);
-        setTotalPages(response.pagination.totalPages);
-      } catch (err) {
-        setError("Failed to load products. Please try again.");
-        console.error("Error fetching variants:", err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchVariants();
-  }, [category, sort, page, pageSize, q]);
 
   const handleSortChange = (newSort: SortOption) => {
     setShowDropdown(false);
@@ -125,44 +111,40 @@ export function ProductsSection({
             </button>
           )}
 
-          {/* Sort Dropdown */}
           {/* View Toggle */}
-          <div className="flex items-center gap-2">
+          <div className="border-neutral-stroke flex items-center gap-1 rounded-full border bg-white p-1">
             <button
               type="button"
               onClick={() => onViewChange?.("grid")}
               className={cn(
-                "rounded-full px-3 py-2 text-xs font-medium transition-colors sm:text-sm",
+                "flex h-8 w-10 items-center justify-center rounded-full transition-colors",
                 view === "grid"
-                  ? "bg-primary-purple text-primary-navy"
+                  ? "bg-primary-navy text-white"
                   : "text-primary-navy hover:bg-neutral-background"
               )}
               aria-pressed={view === "grid"}
+              aria-label="Grid view"
             >
-              <span className="inline-flex items-center gap-2">
-                <LayoutGrid className="h-4 w-4" />
-                Grid
-              </span>
+              <LayoutGrid className="h-4 w-4" />
             </button>
 
             <button
               type="button"
               onClick={() => onViewChange?.("list")}
               className={cn(
-                "rounded-full px-3 py-2 text-xs font-medium transition-colors sm:text-sm",
+                "flex h-8 w-10 items-center justify-center rounded-full transition-colors",
                 view === "list"
-                  ? "bg-primary-purple text-primary-navy"
+                  ? "bg-primary-navy text-white"
                   : "text-primary-navy hover:bg-neutral-background"
               )}
               aria-pressed={view === "list"}
+              aria-label="List view"
             >
-              <span className="inline-flex items-center gap-2">
-                <List className="h-4 w-4" />
-                List
-              </span>
+              <AlignJustify className="h-4 w-4" />
             </button>
           </div>
 
+          {/* Sort Dropdown */}
           <div className="relative">
             <div className="bg-primary-purple flex items-center gap-2 rounded-full px-3 py-2 sm:px-4">
               <button
@@ -214,20 +196,8 @@ export function ProductsSection({
       </div>
 
       {/* Variants Grid */}
-      {isLoading ? (
+      {isPending ? (
         <ProductGridSkeleton count={pageSize} className="mb-8" />
-      ) : error ? (
-        <div className="mb-8 flex min-h-[300px] items-center justify-center rounded-[28px] bg-white p-8">
-          <div className="text-center">
-            <p className="text-primary-navy mb-4 text-lg">{error}</p>
-            <button
-              onClick={() => window.location.reload()}
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline transition-colors"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
       ) : variants.length === 0 ? (
         <div className="mb-8 flex min-h-[300px] items-center justify-center rounded-[28px] bg-white p-8">
           <div className="text-center">
@@ -236,6 +206,19 @@ export function ProductsSection({
               Try adjusting your filters or search criteria
             </p>
           </div>
+        </div>
+      ) : view === "list" ? (
+        <div className="mb-8 flex flex-col gap-4">
+          {variants.map((variant, index) => (
+            <VariantCard
+              key={variant.variantId}
+              variant={variant}
+              layout="list"
+              imageBgClassName={
+                listImageBackgrounds[index % listImageBackgrounds.length]
+              }
+            />
+          ))}
         </div>
       ) : (
         <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -254,12 +237,12 @@ export function ProductsSection({
       )}
 
       {/* Pagination */}
-      {!isLoading && !error && totalPages > 1 && (
+      {!isPending && totalPages > 1 && (
         <div className="flex justify-center">
           <Pagination
             currentPage={page}
             totalPages={totalPages}
-            onPageChange={(newPage) => onPageChange?.(newPage)}
+            getHref={getPageHref}
           />
         </div>
       )}

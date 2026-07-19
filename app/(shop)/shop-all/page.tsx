@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
-import { Suspense } from "react";
 import { BreadcrumbsNav } from "@/components/features/shop-all/BreadcrumbsNav";
 import { ShopAllContent } from "@/components/features/shop-all/ShopAllContent";
 // import { StarterKitsSection } from "@/components/features/shop/StarterKitsSection";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
-import { ProductGridSkeleton } from "@/components/ui/skeleton";
 import { CategoryService } from "@/lib/services/categories";
+import { ProductService } from "@/lib/services/products";
 import { getBaseUrl } from "@/lib/utils/seo";
 import { FloatingCartButton } from "@/components/features/cart/FloatingCartButton";
+import type { SortOption } from "@/lib/types/product";
+
+const PAGE_SIZE = 9;
 
 interface ShopAllPageProps {
   searchParams: Promise<{
     category?: string;
     q?: string;
     page?: string;
+    sort?: string;
+    view?: string;
   }>;
 }
 
@@ -29,7 +33,7 @@ export async function generateMetadata({
   const page = Number(params.page) || 1;
 
   const baseUrl = getBaseUrl();
-  let title = "Shop Guinea Pig & Rabbit Essentials | Piggy Way Crossing";
+  let title = "Shop Guinea Pig & Rabbit Essentials";
   let description =
     "Discover premium guinea pig and rabbit essentials at Piggy Way Crossing. Shop liners, huts, cages, snacks, and more for your furry friends.";
 
@@ -39,7 +43,7 @@ export async function generateMetadata({
       const categories = await CategoryService.getCategories();
       const category = categories.find((cat) => cat.slug === categorySlug);
       if (category) {
-        title = `Shop ${category.name} | Piggy Way Crossing`;
+        title = `Shop ${category.name}`;
         description = `Browse our collection of ${category.name.toLowerCase()} for guinea pigs and rabbits at Piggy Way Crossing.`;
       }
     } catch (error) {
@@ -49,7 +53,7 @@ export async function generateMetadata({
 
   // Handle search query
   if (searchQuery) {
-    title = `Search "${searchQuery}" | Piggy Way Crossing`;
+    title = `Search "${searchQuery}"`;
     description = `Search results for "${searchQuery}" at Piggy Way Crossing.`;
   }
 
@@ -67,6 +71,8 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // Internal search result pages should not be indexed
+    ...(searchQuery ? { robots: { index: false, follow: true } } : {}),
     alternates: {
       canonical:
         page === 1 && !searchQuery
@@ -88,6 +94,24 @@ export async function generateMetadata({
 }
 
 export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
+  const params = await searchParams;
+  const category = params.category || undefined;
+  const q = params.q || undefined;
+  const parsedPage = parseInt(params.page || "1", 10);
+  const page = Number.isNaN(parsedPage) ? 1 : Math.max(1, parsedPage);
+  const sort = (params.sort as SortOption) || "-date_created";
+  const view = params.view === "list" ? "list" : "grid";
+
+  // Fetch server-side so product links are present in the initial HTML
+  const response = await ProductService.getVariants({
+    page,
+    page_size: PAGE_SIZE,
+    category,
+    q,
+    sort,
+    in_stock: "true",
+  });
+
   return (
     <div className="bg-neutral-background-light relative min-h-screen">
       <BackgroundBlobs variant={3} />
@@ -96,7 +120,7 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
         <BreadcrumbsNav />
 
         {/* Page Title */}
-        <h1 className="text-primary-navy-light mt-6 mb-8 text-[32px] leading-tight font-semibold sm:text-[42px]">
+        <h1 className="text-primary-navy-light text-large sm:text-h4 mt-6 mb-8 leading-tight font-semibold">
           Shop{" "}
           <span className="text-primary-navy">
             Guinea Pig & Rabbit Essentials
@@ -105,9 +129,17 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
         </h1>
 
         {/* Category Filter and Products Section with URL State */}
-        <Suspense fallback={<ProductGridSkeleton count={9} />}>
-          <ShopAllContent />
-        </Suspense>
+        <ShopAllContent
+          variants={response.data}
+          totalItems={response.pagination.total}
+          totalPages={response.pagination.totalPages}
+          category={category || null}
+          sort={sort}
+          page={page}
+          pageSize={PAGE_SIZE}
+          q={q}
+          view={view}
+        />
       </div>
 
       {/* Starter Kits Section */}
