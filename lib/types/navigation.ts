@@ -24,26 +24,29 @@ export const footerLinks: FooterLinkGroup[] = [
     title: "Shop",
     links: [
       { label: "SALE", href: "/shop-all" },
-      { label: "for Guinea pigs", href: "/shop-all?category=guinea-pig" },
-      { label: "for Rabbit", href: "/shop-all?category=rabbit" },
+      // Species filtering is not supported by the variants API yet,
+      // so these land on the full catalogue instead of a dead filter
+      { label: "for Guinea pigs", href: "/shop-all" },
+      { label: "for Rabbit", href: "/shop-all" },
     ],
   },
   {
+    // Slugs must match real backend categories (see CategoryFilterBar)
     title: "Categories",
     links: [
-      { label: "Bedding", href: "/shop-all?category=bedding" },
-      { label: "Food & Treats", href: "/shop-all?category=food-treats" },
-      { label: "C&C Cage & Housing", href: "/shop-all?category=housing" },
-      // { label: "Merch", href: "/shop-all?category=merch" },
+      { label: "Liners", href: "/shop-all?category=liner" },
+      { label: "Huts", href: "/shop-all?category=hut" },
+      { label: "C&C Cages", href: "/shop-all?category=c-c-cage" },
+      { label: "Combos", href: "/shop-all?category=combo" },
     ],
   },
   {
     title: "Helps",
     links: [
       { label: "My account", href: "/account" },
-      { label: "Shipping & Delivery", href: "#" },
-      { label: "Returns Policy", href: "#" },
-      { label: "FAQs", href: "#" },
+      { label: "Shipping & Delivery", href: "/shipping-delivery" },
+      { label: "Returns Policy", href: "/returns-policy" },
+      { label: "FAQs", href: "/faqs" },
     ],
   },
   {
