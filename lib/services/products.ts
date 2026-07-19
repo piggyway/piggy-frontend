@@ -154,6 +154,7 @@ export class ProductService {
       imageUrl: normalizeImageUrl(product.image_url) || DEFAULT_PRODUCT_IMAGE,
       variantsCount: product.variants_count,
       isFeatured: product.is_featured,
+      dateUpdated: product.date_updated ?? null,
     };
   }
 
