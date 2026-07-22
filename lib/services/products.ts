@@ -414,6 +414,26 @@ export class ProductService {
   }
 
   /**
+   * Get 3 random variants (for "You Might Also Like" sections)
+   */
+  static async getRandomVariants(): Promise<VariantListItem[]> {
+    try {
+      const response = await apiClient.get<{
+        data: VariantListItemFromAPI[];
+      }>(API_ENDPOINTS.VARIANTS_RANDOM);
+
+      if (!response.data) {
+        throw new Error("Invalid API response format");
+      }
+
+      return response.data.map((v) => this.transformVariantListItem(v));
+    } catch (error) {
+      console.error("[ProductService] Failed to fetch random variants:", error);
+      return [];
+    }
+  }
+
+  /**
    * Transform variant list response
    */
   private static transformVariantListResponse(response: {
