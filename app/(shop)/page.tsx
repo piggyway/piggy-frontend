@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { HeroSection } from "@/components/features/homepage/HeroSection";
 import { BoardingBannerSection } from "@/components/features/homepage/BoardingBannerSection";
 import { ShopByCategorySection } from "@/components/features/homepage/ShopByCategorySection";
@@ -9,6 +10,13 @@ import { OurStorySection } from "@/components/features/homepage/OurStorySection"
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 // import { WelcomeMessage } from "@/components/features/homepage/WelcomeMessage";
 import { FirstLoginRedirect } from "@/components/features/auth/FirstLoginRedirect";
+
+// ISR: refresh server-fetched sections (categories) without a redeploy
+export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 export default function Home() {
   return (

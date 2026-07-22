@@ -12,11 +12,11 @@ export default function NotFound() {
       <main className="bg-[#FFFBF5]">
         <div className="container mx-auto max-w-[1160px] px-4 py-16 sm:py-20">
           <div className="flex flex-col items-start gap-10">
-            <h1 className="text-primary-navy-light text-[40px] leading-none font-semibold tracking-[-0.768px] sm:text-[64px] sm:leading-[64px]">
+            <h1 className="text-primary-navy-light text-h4 sm:text-h1 leading-none font-semibold tracking-[-0.768px] sm:leading-[64px]">
               Oops!
             </h1>
             <div className="flex w-full items-end justify-end gap-4 pt-16 sm:gap-10 sm:pt-[120px]">
-              <p className="text-primary-navy-light text-xl leading-7 font-semibold sm:text-[32px] sm:leading-10">
+              <p className="text-primary-navy-light sm:text-large text-xl leading-7 font-semibold sm:leading-10">
                 Guinea pig ate the page...
               </p>
               <div className="relative h-[54px] w-[107px] shrink-0 sm:h-[107px] sm:w-[214px]">

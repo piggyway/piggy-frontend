@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { Address, AddressType } from "@/lib/types/account";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,30 +48,37 @@ export function AddressFormDialog({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (address) {
-      setFormData({
-        type: address.type,
-        isDefault: address.isDefault,
-        recipientName: address.recipientName,
-        addressText: address.addressText,
-        postalCode: address.postalCode,
-        countryCode: address.countryCode,
-        phoneAu: address.phoneAu,
-      });
-    } else {
-      setFormData({
-        type: "shipping",
-        isDefault: false,
-        recipientName: null,
-        addressText: "",
-        postalCode: "",
-        countryCode: "AU",
-        phoneAu: null,
-      });
+  // Reset the form whenever the dialog is (re)opened for a different address.
+  // State is adjusted during render (instead of in an effect) per React guidance.
+  const [prevKey, setPrevKey] = useState<string | null>(null);
+  const currentKey = open ? `${address?.id ?? "new"}` : null;
+  if (currentKey !== prevKey) {
+    setPrevKey(currentKey);
+    if (currentKey !== null) {
+      if (address) {
+        setFormData({
+          type: address.type,
+          isDefault: address.isDefault,
+          recipientName: address.recipientName,
+          addressText: address.addressText,
+          postalCode: address.postalCode,
+          countryCode: address.countryCode,
+          phoneAu: address.phoneAu,
+        });
+      } else {
+        setFormData({
+          type: "shipping",
+          isDefault: false,
+          recipientName: null,
+          addressText: "",
+          postalCode: "",
+          countryCode: "AU",
+          phoneAu: null,
+        });
+      }
+      setErrors({});
     }
-    setErrors({});
-  }, [address, open]);
+  }
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};

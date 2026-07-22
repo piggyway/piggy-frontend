@@ -78,6 +78,7 @@ export interface ProductListItemFromAPI {
   image_url: string | null;
   variants_count: number;
   is_featured: boolean;
+  date_updated?: string | null;
 }
 
 /**
@@ -116,6 +117,7 @@ export interface ProductListItem {
   imageUrl: string;
   variantsCount: number;
   isFeatured: boolean;
+  dateUpdated: string | null;
 }
 
 /**

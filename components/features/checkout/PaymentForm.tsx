@@ -1,111 +1,171 @@
 "use client";
 
 import * as React from "react";
-import { CreditCard } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Lock } from "lucide-react";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Elements,
+  PaymentElement,
+  useElements,
+  useStripe,
+} from "@stripe/react-stripe-js";
+import type { Appearance } from "@stripe/stripe-js";
+import { Button } from "@/components/ui/button";
+import { stripePromise } from "@/lib/stripe";
+import { colors } from "@/lib/design-tokens/colors";
 
-export function PaymentForm() {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+/**
+ * Card details are collected inside Stripe-hosted iframes (Payment Element),
+ * so raw card numbers never touch our DOM or servers (PCI SAQ A).
+ */
 
-  async function onSubmit(event: React.SyntheticEvent) {
+const appearance: Appearance = {
+  theme: "stripe",
+  variables: {
+    colorPrimary: colors.primary.navy,
+    colorText: colors.primary.navy,
+    colorTextSecondary: colors.slate[600],
+    colorTextPlaceholder: colors.slate[400],
+    colorBackground: colors.neutral.white,
+    borderRadius: "12px",
+    fontFamily: "Outfit, sans-serif",
+    fontSizeBase: "15px",
+  },
+  rules: {
+    ".Input": {
+      border: `1px solid ${colors.neutral.stroke}`,
+      boxShadow: "none",
+      padding: "14px 16px",
+    },
+    ".Input:focus": {
+      border: `1px solid ${colors.primary.navy}`,
+      boxShadow: `0 0 0 1px ${colors.primary.navy}`,
+    },
+    ".Label": {
+      color: colors.primary.navy,
+      fontWeight: "500",
+    },
+  },
+};
+
+const fonts = [
+  {
+    cssSrc:
+      "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap",
+  },
+];
+
+interface PaymentFormProps {
+  clientSecret: string;
+  email: string;
+  totalLabel: string;
+  onBack: () => void;
+}
+
+export function PaymentForm({
+  clientSecret,
+  email,
+  totalLabel,
+  onBack,
+}: PaymentFormProps) {
+  return (
+    <Elements
+      stripe={stripePromise}
+      options={{ clientSecret, appearance, fonts, locale: "en-AU" }}
+    >
+      <PaymentFormInner email={email} totalLabel={totalLabel} onBack={onBack} />
+    </Elements>
+  );
+}
+
+function PaymentFormInner({
+  email,
+  totalLabel,
+  onBack,
+}: Omit<PaymentFormProps, "clientSecret">) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setIsLoading(true);
+    if (!stripe || !elements || isSubmitting) return;
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
-      alert("Payment processed (mock)!");
-    }, 2000);
+    setIsSubmitting(true);
+    setErrorMessage(null);
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/checkout/success`,
+        receipt_email: email,
+      },
+    });
+
+    // Only reached when confirmation fails immediately (card declined,
+    // validation error, 3DS abandoned). On success Stripe redirects to
+    // return_url and this code never runs. Card and validation errors are
+    // already shown inline by the Payment Element, so only surface the
+    // rest here to avoid a duplicated message.
+    if (error.type !== "card_error" && error.type !== "validation_error") {
+      setErrorMessage(
+        error.message || "Payment failed. Please try again or use another card."
+      );
+    }
+    setIsSubmitting(false);
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Payment Details</CardTitle>
-        <CardDescription>
-          Enter your card information to complete your purchase.
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={onSubmit} className="grid gap-6">
-          <div className="grid gap-2">
-            <label
-              htmlFor="name"
-              className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Cardholder Name
-            </label>
-            <Input
-              id="name"
-              placeholder="Sofia Davis"
-              required
-              className="bg-white"
-            />
-          </div>
+    <form
+      onSubmit={handleSubmit}
+      className="border-neutral-stroke flex w-full flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9 lg:min-h-[640px]"
+    >
+      <div className="flex flex-col gap-1.5">
+        <h2 className="text-primary-navy text-[22px] font-semibold">Payment</h2>
+        <p className="text-subtle text-slate-600">
+          All transactions are secure and encrypted. Card details go directly to
+          Stripe and never touch our servers.
+        </p>
+      </div>
 
-          <div className="grid gap-2">
-            <label
-              htmlFor="number"
-              className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Card Number
-            </label>
-            <div className="relative">
-              <Input
-                id="number"
-                placeholder="0000 0000 0000 0000"
-                required
-                className="bg-white pl-10"
-              />
-              <CreditCard className="absolute top-2.5 left-3 size-4 text-slate-500" />
-            </div>
-          </div>
+      <PaymentElement
+        options={{ layout: "tabs", wallets: { link: "never" } }}
+      />
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-2">
-              <label
-                htmlFor="expiry"
-                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Expiry Date
-              </label>
-              <Input
-                id="expiry"
-                placeholder="MM/YY"
-                required
-                className="bg-white"
-              />
-            </div>
-            <div className="grid gap-2">
-              <label
-                htmlFor="cvv"
-                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                CVV
-              </label>
-              <Input id="cvv" placeholder="123" required className="bg-white" />
-            </div>
-          </div>
+      {errorMessage && (
+        <p
+          role="alert"
+          className="rounded-[12px] bg-red-50 px-4 py-3 text-[14px] text-red-600"
+        >
+          {errorMessage}
+        </p>
+      )}
 
-          <Button
-            className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
-            disabled={isLoading}
-          >
-            {isLoading && (
-              <span className="mr-2 size-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-            )}
-            Pay Now
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+      <div className="bg-neutral-stroke h-px w-full lg:mt-auto" />
+
+      <div className="flex items-center justify-between gap-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onBack}
+          disabled={isSubmitting}
+          className="border-neutral-stroke text-subtle-medium h-12 rounded-full px-7"
+        >
+          ← Back
+        </Button>
+        <Button
+          type="submit"
+          disabled={!stripe || !elements || isSubmitting}
+          className="h-[52px] rounded-full px-8 text-[16px] font-semibold"
+        >
+          {isSubmitting ? (
+            <span className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+          ) : (
+            <Lock className="size-3.5" />
+          )}
+          Pay {totalLabel}
+        </Button>
+      </div>
+    </form>
   );
 }

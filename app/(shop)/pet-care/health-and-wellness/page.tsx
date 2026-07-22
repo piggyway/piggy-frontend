@@ -5,14 +5,16 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
 export const metadata: Metadata = {
-  title: "Small Pet Health & Wellness Guide | Piggy Way Crossing",
+  title: "Small Pet Health & Wellness Guide",
   description:
     "Essential health guide for guinea pigs and rabbits. Learn to recognize common ailments, grooming tips, and when to visit the vet.",
+  alternates: { canonical: "/pet-care/health-and-wellness" },
   openGraph: {
     title: "Small Pet Health & Wellness Guide",
     description:
       "Essential health guide for guinea pigs and rabbits. Learn to recognize common ailments, grooming tips, and when to visit the vet.",
     type: "article",
+    images: ["/pet-care-tips/default1.png"],
     publishedTime: "2024-03-20T00:00:00.000Z",
     authors: ["Piggy Way Crossing Team"],
     tags: ["Pet Health", "Guinea Pig Care", "Rabbit Care", "Wellness"],
@@ -104,8 +106,8 @@ export default function HealthWellnessPage() {
 
           <h2>Daily Health Checks</h2>
           <p>
-            Make health checks part of your daily cuddle routine. It only takes a
-            minute but can save a life.
+            Make health checks part of your daily cuddle routine. It only takes
+            a minute but can save a life.
           </p>
           <ul>
             <li>

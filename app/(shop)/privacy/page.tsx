@@ -2,8 +2,9 @@ import { Metadata } from "next";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Piggy Way Crossing",
+  title: "Privacy Policy",
   description: "How we collect, use, and protect your personal information.",
+  alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {

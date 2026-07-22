@@ -11,10 +11,10 @@ export function StarterKitsSection() {
       <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* Title */}
         <div className="mb-8 sm:mb-10">
-          <p className="text-primary-navy mb-2 text-[20px] leading-[32px] font-normal sm:text-[24px]">
+          <p className="text-primary-navy text-p-ui sm:text-lead mb-2 leading-[32px] font-normal">
             Everything You Need to Begin
           </p>
-          <h2 className="text-primary-navy-light text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
+          <h2 className="text-primary-navy-light text-large sm:text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
             Starter Kits & Bundles
           </h2>
         </div>
@@ -42,12 +42,12 @@ export function StarterKitsSection() {
                     />
                   </div>
                 </div>
-                <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
+                <p className="text-primary-navy text-p-ui leading-[24px] font-medium">
                   First-Time Guinea Pig Owner: Complete Essentials Checklist
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="text-primary-navy flex-1 text-[24px] leading-[32px] font-semibold">
+                <p className="text-primary-navy text-lead flex-1 leading-[32px] font-semibold">
                   Read more
                 </p>
                 <div
@@ -68,15 +68,15 @@ export function StarterKitsSection() {
               className="bg-primary-navy-light flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="flex flex-1 flex-col gap-[14px] text-white">
-                <p className="text-[32px] leading-[40px] font-semibold">
+                <p className="text-large leading-[40px] font-semibold">
                   Why Fleece Cage Liners Are a Game-Changer
                 </p>
-                <p className="text-[20px] leading-[24px] font-medium">
+                <p className="text-p-ui leading-[24px] font-medium">
                   Cleaner, healthier, and eco-friendly choice for guinea pigs.
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="flex-1 text-[24px] leading-[32px] font-semibold text-white">
+                <p className="text-lead flex-1 leading-[32px] font-semibold text-white">
                   Read more
                 </p>
                 <div
@@ -97,15 +97,15 @@ export function StarterKitsSection() {
               className="bg-secondary-mint flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="flex flex-1 flex-col gap-[14px]">
-                <p className="text-primary-navy-light text-[32px] leading-[40px] font-semibold">
+                <p className="text-primary-navy-light text-large leading-[40px] font-semibold">
                   Rabbit Starter Kit: Everything You Need for Day One
                 </p>
-                <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
+                <p className="text-primary-navy text-p-ui leading-[24px] font-medium">
                   Preparing for a new bunny? Use our comprehensive checklist.
                 </p>
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="text-primary-navy flex-1 text-[24px] leading-[32px] font-semibold">
+                <p className="text-primary-navy text-lead flex-1 leading-[32px] font-semibold">
                   Read more
                 </p>
                 <div

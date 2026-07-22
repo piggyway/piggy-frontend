@@ -17,17 +17,17 @@ export function OurStorySection() {
             <div className="relative flex min-h-[300px] flex-1 flex-col justify-between">
               {/* Title */}
               <div className="mb-8 flex items-center gap-5">
-                <h2 className="text-primary-navy text-[42px] leading-[42px] font-semibold tracking-[-0.21px]">
+                <h2 className="text-primary-navy text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
                   Our Story
                 </h2>
               </div>
 
               {/* Description */}
               <div className="flex flex-col gap-2">
-                <p className="text-primary-navy-light text-[24px] leading-[32px] font-semibold">
+                <p className="text-primary-navy-light text-lead leading-[32px] font-semibold">
                   Our Story Designed by Pet Parents, for Pet Parents
                 </p>
-                <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
+                <p className="text-primary-navy text-p-ui leading-[24px] font-medium">
                   We&apos;re guinea pig &amp; rabbit lovers creating products
                   that make life easier, healthier, and happier for pets and
                   their humans
@@ -93,13 +93,13 @@ export function OurStorySection() {
 
           {/* Mobile/Tablet Layout */}
           <div className="flex flex-col gap-6 lg:hidden">
-            <h2 className="text-primary-navy text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
+            <h2 className="text-primary-navy text-large sm:text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
               Our Story
             </h2>
-            <p className="text-primary-navy-light text-xl leading-[32px] font-semibold sm:text-[24px]">
+            <p className="text-primary-navy-light sm:text-lead text-xl leading-[32px] font-semibold">
               Our Story Designed by Pet Parents, for Pet Parents
             </p>
-            <p className="text-primary-navy text-base leading-[24px] font-medium sm:text-[20px]">
+            <p className="text-primary-navy sm:text-p-ui text-base leading-[24px] font-medium">
               We&apos;re guinea pig &amp; rabbit lovers creating products that
               make life easier, healthier, and happier for pets and their humans
             </p>

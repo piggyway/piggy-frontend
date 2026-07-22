@@ -18,6 +18,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { ProductDetail } from "@/lib/types/product";
 import { useCart } from "@/components/features/cart/CartProvider";
+import { ProductImageLightbox } from "@/components/features/product-detail/ProductImageLightbox";
 
 interface ProductDetailContentProps {
   product: ProductDetail;
@@ -76,6 +77,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
 
   // Track previous variant to only auto-switch images when the variant actually changes
   const lastSelectedVariantId = useRef(
@@ -453,8 +455,13 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             </div>
           )}
 
-          {/* Main Image */}
-          <div className="bg-neutral-grey-background relative aspect-square w-full overflow-hidden rounded-[24px] sm:flex-1 sm:self-start">
+          {/* Main Image - click to open the fullscreen preview */}
+          <button
+            type="button"
+            onClick={() => setPreviewOpen(true)}
+            aria-label="Preview image"
+            className="bg-neutral-grey-background relative aspect-square w-full cursor-zoom-in overflow-hidden rounded-[24px] sm:flex-1 sm:self-start"
+          >
             <AnimatePresence mode="wait">
               <motion.div
                 key={allImages[selectedImageIndex] || "default"}
@@ -477,7 +484,14 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                 />
               </motion.div>
             </AnimatePresence>
-          </div>
+          </button>
+
+          <ProductImageLightbox
+            src={allImages[selectedImageIndex] || "/default-product-image.png"}
+            alt={product.title}
+            open={previewOpen}
+            onClose={() => setPreviewOpen(false)}
+          />
         </section>
 
         {/* Right: Product Details */}
@@ -487,19 +501,19 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
         >
           {/* Product Name and Description */}
           <header className="flex flex-col gap-3.5">
-            <h1 className="text-primary-navy-light text-[24px] leading-8 font-semibold">
+            <h1 className="text-primary-navy-light text-lead leading-8 font-semibold">
               {product.title}
               {product.subtitle ? ` ${product.subtitle}` : ""}
             </h1>
             {product.description && (
-              <p className="text-primary-navy text-[16px] leading-6 font-normal">
+              <p className="text-primary-navy text-p leading-6 font-normal">
                 {product.description}
               </p>
             )}
 
             {/* Price */}
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-primary-navy text-[20px] leading-6 font-medium">
+              <p className="text-primary-navy text-p-ui leading-6 font-medium">
                 {priceHasRange ? "From " : ""}
                 {currentPrice.displayPrice}
               </p>
@@ -591,7 +605,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                 className="flex-1"
               />
               <Button
-                className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 h-auto flex-1 rounded-full px-6 py-3 text-[14px] font-semibold disabled:opacity-50"
+                className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 text-subtle h-auto flex-1 rounded-full px-6 py-3 font-semibold disabled:opacity-50"
                 onClick={handleAddToCart}
                 disabled={!isInStock || isMutating}
               >

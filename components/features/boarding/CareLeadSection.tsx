@@ -12,15 +12,15 @@ export function CareLeadSection() {
           <div className="grid items-start gap-[40px] lg:grid-cols-[1fr_350px]">
             <div className="flex flex-col gap-[40px]">
               <div className="flex flex-col gap-[8px]">
-                <p className="text-[#050451] text-[24px] leading-[32px] font-normal">
+                <p className="text-lead leading-[32px] font-normal text-[#050451]">
                   {CARE_LEAD_CONTENT.eyebrow}
                 </p>
-                <h2 className="text-[#405aab] text-[32px] leading-[38px] sm:text-[42px] sm:leading-[42px] font-semibold tracking-[-0.21px]">
+                <h2 className="text-large sm:text-h4 leading-[38px] font-semibold tracking-[-0.21px] text-[#405aab] sm:leading-[42px]">
                   {CARE_LEAD_CONTENT.title}
                 </h2>
               </div>
 
-              <div className="text-[#050451] space-y-[32px] text-[20px] sm:text-[24px] leading-[32px] font-normal">
+              <div className="text-p-ui sm:text-lead space-y-[32px] leading-[32px] font-normal text-[#050451]">
                 {CARE_LEAD_CONTENT.paragraphs.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
@@ -30,8 +30,8 @@ export function CareLeadSection() {
               </div>
             </div>
 
-            <div className="flex flex-col items-center gap-[24px] mx-auto w-full max-w-[350px]">
-              <div className="relative mx-auto h-[260px] w-[260px] sm:h-[320px] sm:w-[320px] lg:h-[350px] lg:w-[350px] overflow-hidden rounded-full border-[12px] border-white bg-gray-100 shadow-sm">
+            <div className="mx-auto flex w-full max-w-[350px] flex-col items-center gap-[24px]">
+              <div className="relative mx-auto h-[260px] w-[260px] overflow-hidden rounded-full border-[12px] border-white bg-gray-100 shadow-sm sm:h-[320px] sm:w-[320px] lg:h-[350px] lg:w-[350px]">
                 <Image
                   src={BOARDING_ASSETS.careLeadImage}
                   alt={CARE_LEAD_CONTENT.name}
@@ -40,11 +40,11 @@ export function CareLeadSection() {
                   sizes="(min-width: 1024px) 350px, (min-width: 640px) 320px, 260px"
                 />
               </div>
-              <div className="text-center flex flex-col gap-[8px]">
-                <p className="text-[#405aab] text-[24px] leading-[32px] font-semibold">
+              <div className="flex flex-col gap-[8px] text-center">
+                <p className="text-lead leading-[32px] font-semibold text-[#405aab]">
                   {CARE_LEAD_CONTENT.name}
                 </p>
-                <p className="text-[#050451] text-[20px] leading-[24px] font-medium">
+                <p className="text-p-ui leading-[24px] font-medium text-[#050451]">
                   {CARE_LEAD_CONTENT.role}
                 </p>
               </div>

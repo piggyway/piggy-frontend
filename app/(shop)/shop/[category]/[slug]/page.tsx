@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Script from "next/script";
 import { draftMode } from "next/headers";
 import { ProductDetailContent } from "@/components/features/product-detail/ProductDetailContent";
 import { ProductInformationSection } from "@/components/features/product-detail/ProductInformationSection";
@@ -37,14 +36,14 @@ export async function generateMetadata({
   });
   if (!product) {
     return {
-      title: "Product not found | Piggy Way Crossing",
+      title: "Product not found",
       robots: { index: false, follow: false },
     };
   }
 
   const baseUrl = getBaseUrl();
   const url = getProductUrl(product.category?.slug, product.slug, baseUrl);
-  const title = `${product.title}${product.subtitle ? ` - ${product.subtitle}` : ""} | Piggy Way Crossing`;
+  const title = `${product.title}${product.subtitle ? ` - ${product.subtitle}` : ""}`;
   const description =
     product.description ||
     product.subtitle ||
@@ -108,6 +107,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const categoryUrl = getCategoryUrl(product.category?.slug, baseUrl);
 
   // Prepare Product JSON-LD
+  const priceCurrency = product.currency?.slug?.toUpperCase() || "AUD";
+  const availability = product.variants?.some(
+    (v) => v.isAvailable && v.stockQuantity > 0
+  )
+    ? "https://schema.org/InStock"
+    : "https://schema.org/OutOfStock";
+  const variantPrices = (product.variants ?? [])
+    .map((v) => v.discountedPrice ?? v.originalPrice)
+    .filter((price): price is number => price !== null);
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -126,17 +135,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
           "@type": "Brand",
           name: "Piggy Way Crossing",
         },
-    offers: {
-      "@type": "Offer",
-      url: productUrl,
-      priceCurrency: product.currency?.slug?.toUpperCase() || "AUD",
-      price: product.basePrice.toString(),
-      availability: product.variants?.some(
-        (v) => v.isAvailable && v.stockQuantity > 0
-      )
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-    },
+    // AggregateOffer covers the price range across variants; fall back to a
+    // single Offer with the base price when no variant prices exist
+    offers:
+      variantPrices.length > 1
+        ? {
+            "@type": "AggregateOffer",
+            url: productUrl,
+            priceCurrency,
+            lowPrice: Math.min(...variantPrices).toString(),
+            highPrice: Math.max(...variantPrices).toString(),
+            offerCount: variantPrices.length,
+            availability,
+          }
+        : {
+            "@type": "Offer",
+            url: productUrl,
+            priceCurrency,
+            price: (variantPrices[0] ?? product.basePrice).toString(),
+            availability,
+          },
   };
 
   // Prepare BreadcrumbList JSON-LD
@@ -175,15 +193,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="bg-neutral-background-light min-h-screen">
-      {/* Structured Data */}
-      <Script
+      {/* Structured Data - plain script tags so JSON-LD is present in the
+          server-rendered HTML (next/script injects after hydration only) */}
+      <script
         id="product-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(productJsonLd),
         }}
       />
-      <Script
+      <script
         id="breadcrumb-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{

@@ -9,10 +9,10 @@ export function WhyShopSection() {
       <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* Title and Description */}
         <div className="mb-8 sm:mb-10">
-          <h2 className="text-primary-navy-light mb-2 text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
+          <h2 className="text-primary-navy-light text-large sm:text-h4 mb-2 leading-[42px] font-semibold tracking-[-0.21px]">
             Why Shop With Us?
           </h2>
-          <p className="text-primary-navy text-[20px] leading-[32px] font-normal sm:text-[24px]">
+          <p className="text-primary-navy text-p-ui sm:text-lead leading-[32px] font-normal">
             We create comfy, easy-clean liners and accessories for guinea pigs
             and rabbits. Designed in Australia with love — soft, practical, and
             made for happy little paws.
@@ -34,7 +34,7 @@ export function WhyShopSection() {
                 />
               </div>
               <div className="bg-secondary-pink flex items-center justify-center rounded-[32px] p-8">
-                <p className="text-center text-[24px] leading-[32px] font-semibold text-white">
+                <p className="text-lead text-center leading-[32px] font-semibold text-white">
                   Eco-Friendly Liners
                 </p>
               </div>
@@ -43,7 +43,7 @@ export function WhyShopSection() {
             {/* Column 2 - Purple card on top, White card on bottom */}
             <div className="flex flex-1 flex-col gap-0">
               <div className="bg-primary-purple flex items-center justify-center rounded-[32px] p-8">
-                <p className="text-primary-navy text-center text-[24px] leading-[32px] font-semibold">
+                <p className="text-primary-navy text-lead text-center leading-[32px] font-semibold">
                   Easy-Clean Cages
                 </p>
               </div>
@@ -70,7 +70,7 @@ export function WhyShopSection() {
                 />
               </div>
               <div className="bg-primary-gold flex items-center justify-center rounded-[32px] p-8">
-                <p className="text-primary-navy text-center text-[24px] leading-[32px] font-semibold">
+                <p className="text-primary-navy text-lead text-center leading-[32px] font-semibold">
                   Loved by Pet Parents
                 </p>
               </div>

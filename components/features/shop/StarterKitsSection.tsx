@@ -25,7 +25,7 @@ export async function StarterKitsSection() {
           <p className="text-primary-navy mb-2 text-lg leading-relaxed sm:text-xl">
             Everything You Need to Begin
           </p>
-          <h2 className="text-primary-navy-light text-[32px] leading-tight font-semibold sm:text-[42px]">
+          <h2 className="text-primary-navy-light text-large sm:text-h4 leading-tight font-semibold">
             Starter Kits & Bundles
           </h2>
         </div>

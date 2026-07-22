@@ -9,7 +9,7 @@ export function CompassionTaglineSection() {
     <AnimatedSection className="w-full">
       <section className="container mx-auto max-w-[1160px] px-4 py-10 sm:py-12">
         <div className="flex flex-col items-end justify-end gap-6 sm:flex-row sm:items-end">
-          <p className="text-primary-navy-light text-[28px] leading-10 font-semibold sm:text-[32px]">
+          <p className="text-primary-navy-light text-large sm:text-large leading-10 font-semibold">
             {COMPASSION_TAGLINE}
           </p>
           <Image

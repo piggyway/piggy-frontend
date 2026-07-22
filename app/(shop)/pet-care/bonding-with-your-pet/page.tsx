@@ -3,14 +3,16 @@ import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Bonding & Building Trust with Your Guinea Pig | Piggy Way Crossing",
+  title: "Bonding & Building Trust with Your Guinea Pig",
   description:
     "Bonding with a guinea pig is a quiet, emotional process. Learn how to build trust through patience, consistency, and gentle everyday moments.",
+  alternates: { canonical: "/pet-care/bonding-with-your-pet" },
   openGraph: {
-    title: "Bonding & Building Trust with Your Guinea Pig | Piggy Way Crossing",
+    title: "Bonding & Building Trust with Your Guinea Pig",
     description:
       "Bonding with a guinea pig is a quiet, emotional process. Learn how to build trust through patience, consistency, and gentle everyday moments.",
     type: "article",
+    images: ["/pet-care-tips/default1.png"],
     publishedTime: "2024-03-25T00:00:00.000Z",
     authors: ["Piggy Way Crossing Team"],
     tags: ["Bonding", "Guinea Pig Care", "Trust Training"],
@@ -37,7 +39,7 @@ export default function BondingPage() {
       },
     },
     datePublished: "2024-03-25",
-    dateModified: new Date().toISOString().split("T")[0],
+    dateModified: "2024-03-25",
     description:
       "Bonding with a guinea pig is a quiet, emotional process built through everyday moments.",
   };
@@ -54,16 +56,16 @@ export default function BondingPage() {
         <nav className="mb-12">
           <Link
             href="/pet-care"
-            className="text-gray-500 hover:text-gray-900 transition-colors inline-flex items-center gap-2 text-sm font-medium"
+            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="h-4 w-4" />
             Back to Pet Care
           </Link>
         </nav>
 
         {/* Header */}
         <header className="mb-12">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-8 text-gray-900 leading-[1.1]">
+          <h1 className="mb-8 text-3xl leading-[1.1] font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
             Bonding & Building Trust with Your Guinea Pig
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
@@ -82,10 +84,10 @@ export default function BondingPage() {
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-gray max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900">
-          <p className="text-xl leading-relaxed text-gray-600 mb-10 font-normal">
-            Bonding with a guinea pig is a quiet, emotional process built through
-            everyday moments. Trust grows when their world feels safe,
+        <article className="prose prose-lg prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
+          <p className="mb-10 text-xl leading-relaxed font-normal text-gray-600">
+            Bonding with a guinea pig is a quiet, emotional process built
+            through everyday moments. Trust grows when their world feels safe,
             predictable, and filled with gentle connection.
           </p>
           <p>
@@ -93,7 +95,7 @@ export default function BondingPage() {
             follows naturally.
           </p>
 
-          <h2 className="text-2xl font-bold mt-12 mb-6 text-gray-900">
+          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
             Positive Experiences & Enrichment
           </h2>
           <p>
@@ -108,30 +110,30 @@ export default function BondingPage() {
             trust begins.
           </p>
 
-          <h2 className="text-2xl font-bold mt-12 mb-6 text-gray-900">
+          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
             Safety in Hideouts
           </h2>
           <p>
             Soft, well-sized hideouts allow them to rest without fear. Many
-            guinea pigs instinctively choose corners for toileting, so setting up
-            clean, thoughtfully arranged toilet areas in those spots supports
+            guinea pigs instinctively choose corners for toileting, so setting
+            up clean, thoughtfully arranged toilet areas in those spots supports
             both comfort and routine.
           </p>
-          <div className="bg-gray-50 p-6 rounded-xl border border-gray-100 my-8">
+          <div className="my-8 rounded-xl border border-gray-100 bg-gray-50 p-6">
             <p className="m-0 text-gray-700 italic">
-              "When a hide is placed over or beside the toilet area, they can eat
-              and rest while feeling protected — a small detail that makes a big
-              emotional difference."
+              "When a hide is placed over or beside the toilet area, they can
+              eat and rest while feeling protected — a small detail that makes a
+              big emotional difference."
             </p>
           </div>
 
-          <h2 className="text-2xl font-bold mt-12 mb-6 text-gray-900">
+          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
             Daily Interaction
           </h2>
           <p>
             Just as important is daily interaction. Spending time with your
-            guinea pig every day helps them grow accustomed to human presence and
-            learn that people bring warmth, not fear.
+            guinea pig every day helps them grow accustomed to human presence
+            and learn that people bring warmth, not fear.
           </p>
           <p>
             Sitting nearby, speaking softly, hand-feeding treats, or simply
@@ -154,35 +156,35 @@ export default function BondingPage() {
 
         {/* Read Next Section */}
         <div className="mt-20 border-t border-gray-100 pt-12">
-          <h3 className="text-gray-900 mb-6 text-xl font-bold">
+          <h3 className="mb-6 text-xl font-bold text-gray-900">
             Bonding Tools
           </h3>
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="bg-gray-50 rounded-2xl p-8 hover:bg-gray-100 transition-colors">
+            <div className="rounded-2xl bg-gray-50 p-8 transition-colors hover:bg-gray-100">
               <h4 className="mb-2 text-lg font-bold text-gray-900">
                 Cuddle Sacks
               </h4>
-              <p className="text-gray-600 mb-6 text-sm">
+              <p className="mb-6 text-sm text-gray-600">
                 The perfect safe space for lap time snuggles.
               </p>
               <Link
                 href="/shop-all"
-                className="inline-flex items-center gap-2 font-medium text-gray-900 hover:text-gray-700 underline underline-offset-4 decoration-gray-300"
+                className="inline-flex items-center gap-2 font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
               >
                 Shop Comfort <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
 
-            <div className="bg-gray-50 rounded-2xl p-8 hover:bg-gray-100 transition-colors">
+            <div className="rounded-2xl bg-gray-50 p-8 transition-colors hover:bg-gray-100">
               <h4 className="mb-2 text-lg font-bold text-gray-900">
                 Playpens & Mats
               </h4>
-              <p className="text-gray-600 mb-6 text-sm">
+              <p className="mb-6 text-sm text-gray-600">
                 Set up a secure, waterproof area for floor time bonding.
               </p>
               <Link
                 href="/shop-all"
-                className="inline-flex items-center gap-2 font-medium text-gray-900 hover:text-gray-700 underline underline-offset-4 decoration-gray-300"
+                className="inline-flex items-center gap-2 font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
               >
                 Shop Setup <ChevronRight className="h-4 w-4" />
               </Link>

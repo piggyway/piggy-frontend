@@ -16,7 +16,7 @@ export function BoardingCtaSection() {
       <section className="container mx-auto max-w-[1160px] px-4 py-10 sm:py-12">
         <div className="flex flex-col items-center gap-10 rounded-[32px] border-[12px] border-white bg-white p-6 sm:p-10 lg:flex-row lg:p-[40px]">
           <div className="flex flex-1 flex-col justify-between gap-10 self-stretch">
-            <h2 className="text-primary-navy text-[32px] leading-[40px] font-semibold tracking-[-0.21px] sm:text-[42px] sm:leading-[42px]">
+            <h2 className="text-primary-navy text-large sm:text-h4 leading-[40px] font-semibold tracking-[-0.21px] sm:leading-[42px]">
               {BOARDING_CTA_CONTENT.titleLines.map((line) => (
                 <span key={line} className="block">
                   {line}
@@ -26,10 +26,10 @@ export function BoardingCtaSection() {
 
             <div className="flex flex-col items-start gap-6">
               <div className="flex flex-col gap-2">
-                <p className="text-primary-navy-light text-[20px] leading-8 font-semibold sm:text-[24px]">
+                <p className="text-primary-navy-light text-p-ui sm:text-lead leading-8 font-semibold">
                   {BOARDING_CTA_CONTENT.eyebrow}
                 </p>
-                <p className="text-primary-navy text-[20px] leading-8 font-normal sm:text-[24px]">
+                <p className="text-primary-navy text-p-ui sm:text-lead leading-8 font-normal">
                   {BOARDING_CTA_CONTENT.description.map((line) => (
                     <span key={line} className="block">
                       {line}
@@ -40,7 +40,7 @@ export function BoardingCtaSection() {
 
               <Link
                 href={PET_CARE_ROUTES.contact}
-                className="bg-primary-purple text-primary-navy flex items-center gap-2 rounded-[20px] px-4 py-2 text-sm font-normal transition-colors hover:bg-primary-purple/80"
+                className="bg-primary-purple text-primary-navy hover:bg-primary-purple/80 flex items-center gap-2 rounded-[20px] px-4 py-2 text-sm font-normal transition-colors"
               >
                 <span>{BOARDING_CTA_CONTENT.buttonLabel}</span>
                 <ArrowUpRight className="size-4" />

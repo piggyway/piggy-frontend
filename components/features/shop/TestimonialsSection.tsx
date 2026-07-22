@@ -39,10 +39,10 @@ export function TestimonialsSection({
           {/* Title and Mascot Header */}
           <div className="mb-8 flex items-start justify-between gap-8 sm:mb-12">
             <div className="flex-1">
-              <p className="text-primary-navy mb-1 text-[24px] leading-8 font-normal">
+              <p className="text-primary-navy text-lead mb-1 leading-8 font-normal">
                 Trusted by Parents
               </p>
-              <h2 className="text-primary-navy-light text-[42px] leading-[42px] font-semibold tracking-[-0.21px]">
+              <h2 className="text-primary-navy-light text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
                 Loved by Piggies
               </h2>
             </div>
@@ -82,12 +82,12 @@ export function TestimonialsSection({
                 <div className="flex min-h-0 flex-1 flex-col">
                   {/* Quote Block - scrolls when it overflows the fixed height */}
                   <div className="text-primary-navy min-h-0 flex-1 overflow-y-auto pr-1">
-                    <p className="text-[20px] leading-6 font-medium">
-                      <span className="text-primary-navy-light pr-1 align-top text-[42px] font-semibold">
+                    <p className="text-p-ui leading-6 font-medium">
+                      <span className="text-primary-navy-light text-h4 pr-1 align-top font-semibold">
                         “
                       </span>
                       {testimonial.quote}
-                      <span className="text-primary-navy-light pl-1 align-bottom text-[42px] font-semibold">
+                      <span className="text-primary-navy-light text-h4 pl-1 align-bottom font-semibold">
                         ”
                       </span>
                     </p>
@@ -95,7 +95,7 @@ export function TestimonialsSection({
 
                   {/* Author */}
                   <div className="mt-4 shrink-0">
-                    <p className="text-primary-navy text-[24px] font-semibold">
+                    <p className="text-primary-navy text-lead font-semibold">
                       {testimonial.author}
                     </p>
                   </div>

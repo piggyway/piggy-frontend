@@ -6,11 +6,11 @@ import { AnimatedSection } from "@/components/features/homepage/AnimatedSection"
 export function PoopHappensSection() {
   return (
     <AnimatedSection className="w-full">
-      <section className="container mx-auto max-w-[1160px] px-4 py-8 flex justify-end items-end gap-10">
-        <h2 className="text-[#405aab] text-[24px] sm:text-[32px] leading-[40px] font-semibold mb-6">
+      <section className="container mx-auto flex max-w-[1160px] items-end justify-end gap-10 px-4 py-8">
+        <h2 className="text-lead sm:text-large mb-6 leading-[40px] font-semibold text-[#405aab]">
           Poop happens... We clean.
         </h2>
-        <div className="w-[150px] h-[75px] sm:w-[214px] sm:h-[107px] relative rounded-[20px] flex items-center justify-center shrink-0">
+        <div className="relative flex h-[75px] w-[150px] shrink-0 items-center justify-center rounded-[20px] sm:h-[107px] sm:w-[214px]">
           <Image
             src="/Group 367.svg"
             alt="Poop scoop and brush"

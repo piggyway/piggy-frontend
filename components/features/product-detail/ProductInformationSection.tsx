@@ -159,7 +159,7 @@ export function ProductInformationSection({
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Rounded Navy Container */}
         <div className="bg-primary-navy flex flex-col gap-8 rounded-[20px] p-6 sm:rounded-[28px] sm:p-8 md:p-10 lg:p-12">
-          <h2 className="text-primary-gold text-[24px] font-semibold sm:text-[28px] lg:text-[32px]">
+          <h2 className="text-primary-gold text-lead sm:text-large lg:text-large font-semibold">
             Product Information
           </h2>
 
@@ -181,13 +181,13 @@ export function ProductInformationSection({
                     className="border-white/20"
                   >
                     <AccordionTrigger className="[&>svg]:text-primary-navy w-full text-left text-white [&>svg]:ml-auto [&>svg]:!h-8 [&>svg]:!w-8 [&>svg]:rounded-full [&>svg]:bg-white [&>svg]:p-2">
-                      <h1 className="text-primary-purple text-[20px] font-medium">
+                      <h2 className="text-primary-purple text-p-ui font-medium">
                         {item.title}
-                      </h1>
+                      </h2>
                     </AccordionTrigger>
                     <AccordionContent>
                       <div
-                        className="text-[14px] leading-relaxed text-white/90 [&_a]:underline [&_a]:underline-offset-4 [&_h2]:text-[16px] [&_h2]:font-semibold [&_h2]:text-white [&_h3]:text-[14px] [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
+                        className="text-body-medium [&_h2]:text-p [&_h3]:text-subtle leading-relaxed text-white/90 [&_a]:underline [&_a]:underline-offset-4 [&_h2]:font-semibold [&_h2]:text-white [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
                         dangerouslySetInnerHTML={{
                           __html: item.content,
                         }}

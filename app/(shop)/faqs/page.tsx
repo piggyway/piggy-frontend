@@ -8,9 +8,10 @@ import {
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 
 export const metadata: Metadata = {
-  title: "Frequently Asked Questions | Piggy Way Crossing",
+  title: "Frequently Asked Questions",
   description:
     "Find answers to common questions about our products, shipping, and guinea pig care.",
+  alternates: { canonical: "/faqs" },
 };
 
 const FAQS = [

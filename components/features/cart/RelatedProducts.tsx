@@ -1,55 +1,73 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/ui/product-card";
-
-const RELATED_PRODUCTS = [
-  {
-    id: "rel-1",
-    title: "Organic Apple Sticks",
-    price: 8.99,
-    image: "/homepage-essentials/snack-example.png",
-    category: "Treats",
-  },
-  {
-    id: "rel-2",
-    title: "Fleece Tunnel Hideout",
-    price: 18.5,
-    image: "/homepage-essentials/hut-example.png",
-    category: "Accessories",
-  },
-  {
-    id: "rel-3",
-    title: "Cozy Cage Liner - Plaid",
-    price: 45.0,
-    image: "/homepage-essentials/liner-example.png",
-    category: "Bedding",
-  },
-  {
-    id: "rel-4",
-    title: "Guinea Pig Starter Kit",
-    price: 89.99,
-    image: "/homepage-essentials/combo-example.png",
-    category: "Kits",
-  },
-];
+import { ProductService } from "@/lib/services/products";
+import { useCart } from "@/components/features/cart/CartProvider";
+import type { VariantListItem } from "@/lib/types/product";
 
 export function RelatedProducts() {
-  const itemsToShow = 2;
-  const visibleProducts = RELATED_PRODUCTS.slice(0, itemsToShow);
+  const [variants, setVariants] = useState<VariantListItem[]>([]);
+  const { addItem, isMutating } = useCart();
+  const [addingVariantId, setAddingVariantId] = useState<number | null>(null);
+
+  const handleAddToCart = async (variantId: number) => {
+    setAddingVariantId(variantId);
+    try {
+      await addItem(variantId, 1);
+    } finally {
+      setAddingVariantId(null);
+    }
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function fetchRandomVariants() {
+      const data = await ProductService.getRandomVariants();
+      if (!cancelled) {
+        setVariants(data);
+      }
+    }
+
+    fetchRandomVariants();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (variants.length === 0) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-6 py-8">
       <h2 className="text-primary-navy text-2xl font-semibold">
         You Might Also Like
       </h2>
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {visibleProducts.map((product) => (
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {variants.map((variant) => (
           <ProductCard
-            key={product.id}
-            title={product.title}
-            price={`$${product.price.toFixed(2)}`}
-            image={product.image}
-            subtitle={product.category}
+            key={variant.variantId}
+            title={variant.productTitle}
+            subtitle={variant.category?.name ?? undefined}
+            price={
+              variant.formattedDiscountedPrice ??
+              variant.formattedOriginalPrice ??
+              "Price TBD"
+            }
+            originalPrice={
+              variant.discountPercentage
+                ? (variant.formattedOriginalPrice ?? undefined)
+                : undefined
+            }
+            discountPercentage={variant.discountPercentage ?? undefined}
+            image={variant.imageUrl}
+            imageAlt={variant.productTitle}
+            href={`/shop/${variant.category?.slug || "product"}/${variant.productSlug}?variant=${variant.variantId}`}
+            onAddToCart={() => handleAddToCart(variant.variantId)}
+            disabled={isMutating || addingVariantId === variant.variantId}
           />
         ))}
       </div>

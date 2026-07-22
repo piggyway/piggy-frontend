@@ -1,59 +1,18 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
 import { CategoryService } from "@/lib/services";
-import type { Category } from "@/lib/types/models";
 
-export function ShopByCategorySection() {
-  // state management
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    async function loadCategories() {
-      try {
-        setLoading(true);
-
-        const data = await CategoryService.getCategories({
-          features: true,
-          limit: 6,
-        });
-
-        setCategories(data);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load categories"
-        );
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    loadCategories();
-  }, []);
-
-  // handle loading
-  if (loading) {
-    return (
-      <div className="container mx-auto py-20">
-        <div className="text-center">Loading categories...</div>
-      </div>
-    );
-  }
-
-  // handle error
-  if (error) {
-    return (
-      <div className="container mx-auto py-20">
-        <div className="text-center">Error: {error}</div>
-      </div>
-    );
-  }
+/**
+ * Server component: categories are fetched during server rendering so the
+ * category links are present in the initial HTML for crawlers.
+ */
+export async function ShopByCategorySection() {
+  const categories = await CategoryService.getCategories({
+    features: true,
+    limit: 6,
+  });
 
   // handle empty data
   if (categories.length === 0) {
@@ -70,10 +29,10 @@ export function ShopByCategorySection() {
         <div className="rounded-[32px] bg-white p-6 sm:p-10 lg:p-12">
           {/* Title */}
           <div className="mb-8 sm:mb-10">
-            <p className="text-primary-navy mb-2 text-[20px] leading-[32px] font-normal sm:text-[24px]">
+            <p className="text-primary-navy text-p-ui sm:text-lead mb-2 leading-[32px] font-normal">
               Shop by Category
             </p>
-            <h2 className="text-primary-navy-light text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
+            <h2 className="text-primary-navy-light text-large sm:text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
               Guinea Pig & Rabbit Essentials
             </h2>
           </div>
@@ -99,7 +58,7 @@ export function ShopByCategorySection() {
                 {/* Title and Arrow Button */}
                 <div className="flex items-center justify-between gap-4">
                   <h3
-                    className={`text-[20px] leading-[32px] font-semibold sm:text-[24px] ${category.textColor}`}
+                    className={`text-p-ui sm:text-lead leading-[32px] font-semibold ${category.textColor}`}
                   >
                     {category.title}
                   </h3>

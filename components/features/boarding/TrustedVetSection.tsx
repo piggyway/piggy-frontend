@@ -10,30 +10,33 @@ export function TrustedVetSection() {
   return (
     <AnimatedSection className="w-full">
       <section className="container mx-auto max-w-[1160px] px-4 pt-10 pb-16 sm:pt-12 sm:pb-20">
-        <div className="rounded-[32px] border-[12px] border-white bg-white p-6 sm:p-10 flex flex-col lg:flex-row gap-10 items-center">
-          
-          <div className="flex flex-col flex-1 h-full min-h-[300px] justify-between">
-            <h2 className="text-[#050451] text-[36px] leading-[40px] font-semibold tracking-[-0.21px] sm:text-[42px] sm:leading-[42px]">
+        <div className="flex flex-col items-center gap-10 rounded-[32px] border-[12px] border-white bg-white p-6 sm:p-10 lg:flex-row">
+          <div className="flex h-full min-h-[300px] flex-1 flex-col justify-between">
+            <h2 className="text-large sm:text-h4 leading-[40px] font-semibold tracking-[-0.21px] text-[#050451] sm:leading-[42px]">
               Looking for a trusted vet?
             </h2>
-            
-            <div className="flex flex-col gap-6 mt-8">
+
+            <div className="mt-8 flex flex-col gap-6">
               <div className="flex flex-col gap-2">
-                <p className="text-[#405aab] text-[24px] leading-[32px] font-semibold">
+                <p className="text-lead leading-[32px] font-semibold text-[#405aab]">
                   Our Trusted Veterinary Partner 💜
                 </p>
-                <p className="text-[#050451] text-[24px] leading-[32px] font-normal">
-                  We&apos;re proud to partner with Dr. Supanee, an experienced unusual pets veterinarian, helping support the care behind our guinea pig boarding.
+                <p className="text-lead leading-[32px] font-normal text-[#050451]">
+                  We&apos;re proud to partner with Dr. Supanee, an experienced
+                  unusual pets veterinarian, helping support the care behind our
+                  guinea pig boarding.
                 </p>
               </div>
-              
+
               <Link
                 href={BOARDING_ROUTES.story} // Update this link if needed
-                className="bg-[#dcd7ff] text-[#050451] flex items-center justify-center gap-2 px-6 py-3 rounded-full w-fit hover:bg-[#c8c1ff] transition-colors"
+                className="flex w-fit items-center justify-center gap-2 rounded-full bg-[#dcd7ff] px-6 py-3 text-[#050451] transition-colors hover:bg-[#c8c1ff]"
               >
-                <span className="text-[16px] leading-[24px] font-normal">Pet care</span>
-                <div className="w-5 h-5 flex items-center justify-center">
-                  <ArrowUpRight className="w-4 h-4" />
+                <span className="text-p leading-[24px] font-normal">
+                  Pet care
+                </span>
+                <div className="flex h-5 w-5 items-center justify-center">
+                  <ArrowUpRight className="h-4 w-4" />
                 </div>
               </Link>
             </div>
@@ -48,7 +51,6 @@ export function TrustedVetSection() {
               sizes="(min-width: 1024px) 420px, 100vw"
             />
           </div>
-
         </div>
       </section>
     </AnimatedSection>

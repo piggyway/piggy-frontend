@@ -1,10 +1,14 @@
 "use client";
 
 import * as React from "react";
-import { Calendar as CalendarIcon, Clock, MapPin } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  ChevronLeft,
+  ChevronRight,
+  MapPin,
+} from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -22,6 +26,40 @@ interface PickupSelectorProps {
   selectedSlotId?: number;
 }
 
+const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
+
+function toDateKey(year: number, month: number, day: number) {
+  return `${year}-${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function formatDateLabel(dateKey: string) {
+  const [y, m, d] = dateKey.split("-").map(Number);
+  const date = new Date(y, m - 1, d);
+  const weekday = date.toLocaleDateString("en-AU", { weekday: "short" });
+  const month = date.toLocaleDateString("en-AU", { month: "short" });
+  return `${weekday} ${d} ${month}`;
+}
+
+/**
+ * Shows only the suburb / postcode / state portion of a full street address
+ * (e.g. "Unit 4 14-16 Anderson St, Templestowe, 3106, VIC" ->
+ * "Templestowe, 3106, VIC") so the exact warehouse address is not exposed
+ * before an order is placed.
+ */
+function formatLocationArea(address: string): string {
+  const parts = address.split(",").map((part) => part.trim());
+  return parts.length > 3 ? parts.slice(-3).join(", ") : address;
+}
+
+function formatSlotTime(slot: PickupSlot, field: "startAt" | "endAt") {
+  const date = new Date(`${slot.slotDate}T${slot[field]}`);
+  return date.toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
 export function PickupSelector({
   onLocationChange,
   onSlotChange,
@@ -32,6 +70,13 @@ export function PickupSelector({
   const [slots, setSlots] = React.useState<PickupSlot[]>([]);
   const [availableDates, setAvailableDates] = React.useState<string[]>([]);
   const [selectedDate, setSelectedDate] = React.useState<string>("");
+  const [viewMonth, setViewMonth] = React.useState<{
+    year: number;
+    month: number;
+  }>(() => {
+    const now = new Date();
+    return { year: now.getFullYear(), month: now.getMonth() };
+  });
   const [loadingLocations, setLoadingLocations] = React.useState(false);
   const [loadingSlots, setLoadingSlots] = React.useState(false);
   const [loadingDates, setLoadingDates] = React.useState(false);
@@ -67,9 +112,10 @@ export function PickupSelector({
           selectedLocationId!
         );
         setAvailableDates(dates);
-        // Automatically select first available date if not already selected
-        if (dates.length > 0 && !selectedDate) {
-          // Optional: setSelectedDate(dates[0]);
+        // Jump the calendar to the first month that has availability
+        if (dates.length > 0) {
+          const [y, m] = dates[0].split("-").map(Number);
+          setViewMonth({ year: y, month: m - 1 });
         }
       } catch (error) {
         console.error("Failed to fetch available dates", error);
@@ -78,7 +124,6 @@ export function PickupSelector({
       }
     }
     fetchDates();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedLocationId]);
 
   // Fetch slots when location or date changes
@@ -117,138 +162,223 @@ export function PickupSelector({
     onSlotChange(0); // Reset slot when date changes
   };
 
+  const changeMonth = (delta: number) => {
+    setViewMonth(({ year, month }) => {
+      const next = new Date(year, month + delta, 1);
+      return { year: next.getFullYear(), month: next.getMonth() };
+    });
+  };
+
   const selectedLocation = locations.find((l) => l.id === selectedLocationId);
+  const selectedSlot = slots.find((s) => s.id === selectedSlotId);
+  const availableSet = React.useMemo(
+    () => new Set(availableDates),
+    [availableDates]
+  );
+
+  // Calendar grid for the current view month (weeks start on Monday)
+  const { year, month } = viewMonth;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const leadingDays = (new Date(year, month, 1).getDay() + 6) % 7;
+  const cellCount = Math.ceil((leadingDays + daysInMonth) / 7) * 7;
+  const cells = Array.from({ length: cellCount }, (_, i) => {
+    const dayOffset = i - leadingDays;
+    const cellDate = new Date(year, month, dayOffset + 1);
+    const inMonth = cellDate.getMonth() === month;
+    const key = toDateKey(
+      cellDate.getFullYear(),
+      cellDate.getMonth(),
+      cellDate.getDate()
+    );
+    return { key, day: cellDate.getDate(), inMonth };
+  });
+
+  const monthLabel = new Date(year, month, 1).toLocaleDateString("en-AU", {
+    month: "long",
+    year: "numeric",
+  });
+
+  const headSubtitle = selectedSlot
+    ? `${formatDateLabel(selectedDate)} · ${formatSlotTime(selectedSlot, "startAt")}`
+    : selectedDate
+      ? formatDateLabel(selectedDate)
+      : "Select a date";
 
   return (
-    <div className="space-y-6">
-      {/* Location Selection */}
-      <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm font-medium">
-          <MapPin className="h-4 w-4" />
-          Select Pickup Location
+    <div className="flex w-full flex-col gap-6">
+      {/* Pickup location */}
+      <div className="flex flex-col gap-2">
+        <label className="text-subtle-medium text-primary-navy">
+          Pickup location
         </label>
         <Select
           value={selectedLocationId?.toString()}
           onValueChange={handleLocationChange}
           disabled={loadingLocations}
         >
-          <SelectTrigger>
-            <SelectValue placeholder="Select a location" />
+          <SelectTrigger className="border-neutral-stroke h-12 rounded-[12px] pr-3.5 pl-4 text-[15px] text-slate-600">
+            {/* flex! beats SelectTrigger's [&>span]:line-clamp-1, which would
+                otherwise stack the icon above the text */}
+            <span className="flex! min-w-0 items-center gap-2.5">
+              <MapPin className="text-primary-navy size-4 shrink-0" />
+              <SelectValue placeholder="Select a pickup location" />
+            </span>
           </SelectTrigger>
           <SelectContent>
             {locations.map((location) => (
               <SelectItem key={location.id} value={location.id.toString()}>
-                {location.name} ({location.address})
+                {location.name} &mdash; {formatLocationArea(location.address)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        {selectedLocation && (
-          <p className="ml-1 text-xs text-slate-500">
-            {selectedLocation.address}
-            {selectedLocation.instructions &&
-              ` • ${selectedLocation.instructions}`}
+        {selectedLocation?.instructions && (
+          <p className="text-[13px] text-slate-400">
+            {selectedLocation.instructions}
           </p>
         )}
       </div>
 
-      {/* Date Selection */}
-      <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm font-medium">
-          <CalendarIcon className="h-4 w-4" />
-          Select Date
-        </label>
-        {selectedLocationId ? (
-          <div className="space-y-2">
-            {loadingDates ? (
-              <div className="text-sm text-slate-500">
-                Loading available dates...
+      {selectedLocationId && (
+        <div className="flex w-full flex-col gap-6">
+          {/* Calendar + time slots */}
+          <div className="border-neutral-stroke flex w-full flex-col gap-4 rounded-[24px] border bg-white px-7 py-6">
+            <div className="flex items-center gap-3">
+              <span className="bg-secondary-mint flex size-9 shrink-0 items-center justify-center rounded-full">
+                <CalendarIcon className="text-primary-navy size-[17px]" />
+              </span>
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <span className="text-primary-navy text-[16px] font-semibold">
+                  Pickup
+                </span>
+                <span className="text-[13px] text-slate-400">
+                  {headSubtitle}
+                </span>
               </div>
-            ) : availableDates.length > 0 ? (
-              <div className="flex flex-wrap gap-2">
-                {availableDates.map((date) => {
-                  const dateObj = new Date(date);
-                  const displayDate = dateObj.toLocaleDateString(undefined, {
-                    weekday: "short",
-                    month: "short",
-                    day: "numeric",
-                  });
+            </div>
+
+            {/* Month navigation */}
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => changeMonth(-1)}
+                aria-label="Previous month"
+                className="border-neutral-stroke flex size-7 items-center justify-center rounded-full border bg-white"
+              >
+                <ChevronLeft className="text-primary-navy size-3" />
+              </button>
+              <span className="text-primary-navy text-[15px] font-semibold">
+                {monthLabel}
+              </span>
+              <button
+                type="button"
+                onClick={() => changeMonth(1)}
+                aria-label="Next month"
+                className="border-neutral-stroke flex size-7 items-center justify-center rounded-full border bg-white"
+              >
+                <ChevronRight className="text-primary-navy size-3" />
+              </button>
+            </div>
+
+            {/* Day grid */}
+            {loadingDates ? (
+              <p className="text-[13px] text-slate-400">
+                Loading available dates...
+              </p>
+            ) : (
+              <div className="flex flex-col gap-1">
+                <div className="flex gap-1">
+                  {WEEKDAYS.map((wd) => (
+                    <span
+                      key={wd}
+                      className="flex h-6 flex-1 items-center justify-center text-[11px] font-medium text-slate-400"
+                    >
+                      {wd}
+                    </span>
+                  ))}
+                </div>
+                {Array.from({ length: cells.length / 7 }, (_, week) => (
+                  <div key={week} className="flex gap-1">
+                    {cells
+                      .slice(week * 7, week * 7 + 7)
+                      .map(({ key, day, inMonth }) => {
+                        const isAvailable = inMonth && availableSet.has(key);
+                        const isSelected = selectedDate === key;
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            disabled={!isAvailable}
+                            onClick={() => handleDateSelect(key)}
+                            className={cn(
+                              "flex h-[38px] flex-1 items-center justify-center rounded-[10px] text-[13px]",
+                              isSelected
+                                ? "bg-primary-navy font-semibold text-white"
+                                : isAvailable
+                                  ? "text-primary-navy hover:bg-primary-purple-light"
+                                  : "text-slate-300"
+                            )}
+                          >
+                            {day}
+                          </button>
+                        );
+                      })}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div className="bg-neutral-stroke h-px w-full" />
+
+            <div className="flex items-center justify-between">
+              <span className="text-primary-navy text-[13px] font-medium">
+                Pickup time slot
+              </span>
+              <span className="text-[11px] text-slate-400">1-hour blocks</span>
+            </div>
+
+            {!selectedDate ? (
+              <p className="text-[13px] text-slate-400">
+                Select a date to see available time slots.
+              </p>
+            ) : loadingSlots ? (
+              <p className="text-[13px] text-slate-400">Loading slots...</p>
+            ) : slots.length > 0 ? (
+              <div className="grid grid-cols-4 gap-2">
+                {slots.map((slot) => {
+                  const isSelected = selectedSlotId === slot.id;
                   return (
-                    <Button
-                      key={date}
-                      variant={selectedDate === date ? "default" : "outline"}
-                      onClick={() => handleDateSelect(date)}
+                    <button
+                      key={slot.id}
+                      type="button"
+                      onClick={() => onSlotChange(slot.id)}
                       className={cn(
-                        "h-auto px-4 py-2",
-                        selectedDate === date
-                          ? "bg-primary-navy hover:bg-primary-navy/90 text-white"
-                          : "hover:bg-slate-50"
+                        "flex h-9 items-center justify-center rounded-full text-[13px]",
+                        isSelected
+                          ? "bg-primary-navy font-semibold text-white"
+                          : "border-neutral-stroke hover:border-primary-navy border bg-white text-slate-600"
                       )}
                     >
-                      {displayDate}
-                    </Button>
+                      {formatSlotTime(slot, "startAt")}
+                    </button>
                   );
                 })}
               </div>
             ) : (
-              <div className="text-sm text-slate-500 italic">
-                No available dates found for this location.
-              </div>
+              <p className="text-[13px] text-slate-400">
+                No available slots for this date.
+              </p>
             )}
           </div>
-        ) : (
-          <div className="text-sm text-slate-500 italic">
-            Please select a location first.
-          </div>
-        )}
-      </div>
 
-      {/* Slot Selection */}
-      {selectedDate && (
-        <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm font-medium">
-            <Clock className="h-4 w-4" />
-            Select Time Slot
-          </label>
-          {loadingSlots ? (
-            <div className="text-sm text-slate-500">Loading slots...</div>
-          ) : slots.length > 0 ? (
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {slots.map((slot) => {
-                const startDate = new Date(`${slot.slotDate}T${slot.startAt}`);
-                const endDate = new Date(`${slot.slotDate}T${slot.endAt}`);
-
-                const startTime = startDate.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-                const endTime = endDate.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                });
-
-                return (
-                  <Button
-                    key={slot.id}
-                    variant={selectedSlotId === slot.id ? "default" : "outline"}
-                    className={cn(
-                      "flex h-auto flex-row items-center justify-center gap-1 py-3 text-sm",
-                      selectedSlotId === slot.id
-                        ? "bg-primary-navy hover:bg-primary-navy/90 text-white"
-                        : "hover:bg-slate-50"
-                    )}
-                    onClick={() => onSlotChange(slot.id)}
-                  >
-                    <span>{startTime}</span>
-                    <span>-</span>
-                    <span>{endTime}</span>
-                  </Button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="rounded-md border border-dashed p-4 text-center text-sm text-slate-500">
-              No available slots for this date.
+          {selectedSlot && (
+            <div className="bg-secondary-mint flex w-full flex-col gap-1 rounded-[16px] px-5 py-4">
+              <span className="text-[12px] text-slate-600">Your pickup</span>
+              <span className="text-primary-navy text-[17px] font-semibold">
+                {formatDateLabel(selectedDate)} ·{" "}
+                {formatSlotTime(selectedSlot, "startAt")}–
+                {formatSlotTime(selectedSlot, "endAt")}
+              </span>
             </div>
           )}
         </div>

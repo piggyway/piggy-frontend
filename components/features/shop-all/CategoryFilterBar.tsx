@@ -62,7 +62,7 @@ export function CategoryFilterBar({
             </div>
             <span
               className={cn(
-                "text-[10px] font-medium sm:text-xs",
+                "text-detail font-medium sm:text-xs",
                 isActive ? "text-primary-navy" : "text-primary-navy/80"
               )}
             >

@@ -14,6 +14,13 @@ interface ProfileInfoProps {
   onComplete?: () => void;
 }
 
+const FIELD_LABELS: Record<string, string> = {
+  firstName: "First name",
+  lastName: "Last name",
+  email: "Email",
+  phone: "Phone number",
+};
+
 export function ProfileInfo({
   autoEdit = false,
   onComplete,
@@ -135,121 +142,89 @@ export function ProfileInfo({
     }
   };
 
+  const visibleFields = autoEdit
+    ? (["firstName", "lastName"] as const)
+    : (["firstName", "lastName", "email", "phone"] as const);
+
   return (
-    <div className="space-y-6 rounded-lg bg-white p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <h2 className="text-primary-navy text-2xl font-semibold">
-          Profile Information
-        </h2>
-        {!autoEdit && (
-          <Button
-            variant={isEditing ? "default" : "outline"}
-            onClick={isEditing ? handleSave : () => setIsEditing(true)}
-            disabled={isSaving}
-          >
-            {isSaving
-              ? "Saving..."
-              : isEditing
-                ? "Save Changes"
-                : "Edit Profile"}
-          </Button>
-        )}
-      </div>
-
-      {errors.general && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">
-          {errors.general}
-        </div>
-      )}
-
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* First Name */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            First Name <span className="text-red-500">*</span>
-          </label>
-          <Input
-            ref={firstNameInputRef}
-            disabled={!isEditing}
-            value={user.firstName}
-            onChange={(e) => handleFieldChange("firstName", e.target.value)}
-            className={errors.firstName ? "border-red-500" : ""}
-          />
-          {errors.firstName && (
-            <p className="text-xs text-red-500">{errors.firstName}</p>
+    <div className="flex flex-col gap-6">
+      {/* Profile information */}
+      <div className="border-neutral-stroke flex flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h2 className="text-primary-navy text-[22px] font-semibold">
+            Profile information
+          </h2>
+          {!autoEdit && (
+            <Button
+              variant={isEditing ? "default" : "outline"}
+              onClick={isEditing ? handleSave : () => setIsEditing(true)}
+              disabled={isSaving}
+              className={
+                isEditing
+                  ? "text-subtle-semibold h-[42px] rounded-full px-6"
+                  : "border-primary-navy text-subtle-semibold text-primary-navy h-[42px] rounded-full border-[1.5px] px-6"
+              }
+            >
+              {isSaving
+                ? "Saving..."
+                : isEditing
+                  ? "Save changes"
+                  : "Edit profile"}
+            </Button>
           )}
         </div>
 
-        {/* Last Name */}
-        <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">
-            Last Name <span className="text-red-500">*</span>
-          </label>
-          <Input
-            disabled={!isEditing}
-            value={user.lastName}
-            onChange={(e) => handleFieldChange("lastName", e.target.value)}
-            className={errors.lastName ? "border-red-500" : ""}
-          />
-          {errors.lastName && (
-            <p className="text-xs text-red-500">{errors.lastName}</p>
-          )}
-        </div>
-
-        {/* Email - only show if not first-time login */}
-        {!autoEdit && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Email <span className="text-red-500">*</span>
-            </label>
-            <Input
-              disabled={!isEditing}
-              value={user.email}
-              onChange={(e) => handleFieldChange("email", e.target.value)}
-              type="email"
-              className={errors.email ? "border-red-500" : ""}
-            />
-            {errors.email && (
-              <p className="text-xs text-red-500">{errors.email}</p>
-            )}
+        {errors.general && (
+          <div className="text-subtle rounded-[12px] bg-red-50 p-3 text-red-600">
+            {errors.general}
           </div>
         )}
 
-        {/* Phone Number - only show if not first-time login */}
-        {!autoEdit && (
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Phone Number
-            </label>
-            <Input
-              disabled={!isEditing}
-              value={user.phone}
-              onChange={(e) => handleFieldChange("phone", e.target.value)}
-              placeholder="+1 (555) 000-0000"
-              className={errors.phone ? "border-red-500" : ""}
-            />
-            {errors.phone && (
-              <p className="text-xs text-red-500">{errors.phone}</p>
-            )}
+        <div className="grid gap-6 md:grid-cols-2">
+          {visibleFields.map((field) => (
+            <div key={field} className="flex flex-col gap-2">
+              <label className="text-subtle-medium text-primary-navy">
+                {FIELD_LABELS[field]}
+                {(field === "firstName" ||
+                  field === "lastName" ||
+                  field === "email") && (
+                  <span className="text-red-500"> *</span>
+                )}
+              </label>
+              <Input
+                ref={field === "firstName" ? firstNameInputRef : undefined}
+                disabled={!isEditing}
+                type={field === "email" ? "email" : "text"}
+                value={user[field]}
+                onChange={(e) => handleFieldChange(field, e.target.value)}
+                placeholder={field === "phone" ? "+61 400 000 000" : undefined}
+                className={`h-12 rounded-[12px] bg-white px-4 text-[15px] text-slate-600 disabled:opacity-100 ${
+                  errors[field] ? "border-red-500" : ""
+                }`}
+              />
+              {errors[field] && (
+                <p className="text-[12px] text-red-500">{errors[field]}</p>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* Save Button for autoEdit mode */}
+        {autoEdit && isEditing && (
+          <div className="flex justify-end">
+            <Button
+              onClick={handleSave}
+              disabled={isSaving}
+              className="text-subtle-semibold h-[42px] rounded-full px-6"
+            >
+              {isSaving ? "Saving..." : "Save profile"}
+            </Button>
           </div>
         )}
       </div>
 
-      {/* Save Button for autoEdit mode */}
-      {autoEdit && isEditing && (
-        <div className="flex justify-end pt-4">
-          <Button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Save Profile"}
-          </Button>
-        </div>
-      )}
-
-      {/* Addresses Section - only show if not first-time login */}
-      {!autoEdit && (
-        <div className="space-y-6 border-t pt-6">
-          <AddressBook />
-        </div>
-      )}
+      {/* Address book - only show if not first-time login */}
+      {!autoEdit && <AddressBook />}
     </div>
   );
 }

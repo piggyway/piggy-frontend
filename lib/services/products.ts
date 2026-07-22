@@ -154,6 +154,7 @@ export class ProductService {
       imageUrl: normalizeImageUrl(product.image_url) || DEFAULT_PRODUCT_IMAGE,
       variantsCount: product.variants_count,
       isFeatured: product.is_featured,
+      dateUpdated: product.date_updated ?? null,
     };
   }
 
@@ -409,6 +410,26 @@ export class ProductService {
           totalPages: 0,
         },
       };
+    }
+  }
+
+  /**
+   * Get 3 random variants (for "You Might Also Like" sections)
+   */
+  static async getRandomVariants(): Promise<VariantListItem[]> {
+    try {
+      const response = await apiClient.get<{
+        data: VariantListItemFromAPI[];
+      }>(API_ENDPOINTS.VARIANTS_RANDOM);
+
+      if (!response.data) {
+        throw new Error("Invalid API response format");
+      }
+
+      return response.data.map((v) => this.transformVariantListItem(v));
+    } catch (error) {
+      console.error("[ProductService] Failed to fetch random variants:", error);
+      return [];
     }
   }
 

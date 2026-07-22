@@ -37,7 +37,7 @@ export async function RelatedProductsSection({
     <AnimatedSection className="w-full">
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Title */}
-        <h2 className="text-primary-navy-light mb-8 text-[28px] font-semibold sm:text-[42px]">
+        <h2 className="text-primary-navy-light text-large sm:text-h4 mb-8 font-semibold">
           Related Products
         </h2>
 

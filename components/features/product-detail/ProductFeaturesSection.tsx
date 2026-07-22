@@ -72,17 +72,17 @@ export function ProductFeaturesSection({
                 />
               </div>
               {productName && (
-                <h2 className="text-primary-navy-light text-[28px] font-semibold sm:text-[32px]">
+                <h2 className="text-primary-navy-light text-large sm:text-large font-semibold">
                   {productName}
                 </h2>
               )}
               {subtitle && (
-                <p className="text-primary-navy text-[24px] leading-8 font-semibold">
+                <p className="text-primary-navy text-lead leading-8 font-semibold">
                   {subtitle}
                 </p>
               )}
               {description && (
-                <p className="text-primary-navy max-w-2xl text-[24px] leading-8">
+                <p className="text-primary-navy text-lead max-w-2xl leading-8">
                   {description}
                 </p>
               )}
@@ -107,12 +107,12 @@ export function ProductFeaturesSection({
                   {(featureSectionTitle || featureSectionSubtitle) && (
                     <div className="flex flex-col gap-2">
                       {featureSectionTitle && (
-                        <h3 className="text-[24px] leading-8 font-semibold text-white">
+                        <h3 className="text-lead leading-8 font-semibold text-white">
                           {featureSectionTitle}
                         </h3>
                       )}
                       {featureSectionSubtitle && (
-                        <p className="text-[20px] leading-6 font-medium text-white">
+                        <p className="text-p-ui leading-6 font-medium text-white">
                           {featureSectionSubtitle}
                         </p>
                       )}
@@ -135,7 +135,7 @@ export function ProductFeaturesSection({
                             className="text-primary-navy size-12"
                             strokeWidth={1.5}
                           />
-                          <p className="text-primary-navy text-center text-[18px] font-semibold">
+                          <p className="text-primary-navy text-p-ui text-center font-semibold">
                             {card.label}
                           </p>
                         </div>
@@ -161,10 +161,10 @@ export function ProductFeaturesSection({
                           block.imageLeft ? "lg:order-2" : "lg:order-1"
                         )}
                       >
-                        <h3 className="text-primary-navy-light text-[32px] leading-10 font-semibold">
+                        <h3 className="text-primary-navy-light text-large leading-10 font-semibold">
                           {block.title}
                         </h3>
-                        <p className="text-primary-navy text-[24px] leading-8 font-normal">
+                        <p className="text-primary-navy text-lead leading-8 font-normal">
                           {block.description}
                         </p>
                       </div>
@@ -205,7 +205,7 @@ export function ProductFeaturesSection({
         {/* Mess happens banner */}
         {featureBannerText && (
           <div className="flex items-end justify-end gap-6">
-            <h2 className="text-primary-navy-light text-center text-[28px] font-semibold">
+            <h2 className="text-primary-navy-light text-large text-center font-semibold">
               {featureBannerText}
             </h2>
             <div className="relative hidden h-[75px] w-[150px] shrink-0 sm:block sm:h-[107px] sm:w-[214px]">

@@ -5,15 +5,16 @@ import { ArrowLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
 export const metadata: Metadata = {
-  title:
-    "First-Time Guinea Pig Owner: Complete Essentials Checklist | Piggy Way Crossing",
+  title: "First-Time Guinea Pig Owner: Complete Essentials Checklist",
   description:
     "Bringing home your first guinea pigs? Here's the ultimate checklist of everything you need for a happy, healthy start.",
+  alternates: { canonical: "/guides/first-time-owner-essentials" },
   openGraph: {
     title: "First-Time Guinea Pig Owner: Complete Essentials Checklist",
     description:
       "Bringing home your first guinea pigs? Here's the ultimate checklist of everything you need.",
     type: "article",
+    images: ["/shop-with-us/default.png"],
     publishedTime: "2024-03-15T00:00:00.000Z",
     authors: ["Piggy Way Crossing Team"],
     tags: ["New Owner Guide", "Guinea Pig Essentials", "Checklist"],

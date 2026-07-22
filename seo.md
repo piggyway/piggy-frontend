@@ -164,11 +164,11 @@ export default function ProductPage({ product }: { product: Product }) {
 
 搜索引擎很看重电商的 **Product schema**、**BreadcrumbList**，可以拿到丰富结果（价格、评分等）。
 
-Next.js App Router 可以这样：
+Next.js App Router 可以这样（注意：必须用原生 `<script>`，不能用 `next/script` 的 `<Script>`。
+`<Script>` 默认 afterInteractive，在 hydration 之后才注入，JSON-LD 不会出现在服务端 HTML 里，爬虫看不到）：
 
 ```tsx
 // app/products/[slug]/page.tsx
-import Script from "next/script";
 
 export default function ProductPage({ product }: { product: Product }) {
   const url = `https://www.example.com/products/${product.slug}`;
@@ -223,12 +223,12 @@ export default function ProductPage({ product }: { product: Product }) {
   return (
     <main>
       {/* 页面内容 */}
-      <Script
+      <script
         id="product-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
       />
-      <Script
+      <script
         id="breadcrumb-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}

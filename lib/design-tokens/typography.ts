@@ -20,6 +20,12 @@ export const typography = {
       weight: 600,
       style: "SemiBold",
     },
+    h3: {
+      size: "48px",
+      lineHeight: "48px",
+      weight: 600,
+      style: "SemiBold",
+    },
     h4: {
       size: "42px",
       lineHeight: "42px",
@@ -97,6 +103,36 @@ export const typography = {
       lineHeight: "14px",
       weight: 300,
       style: "Light",
+    },
+    detail: {
+      size: "12px",
+      lineHeight: "20px",
+      weight: 300,
+      style: "Light",
+    },
+    blockquote: {
+      size: "16px",
+      lineHeight: "24px",
+      weight: 300,
+      style: "Light",
+    },
+    "inline-code": {
+      size: "14px",
+      lineHeight: "20px",
+      weight: 500,
+      style: "Medium",
+    },
+    "table-head": {
+      size: "16px",
+      lineHeight: "24px",
+      weight: 500,
+      style: "Medium",
+    },
+    "table-item": {
+      size: "16px",
+      lineHeight: "24px",
+      weight: 400,
+      style: "Regular",
     },
   },
 } as const;

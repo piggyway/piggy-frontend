@@ -13,7 +13,7 @@ export function HeroSection() {
             {HERO_CONTENT.badge}
           </span>
 
-          <h1 className="text-primary-navy text-[36px] leading-tight font-semibold tracking-[-0.288px] sm:text-[48px] sm:leading-[48px]">
+          <h1 className="text-primary-navy text-large sm:text-h3 leading-tight font-semibold tracking-[-0.288px] sm:leading-[48px]">
             {HERO_CONTENT.title}
           </h1>
 
@@ -43,7 +43,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          <div className="text-primary-navy flex flex-col gap-0 text-[20px] leading-8 sm:text-[24px]">
+          <div className="text-primary-navy text-p-ui sm:text-lead flex flex-col gap-0 leading-8">
             <p className="font-bold">{HERO_CONTENT.paragraphs[0]}</p>
             <p className="font-normal">{HERO_CONTENT.paragraphs[1]}</p>
           </div>

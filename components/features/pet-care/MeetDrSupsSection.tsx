@@ -29,16 +29,16 @@ export function MeetDrSupsSection() {
                     />
                   </div>
                   <div className="flex flex-1 flex-col gap-2">
-                    <p className="text-primary-navy text-[20px] leading-8 font-normal sm:text-[24px]">
+                    <p className="text-primary-navy text-p-ui sm:text-lead leading-8 font-normal">
                       {MEET_DR_SUPS_CONTENT.eyebrow}
                     </p>
-                    <h2 className="text-primary-navy-light text-[32px] leading-9 font-semibold tracking-[-0.21px] sm:text-[42px] sm:leading-[42px]">
+                    <h2 className="text-primary-navy-light text-large sm:text-h4 leading-9 font-semibold tracking-[-0.21px] sm:leading-[42px]">
                       {MEET_DR_SUPS_CONTENT.title}
                     </h2>
                   </div>
                 </div>
 
-                <div className="text-primary-navy flex flex-col gap-6 text-[20px] leading-8 font-normal sm:text-[24px]">
+                <div className="text-primary-navy text-p-ui sm:text-lead flex flex-col gap-6 leading-8 font-normal">
                   {MEET_DR_SUPS_CONTENT.paragraphs.map((paragraph) => (
                     <p key={paragraph}>{paragraph}</p>
                   ))}
@@ -56,15 +56,17 @@ export function MeetDrSupsSection() {
                   />
                 </div>
                 <div className="flex flex-col items-center gap-2 text-center">
-                  <p className="text-primary-navy-light text-[20px] leading-8 font-semibold sm:text-[24px]">
+                  <p className="text-primary-navy-light text-p-ui sm:text-lead leading-8 font-semibold">
                     {MEET_DR_SUPS_CONTENT.photoCaptionName}
                   </p>
-                  <p className="text-primary-navy text-[20px] leading-6 font-medium">
-                    {MEET_DR_SUPS_CONTENT.photoCaptionCredentials.map((line) => (
-                      <span key={line} className="block">
-                        {line}
-                      </span>
-                    ))}
+                  <p className="text-primary-navy text-p-ui leading-6 font-medium">
+                    {MEET_DR_SUPS_CONTENT.photoCaptionCredentials.map(
+                      (line) => (
+                        <span key={line} className="block">
+                          {line}
+                        </span>
+                      )
+                    )}
                   </p>
                 </div>
               </div>
@@ -78,14 +80,14 @@ export function MeetDrSupsSection() {
                 height={28}
                 className="h-7 w-[31px] shrink-0 object-contain"
               />
-              <p className="text-primary-navy flex-1 text-[20px] leading-8 font-semibold sm:text-[24px]">
+              <p className="text-primary-navy text-p-ui sm:text-lead flex-1 leading-8 font-semibold">
                 {MEET_DR_SUPS_CONTENT.footerPrompt}
               </p>
               <Link
                 href={PET_CARE_ROUTES.drSupsBooking}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-primary-purple text-primary-navy flex shrink-0 items-center gap-2 rounded-[20px] px-4 py-2 text-sm font-normal transition-colors hover:bg-primary-purple/80"
+                className="bg-primary-purple text-primary-navy hover:bg-primary-purple/80 flex shrink-0 items-center gap-2 rounded-[20px] px-4 py-2 text-sm font-normal transition-colors"
               >
                 <span>{MEET_DR_SUPS_CONTENT.footerButtonLabel}</span>
                 <ArrowUpRight className="size-4" />

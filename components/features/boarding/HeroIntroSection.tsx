@@ -11,10 +11,10 @@ export function HeroIntroSection() {
     <AnimatedSection className="w-full">
       <section className="container mx-auto max-w-[1160px] px-4 pt-12 pb-4 sm:pt-16 md:pt-20 lg:pt-16">
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-primary-navy-light text-[32px] leading-[38px] font-semibold tracking-[-0.21px] sm:text-[42px] sm:leading-[42px]">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 leading-[38px] font-semibold tracking-[-0.21px] sm:leading-[42px]">
             Guinea Pig Boarding in Melbourne 🐹
           </h1>
-          <p className="text-primary-navy mt-2 text-[30px] leading-[34px] font-semibold sm:text-[40px] sm:leading-[42px]">
+          <p className="text-primary-navy text-large sm:text-h4 mt-2 leading-[34px] font-semibold sm:leading-[42px]">
             Thoughtful boarding and care for guinea pigs, designed to feel like
             home.
           </p>
@@ -43,7 +43,7 @@ export function HeroIntroSection() {
               />
 
               <div className="flex max-w-[420px] flex-col items-start text-left">
-                <p className="text-primary-navy text-[18px] leading-[28px] font-normal sm:text-[20px] sm:leading-[30px] lg:text-[22px] lg:leading-[31px]">
+                <p className="text-primary-navy text-p-ui sm:text-p-ui lg:text-lead leading-[28px] font-normal sm:leading-[30px] lg:leading-[31px]">
                   Thoughtful boarding &amp; care for guinea pigs, designed to
                   feel like home.
                 </p>
