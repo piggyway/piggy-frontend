@@ -8,12 +8,13 @@ import { ProfileInfo } from "./sections/ProfileInfo";
 import { OrderHistory } from "./sections/OrderHistory";
 import { OrderDetails } from "./sections/OrderDetails";
 import { TrackOrder } from "./sections/TrackOrder";
+import { Boarding } from "./sections/Boarding";
 import { FirstLoginBanner } from "./FirstLoginBanner";
 import { useUser } from "@/contexts/UserContext";
 import { Loader2 } from "lucide-react";
 
 export function AccountLayout() {
-  const { isFirstLogin, clearUser } = useUser();
+  const { user, isFirstLogin, clearUser } = useUser();
   const { status } = useSession();
   const router = useRouter();
   const [currentSection, setCurrentSection] =
@@ -21,9 +22,11 @@ export function AccountLayout() {
   const [selectedOrderNumber, setSelectedOrderNumber] = useState<string | null>(
     null
   );
-  const [showBanner, setShowBanner] = useState(false);
+  const [trackOrderNumber, setTrackOrderNumber] = useState<string | null>(null);
+  // First-time login banner: captured once at mount, same as the previous
+  // run-once effect behaviour.
+  const [showBanner, setShowBanner] = useState(isFirstLogin);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const hasCheckedRef = useRef(false);
   const contentRef = useRef<HTMLDivElement>(null);
 
   // Protect route
@@ -46,14 +49,6 @@ export function AccountLayout() {
   if (status === "unauthenticated") {
     return null;
   }
-
-  // Detect first-time login
-  useEffect(() => {
-    if (hasCheckedRef.current) return;
-
-    setShowBanner(isFirstLogin);
-    hasCheckedRef.current = true;
-  }, [isFirstLogin]);
 
   const handleBannerComplete = () => {
     // Hide banner
@@ -125,6 +120,12 @@ export function AccountLayout() {
     setCurrentSection("orders");
   };
 
+  const handleTrackOrder = (orderNumber: string) => {
+    setTrackOrderNumber(orderNumber);
+    setCurrentSection("track");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   const renderContent = () => {
     switch (currentSection) {
       case "profile":
@@ -144,10 +145,13 @@ export function AccountLayout() {
           <OrderDetails
             orderNumber={selectedOrderNumber}
             onBack={handleBackToOrders}
+            onTrack={handleTrackOrder}
           />
         );
       case "track":
-        return <TrackOrder />;
+        return <TrackOrder initialOrderNumber={trackOrderNumber} />;
+      case "boarding":
+        return <Boarding />;
       default:
         return (
           <ProfileInfo
@@ -159,10 +163,16 @@ export function AccountLayout() {
   };
 
   return (
-    <div className="mx-auto max-w-[1160px] px-4 py-8">
-      {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
-        <h1 className="text-primary-navy text-3xl font-bold">My Account</h1>
+    <div className="container mx-auto px-4 pt-12 pb-24 sm:px-6 lg:px-8">
+      {/* Page title */}
+      <div className="mb-8 flex flex-col gap-2">
+        <h1 className="text-primary-navy text-[40px] leading-none font-semibold">
+          My Account
+        </h1>
+        <p className="text-p text-slate-600">
+          Welcome back{user?.firstName ? `, ${user.firstName}` : ""} — manage
+          your orders, boarding and details here.
+        </p>
       </div>
 
       {/* First Login Banner */}
@@ -174,8 +184,8 @@ export function AccountLayout() {
         />
       )}
 
-      <div className="flex flex-col gap-8 md:flex-row">
-        <aside className="flex-shrink-0 md:w-64">
+      <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
+        <aside className="w-full shrink-0 lg:w-[300px]">
           <AccountSidebar
             currentSection={currentSection}
             onSectionChange={setCurrentSection}
@@ -183,7 +193,7 @@ export function AccountLayout() {
             isLoggingOut={isLoggingOut}
           />
         </aside>
-        <main ref={contentRef} className="flex-1">
+        <main ref={contentRef} className="min-w-0 flex-1">
           {renderContent()}
         </main>
       </div>
