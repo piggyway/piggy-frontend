@@ -1,14 +1,21 @@
 import { Metadata } from "next";
 import { Truck, Clock, Globe } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
+import { ConfigService } from "@/lib/services/config";
 
-export const metadata: Metadata = {
-  title: "Shipping & Delivery | Piggy Way Crossing",
-  description:
-    "Learn about our shipping rates, delivery times, and policies. Free shipping on orders over $99.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { freeShippingThreshold } = await ConfigService.getShippingConfig();
+  return {
+    title: "Shipping & Delivery",
+    description: `Learn about our shipping rates, delivery times, and policies. Free shipping on orders over $${freeShippingThreshold}.`,
+    alternates: { canonical: "/shipping-delivery" },
+  };
+}
 
-export default function ShippingPage() {
+export default async function ShippingPage() {
+  const { freeShippingThreshold, standardShippingFee } =
+    await ConfigService.getShippingConfig();
+
   return (
     <div className="bg-neutral-background-light min-h-screen py-16 sm:py-24">
       <div className="container mx-auto px-4">
@@ -25,7 +32,9 @@ export default function ShippingPage() {
               <h3 className="text-primary-navy mb-2 font-bold">
                 Free Shipping
               </h3>
-              <p className="text-sm text-gray-600">On all orders over $99</p>
+              <p className="text-sm text-gray-600">
+                On all orders over ${freeShippingThreshold}
+              </p>
             </div>
             <div className="rounded-2xl bg-white p-6 text-center shadow-sm">
               <div className="bg-secondary-mint mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
@@ -52,16 +61,18 @@ export default function ShippingPage() {
               </h2>
               <div className="space-y-4">
                 <div className="flex justify-between border-b pb-2">
-                  <span>Standard Shipping (Orders under $99)</span>
-                  <span className="font-semibold">$9.95</span>
-                </div>
-                <div className="flex justify-between border-b pb-2">
-                  <span>Standard Shipping (Orders $99+)</span>
-                  <span className="font-semibold text-green-600">FREE</span>
+                  <span>
+                    Standard Shipping (Orders under ${freeShippingThreshold})
+                  </span>
+                  <span className="font-semibold">
+                    ${standardShippingFee.toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Express Shipping</span>
-                  <span className="font-semibold">$14.95</span>
+                  <span>
+                    Standard Shipping (Orders ${freeShippingThreshold}+)
+                  </span>
+                  <span className="font-semibold text-green-600">FREE</span>
                 </div>
               </div>
             </section>
@@ -78,7 +89,6 @@ export default function ShippingPage() {
                 <li>Metro Areas (East Coast): 2-4 business days</li>
                 <li>Regional Areas: 4-7 business days</li>
                 <li>Western Australia & NT: 7-10 business days</li>
-                <li>Express Shipping: 1-3 business days (Metro)</li>
               </ul>
             </section>
 

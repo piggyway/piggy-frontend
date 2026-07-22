@@ -4,12 +4,16 @@
  */
 
 export const API_ENDPOINTS = {
+  // Shop config
+  CONFIG: "/api/config",
+
   // Products
   PRODUCTS: "/api/products",
   PRODUCT_BY_ID: (id: string | number) => `/api/products/${id}`,
 
   // Variants
   VARIANTS: "/api/variants",
+  VARIANTS_RANDOM: "/api/variants/random",
   VARIANTS_REVIEWS: (id: string | number) => `/api/variants/${id}/reviews`,
 
   // Categories

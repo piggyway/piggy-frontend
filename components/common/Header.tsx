@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { headerNavigation } from "@/lib/types/navigation";
 import { cn } from "@/lib/utils";
+import { useShippingConfig } from "@/hooks/useShippingConfig";
 
 function SearchQueryUpdater({
   setSearchQuery,
@@ -40,6 +41,7 @@ function SearchQueryUpdater({
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { freeShippingThreshold } = useShippingConfig();
   // Removed useSearchParams from here
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -99,7 +101,7 @@ export function Header() {
       <div className="bg-primary-purple w-full py-3">
         <div className="mx-auto max-w-[1160px] px-4 text-center">
           <p className="text-primary-navy text-sm font-medium">
-            Free shipping over $199
+            Free shipping over ${freeShippingThreshold}
           </p>
         </div>
       </div>

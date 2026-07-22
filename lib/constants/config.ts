@@ -41,3 +41,12 @@ export const FEATURE_FLAGS = {
   enableDebugMode: isDevelopment,
   enableBetaFeatures: isStaging || isDevelopment,
 } as const;
+
+/**
+ * Shipping (fallback values, in dollars)
+ * The source of truth is the backend: GET /api/v1/config, read via
+ * ConfigService / useShippingConfig. These constants are only used
+ * while loading or when the backend is unreachable.
+ */
+export const FREE_SHIPPING_THRESHOLD = 120;
+export const STANDARD_SHIPPING_FEE = 18;
