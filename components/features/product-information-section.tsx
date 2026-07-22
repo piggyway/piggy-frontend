@@ -58,7 +58,7 @@ export function ProductInformationSection({
       {/* Title */}
       <div className="flex w-full items-center gap-10">
         <div className="min-w-0 flex-1">
-          <h2 className="text-primary-gold text-[32px] leading-10 font-semibold">
+          <h2 className="text-primary-gold text-large leading-10 font-semibold">
             Product Information
           </h2>
         </div>

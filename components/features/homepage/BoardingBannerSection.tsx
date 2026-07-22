@@ -38,7 +38,7 @@ const BOARDING_PHOTOS = [
     alt: "Guinea pig tunnel",
     className:
       "absolute -right-6 top-[20%] h-[160px] w-[160px] sm:h-[200px] sm:w-[200px] lg:h-[240px] lg:w-[240px] object-cover rounded-[50px_100px_50px_50px] shadow-lg",
-  }
+  },
 ];
 
 const SPARKLES = [
@@ -88,20 +88,20 @@ export function BoardingBannerSection() {
             />
           ))}
 
-          <div className="relative z-10 flex flex-col items-center justify-center min-h-[420px] px-6 py-12 sm:px-12 sm:py-16 text-center">
+          <div className="relative z-10 flex min-h-[420px] flex-col items-center justify-center px-6 py-12 text-center sm:px-12 sm:py-16">
             <Image
               src={BOARDING_LOGO_IMAGE}
               alt="Piggy Way Boarding"
               width={227}
               height={122}
-              className="h-auto w-[160px] sm:w-[200px] lg:w-[227px] mb-6"
+              className="mb-6 h-auto w-[160px] sm:w-[200px] lg:w-[227px]"
             />
 
-            <h2 className="text-[#405aab] text-[28px] leading-[36px] sm:text-[36px] sm:leading-[44px] lg:text-[42px] lg:leading-[50px] font-semibold mb-4 tracking-tight">
+            <h2 className="text-large sm:text-large lg:text-h4 mb-4 leading-[36px] font-semibold tracking-tight text-[#405aab] sm:leading-[44px] lg:leading-[50px]">
               Guinea Pig Boarding in Melbourne 🐹
             </h2>
 
-            <p className="text-primary-navy max-w-[600px] text-[18px] leading-[26px] sm:text-[21px] sm:leading-[30px] font-normal mb-8">
+            <p className="text-primary-navy text-p-ui sm:text-p-ui mb-8 max-w-[600px] leading-[26px] font-normal sm:leading-[30px]">
               Thoughtful boarding &amp; care for guinea pigs, designed to feel
               like home.
             </p>
@@ -109,7 +109,7 @@ export function BoardingBannerSection() {
             <Button
               asChild
               variant="secondary"
-              className="bg-[#dcd7ff] hover:bg-[#c8c1ff] text-[#1a327e] h-[40px] rounded-full px-6 text-[14px] leading-6 font-medium shadow-none transition-colors"
+              className="text-subtle h-[40px] rounded-full bg-[#dcd7ff] px-6 leading-6 font-medium text-[#1a327e] shadow-none transition-colors hover:bg-[#c8c1ff]"
             >
               <Link href={BOARDING_PAGE_HREF}>Book with us</Link>
             </Button>

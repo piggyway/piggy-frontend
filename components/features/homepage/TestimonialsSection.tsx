@@ -35,10 +35,10 @@ export function TestimonialsSection() {
           {/* Title with Icon */}
           <div className="mb-8 flex items-start justify-between gap-8 sm:mb-10">
             <div className="flex-1">
-              <p className="text-primary-navy mb-2 text-[24px] leading-[32px] font-normal sm:text-[24px]">
+              <p className="text-primary-navy text-lead sm:text-lead mb-2 leading-[32px] font-normal">
                 Trusted by Parents
               </p>
-              <h2 className="text-primary-navy-light text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
+              <h2 className="text-primary-navy-light text-large sm:text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
                 Loved by Piggies
               </h2>
             </div>
@@ -62,20 +62,20 @@ export function TestimonialsSection() {
               >
                 {/* Quote with decorative quotes */}
                 <div className="text-primary-navy flex items-start gap-0">
-                  <span className="w-[30px] shrink-0 text-[42px] leading-[42px] font-semibold tracking-[-0.21px]">
+                  <span className="text-h4 w-[30px] shrink-0 leading-[42px] font-semibold tracking-[-0.21px]">
                     "
                   </span>
-                  <p className="flex-1 text-[20px] leading-[24px] font-medium">
+                  <p className="text-p-ui flex-1 leading-[24px] font-medium">
                     {testimonial.quote}
                   </p>
-                  <span className="w-[20px] shrink-0 self-end text-[42px] leading-[0px] font-semibold tracking-[-0.21px]">
+                  <span className="text-h4 w-[20px] shrink-0 self-end leading-[0px] font-semibold tracking-[-0.21px]">
                     "
                   </span>
                 </div>
 
                 {/* Author */}
                 <div className="mt-auto">
-                  <p className="text-primary-navy text-[24px] leading-[32px] font-semibold">
+                  <p className="text-primary-navy text-lead leading-[32px] font-semibold">
                     {testimonial.author}
                   </p>
                 </div>

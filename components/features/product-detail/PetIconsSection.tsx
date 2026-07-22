@@ -79,7 +79,7 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
     return (
       <AnimatedSection className="w-full">
         <div className="container mx-auto max-w-[1160px] px-4">
-          <h2 className="text-primary-navy-light mb-8 text-center text-[28px] font-semibold sm:text-[32px]">
+          <h2 className="text-primary-navy-light text-large sm:text-large mb-8 text-center font-semibold">
             Suitable for small pets and more 🐰🐹
           </h2>
           <p className="text-primary-navy text-center text-base">
@@ -97,7 +97,7 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
     <AnimatedSection className="w-full">
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Title */}
-        <h2 className="text-primary-navy-light mb-8 text-center text-[28px] font-semibold sm:text-[32px]">
+        <h2 className="text-primary-navy-light text-large sm:text-large mb-8 text-center font-semibold">
           Suitable for small pets and more 🐰🐹
         </h2>
 

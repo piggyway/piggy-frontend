@@ -68,7 +68,7 @@ export function ProductDetailsPanel({
 
       {/* Product Name */}
       <div>
-        <h1 className="text-primary-navy-light mb-3 text-[28px] leading-tight font-semibold sm:text-[32px]">
+        <h1 className="text-primary-navy-light text-large sm:text-large mb-3 leading-tight font-semibold">
           Product name: <span className="text-primary-navy">{name}</span>
         </h1>
         <p className="text-primary-navy text-base leading-relaxed">

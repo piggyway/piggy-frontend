@@ -10,10 +10,10 @@ export function VetExpertiseSection() {
       <section className="container mx-auto max-w-[1160px] px-4 py-10 sm:py-12">
         <div className="flex flex-col gap-16">
           <div className="flex flex-col gap-4">
-            <h2 className="text-primary-navy-light text-[28px] leading-9 font-semibold sm:text-[32px] sm:leading-10">
+            <h2 className="text-primary-navy-light text-large sm:text-large leading-9 font-semibold sm:leading-10">
               {VET_EXPERTISE_CONTENT.title}
             </h2>
-            <p className="text-primary-navy text-[20px] leading-8 font-normal sm:text-[24px]">
+            <p className="text-primary-navy text-p-ui sm:text-lead leading-8 font-normal">
               {VET_EXPERTISE_CONTENT.subtitle}
             </p>
           </div>
@@ -33,10 +33,10 @@ export function VetExpertiseSection() {
                   />
                 </div>
                 <div className="text-primary-navy flex flex-1 flex-col gap-2">
-                  <h3 className="text-[20px] leading-8 font-semibold sm:text-[24px]">
+                  <h3 className="text-p-ui sm:text-lead leading-8 font-semibold">
                     {item.title}
                   </h3>
-                  <p className="text-[16px] leading-6 font-normal">
+                  <p className="text-p leading-6 font-normal">
                     {item.description}
                   </p>
                 </div>

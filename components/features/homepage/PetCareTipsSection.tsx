@@ -11,10 +11,10 @@ export function PetCareTipsSection() {
       <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* Title */}
         <div className="mb-8 sm:mb-10">
-          <p className="text-primary-navy mb-2 text-[20px] leading-[32px] font-normal sm:text-[24px]">
+          <p className="text-primary-navy text-p-ui sm:text-lead mb-2 leading-[32px] font-normal">
             Learn, Love, Care
           </p>
-          <h2 className="text-primary-navy-light text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
+          <h2 className="text-primary-navy-light text-large sm:text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
             Pet Care & Tips
           </h2>
         </div>
@@ -29,10 +29,10 @@ export function PetCareTipsSection() {
             >
               <div className="flex flex-1 flex-col gap-[14px]">
                 <div>
-                  <p className="text-[32px] leading-[40px] font-semibold text-white">
+                  <p className="text-large leading-[40px] font-semibold text-white">
                     Guinea Pig Diet Guide
                   </p>
-                  <p className="mt-2 text-[20px] leading-[24px] font-medium text-white">
+                  <p className="text-p-ui mt-2 leading-[24px] font-medium text-white">
                     What to Feed Your Piggy
                   </p>
                 </div>
@@ -55,10 +55,9 @@ export function PetCareTipsSection() {
                     />
                   </div> */}
                 </div>
-                
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="flex-1 text-[24px] leading-[32px] font-semibold text-white">
+                <p className="text-lead flex-1 leading-[32px] font-semibold text-white">
                   Read more
                 </p>
                 <div
@@ -79,10 +78,10 @@ export function PetCareTipsSection() {
               className="relative flex h-[387px] flex-1 flex-col gap-5 overflow-hidden rounded-[28px] bg-white p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="relative z-10 flex flex-1 flex-col gap-[14px]">
-                <p className="text-primary-navy-light text-[32px] leading-[40px] font-semibold">
+                <p className="text-primary-navy-light text-large leading-[40px] font-semibold">
                   Everything You Need to Begin
                 </p>
-                <p className="text-primary-navy text-[20px] leading-[24px] font-medium">
+                <p className="text-primary-navy text-p-ui leading-[24px] font-medium">
                   Setting Up the Perfect Habitat for Small Pets
                 </p>
               </div>
@@ -105,7 +104,7 @@ export function PetCareTipsSection() {
                 </div> */}
               </div>
               <div className="relative z-10 flex items-center justify-between gap-4">
-                <p className="text-primary-navy flex-1 text-[24px] leading-[32px] font-semibold">
+                <p className="text-primary-navy text-lead flex-1 leading-[32px] font-semibold">
                   Read more
                 </p>
                 <div
@@ -127,10 +126,10 @@ export function PetCareTipsSection() {
             >
               <div className="flex flex-1 flex-col gap-[14px]">
                 <div>
-                  <p className="text-[32px] leading-[40px] font-semibold text-white">
+                  <p className="text-large leading-[40px] font-semibold text-white">
                     Bonding Tips
                   </p>
-                  <p className="mt-2 text-[20px] leading-[24px] font-medium text-white">
+                  <p className="text-p-ui mt-2 leading-[24px] font-medium text-white">
                     Building Trust with Small Pets
                   </p>
                 </div>
@@ -153,10 +152,9 @@ export function PetCareTipsSection() {
                     />
                   </div> */}
                 </div>
-                
               </div>
               <div className="flex items-center justify-between gap-4">
-                <p className="flex-1 text-[24px] leading-[32px] font-semibold text-white">
+                <p className="text-lead flex-1 leading-[32px] font-semibold text-white">
                   Read more
                 </p>
                 <div

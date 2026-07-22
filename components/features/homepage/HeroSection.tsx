@@ -19,10 +19,10 @@ export function HeroSection() {
       <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* Title */}
         <div className="mb-10">
-          <h4 className="text-primary-navy-light mb-3 text-[32px] leading-[42px] font-semibold tracking-[-0.21px] sm:text-[42px]">
+          <h4 className="text-primary-navy-light text-large sm:text-h4 mb-3 leading-[42px] font-semibold tracking-[-0.21px]">
             New Brand, True Care ✨
           </h4>
-          <h1 className="text-primary-navy text-[48px] leading-[64px] font-semibold tracking-[-0.768px] sm:text-[64px]">
+          <h1 className="text-primary-navy text-h3 sm:text-h1 leading-[64px] font-semibold tracking-[-0.768px]">
             Just for <span className="text-primary-navy">Small Paws</span>!
           </h1>
         </div>
@@ -51,7 +51,7 @@ export function HeroSection() {
                 sizes="(min-width: 1024px) 432px, 60vw"
               />
             </div>
-            
+
             <div className="absolute top-0 left-0 h-[175px] w-[248px] overflow-hidden rounded-[33px]">
               <Image
                 src={heroTileImages.pink}
@@ -61,7 +61,6 @@ export function HeroSection() {
                 sizes="(min-width: 1024px) 248px, 50vw"
               />
             </div>
-
 
             {/* Middle Top - Gold */}
             <div className="bg-primary-gold absolute top-0 left-[680px] h-[175px] w-[165px] overflow-hidden rounded-[33px]">
@@ -95,7 +94,6 @@ export function HeroSection() {
                 sizes="(min-width: 1024px) 298px, 33vw"
               />
             </div>
-
           </div>
         </div>
 
@@ -158,7 +156,7 @@ export function HeroSection() {
         </div>
 
         {/* Description */}
-        <p className="text-primary-navy max-w-[745px] text-[20px] leading-[32px] font-semibold sm:text-[24px]">
+        <p className="text-primary-navy text-p-ui sm:text-lead max-w-[745px] leading-[32px] font-semibold">
           Discover our first-ever range of liners, created to keep things clean,
           comfy, and fuss-free.
         </p>
