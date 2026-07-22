@@ -80,8 +80,8 @@ export function CartPage() {
           </h1>
           {error && <p className="text-destructive mb-2 text-sm">{error}</p>}
           <p className="mb-8 max-w-md text-slate-600">
-            Looks like you haven't started your shopping spree yet. Explore our
-            products and find something you love!
+            Looks like you haven&apos;t started your shopping spree yet. Explore
+            our products and find something you love!
           </p>
           <Button asChild size="lg" className="bg-primary-navy text-white">
             <Link href="/shop">Start Shopping</Link>
@@ -96,8 +96,8 @@ export function CartPage() {
 
   return (
     <div className="mx-auto max-w-[1160px] px-4 pt-32 pb-24">
-      <div className="mb-12 flex items-center gap-4">
-        <Button variant="ghost" size="sm" asChild className="gap-2">
+      <div className="mb-12 flex flex-col items-start gap-4">
+        <Button variant="ghost" size="sm" asChild className="-ml-3 gap-2">
           <Link href="/shop">
             <ArrowLeft className="size-4" />
             Continue Shopping
@@ -152,11 +152,6 @@ export function CartPage() {
               </div>
             )}
           </div>
-
-          {/* Related Products Section - Shown below cart items on mobile/desktop */}
-          <div className="mt-12">
-            <RelatedProducts />
-          </div>
         </div>
 
         {/* Order Summary */}
@@ -166,9 +161,14 @@ export function CartPage() {
             discount={discount}
             grandTotal={grandTotal}
             currencySymbol={cart.currencySymbol}
-            className="sticky top-24"
+            className="sticky top-24 lg:h-[720px]"
           />
         </div>
+      </div>
+
+      {/* Related Products Section - full content width below the cart columns */}
+      <div className="mt-12">
+        <RelatedProducts />
       </div>
     </div>
   );
