@@ -49,6 +49,20 @@ export function ProductFeaturesSection({
   featureCards = [],
   storyBlocks = [],
 }: ProductFeaturesSectionProps) {
+  // Without cards, story blocks, or any intro/banner copy the section is just
+  // a pet icon and the product title, so render nothing at all.
+  const hasContent =
+    featureCards.length > 0 ||
+    storyBlocks.length > 0 ||
+    Boolean(subtitle.trim()) ||
+    Boolean(description.trim()) ||
+    Boolean(featureSectionTitle.trim()) ||
+    Boolean(featureBannerText.trim());
+
+  if (!hasContent) {
+    return null;
+  }
+
   return (
     <AnimatedSection className="w-full">
       <div className="container mx-auto flex max-w-[1160px] flex-col gap-12 px-4">

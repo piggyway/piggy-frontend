@@ -16,6 +16,7 @@ import type {
   ProductDetail,
   StoryBlock,
   FeatureCard,
+  InfoSection,
   ProductOption,
   ProductVariant,
   AddOn,
@@ -230,6 +231,16 @@ export class ProductService {
         }))
         .filter(
           (card): card is FeatureCard => card.icon !== "" && card.label !== ""
+        ),
+      infoSections: (product.info_sections ?? [])
+        .map((section) => ({
+          id: section.id,
+          title: section.title || "",
+          content: section.content || "",
+        }))
+        .filter(
+          (section): section is InfoSection =>
+            section.title !== "" && section.content !== ""
         ),
       options,
       variants: product.variants.map((variant) =>

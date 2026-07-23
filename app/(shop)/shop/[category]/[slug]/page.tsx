@@ -238,6 +238,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           specSectionTitle={productCategory?.specSectionTitle}
           careSectionTitle={productCategory?.careSectionTitle}
           careCards={productCategory?.careCards}
+          infoSections={product.infoSections}
         />
 
         {/* Product Features story - image/text blocks from CMS */}

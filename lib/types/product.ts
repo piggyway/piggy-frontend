@@ -309,6 +309,25 @@ export interface FeatureCard {
 }
 
 /**
+ * Product information section from API (snake_case)
+ */
+export interface InfoSectionFromAPI {
+  id: number;
+  title: string | null;
+  content: string | null;
+  sort: number | null;
+}
+
+/**
+ * Product information section for frontend (camelCase)
+ */
+export interface InfoSection {
+  id: number;
+  title: string;
+  content: string;
+}
+
+/**
  * Add-on selection mode
  */
 export type AddOnSelectionMode = "single" | "multiple";
@@ -411,6 +430,7 @@ export interface ProductDetailFromAPI {
   detail_information_files: string[];
   story_blocks: StoryBlockFromAPI[];
   feature_cards: FeatureCardFromAPI[];
+  info_sections: InfoSectionFromAPI[];
   options: Array<{
     id: number;
     name: string | null;
@@ -480,6 +500,7 @@ export interface ProductDetail {
   detailInformationFiles: string[];
   storyBlocks: StoryBlock[];
   featureCards: FeatureCard[];
+  infoSections: InfoSection[];
   options: ProductOption[];
   variants: ProductVariant[];
   addOnGroups: AddOnGroup[];
