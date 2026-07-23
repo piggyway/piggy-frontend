@@ -10,6 +10,17 @@ export interface VariantOption {
   value: string;
 }
 
+/**
+ * Cart item add-on from API (snake_case). unit_price_amt is in CENTS.
+ */
+export interface CartItemAddOnFromAPI {
+  id: number;
+  add_on_rid: number | null;
+  name: string | null;
+  unit_price_amt: number | null;
+  currency: number | null;
+}
+
 export interface CartItemFromAPI {
   id: string | number; // Backend may return number, we'll convert to string
   cart_id: string;
@@ -27,6 +38,7 @@ export interface CartItemFromAPI {
   image_url: string | null;
   is_available: boolean | null;
   stock_quantity: number | null;
+  add_ons?: CartItemAddOnFromAPI[];
   line_subtotal_amt: number;
   currency: string | null; // May be null, we'll use cart currency as fallback
 }
@@ -64,6 +76,17 @@ export interface CartResponseFromAPI {
 
 // ==================== Frontend Types ====================
 
+/**
+ * Cart item add-on for frontend (camelCase). unitPriceCents is in CENTS.
+ */
+export interface CartItemAddOn {
+  id: number;
+  addOnRid: number | null;
+  name: string;
+  unitPriceCents: number;
+  formattedUnitPrice: string;
+}
+
 export interface CartItem {
   id: string;
   cartId: string;
@@ -81,6 +104,7 @@ export interface CartItem {
   stockQuantity: number | null;
   variantSku: string | null;
   variantOptions: VariantOption[];
+  addOns: CartItemAddOn[];
   notes: string | null;
   formattedUnitPrice: string;
   formattedLineSubtotal: string;
@@ -118,6 +142,7 @@ export interface AddCartItemPayload {
   variantRid: number;
   quantity?: number;
   notes?: string;
+  addOnIds?: number[];
 }
 
 export interface UpdateCartItemPayload {

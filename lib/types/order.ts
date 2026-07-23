@@ -8,6 +8,12 @@ export type OrderStatus =
   | "refunded"
   | "disputed";
 
+export interface OrderItemAddOn {
+  add_on_rid: number | null;
+  name: string;
+  unit_price_cents: number;
+}
+
 export interface OrderItem {
   product_title: string;
   variant_sku: string | null;
@@ -17,6 +23,7 @@ export interface OrderItem {
   product_rid: number | null;
   variant_rid: number | null;
   image_url: string | null;
+  add_ons?: OrderItemAddOn[];
   variant_attributes:
     | {
         option_name: string;
@@ -66,5 +73,3 @@ export interface OrderDetailResponse {
   success: true;
   data: OrderWithItems;
 }
-
-

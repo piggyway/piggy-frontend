@@ -309,6 +309,74 @@ export interface FeatureCard {
 }
 
 /**
+ * Add-on selection mode
+ */
+export type AddOnSelectionMode = "single" | "multiple";
+
+/**
+ * Add-on item from API (snake_case)
+ */
+export interface AddOnFromAPI {
+  id: number;
+  uuid: string | null;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  currency: CurrencyInfo | null;
+  image_url: string | null;
+  stock_quantity: number;
+  is_available: boolean;
+  sort: number | null;
+  group_id: number | null;
+}
+
+/**
+ * Add-on group from API (snake_case)
+ */
+export interface AddOnGroupFromAPI {
+  id: number;
+  uuid: string | null;
+  name: string | null;
+  selection_mode: string | null;
+  is_required: boolean;
+  sort: number | null;
+  add_ons: AddOnFromAPI[];
+}
+
+/**
+ * Add-on item for frontend (camelCase). price is in dollars.
+ */
+export interface AddOn {
+  id: number;
+  uuid: string | null;
+  name: string;
+  slug: string | null;
+  description: string | null;
+  price: number;
+  formattedPrice: string;
+  currency: CurrencyInfo | null;
+  imageUrl: string | null;
+  stockQuantity: number;
+  isAvailable: boolean;
+  sort: number;
+  groupId: number | null;
+}
+
+/**
+ * Add-on group for frontend (camelCase)
+ */
+export interface AddOnGroup {
+  id: number;
+  uuid: string | null;
+  name: string;
+  selectionMode: AddOnSelectionMode;
+  isRequired: boolean;
+  sort: number;
+  addOns: AddOn[];
+}
+
+/**
  * Product detail from API (snake_case)
  */
 export interface ProductDetailFromAPI {
@@ -370,6 +438,8 @@ export interface ProductDetailFromAPI {
     }>;
     image_urls: string[];
   }>;
+  add_on_groups: AddOnGroupFromAPI[];
+  add_ons: AddOnFromAPI[];
 }
 
 /**
@@ -401,6 +471,8 @@ export interface ProductDetail {
   featureCards: FeatureCard[];
   options: ProductOption[];
   variants: ProductVariant[];
+  addOnGroups: AddOnGroup[];
+  addOns: AddOn[];
 }
 
 // ==================== Review Types ====================

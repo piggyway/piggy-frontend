@@ -18,6 +18,11 @@ import type {
   FeatureCard,
   ProductOption,
   ProductVariant,
+  AddOn,
+  AddOnFromAPI,
+  AddOnGroup,
+  AddOnGroupFromAPI,
+  AddOnSelectionMode,
   VariantListParams,
   VariantListItemFromAPI,
   VariantListItem,
@@ -227,6 +232,52 @@ export class ProductService {
       variants: product.variants.map((variant) =>
         this.transformVariant(variant)
       ),
+      addOnGroups: (product.add_on_groups ?? [])
+        .map((group) => this.transformAddOnGroup(group))
+        .filter((group) => group.addOns.length > 0),
+      addOns: (product.add_ons ?? []).map((addOn) =>
+        this.transformAddOn(addOn)
+      ),
+    };
+  }
+
+  /**
+   * Transform an add-on group from API format
+   */
+  private static transformAddOnGroup(group: AddOnGroupFromAPI): AddOnGroup {
+    const selectionMode: AddOnSelectionMode =
+      group.selection_mode === "single" ? "single" : "multiple";
+    return {
+      id: group.id,
+      uuid: group.uuid,
+      name: group.name || "Add-ons",
+      selectionMode,
+      isRequired: group.is_required,
+      sort: group.sort ?? 0,
+      addOns: (group.add_ons ?? []).map((addOn) => this.transformAddOn(addOn)),
+    };
+  }
+
+  /**
+   * Transform an add-on from API format. Price stays in dollars.
+   */
+  private static transformAddOn(addOn: AddOnFromAPI): AddOn {
+    const price = addOn.price ?? 0;
+    const currencySlug = addOn.currency?.slug || DEFAULT_CURRENCY;
+    return {
+      id: addOn.id,
+      uuid: addOn.uuid,
+      name: addOn.name || "Add-on",
+      slug: addOn.slug,
+      description: addOn.description,
+      price,
+      formattedPrice: this.formatPrice(price, currencySlug),
+      currency: addOn.currency,
+      imageUrl: normalizeImageUrl(addOn.image_url),
+      stockQuantity: addOn.stock_quantity,
+      isAvailable: addOn.is_available,
+      sort: addOn.sort ?? 0,
+      groupId: addOn.group_id,
     };
   }
 
