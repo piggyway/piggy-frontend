@@ -131,6 +131,15 @@ export function CheckoutSummary({
                   </p>
                 )
               )}
+              {item.addOns.length > 0 && (
+                <div className="mt-0.5 flex flex-col">
+                  {item.addOns.map((addOn) => (
+                    <p key={addOn.id} className="text-[12px] text-slate-400">
+                      + {addOn.name} ({addOn.formattedUnitPrice})
+                    </p>
+                  ))}
+                </div>
+              )}
             </div>
             <p className="text-subtle-semibold text-primary-navy">
               {item.formattedLineSubtotal}

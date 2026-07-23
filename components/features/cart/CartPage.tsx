@@ -127,6 +127,11 @@ export function CartPage() {
                   title={item.productTitle}
                   variant={item.variantSku || undefined}
                   variantOptions={item.variantOptions}
+                  addOns={item.addOns.map((addOn) => ({
+                    id: addOn.id,
+                    name: addOn.name,
+                    formattedUnitPrice: addOn.formattedUnitPrice,
+                  }))}
                   price={item.unitPriceCents / 100}
                   image={item.imageUrl}
                   quantity={item.quantity}

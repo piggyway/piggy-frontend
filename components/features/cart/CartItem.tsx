@@ -9,11 +9,18 @@ import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { cn } from "@/lib/utils";
 import { VariantOption } from "@/lib/types/cart";
 
+export interface CartItemAddOnDisplay {
+  id: number;
+  name: string;
+  formattedUnitPrice: string;
+}
+
 export interface CartItemProps {
   id: string;
   title: string;
   variant?: string;
   variantOptions?: VariantOption[];
+  addOns?: CartItemAddOnDisplay[];
   price: number;
   image: string;
   quantity: number;
@@ -30,6 +37,7 @@ export function CartItem({
   title,
   variant,
   variantOptions,
+  addOns,
   price,
   image,
   quantity,
@@ -70,7 +78,8 @@ export function CartItem({
             <div className="flex flex-wrap gap-x-3 gap-y-1">
               {variantOptions.map((opt, i) => (
                 <p key={i} className="text-sm text-slate-500">
-                  <span className="text-slate-400">{opt.name}:</span> {opt.value}
+                  <span className="text-slate-400">{opt.name}:</span>{" "}
+                  {opt.value}
                 </p>
               ))}
             </div>
@@ -85,6 +94,21 @@ export function CartItem({
                 ))}
               </div>
             )
+          )}
+          {addOns && addOns.length > 0 && (
+            <ul className="border-neutral-stroke mt-1 flex flex-col gap-1 border-l-2 pl-3">
+              {addOns.map((addOn) => (
+                <li
+                  key={addOn.id}
+                  className="flex items-center justify-between gap-3 text-sm text-slate-500"
+                >
+                  <span className="truncate">+ {addOn.name}</span>
+                  <span className="shrink-0 text-slate-400">
+                    {addOn.formattedUnitPrice}
+                  </span>
+                </li>
+              ))}
+            </ul>
           )}
           <p className="text-primary-navy font-medium sm:hidden">
             {currencySymbol}
