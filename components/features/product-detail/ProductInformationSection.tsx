@@ -12,6 +12,7 @@ import {
   Ban,
   type LucideIcon,
 } from "lucide-react";
+import type { CareCard } from "@/lib/types/models";
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import {
   Accordion,
@@ -34,50 +35,28 @@ interface ProductInformationSectionProps {
   specifications: string;
   careInstructions: string;
   detailInformationFiles: string[];
+  /** Category-driven presentation, sourced from the CMS product-category. */
+  specSectionTitle?: string | null;
+  careSectionTitle?: string | null;
+  careCards?: CareCard[];
 }
 
-const CARE_CARDS: {
-  icon: LucideIcon;
-  caption: string;
-  sub?: string;
-  bg: string;
-  forbidden?: boolean;
-}[] = [
-  {
-    icon: Sparkles,
-    caption: "Shake out daily for easy cleaning",
-    bg: "bg-neutral-pink-background",
-  },
-  {
-    icon: WashingMachine,
-    caption: "Machine wash",
-    sub: "(cold or warm)",
-    bg: "bg-secondary-mint",
-  },
-  {
-    icon: Wind,
-    caption: "Tumble dry or line dry",
-    bg: "bg-neutral-white",
-  },
-  {
-    icon: Brush,
-    caption: "Do not scrub with stiff brushes",
-    bg: "bg-neutral-stroke",
-    forbidden: true,
-  },
-  {
-    icon: Flame,
-    caption: "Do not tumble dry on high heat",
-    bg: "bg-neutral-background",
-    forbidden: true,
-  },
-  {
-    icon: FlaskConical,
-    caption: "Avoid bleach or fabric softeners",
-    bg: "bg-primary-purple",
-    forbidden: true,
-  },
-];
+/**
+ * Maps a care card `icon` name (stored in the CMS `care_cards` JSON) to a
+ * lucide icon. Keys MUST match the CMS-allowed icon names one-to-one; adding
+ * an option is a two-side change (this map + the CMS choices). The fallback is
+ * defensive only.
+ */
+const CARE_ICON_MAP: Record<string, LucideIcon> = {
+  Sparkles,
+  WashingMachine,
+  Wind,
+  Brush,
+  Flame,
+  FlaskConical,
+};
+
+const DEFAULT_CARE_CARD_BG = "bg-neutral-background";
 
 // Maps the first two accordion items to a carousel image index
 const IMAGE_INDEX_BY_ITEM: Record<string, number> = {
@@ -90,6 +69,9 @@ export function ProductInformationSection({
   specifications,
   careInstructions,
   detailInformationFiles,
+  specSectionTitle,
+  careSectionTitle,
+  careCards = [],
 }: ProductInformationSectionProps) {
   const defaultProductFeatures = `
     <ul class="list-disc pl-5 space-y-2">
@@ -130,15 +112,17 @@ export function ProductInformationSection({
     },
     {
       id: "specifications",
-      title: "Size guide",
+      title: specSectionTitle?.trim() || "Size guide",
       content: normalizeContent(specifications, defaultSpecifications),
     },
     {
       id: "care",
-      title: "Liner Care & Cleaning Guide",
+      title: careSectionTitle?.trim() || "Liner Care & Cleaning Guide",
       content: normalizeContent(careInstructions, defaultCareInstructions),
     },
   ];
+
+  const hasCareCards = careCards.length > 0;
 
   const carouselImages =
     detailInformationFiles && detailInformationFiles.length > 0
@@ -200,16 +184,16 @@ export function ProductInformationSection({
 
             {/* Right: image carousel (Features / Specifications) or care grid (Care) */}
             <div className="relative">
-              {activeItem === "care" ? (
+              {activeItem === "care" && hasCareCards ? (
                 <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                  {CARE_CARDS.map((card) => {
-                    const Icon = card.icon;
+                  {careCards.map((card, index) => {
+                    const Icon = CARE_ICON_MAP[card.icon] ?? Sparkles;
                     return (
                       <div
-                        key={card.caption}
+                        key={`${card.title}-${index}`}
                         className={cn(
                           "flex flex-col items-center gap-3 rounded-[16px] p-4 text-center",
-                          card.bg
+                          card.bg || DEFAULT_CARE_CARD_BG
                         )}
                       >
                         {card.forbidden ? (
@@ -230,10 +214,10 @@ export function ProductInformationSection({
                           />
                         )}
                         <p className="text-primary-navy text-sm leading-5 font-medium">
-                          {card.caption}
-                          {card.sub && (
+                          {card.title}
+                          {card.description && (
                             <span className="text-primary-navy/70 mt-0.5 block text-xs font-normal">
-                              {card.sub}
+                              {card.description}
                             </span>
                           )}
                         </p>
