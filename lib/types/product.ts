@@ -159,6 +159,7 @@ export interface VariantListItemFromAPI {
   image_url: string | null;
   stock_quantity: number;
   is_available: boolean;
+  purchase_mode: PurchaseMode;
   option_values: Array<{
     option_name: string | null;
     option_slug: string | null;
@@ -184,6 +185,7 @@ export interface VariantListItem {
   imageUrl: string;
   stockQuantity: number;
   isAvailable: boolean;
+  purchaseMode: PurchaseMode;
   optionValues: VariantOptionDisplay[];
 }
 

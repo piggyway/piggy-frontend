@@ -104,13 +104,14 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
 
   // Fetch server-side so product links are present in the initial HTML
   const [response, categories] = await Promise.all([
+    // Out-of-stock variants are intentionally included so the grid can show a
+    // "Sold Out" state; the backend still excludes is_available=false variants.
     ProductService.getVariants({
       page,
       page_size: PAGE_SIZE,
       category,
       q,
       sort,
-      in_stock: "true",
     }),
     CategoryService.getCategories(),
   ]);

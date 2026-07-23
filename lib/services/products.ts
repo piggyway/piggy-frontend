@@ -572,6 +572,8 @@ export class ProductService {
       imageUrl: normalizeImageUrl(variant.image_url) || DEFAULT_PRODUCT_IMAGE,
       stockQuantity: variant.stock_quantity,
       isAvailable: variant.is_available,
+      purchaseMode:
+        variant.purchase_mode === "preorder" ? "preorder" : "standard",
       optionValues: variant.option_values.map((ov) => ({
         optionName: ov.option_name,
         optionSlug: ov.option_slug,
