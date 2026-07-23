@@ -5,6 +5,7 @@ import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { CategoryFilterBar } from "@/components/features/shop-all/CategoryFilterBar";
 import { ProductsSection } from "@/components/features/shop-all/ProductsSection";
 import type { SortOption, VariantListItem } from "@/lib/types/product";
+import type { Category } from "@/lib/types/models";
 
 // choose grid or list
 type ViewMode = "grid" | "list";
@@ -15,6 +16,7 @@ type ViewMode = "grid" | "list";
  * interactions into URL updates, which re-render the server page.
  */
 interface ShopAllContentProps {
+  categories: Category[];
   variants: VariantListItem[];
   totalItems: number;
   totalPages: number;
@@ -27,6 +29,7 @@ interface ShopAllContentProps {
 }
 
 export function ShopAllContent({
+  categories,
   variants,
   totalItems,
   totalPages,
@@ -104,6 +107,7 @@ export function ShopAllContent({
     <>
       {/* Category Filter */}
       <CategoryFilterBar
+        categories={categories}
         activeCategory={category}
         onCategoryChange={handleCategoryChange}
       />

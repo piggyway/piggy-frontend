@@ -16,8 +16,8 @@ export function BestSellingSection() {
     },
     {
       id: 2,
-      title: "Hut",
-      slug: "hut",
+      title: "Hideout",
+      slug: "hideout",
       image: "/homepage-essentials/hut-example.png",
       bgColor: "bg-secondary-mint",
     },
