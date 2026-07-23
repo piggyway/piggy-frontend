@@ -36,7 +36,8 @@ interface CartContextValue {
   addItem: (
     variantRid: number,
     quantity?: number,
-    notes?: string
+    notes?: string,
+    addOnIds?: number[]
   ) => Promise<void>;
   updateItem: (
     itemId: string,
@@ -214,7 +215,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           toast.error(errorMsg);
         }
       } catch (err) {
-        const errorMsg = options?.errorMessage || "An error occurred";
+        // Prefer the backend's (already user-friendly) message when present,
+        // e.g. add-on stock/availability errors, over the generic fallback.
+        const errorMsg =
+          err instanceof Error && err.message
+            ? err.message
+            : options?.errorMessage || "An error occurred";
         setError(errorMsg);
         toast.error(errorMsg);
       } finally {
@@ -225,13 +231,19 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   );
 
   const addItem = useCallback(
-    async (variantRid: number, quantity = 1, notes?: string) => {
+    async (
+      variantRid: number,
+      quantity = 1,
+      notes?: string,
+      addOnIds?: number[]
+    ) => {
       await runMutation(
         () =>
           CartService.addItem({
             variantRid,
             quantity,
             notes,
+            addOnIds,
           }),
         {
           onSuccess: (updatedCart) => {

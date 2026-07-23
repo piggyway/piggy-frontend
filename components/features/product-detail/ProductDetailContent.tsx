@@ -16,9 +16,17 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-import type { ProductDetail } from "@/lib/types/product";
+import type { AddOn, AddOnGroup, ProductDetail } from "@/lib/types/product";
 import { useCart } from "@/components/features/cart/CartProvider";
 import { ProductImageLightbox } from "@/components/features/product-detail/ProductImageLightbox";
+import { AddOnSelector } from "@/components/features/product-detail/AddOnSelector";
+
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  AUD: "$",
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+};
 
 interface ProductDetailContentProps {
   product: ProductDetail;
@@ -75,6 +83,22 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   }, [product.variants, variantIdFromUrl]);
 
   const [quantity, setQuantity] = useState(1);
+
+  // Selected add-on ids. Required single-selection groups start with their
+  // first in-stock option pre-selected so the requirement is satisfied.
+  const [selectedAddOnIds, setSelectedAddOnIds] = useState<number[]>(() => {
+    const initial: number[] = [];
+    product.addOnGroups.forEach((group) => {
+      if (group.selectionMode === "single" && group.isRequired) {
+        const firstAvailable = group.addOns.find(
+          (a) => a.isAvailable && a.stockQuantity > 0
+        );
+        if (firstAvailable) initial.push(firstAvailable.id);
+      }
+    });
+    return initial;
+  });
+
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
@@ -112,11 +136,18 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     router.replace(`${pathname}?${params.toString()}`, { scroll: false });
   }, [selectedVariant, searchParams, pathname, router]);
 
+  const currencySymbol = useMemo(() => {
+    const currencySlug =
+      selectedVariant?.currency?.slug || product.currency?.slug || "AUD";
+    return CURRENCY_SYMBOLS[currencySlug.toUpperCase()] || "$";
+  }, [selectedVariant, product.currency]);
+
   // Get current price info based on selected variant
   const currentPrice = useMemo(() => {
     if (!selectedVariant) {
       return {
         displayPrice: product.formattedPrice,
+        mainPriceNumeric: product.basePrice,
         originalPrice: null,
         discountPercentage: null,
       };
@@ -124,7 +155,6 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
     const price =
       selectedVariant.discountedPrice ?? selectedVariant.originalPrice;
-    const originalPriceRaw = selectedVariant.originalPrice;
 
     // Determine which price to show as the main price
     const mainPrice = price;
@@ -132,20 +162,13 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     if (mainPrice === null) {
       return {
         displayPrice: product.formattedPrice,
+        mainPriceNumeric: product.basePrice,
         originalPrice: null,
         discountPercentage: null,
       };
     }
 
-    const currencySlug =
-      selectedVariant.currency?.slug || product.currency?.slug || "AUD";
-    const currencySymbols: Record<string, string> = {
-      AUD: "$",
-      USD: "$",
-      EUR: "€",
-      GBP: "£",
-    };
-    const symbol = currencySymbols[currencySlug.toUpperCase()] || "$";
+    const symbol = currencySymbol;
 
     let displayOriginalPrice: string | null = null;
     let discountPercentage: string | null = null;
@@ -167,10 +190,58 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
 
     return {
       displayPrice: `${symbol}${mainPrice.toFixed(2)}`,
+      mainPriceNumeric: mainPrice,
       originalPrice: displayOriginalPrice,
       discountPercentage,
     };
-  }, [selectedVariant, product]);
+  }, [selectedVariant, product, currencySymbol]);
+
+  // Flat lookup of every add-on across groups and ungrouped
+  const addOnById = useMemo(() => {
+    const map = new Map<number, AddOn>();
+    for (const group of product.addOnGroups) {
+      for (const addOn of group.addOns) map.set(addOn.id, addOn);
+    }
+    for (const addOn of product.addOns) map.set(addOn.id, addOn);
+    return map;
+  }, [product.addOnGroups, product.addOns]);
+
+  // Sum of selected add-on prices (dollars)
+  const addOnsTotal = useMemo(() => {
+    return selectedAddOnIds.reduce((sum, id) => {
+      const addOn = addOnById.get(id);
+      return sum + (addOn?.price ?? 0);
+    }, 0);
+  }, [selectedAddOnIds, addOnById]);
+
+  // Composite display price: variant/base price + selected add-ons
+  const compositeDisplayPrice = useMemo(() => {
+    const base = currentPrice.mainPriceNumeric;
+    const total = base + addOnsTotal;
+    return `${currencySymbol}${total.toFixed(2)}`;
+  }, [currentPrice.mainPriceNumeric, addOnsTotal, currencySymbol]);
+
+  const handleAddOnToggle = (addOn: AddOn, group: AddOnGroup | null) => {
+    setSelectedAddOnIds((prev) => {
+      const isSelected = prev.includes(addOn.id);
+      if (group && group.selectionMode === "single") {
+        const groupIds = new Set(group.addOns.map((a) => a.id));
+        const withoutGroup = prev.filter((id) => !groupIds.has(id));
+        // Toggle off only when the group is optional; required groups always
+        // keep one selection.
+        if (isSelected && !group.isRequired) return withoutGroup;
+        return [...withoutGroup, addOn.id];
+      }
+      return isSelected
+        ? prev.filter((id) => id !== addOn.id)
+        : [...prev, addOn.id];
+    });
+  };
+
+  const handleClearAddOnGroup = (group: AddOnGroup) => {
+    const groupIds = new Set(group.addOns.map((a) => a.id));
+    setSelectedAddOnIds((prev) => prev.filter((id) => !groupIds.has(id)));
+  };
 
   // Whether variant prices differ → show a "From" prefix on the price
   const priceHasRange = useMemo(() => {
@@ -380,7 +451,12 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     }
 
     setAddError(null);
-    await addItem(selectedVariant.id, quantity);
+    await addItem(
+      selectedVariant.id,
+      quantity,
+      undefined,
+      selectedAddOnIds.length > 0 ? selectedAddOnIds : undefined
+    );
   };
 
   const breadcrumbItems: BreadcrumbItem[] = [
@@ -515,7 +591,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             <div className="flex flex-wrap items-center gap-3">
               <p className="text-primary-navy text-p-ui leading-6 font-medium">
                 {priceHasRange ? "From " : ""}
-                {currentPrice.displayPrice}
+                {compositeDisplayPrice}
               </p>
               {currentPrice.originalPrice && (
                 <p className="text-base text-neutral-400 line-through decoration-neutral-400/80">
@@ -590,6 +666,18 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
               />
             );
           })}
+
+          {/* Paid add-ons */}
+          {(product.addOnGroups.length > 0 || product.addOns.length > 0) && (
+            <AddOnSelector
+              groups={product.addOnGroups}
+              ungrouped={product.addOns}
+              selectedIds={selectedAddOnIds}
+              quantity={quantity}
+              onToggle={handleAddOnToggle}
+              onClearGroup={handleClearAddOnGroup}
+            />
+          )}
 
           {/* Quantity and Add to Cart */}
           <div className="flex flex-col gap-3">
