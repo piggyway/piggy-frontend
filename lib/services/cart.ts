@@ -35,6 +35,8 @@ const ADD_ON_ERROR_MESSAGES: Record<string, string> = {
   add_on_group_single_selection_violation:
     "Please pick only one option from this add-on group.",
   add_ons_unavailable: "Some selected add-ons are no longer available.",
+  product_preorder_only:
+    "This product is pre-order only. Please contact us to enquire.",
 };
 
 /**

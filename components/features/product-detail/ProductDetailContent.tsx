@@ -3,6 +3,8 @@
 import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
+import { CalendarClock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Breadcrumbs, type BreadcrumbItem } from "@/components/ui/breadcrumbs";
@@ -679,33 +681,61 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
             />
           )}
 
-          {/* Quantity and Add to Cart */}
-          <div className="flex flex-col gap-3">
-            <div className="flex w-full items-stretch gap-4">
-              <QuantitySelector
-                value={quantity}
-                min={1}
-                max={selectedVariant?.stockQuantity ?? 99}
-                onValueChange={setQuantitySafe}
-                disabled={!isInStock}
-                showLabel={false}
-                fullWidth
-                className="flex-1"
-              />
+          {/* Pre-order only products are enquiry-based: no quantity or
+              add-to-cart, just a clear notice and a CTA to the contact page. */}
+          {product.purchaseMode === "preorder" ? (
+            <div className="border-secondary-mint bg-secondary-mint/40 flex flex-col gap-4 rounded-[20px] border p-5">
+              <div className="flex items-start gap-3">
+                <span className="bg-secondary-mint text-primary-navy flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+                  <CalendarClock className="h-5 w-5" />
+                </span>
+                <div className="flex flex-col gap-1">
+                  <p className="text-primary-navy text-p-ui font-semibold">
+                    Pre-order only
+                  </p>
+                  <p className="text-primary-navy/70 text-subtle leading-5">
+                    This item is available by pre-order. Send us an enquiry and
+                    our team will help you arrange it.
+                  </p>
+                </div>
+              </div>
               <Button
-                className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 text-subtle h-auto flex-1 rounded-full px-6 py-3 font-semibold disabled:opacity-50"
-                onClick={handleAddToCart}
-                disabled={!isInStock || isMutating}
+                asChild
+                className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 text-subtle h-auto w-full rounded-full px-6 py-3 font-semibold"
               >
-                {isMutating
-                  ? "Adding..."
-                  : isInStock
-                    ? "Add to cart"
-                    : "Out of Stock"}
+                <Link href="/contact">Enquire to pre-order</Link>
               </Button>
             </div>
-            {addError && <p className="text-destructive text-sm">{addError}</p>}
-          </div>
+          ) : (
+            <div className="flex flex-col gap-3">
+              <div className="flex w-full items-stretch gap-4">
+                <QuantitySelector
+                  value={quantity}
+                  min={1}
+                  max={selectedVariant?.stockQuantity ?? 99}
+                  onValueChange={setQuantitySafe}
+                  disabled={!isInStock}
+                  showLabel={false}
+                  fullWidth
+                  className="flex-1"
+                />
+                <Button
+                  className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 text-subtle h-auto flex-1 rounded-full px-6 py-3 font-semibold disabled:opacity-50"
+                  onClick={handleAddToCart}
+                  disabled={!isInStock || isMutating}
+                >
+                  {isMutating
+                    ? "Adding..."
+                    : isInStock
+                      ? "Add to cart"
+                      : "Out of Stock"}
+                </Button>
+              </div>
+              {addError && (
+                <p className="text-destructive text-sm">{addError}</p>
+              )}
+            </div>
+          )}
         </section>
       </div>
 

@@ -189,6 +189,8 @@ export class ProductService {
       featureSectionSubtitle: product.feature_section_subtitle || "",
       featureSectionDescription: product.feature_section_description || "",
       featureBannerText: product.feature_banner_text || "",
+      purchaseMode:
+        product.purchase_mode === "preorder" ? "preorder" : "standard",
       slug: product.slug || `product-${product.id}`,
       basePrice: price,
       formattedPrice: this.formatPrice(price, currencySlug),

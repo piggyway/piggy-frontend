@@ -379,6 +379,13 @@ export interface AddOnGroup {
 /**
  * Product detail from API (snake_case)
  */
+/**
+ * How a product can be purchased. `standard` allows direct add-to-cart;
+ * `preorder` products are enquiry-only (no add-to-cart / checkout).
+ * Keys must match the CMS `product_info.purchase_mode` dropdown choices.
+ */
+export type PurchaseMode = "standard" | "preorder";
+
 export interface ProductDetailFromAPI {
   id: number;
   title: string | null;
@@ -392,6 +399,7 @@ export interface ProductDetailFromAPI {
   feature_section_subtitle: string | null;
   feature_section_description: string | null;
   feature_banner_text: string | null;
+  purchase_mode: PurchaseMode;
   slug: string | null;
   base_price: number | null;
   currency: CurrencyInfo | null;
@@ -458,6 +466,7 @@ export interface ProductDetail {
   featureSectionSubtitle: string;
   featureSectionDescription: string;
   featureBannerText: string;
+  purchaseMode: PurchaseMode;
   slug: string;
   basePrice: number;
   formattedPrice: string;
