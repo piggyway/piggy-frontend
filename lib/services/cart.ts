@@ -39,12 +39,21 @@ const ADD_ON_ERROR_MESSAGES: Record<string, string> = {
 };
 
 /**
- * Map a raw backend error string to a friendly message when it matches a
- * known add-on error code; otherwise return the raw error unchanged.
+ * Map a raw backend error to a friendly message. The backend may send either a
+ * bare error code ("add_on_insufficient_stock") or a code with a human detail
+ * ("add_on_insufficient_stock: Decoration Kit (requested 3, available 2)").
+ * For a bare known code we use the friendly copy; for a "code: detail" form we
+ * keep the (more specific) detail and drop the code prefix; unknown errors pass
+ * through unchanged.
  */
 function mapAddOnError(rawError: string | undefined): string | undefined {
   if (!rawError) return rawError;
-  return ADD_ON_ERROR_MESSAGES[rawError] ?? rawError;
+  if (ADD_ON_ERROR_MESSAGES[rawError]) return ADD_ON_ERROR_MESSAGES[rawError];
+  const match = rawError.match(/^([a-z_]+):\s*(.+)$/);
+  if (match && ADD_ON_ERROR_MESSAGES[match[1]]) {
+    return match[2].trim() || ADD_ON_ERROR_MESSAGES[match[1]];
+  }
+  return rawError;
 }
 
 export class CartService {
