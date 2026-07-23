@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { Check } from "lucide-react";
+import { Check, ZoomIn } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ProductImageLightbox } from "@/components/features/product-detail/ProductImageLightbox";
 import type { AddOn, AddOnGroup } from "@/lib/types/product";
 
 interface AddOnSelectorProps {
@@ -10,6 +12,7 @@ interface AddOnSelectorProps {
   ungrouped: AddOn[];
   selectedIds: number[];
   quantity: number;
+  maxSelections: number | null;
   onToggle: (addOn: AddOn, group: AddOnGroup | null) => void;
   onClearGroup: (group: AddOnGroup) => void;
 }
@@ -22,25 +25,40 @@ interface AddOnCardProps {
   addOn: AddOn;
   selected: boolean;
   disabled: boolean;
+  capDisabled: boolean;
+  capTitle: string | null;
   indicator: "check" | "radio";
   capHint: string | null;
   onClick: () => void;
+  onImageClick: () => void;
 }
 
 function AddOnCard({
   addOn,
   selected,
   disabled,
+  capDisabled,
+  capTitle,
   indicator,
   capHint,
   onClick,
+  onImageClick,
 }: AddOnCardProps) {
+  const handleImageKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      e.stopPropagation();
+      onImageClick();
+    }
+  };
+
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
       aria-pressed={selected}
+      title={capDisabled ? (capTitle ?? undefined) : undefined}
       className={cn(
         "flex w-full items-center gap-3 rounded-[14px] border-2 p-3 text-left transition-all",
         selected
@@ -67,9 +85,19 @@ function AddOnCard({
           ))}
       </span>
 
-      {/* Thumbnail */}
+      {/* Thumbnail: clicking opens a larger preview without toggling selection */}
       {addOn.imageUrl && (
-        <span className="bg-neutral-grey-background relative size-11 shrink-0 overflow-hidden rounded-[10px]">
+        <span
+          role="button"
+          tabIndex={0}
+          aria-label={`View larger image of ${addOn.name}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onImageClick();
+          }}
+          onKeyDown={handleImageKeyDown}
+          className="group bg-neutral-grey-background relative size-11 shrink-0 cursor-zoom-in overflow-hidden rounded-[10px]"
+        >
           <Image
             src={addOn.imageUrl}
             alt={addOn.name}
@@ -77,6 +105,9 @@ function AddOnCard({
             className="object-cover"
             sizes="44px"
           />
+          <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-white opacity-0 transition-all group-hover:bg-black/35 group-hover:opacity-100">
+            <ZoomIn className="size-4" />
+          </span>
         </span>
       )}
 
@@ -117,14 +148,25 @@ export function AddOnSelector({
   ungrouped,
   selectedIds,
   quantity,
+  maxSelections,
   onToggle,
   onClearGroup,
 }: AddOnSelectorProps) {
+  const [preview, setPreview] = useState<{ src: string; name: string } | null>(
+    null
+  );
+
   if (groups.length === 0 && ungrouped.length === 0) {
     return null;
   }
 
   const selectedSet = new Set(selectedIds);
+  const hasCap = maxSelections !== null;
+  const capReached = hasCap && selectedIds.length >= maxSelections;
+  const addOnWord = maxSelections === 1 ? "add-on" : "add-ons";
+  const capTitle = hasCap
+    ? `Maximum ${maxSelections} ${addOnWord} selected`
+    : null;
 
   const capHintFor = (addOn: AddOn): string | null => {
     if (
@@ -137,8 +179,44 @@ export function AddOnSelector({
     return null;
   };
 
+  // A card is cap-disabled when the cap is reached and selecting it would add a
+  // new selection. Selecting an unselected option inside a single-selection
+  // group that already has a pick only replaces it, so it stays enabled.
+  const isCapDisabled = (addOn: AddOn, group: AddOnGroup | null): boolean => {
+    if (!capReached || selectedSet.has(addOn.id)) return false;
+    if (
+      group &&
+      group.selectionMode === "single" &&
+      group.addOns.some((a) => selectedSet.has(a.id))
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  const handleImageClick = (addOn: AddOn) => {
+    if (addOn.imageUrl) {
+      setPreview({ src: addOn.imageUrl, name: addOn.name });
+    }
+  };
+
+  const capHelperText = capReached
+    ? `Maximum ${maxSelections} ${addOnWord} selected`
+    : `Choose up to ${maxSelections} ${addOnWord}`;
+
   return (
     <div className="flex flex-col gap-6">
+      {hasCap && (
+        <p
+          className={cn(
+            "text-[13px] font-medium",
+            capReached ? "text-[#FF4D4F]" : "text-slate-500"
+          )}
+        >
+          {capHelperText}
+        </p>
+      )}
+
       {groups.map((group) => {
         const groupSelected = group.addOns.some((a) => selectedSet.has(a.id));
         return (
@@ -164,19 +242,25 @@ export function AddOnSelector({
               )}
             </div>
             <div className="flex flex-col gap-2.5">
-              {group.addOns.map((addOn) => (
-                <AddOnCard
-                  key={addOn.id}
-                  addOn={addOn}
-                  selected={selectedSet.has(addOn.id)}
-                  disabled={isOutOfStock(addOn)}
-                  indicator={
-                    group.selectionMode === "single" ? "radio" : "check"
-                  }
-                  capHint={capHintFor(addOn)}
-                  onClick={() => onToggle(addOn, group)}
-                />
-              ))}
+              {group.addOns.map((addOn) => {
+                const capDisabled = isCapDisabled(addOn, group);
+                return (
+                  <AddOnCard
+                    key={addOn.id}
+                    addOn={addOn}
+                    selected={selectedSet.has(addOn.id)}
+                    disabled={isOutOfStock(addOn) || capDisabled}
+                    capDisabled={capDisabled}
+                    capTitle={capTitle}
+                    indicator={
+                      group.selectionMode === "single" ? "radio" : "check"
+                    }
+                    capHint={capHintFor(addOn)}
+                    onClick={() => onToggle(addOn, group)}
+                    onImageClick={() => handleImageClick(addOn)}
+                  />
+                );
+              })}
             </div>
           </div>
         );
@@ -186,20 +270,34 @@ export function AddOnSelector({
         <div className="flex flex-col gap-3">
           <p className="text-primary-navy text-p-ui font-medium">Add-ons</p>
           <div className="flex flex-col gap-2.5">
-            {ungrouped.map((addOn) => (
-              <AddOnCard
-                key={addOn.id}
-                addOn={addOn}
-                selected={selectedSet.has(addOn.id)}
-                disabled={isOutOfStock(addOn)}
-                indicator="check"
-                capHint={capHintFor(addOn)}
-                onClick={() => onToggle(addOn, null)}
-              />
-            ))}
+            {ungrouped.map((addOn) => {
+              const capDisabled = isCapDisabled(addOn, null);
+              return (
+                <AddOnCard
+                  key={addOn.id}
+                  addOn={addOn}
+                  selected={selectedSet.has(addOn.id)}
+                  disabled={isOutOfStock(addOn) || capDisabled}
+                  capDisabled={capDisabled}
+                  capTitle={capTitle}
+                  indicator="check"
+                  capHint={capHintFor(addOn)}
+                  onClick={() => onToggle(addOn, null)}
+                  onImageClick={() => handleImageClick(addOn)}
+                />
+              );
+            })}
           </div>
         </div>
       )}
+
+      <ProductImageLightbox
+        src={preview?.src ?? ""}
+        alt={preview?.name ?? ""}
+        caption={preview?.name}
+        open={preview !== null}
+        onClose={() => setPreview(null)}
+      />
     </div>
   );
 }

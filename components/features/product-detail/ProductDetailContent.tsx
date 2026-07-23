@@ -676,6 +676,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
               ungrouped={product.addOns}
               selectedIds={selectedAddOnIds}
               quantity={quantity}
+              maxSelections={product.addOnMaxSelections}
               onToggle={handleAddOnToggle}
               onClearGroup={handleClearAddOnGroup}
             />

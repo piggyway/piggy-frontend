@@ -191,6 +191,7 @@ export class ProductService {
       featureBannerText: product.feature_banner_text || "",
       purchaseMode:
         product.purchase_mode === "preorder" ? "preorder" : "standard",
+      addOnMaxSelections: product.add_on_max_selections ?? null,
       slug: product.slug || `product-${product.id}`,
       basePrice: price,
       formattedPrice: this.formatPrice(price, currencySlug),

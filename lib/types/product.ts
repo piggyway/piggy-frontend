@@ -400,6 +400,7 @@ export interface ProductDetailFromAPI {
   feature_section_description: string | null;
   feature_banner_text: string | null;
   purchase_mode: PurchaseMode;
+  add_on_max_selections: number | null;
   slug: string | null;
   base_price: number | null;
   currency: CurrencyInfo | null;
@@ -467,6 +468,7 @@ export interface ProductDetail {
   featureSectionDescription: string;
   featureBannerText: string;
   purchaseMode: PurchaseMode;
+  addOnMaxSelections: number | null;
   slug: string;
   basePrice: number;
   formattedPrice: string;
