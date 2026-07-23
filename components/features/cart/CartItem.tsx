@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
@@ -33,7 +32,6 @@ export interface CartItemProps {
 }
 
 export function CartItem({
-  id: _id,
   title,
   variant,
   variantOptions,

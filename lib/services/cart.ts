@@ -14,7 +14,6 @@ import type {
   CartItemAddOn,
   CartItemAddOnFromAPI,
   CartItemFromAPI,
-  CartPaginationFromAPI,
   CartResponseFromAPI,
   CartTotals,
   CartTotalsFromAPI,
