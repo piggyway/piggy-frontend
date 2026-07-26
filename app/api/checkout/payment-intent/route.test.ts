@@ -131,6 +131,70 @@ describe("POST /api/checkout/payment-intent", () => {
     });
   });
 
+  it("drops attacker-controlled cart, user, currency, and price fields before forwarding", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: { client_secret: "secret", payment_intent_id: "pi_safe" },
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      )
+    );
+
+    await POST(
+      createRequest({
+        email: "buyer@example.com",
+        cartId: "other-users-cart",
+        userId: "other-user",
+        currency: "usd",
+        totalCents: 1,
+        subtotalCents: 1,
+        cartItems: [{ unitPriceCents: 1, lineSubtotalCents: 1 }],
+      })
+    );
+
+    const [, options] = vi.mocked(globalThis.fetch).mock.calls[0];
+    const forwardedBody = JSON.parse(String(options?.body)) as Record<
+      string,
+      unknown
+    >;
+
+    expect(forwardedBody).not.toHaveProperty("cart_id");
+    expect(forwardedBody).not.toHaveProperty("cartId");
+    expect(forwardedBody).not.toHaveProperty("user_id");
+    expect(forwardedBody).not.toHaveProperty("userId");
+    expect(forwardedBody).not.toHaveProperty("currency");
+    expect(forwardedBody).not.toHaveProperty("total_cents");
+    expect(forwardedBody).not.toHaveProperty("subtotal_cents");
+    expect(forwardedBody).not.toHaveProperty("cart_items");
+    expect(forwardedBody).not.toHaveProperty("cartItems");
+  });
+
+  it("creates a logged-in payment intent without a guest session header", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: { client_secret: "secret", payment_intent_id: "pi_logged_in" },
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      )
+    );
+
+    const response = await POST(
+      createRequest(
+        { email: "buyer@example.com" },
+        { authorization: "Bearer account-token" }
+      )
+    );
+
+    expect(response.status).toBe(200);
+    const [, options] = fetchMock.mock.calls[0];
+    expect(options?.headers).toEqual({
+      "Content-Type": "application/json",
+      Authorization: "Bearer account-token",
+    });
+  });
+
   it("returns 502 when the backend omits the client secret", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ data: { payment_intent_id: "pi_1" } }), {

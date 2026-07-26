@@ -119,6 +119,51 @@ describe("POST /api/checkout", () => {
         }),
       }
     );
+
+    const [, options] = fetchMock.mock.calls[0];
+    const forwardedBody = JSON.parse(String(options?.body)) as Record<
+      string,
+      unknown
+    >;
+    expect(forwardedBody).not.toHaveProperty("cart_id");
+    expect(forwardedBody).not.toHaveProperty("cartId");
+    expect(forwardedBody).not.toHaveProperty("user_id");
+    expect(forwardedBody).not.toHaveProperty("userId");
+    expect(forwardedBody).not.toHaveProperty("currency");
+    expect(forwardedBody).not.toHaveProperty("total_cents");
+    expect(forwardedBody).not.toHaveProperty("cart_items");
+    expect(forwardedBody).not.toHaveProperty("cartItems");
+    expect(forwardedBody.email).toBe("buyer@example.com");
+  });
+
+  it("creates a logged-in checkout without a guest session header or fallback email", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({ data: { url: "https://checkout.example/session" } }),
+        {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        }
+      )
+    );
+
+    const response = await POST(
+      createRequest(
+        { email: "account@example.com", currency: "usd", totalCents: 1 },
+        { authorization: "Bearer account-token" }
+      )
+    );
+
+    expect(response.status).toBe(200);
+    const [, options] = fetchMock.mock.calls[0];
+    expect(options?.headers).toEqual({
+      "Content-Type": "application/json",
+      Origin: "http://localhost:3000",
+      Authorization: "Bearer account-token",
+    });
+    expect(JSON.parse(String(options?.body))).toMatchObject({
+      email: "account@example.com",
+    });
   });
 
   it.each([
