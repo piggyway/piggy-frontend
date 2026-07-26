@@ -15,7 +15,7 @@ export function HeroIntroSection() {
             Guinea Pig Boarding in Melbourne 🐹
           </h1>
           <p className="text-primary-navy text-large sm:text-h4 mt-2 leading-[34px] font-semibold sm:leading-[42px]">
-            Thoughtful boarding and care for guinea pigs, designed to feel like
+            Thoughtful guinea pig boarding in Melbourne, designed to feel like
             home.
           </p>
         </div>
