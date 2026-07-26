@@ -11,8 +11,8 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/components/features/cart/CartProvider";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { fetchWithAuth } from "@/lib/api/client";
 import type {
   CheckoutShippingAddress,
   PaymentIntentAmounts,
@@ -39,7 +39,6 @@ export function CheckoutPage() {
   const [currentStep, setCurrentStep] = React.useState(1);
   const { cart, isLoading, ensureLoaded } = useCart();
   const router = useRouter();
-  const { data: session } = useSession();
 
   // Checkout State
   const [email, setEmail] = React.useState("");
@@ -78,20 +77,12 @@ export function CheckoutPage() {
     setIsCheckingOut(true);
 
     try {
-      const token =
-        typeof window !== "undefined"
-          ? localStorage.getItem("access_token")
-          : null;
-
       const payload = {
         email,
         fulfillmentType,
         pickupLocationId: selectedLocationId,
         pickupSlotId: selectedSlotId,
-        cartId: cart.id,
-        currency: cart.currency,
         promoCode: cart.appliedCouponCode || undefined,
-        userId: (session?.user as { id?: string } | undefined)?.id,
         shippingAddress:
           fulfillmentType === "delivery" ? shippingAddress : undefined,
         // Re-use the existing intent (updates the amount) when the user
@@ -99,13 +90,13 @@ export function CheckoutPage() {
         paymentIntentId: paymentIntentId || undefined,
       };
 
-      const res = await fetch("/api/checkout/payment-intent", {
+      const res = await fetchWithAuth("/api/checkout/payment-intent", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: token } : {}),
         },
         body: JSON.stringify(payload),
+        redirectOnAuthError: false,
       });
 
       const data = await res.json().catch(() => ({}));
