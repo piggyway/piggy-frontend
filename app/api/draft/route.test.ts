@@ -1,4 +1,4 @@
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 import { draftMode } from "next/headers";
 
@@ -7,42 +7,65 @@ vi.mock("next/headers", () => ({ draftMode: vi.fn() }));
 let GET: typeof import("./route").GET;
 
 describe("GET /api/draft", () => {
-  beforeAll(async () => {
+  beforeEach(() => {
     delete process.env.PREVIEW_SECRET;
     process.env.API_BASE_URL = "https://backend.example";
     process.env.NEXT_PUBLIC_SITE_URL = "https://piggyway.example";
-    ({ GET } = await import("./route"));
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+    delete process.env.PREVIEW_SECRET;
   });
 
-  it.each([null, "wrong-secret"])(
-    "rejects a %s preview secret before enabling draft mode or calling the backend",
-    async (secret) => {
-      const fetchMock = vi.spyOn(globalThis, "fetch");
-      const draftModeMock = vi.mocked(draftMode);
-      const params = new URLSearchParams({
-        collection: "product_info",
-        slug: "hay",
-      });
-      if (secret) params.set("secret", secret);
+  async function loadRoute() {
+    vi.resetModules();
+    ({ GET } = await import("./route"));
+  }
 
-      const response = await GET(
-        new NextRequest(`http://localhost/api/draft?${params.toString()}`)
-      );
+  it("rejects the old hardcoded secret when PREVIEW_SECRET is not configured before enabling draft mode or calling the backend", async () => {
+    await loadRoute();
+    const fetchMock = vi.spyOn(globalThis, "fetch");
+    const draftModeMock = vi.mocked(draftMode);
 
-      expect(response.status).toBe(401);
-      await expect(response.json()).resolves.toEqual({
-        error: "Invalid token",
-      });
-      expect(draftModeMock).not.toHaveBeenCalled();
-      expect(fetchMock).not.toHaveBeenCalled();
-    }
-  );
+    const response = await GET(
+      new NextRequest(
+        "http://localhost/api/draft?secret=piggyway-preview-secret&collection=product_info&slug=hay"
+      )
+    );
 
-  it("enables draft mode and forwards the configured secret when the current fallback secret is supplied", async () => {
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({
+      error: "Preview secret is not configured",
+    });
+    expect(draftModeMock).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("rejects a wrong configured preview secret before enabling draft mode or calling the backend", async () => {
+    process.env.PREVIEW_SECRET = "configured-preview-secret";
+    await loadRoute();
+    const fetchMock = vi.spyOn(globalThis, "fetch");
+    const draftModeMock = vi.mocked(draftMode);
+
+    const response = await GET(
+      new NextRequest(
+        "http://localhost/api/draft?secret=wrong-secret&collection=product_info&slug=hay"
+      )
+    );
+
+    expect(response.status).toBe(401);
+    await expect(response.json()).resolves.toEqual({
+      error: "Invalid token",
+    });
+    expect(draftModeMock).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
+
+  it("enables draft mode and forwards the configured secret when it is supplied", async () => {
+    process.env.PREVIEW_SECRET = "configured-preview-secret";
+    await loadRoute();
     const enable = vi.fn();
     vi.mocked(draftMode).mockResolvedValue({ enable } as never);
     const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
@@ -57,7 +80,7 @@ describe("GET /api/draft", () => {
 
     const response = await GET(
       new NextRequest(
-        "http://localhost/api/draft?secret=piggyway-preview-secret&collection=product_info&slug=hay"
+        "http://localhost/api/draft?secret=configured-preview-secret&collection=product_info&slug=hay"
       )
     );
 
@@ -68,11 +91,13 @@ describe("GET /api/draft", () => {
     expect(enable).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
       "https://backend.example/api/v1/products/hay?include_draft=true",
-      { headers: {} }
+      { headers: { "x-preview-secret": "configured-preview-secret" } }
     );
   });
 
   it("returns a concrete 404 when the draft product backend rejects the lookup", async () => {
+    process.env.PREVIEW_SECRET = "configured-preview-secret";
+    await loadRoute();
     vi.mocked(draftMode).mockResolvedValue({ enable: vi.fn() } as never);
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ error: "not_found" }), {
@@ -83,7 +108,7 @@ describe("GET /api/draft", () => {
 
     const response = await GET(
       new NextRequest(
-        "http://localhost/api/draft?secret=piggyway-preview-secret&collection=product_info&slug=missing"
+        "http://localhost/api/draft?secret=configured-preview-secret&collection=product_info&slug=missing"
       )
     );
 
