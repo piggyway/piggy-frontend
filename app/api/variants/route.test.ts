@@ -80,6 +80,24 @@ describe("GET /api/variants", () => {
     expect(options?.headers).toEqual({ Authorization: "Bearer account-token" });
   });
 
+  it("passes an upstream error status through instead of reporting success", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ error: "category_not_found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+
+    const response = await GET(
+      new NextRequest("http://localhost/api/variants?category=missing")
+    );
+
+    expect(response.status).toBe(404);
+    await expect(response.json()).resolves.toEqual({
+      error: "category_not_found",
+    });
+  });
+
   it("returns a 500 envelope when the backend response is unreadable", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(globalThis, "fetch").mockResolvedValue(

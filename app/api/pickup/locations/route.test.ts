@@ -54,6 +54,24 @@ describe("GET /api/pickup/locations", () => {
     expect(options?.headers).toEqual({ Authorization: "Bearer account-token" });
   });
 
+  it("passes an upstream error status through instead of reporting success", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ error: "service_unavailable" }), {
+        status: 503,
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+
+    const response = await GET(
+      new NextRequest("http://localhost/api/pickup/locations")
+    );
+
+    expect(response.status).toBe(503);
+    await expect(response.json()).resolves.toEqual({
+      error: "service_unavailable",
+    });
+  });
+
   it("returns a 500 envelope when the backend response is unreadable", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(globalThis, "fetch").mockResolvedValue(

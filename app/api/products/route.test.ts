@@ -106,6 +106,22 @@ describe("GET /api/products", () => {
     expect(String(url)).toContain("limit=5");
   });
 
+  it("passes an upstream error status through instead of reporting success", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ error: "bad_request" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+
+    const response = await GET(
+      new NextRequest("http://localhost/api/products?limit=nonsense")
+    );
+
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toEqual({ error: "bad_request" });
+  });
+
   it("returns a 500 envelope when the backend response is unreadable", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
