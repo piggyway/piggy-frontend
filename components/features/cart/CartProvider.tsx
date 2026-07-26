@@ -14,6 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { CartService } from "@/lib/services/cart";
 import { PromoService } from "@/lib/services/promo";
 import type { Cart } from "@/lib/types/cart";
+import { preserveCartItemOrder } from "@/lib/utils/cart";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -146,47 +147,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     isLoadingRef.current = false;
   }, []);
 
-  /**
-   * Preserve the order of existing items when updating cart
-   * New items are appended to the end
-   */
-  const preserveItemOrder = useCallback(
-    (oldCart: Cart | null, newCart: Cart): Cart => {
-      if (!oldCart || oldCart.items.length === 0) {
-        return newCart;
-      }
-
-      // Create a map of new items by id for quick lookup
-      const newItemsMap = new Map(newCart.items.map((item) => [item.id, item]));
-
-      // Preserve order of existing items
-      const orderedItems: Cart["items"] = [];
-      const processedIds = new Set<string>();
-
-      // First, add existing items in their original order
-      for (const oldItem of oldCart.items) {
-        const updatedItem = newItemsMap.get(oldItem.id);
-        if (updatedItem) {
-          orderedItems.push(updatedItem);
-          processedIds.add(oldItem.id);
-        }
-      }
-
-      // Then, append any new items that weren't in the old cart
-      for (const newItem of newCart.items) {
-        if (!processedIds.has(newItem.id)) {
-          orderedItems.push(newItem);
-        }
-      }
-
-      return {
-        ...newCart,
-        items: orderedItems,
-      };
-    },
-    []
-  );
-
   const runMutation = useCallback(
     async (
       action: () => Promise<Cart | null>,
@@ -201,7 +161,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const updated = await action();
         if (updated) {
           // Preserve the order of existing items
-          const orderedCart = preserveItemOrder(cart, updated);
+          const orderedCart = preserveCartItemOrder(cart, updated);
           setCart(orderedCart);
           setError(null);
           if (options?.onSuccess) {
@@ -227,7 +187,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setIsMutating(false);
       }
     },
-    [cart, preserveItemOrder]
+    [cart]
   );
 
   const addItem = useCallback(
@@ -337,7 +297,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setError(errorMsg);
         toast.error(errorMsg);
       }
-    } catch (err) {
+    } catch {
       const errorMsg = "An error occurred while removing promo code";
       setError(errorMsg);
       toast.error(errorMsg);

@@ -39,28 +39,24 @@ const Accordion = React.forwardRef<
     );
 
     const toggleItem = (value: string) => {
-      setOpenItems((prev) => {
-        let newItems: string[];
-        if (type === "single") {
-          const isOpen = prev.includes(value);
-          if (isOpen && !collapsible) {
-            newItems = prev;
-          } else if (isOpen) {
-            newItems = [];
-          } else {
-            newItems = [value];
-          }
+      let newItems: string[];
+      if (type === "single") {
+        const isOpen = openItems.includes(value);
+        if (isOpen && !collapsible) {
+          newItems = openItems;
+        } else if (isOpen) {
+          newItems = [];
         } else {
-          newItems = prev.includes(value)
-            ? prev.filter((item) => item !== value)
-            : [...prev, value];
+          newItems = [value];
         }
+      } else {
+        newItems = openItems.includes(value)
+          ? openItems.filter((item) => item !== value)
+          : [...openItems, value];
+      }
 
-        if (onValueChange) {
-          onValueChange(type === "single" ? newItems[0] || "" : newItems);
-        }
-        return newItems;
-      });
+      setOpenItems(newItems);
+      onValueChange?.(type === "single" ? newItems[0] || "" : newItems);
     };
 
     return (

@@ -11,6 +11,7 @@ import { Breadcrumbs, type BreadcrumbItem } from "@/components/ui/breadcrumbs";
 import { ProductColorSelector } from "@/components/ui/product-color-selector";
 import { ProductSizeSelector } from "@/components/ui/product-size-selector";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
+import { clampQuantity, getColorSwatchColor } from "@/lib/utils/cart";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +20,11 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { AddOn, AddOnGroup, ProductDetail } from "@/lib/types/product";
+import {
+  buildVariantSearchParams,
+  resolveSelectionFromParams,
+  variantToOptionParamInputs,
+} from "@/lib/utils/variant-search-params";
 import { useCart } from "@/components/features/cart/CartProvider";
 import { ProductImageLightbox } from "@/components/features/product-detail/ProductImageLightbox";
 import { AddOnSelector } from "@/components/features/product-detail/AddOnSelector";
@@ -34,55 +40,69 @@ interface ProductDetailContentProps {
   product: ProductDetail;
 }
 
+function resolveSelectionFromUrl(
+  product: ProductDetail,
+  searchParams: { get(name: string): string | null } | null
+): Record<number, number> {
+  if (searchParams) {
+    const fromParams = resolveSelectionFromParams(product, searchParams);
+    if (fromParams) return fromParams;
+
+    const variantIdFromUrl = searchParams.get("variant");
+    if (variantIdFromUrl) {
+      const variantId = Number.parseInt(variantIdFromUrl, 10);
+      const variant = product.variants.find((v) => v.id === variantId);
+      if (variant) {
+        const initial: Record<number, number> = {};
+        for (const ov of variant.optionValues) {
+          initial[ov.optionId] = ov.valueId;
+        }
+        return initial;
+      }
+    }
+  }
+
+  const initial: Record<number, number> = {};
+  for (const option of product.options) {
+    if (option.values.length > 0) {
+      initial[option.id] = option.values[0].id;
+    }
+  }
+  return initial;
+}
+
+function selectionsEqual(
+  a: Record<number, number>,
+  b: Record<number, number>
+): boolean {
+  const aKeys = Object.keys(a);
+  const bKeys = Object.keys(b);
+  if (aKeys.length !== bKeys.length) return false;
+  return aKeys.every((key) => a[Number(key)] === b[Number(key)]);
+}
+
 export function ProductDetailContent({ product }: ProductDetailContentProps) {
   const { addItem, isMutating } = useCart();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const [addError, setAddError] = useState<string | null>(null);
-  // Check for variant ID in URL params
-  const variantIdFromUrl = searchParams?.get("variant");
 
-  // State for selected options
+  // State for selected options — semantic params first, then legacy ?variant=, then defaults
   const [selectedOptions, setSelectedOptions] = useState<
     Record<number, number>
-  >(() => {
-    // If variant ID is provided in URL, find that variant and use its options
-    if (variantIdFromUrl) {
-      const variantId = parseInt(variantIdFromUrl, 10);
-      const variant = product.variants.find((v) => v.id === variantId);
-      if (variant) {
-        const initial: Record<number, number> = {};
-        variant.optionValues.forEach((ov) => {
-          initial[ov.optionId] = ov.valueId;
-        });
-        return initial;
-      }
-    }
-    // Otherwise initialize with first available value for each option
-    const initial: Record<number, number> = {};
-    product.options.forEach((option) => {
-      if (option.values.length > 0) {
-        initial[option.id] = option.values[0].id;
-      }
-    });
-    return initial;
-  });
+  >(() => resolveSelectionFromUrl(product, searchParams));
 
-  useEffect(() => {
-    if (!variantIdFromUrl) return;
-    const variantId = Number.parseInt(variantIdFromUrl, 10);
-    if (Number.isNaN(variantId)) return;
-    const variant = product.variants.find((v) => v.id === variantId);
-    if (!variant) return;
-    setSelectedOptions((prev) => {
-      const next: Record<number, number> = { ...prev };
-      for (const ov of variant.optionValues) {
-        next[ov.optionId] = ov.valueId;
-      }
-      return next;
-    });
-  }, [product.variants, variantIdFromUrl]);
+  // Sync selection when the URL changes (back/forward, shared / legacy links)
+  const urlKey = searchParams?.toString() ?? "";
+  const lastSyncedUrlKey = useRef(urlKey);
+  if (lastSyncedUrlKey.current !== urlKey) {
+    lastSyncedUrlKey.current = urlKey;
+    const fromUrl = resolveSelectionFromUrl(product, searchParams);
+    if (!selectionsEqual(fromUrl, selectedOptions)) {
+      setSelectedOptions(fromUrl);
+    }
+  }
 
   const [quantity, setQuantity] = useState(1);
 
@@ -129,14 +149,18 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
     return found;
   }, [product.variants, selectedOptions]);
 
-  // Keep the URL `variant` param in sync with the selected variant
+  // Keep semantic option params in sync; strip legacy `variant`
   useEffect(() => {
     if (!selectedVariant) return;
-    if (searchParams?.get("variant") === String(selectedVariant.id)) return;
-    const params = new URLSearchParams(searchParams?.toString() ?? "");
-    params.set("variant", String(selectedVariant.id));
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  }, [selectedVariant, searchParams, pathname, router]);
+    const next = buildVariantSearchParams(
+      variantToOptionParamInputs({ options: product.options }, selectedVariant),
+      searchParams?.toString() ?? ""
+    );
+    const current = searchParams?.toString() ?? "";
+    if (next.toString() === current) return;
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  }, [selectedVariant, searchParams, pathname, router, product.options]);
 
   const currencySymbol = useMemo(() => {
     const currencySlug =
@@ -355,41 +379,32 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   );
 
   // Update image when variant changes
-  useEffect(() => {
-    // Only proceed if variant has effectively changed (or on first run)
-    if (selectedVariant?.id === lastSelectedVariantId.current) {
-      return;
-    }
+  if (selectedVariant?.id !== lastSelectedVariantId.current) {
     lastSelectedVariantId.current = selectedVariant?.id;
 
-    // If the current selected image already belongs to the selected variant, keep it.
     const currentImage = allImages[selectedImageIndex];
-    if (
+    const imageBelongsToVariant = Boolean(
       currentImage &&
-      selectedVariant?.id &&
-      imageToVariant.get(currentImage)?.id === selectedVariant.id
-    ) {
-      return;
-    }
+        selectedVariant?.id &&
+        imageToVariant.get(currentImage)?.id === selectedVariant.id
+    );
 
-    const firstVariantImage = selectedVariant?.imageUrls?.[0];
-    const index = firstVariantImage ? allImages.indexOf(firstVariantImage) : -1;
-    const fallbackImage = product.images?.[0] || null;
-    const fallbackIndex = fallbackImage ? allImages.indexOf(fallbackImage) : 0;
-    if (firstVariantImage && index !== -1) {
-      setSelectedImageIndex(index);
-      return;
+    if (!imageBelongsToVariant) {
+      const firstVariantImage = selectedVariant?.imageUrls?.[0];
+      const index = firstVariantImage
+        ? allImages.indexOf(firstVariantImage)
+        : -1;
+      const fallbackImage = product.images?.[0] || null;
+      const fallbackIndex = fallbackImage
+        ? allImages.indexOf(fallbackImage)
+        : 0;
+      if (firstVariantImage && index !== -1) {
+        setSelectedImageIndex(index);
+      } else {
+        setSelectedImageIndex(fallbackIndex >= 0 ? fallbackIndex : 0);
+      }
     }
-
-    // If the selected variant has no images, reset to the product's primary image (or 0).
-    setSelectedImageIndex(fallbackIndex >= 0 ? fallbackIndex : 0);
-  }, [
-    selectedVariant,
-    allImages,
-    imageToVariant,
-    selectedImageIndex,
-    product.images,
-  ]);
+  }
 
   // Handle option selection. If the new combination has no in-stock variant
   // (e.g. picking a colour that the current size does not come in), adopt the
@@ -432,13 +447,8 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   const getMaxQty = () =>
     selectedVariant?.stockQuantity ? selectedVariant.stockQuantity : Infinity;
 
-  const clampQty = (n: number) => {
-    const max = getMaxQty();
-    return Math.max(1, Math.min(n, max));
-  };
-
   const setQuantitySafe = (n: number) => {
-    setQuantity(clampQty(n));
+    setQuantity(clampQuantity(n, getMaxQty()));
   };
 
   const handleAddToCart = async () => {
@@ -605,6 +615,12 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                   {currentPrice.discountPercentage}
                 </span>
               )}
+              {product.purchaseMode === "preorder" && (
+                <span className="bg-secondary-mint text-primary-navy inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-sm font-medium">
+                  <CalendarClock className="size-3.5" />
+                  Pre-order only
+                </span>
+              )}
             </div>
           </header>
 
@@ -637,7 +653,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                   colors={option.values.map((value) => ({
                     value: String(value.id),
                     label: value.value || "",
-                    color: value.colorHex || "#cccccc",
+                    color: getColorSwatchColor(value.colorHex),
                   }))}
                   selectedColor={selectedValue}
                   disabledValues={disabledValues}
@@ -685,21 +701,12 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
           {/* Pre-order only products are enquiry-based: no quantity or
               add-to-cart, just a clear notice and a CTA to the contact page. */}
           {product.purchaseMode === "preorder" ? (
-            <div className="border-secondary-mint bg-secondary-mint/40 flex flex-col gap-4 rounded-[20px] border p-5">
-              <div className="flex items-start gap-3">
-                <span className="bg-secondary-mint text-primary-navy flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-                  <CalendarClock className="h-5 w-5" />
-                </span>
-                <div className="flex flex-col gap-1">
-                  <p className="text-primary-navy text-p-ui font-semibold">
-                    Pre-order only
-                  </p>
-                  <p className="text-primary-navy/70 text-subtle leading-5">
-                    This item is available by pre-order. Send us an enquiry and
-                    our team will help you arrange it.
-                  </p>
-                </div>
-              </div>
+            <div className="border-neutral-stroke flex flex-col gap-3 border-t pt-6">
+              <p className="text-primary-navy/70 text-subtle leading-5">
+                This item is made to order, so it cannot be added to the cart.
+                Send us an enquiry and our team will confirm availability and
+                lead time.
+              </p>
               <Button
                 asChild
                 className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 text-subtle h-auto w-full rounded-full px-6 py-3 font-semibold"

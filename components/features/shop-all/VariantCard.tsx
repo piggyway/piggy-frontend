@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ShoppingCart } from "lucide-react";
 import type { VariantListItem } from "@/lib/types/product";
+import { buildVariantSearchParams } from "@/lib/utils/variant-search-params";
 import { useCart } from "@/components/features/cart/CartProvider";
 
 interface VariantCardProps {
@@ -74,8 +75,9 @@ export function VariantCard({
     }
   };
 
-  // Build href with variant query param
-  const href = `/shop/${variant.category?.slug || "product"}/${variant.productSlug}?variant=${variant.variantId}`;
+  const variantParams = buildVariantSearchParams(variant.optionValues);
+  const variantQuery = variantParams.toString();
+  const href = `/shop/${variant.category?.slug || "product"}/${variant.productSlug}${variantQuery ? `?${variantQuery}` : ""}`;
 
   const priceSection = (
     <div className="flex flex-col gap-1">
