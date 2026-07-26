@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 
           // Directly call backend API with draft mode enabled
           const backendUrl = new URL(
-            `${API_BASE_URL}/api/v1/products/${productSlug}`
+            `${API_BASE_URL}/api/v1/products/${encodeURIComponent(productSlug)}`
           );
           backendUrl.searchParams.set("include_draft", "true");
 

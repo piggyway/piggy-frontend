@@ -28,7 +28,7 @@ export async function PATCH(
     const { addressId } = await ctx.params;
 
     const res = await fetch(
-      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}/default`,
+      `${API_BASE_URL}/api/v1/users/me/addresses/${encodeURIComponent(addressId)}/default`,
       {
         method: "PATCH",
         headers: {

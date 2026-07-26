@@ -137,6 +137,27 @@ describe("/api/users/me/addresses/[addressId]", () => {
     expect(options?.body).toBeUndefined();
   });
 
+  it("encodes the address id so it cannot escape the address path upstream", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ data: {} }), {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      })
+    );
+
+    await GET(
+      new NextRequest("http://localhost/api/users/me/addresses/x", {
+        headers: { authorization: "Bearer account-token" },
+      }),
+      params("../../../orders")
+    );
+
+    const [url] = fetchMock.mock.calls[0];
+    expect(url).toBe(
+      "https://backend.example/api/v1/users/me/addresses/..%2F..%2F..%2Forders"
+    );
+  });
+
   it("preserves an upstream ownership rejection instead of masking it", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(

@@ -15,12 +15,15 @@ export async function GET(
     const { id } = await params;
     const token = request.headers.get("authorization");
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/variants/${id}/reviews`, {
-      headers: {
-        Authorization: token || "",
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/variants/${encodeURIComponent(id)}/reviews`,
+      {
+        headers: {
+          Authorization: token || "",
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!res.ok) {
       if (res.status === 404) {
