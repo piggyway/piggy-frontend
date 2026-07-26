@@ -90,6 +90,79 @@ describe("GET /api/products/[slug]", () => {
     });
   });
 
+  it("ignores an include_draft query parameter that is not backed by the preview secret", async () => {
+    process.env.PREVIEW_SECRET = "configured-secret";
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(productResponse());
+
+    await GET(
+      new NextRequest(
+        "http://localhost/api/products/unpublished?include_draft=true"
+      ),
+      params("unpublished")
+    );
+
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(String(url)).not.toContain("include_draft");
+    expect(options?.headers).not.toHaveProperty("x-preview-secret");
+  });
+
+  it("rejects a forged preview secret on the include_draft parameter", async () => {
+    process.env.PREVIEW_SECRET = "configured-secret";
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(productResponse());
+
+    await GET(
+      new NextRequest(
+        "http://localhost/api/products/unpublished?include_draft=true",
+        { headers: { "x-preview-secret": "guessed-secret" } }
+      ),
+      params("unpublished")
+    );
+
+    const [url] = fetchMock.mock.calls[0];
+    expect(String(url)).not.toContain("include_draft");
+  });
+
+  it("honours include_draft for a server render that presents the preview secret", async () => {
+    process.env.PREVIEW_SECRET = "configured-secret";
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(productResponse());
+
+    await GET(
+      new NextRequest(
+        "http://localhost/api/products/unpublished?include_draft=true",
+        { headers: { "x-preview-secret": "configured-secret" } }
+      ),
+      params("unpublished")
+    );
+
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(String(url)).toContain("include_draft=true");
+    expect(options?.headers).toMatchObject({
+      "x-preview-secret": "configured-secret",
+    });
+  });
+
+  it("encodes a slug so it cannot escape the products path upstream", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(productResponse());
+
+    await GET(
+      new NextRequest("http://localhost/api/products/x"),
+      params("../../admin/secrets")
+    );
+
+    const [url] = fetchMock.mock.calls[0];
+    expect(String(url)).toBe(
+      "https://backend.example/api/v1/products/..%2F..%2Fadmin%2Fsecrets"
+    );
+  });
+
   it("refuses to expose drafts when no preview secret is configured", async () => {
     setDraftMode(true);
     const fetchMock = vi

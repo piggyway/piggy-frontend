@@ -99,13 +99,22 @@ export class ProductService {
   ): Promise<ProductDetail | null> {
     try {
       const params: Record<string, string | number | boolean> = {};
+      const headers: Record<string, string> = {};
       if (options?.includeDraft) {
         params.include_draft = true;
+        // Draft reads only happen server-side, where the route requires the
+        // preview secret before it will return unpublished products.
+        if (typeof window === "undefined" && process.env.PREVIEW_SECRET) {
+          headers["x-preview-secret"] = process.env.PREVIEW_SECRET;
+        }
       }
 
       const response = await apiClient.get<ProductDetailFromAPI>(
         API_ENDPOINTS.PRODUCT_BY_ID(slug),
-        { params: Object.keys(params).length > 0 ? params : undefined }
+        {
+          params: Object.keys(params).length > 0 ? params : undefined,
+          headers: Object.keys(headers).length > 0 ? headers : undefined,
+        }
       );
 
       if (!response.id) {
