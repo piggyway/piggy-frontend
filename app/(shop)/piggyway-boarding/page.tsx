@@ -60,13 +60,32 @@ export default function BoardingPage() {
     url: pageUrl,
     image: imageUrl,
     email: "support@piggyway.com.au",
+    telephone: "+61 414 766 727",
     priceRange: "$$",
     address: {
       "@type": "PostalAddress",
-      addressLocality: "Melbourne",
+      streetAddress: "14-16 Anderson St",
+      addressLocality: "Templestowe",
       addressRegion: "VIC",
+      postalCode: "3106",
       addressCountry: "AU",
     },
+    openingHoursSpecification: [
+      {
+        "@type": "OpeningHoursSpecification",
+        dayOfWeek: [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday",
+        ],
+        opens: "00:00",
+        closes: "23:59",
+      },
+    ],
     sameAs: ["https://www.instagram.com/piggyway_crossing"],
   };
 
