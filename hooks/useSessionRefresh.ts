@@ -26,7 +26,7 @@ export function useSessionRefresh() {
     await update({
       accessToken: refreshed.accessToken,
       refreshToken: refreshed.refreshToken,
-    } as any);
+    });
   }, [update]);
 
   return refreshSession;

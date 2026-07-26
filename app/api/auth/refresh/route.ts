@@ -4,17 +4,31 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import { getToken, JWT } from "next-auth/jwt";
 
 export const dynamic = "force-dynamic";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
 
+type AuthRefreshBody = {
+  accessToken?: string;
+  error?: string;
+  message?: string;
+};
+
 function extractRtFromSetCookie(setCookie: string | null): string | null {
   if (!setCookie) return null;
   const m = setCookie.match(/(?:^|;\s*)rt=([^;]+)/);
   return m?.[1] ?? null;
+}
+
+function parseJsonBody<T>(text: string): T | null {
+  try {
+    return text ? (JSON.parse(text) as T) : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -28,11 +42,11 @@ export async function POST(request: NextRequest) {
     }
 
     const token = await getToken({
-      req: request as any,
+      req: request,
       secret: process.env.NEXTAUTH_SECRET,
     });
 
-    const refreshToken = (token as any)?.refreshToken as string | undefined;
+    const refreshToken = (token as JWT | null)?.refreshToken;
     if (!refreshToken) {
       return NextResponse.json(
         { error: "unauthorized", message: "Missing refresh token" },
@@ -49,12 +63,7 @@ export async function POST(request: NextRequest) {
     });
 
     const bodyText = await res.text();
-    let body: any = null;
-    try {
-      body = bodyText ? JSON.parse(bodyText) : null;
-    } catch {
-      body = null;
-    }
+    const body = parseJsonBody<AuthRefreshBody>(bodyText);
 
     if (!res.ok) {
       return NextResponse.json(body ?? { error: "refresh_failed" }, {
@@ -62,7 +71,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const accessToken = body?.accessToken as string | undefined;
+    const accessToken = body?.accessToken;
     if (!accessToken) {
       return NextResponse.json(
         { error: "refresh_failed", message: "Missing access token" },

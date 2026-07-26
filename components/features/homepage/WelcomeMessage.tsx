@@ -5,19 +5,21 @@ import { useEffect, useState } from "react";
 
 export function WelcomeMessage() {
   const { user, isAuthenticated } = useUser();
-  const [show, setShow] = useState(false);
+  const canShow = Boolean(isAuthenticated && user?.firstName);
+  const [revealed, setRevealed] = useState(false);
+
+  if (!canShow && revealed) {
+    setRevealed(false);
+  }
 
   useEffect(() => {
-    // Show welcome message with fade-in animation
-    if (isAuthenticated && user?.firstName) {
-      setTimeout(() => setShow(true), 100);
-    } else {
-      setShow(false);
-    }
-  }, [isAuthenticated, user?.firstName]);
+    if (!canShow) return;
+    const id = setTimeout(() => setRevealed(true), 100);
+    return () => clearTimeout(id);
+  }, [canShow]);
 
   // Only render when authenticated and has user name, otherwise take no space
-  if (!isAuthenticated || !user?.firstName || !show) {
+  if (!canShow || !revealed || !user?.firstName) {
     return null;
   }
 

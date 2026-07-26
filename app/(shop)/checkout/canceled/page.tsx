@@ -14,7 +14,7 @@ export default function CanceledPage() {
           Payment Canceled
         </h1>
         <p className="mb-8 text-slate-600">
-          It looks like you canceled the payment process. No worries, your order hasn't been processed and no charges were made.
+          It looks like you canceled the payment process. No worries, your order hasn&apos;t been processed and no charges were made.
         </p>
 
         <div className="space-y-3">

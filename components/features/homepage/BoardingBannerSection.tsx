@@ -8,39 +8,6 @@ import { Button } from "@/components/ui/button";
 const BOARDING_LOGO_IMAGE = "/Boarding Logo.png";
 const BOARDING_PAGE_HREF = "/piggyway-boarding";
 
-const BOARDING_PHOTOS = [
-  {
-    src: "https://www.figma.com/api/mcp/asset/39584d36-cfc6-462d-94c9-5a2419dfe39c",
-    alt: "Guinea pig",
-    className:
-      "absolute -left-6 -top-8 h-[140px] w-[140px] sm:h-[180px] sm:w-[180px] lg:h-[220px] lg:w-[220px] object-cover rounded-[50px_50px_50px_100px] shadow-lg",
-  },
-  {
-    src: "https://www.figma.com/api/mcp/asset/dd1f521b-dc63-4071-8e5d-38ffcff47d1d",
-    alt: "Guinea pig eating",
-    className:
-      "absolute right-[15%] -top-6 h-[80px] w-[80px] sm:h-[100px] sm:w-[100px] lg:h-[120px] lg:w-[120px] object-cover rounded-full shadow-lg",
-  },
-  {
-    src: "https://www.figma.com/api/mcp/asset/0ab37bc5-68ca-4050-9e44-b533032b7f34",
-    alt: "Guinea pig portrait",
-    className:
-      "absolute left-[10%] -bottom-10 h-[100px] w-[100px] sm:h-[130px] sm:w-[130px] lg:h-[150px] lg:w-[150px] object-cover rounded-full shadow-lg",
-  },
-  {
-    src: "https://www.figma.com/api/mcp/asset/ebfb04c7-f0d6-43d1-9900-5d07a1e627a6",
-    alt: "Guinea pig resting",
-    className:
-      "absolute right-[20%] -bottom-12 h-[120px] w-[120px] sm:h-[150px] sm:w-[150px] lg:h-[180px] lg:w-[180px] object-cover rounded-[30px] shadow-lg",
-  },
-  {
-    src: "https://www.figma.com/api/mcp/asset/39584d36-cfc6-462d-94c9-5a2419dfe39c", // Reusing an image as placeholder for the 5th
-    alt: "Guinea pig tunnel",
-    className:
-      "absolute -right-6 top-[20%] h-[160px] w-[160px] sm:h-[200px] sm:w-[200px] lg:h-[240px] lg:w-[240px] object-cover rounded-[50px_100px_50px_50px] shadow-lg",
-  },
-];
-
 const SPARKLES = [
   { className: "left-[10%] top-[20%] h-6 w-6 text-white/95" },
   { className: "left-[20%] bottom-[15%] h-7 w-7 text-secondary-pink" },

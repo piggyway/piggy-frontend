@@ -1,8 +1,21 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { NextAuthOptions, Account, Profile, User } from "next-auth";
+import { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 const API_BASE_URL = process.env.API_BASE_URL!; // e.g. http://localhost:3000
+
+type BackendSession = NonNullable<User["backendSession"]>;
+
+type AuthRefreshBody = {
+  accessToken?: string;
+  error?: string;
+};
+
+type SessionUpdatePayload = {
+  accessToken?: string;
+  refreshToken?: string;
+};
 
 function parseJwtExpMs(accessToken: string): number | null {
   try {
@@ -23,7 +36,15 @@ function extractRtFromSetCookie(setCookie: string | null): string | null {
   return m?.[1] ?? null;
 }
 
-async function refreshAccessToken(token: any) {
+function parseJsonBody<T>(text: string): T | null {
+  try {
+    return text ? (JSON.parse(text) as T) : null;
+  } catch {
+    return null;
+  }
+}
+
+async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     if (!token?.refreshToken) {
       return { ...token, error: "RefreshAccessTokenError" as const };
@@ -37,18 +58,13 @@ async function refreshAccessToken(token: any) {
     });
 
     const text = await res.text();
-    let body: any = null;
-    try {
-      body = text ? JSON.parse(text) : null;
-    } catch {
-      body = null;
-    }
+    const body = parseJsonBody<AuthRefreshBody>(text);
 
     if (!res.ok) {
       return { ...token, error: "RefreshAccessTokenError" as const };
     }
 
-    const accessToken = body?.accessToken as string | undefined;
+    const accessToken = body?.accessToken;
     if (!accessToken) {
       return { ...token, error: "RefreshAccessTokenError" as const };
     }
@@ -129,7 +145,7 @@ export const authOptions: NextAuthOptions = {
      */
     async signIn({ user, account, profile }) {
       // Email login via credentials - already has backendSession attached
-      if (account?.provider === "email" && (user as any)?.backendSession) {
+      if (account?.provider === "email" && user.backendSession) {
         return true;
       }
 
@@ -139,27 +155,23 @@ export const authOptions: NextAuthOptions = {
       }
 
       try {
+        const accountWithUserId = account as Account & { userId?: string };
         const res = await fetch(`${API_BASE_URL}/api/v1/auth/sso`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             provider: "google",
             providerAccountId:
-              account.providerAccountId ?? (account as any).userId,
+              account.providerAccountId ?? accountWithUserId.userId,
             email: user.email,
             displayName: user.name,
             avatarUrl: user.image,
-            rawProfile: profile,
+            rawProfile: profile as Profile | undefined,
           }),
         });
 
         const text = await res.text();
-        let body: any = null;
-        try {
-          body = text ? JSON.parse(text) : null;
-        } catch {
-          // 后端返回的不是 JSON，就保持 body = null
-        }
+        const body = parseJsonBody<BackendSession & { error?: string }>(text);
 
         if (!res.ok) {
           console.error("SSO login failed", res.status, body || text);
@@ -177,7 +189,9 @@ export const authOptions: NextAuthOptions = {
         const sessionFromBackend = body;
 
         // 把后端 session 临时挂在 user 上，后面 jwt() 里用
-        (user as any).backendSession = sessionFromBackend;
+        if (sessionFromBackend) {
+          user.backendSession = sessionFromBackend;
+        }
 
         return true;
       } catch (e) {
@@ -191,7 +205,7 @@ export const authOptions: NextAuthOptions = {
      * 把后端 session 信息写入 JWT
      */
     async jwt({ token, user, trigger, session }) {
-      const backendSession = (user as any)?.backendSession;
+      const backendSession = user?.backendSession;
 
       if (backendSession) {
         token.accessToken = backendSession.accessToken;
@@ -204,7 +218,7 @@ export const authOptions: NextAuthOptions = {
 
       // Client-triggered updates (e.g. after calling /api/auth/refresh)
       if (trigger === "update" && session) {
-        const s: any = session as any;
+        const s = session as SessionUpdatePayload;
         if (s.accessToken) {
           token.accessToken = s.accessToken;
           token.accessTokenExpires =
@@ -217,7 +231,7 @@ export const authOptions: NextAuthOptions = {
       }
 
       // Auto-refresh access token if it's close to expiring (5 minutes leeway)
-      const expires = (token as any).accessTokenExpires as number | undefined;
+      const expires = token.accessTokenExpires;
       if (expires && Date.now() > expires - 5 * 60 * 1000) {
         return await refreshAccessToken(token);
       }
@@ -230,12 +244,12 @@ export const authOptions: NextAuthOptions = {
      */
     async session({ session, token }) {
       if (token.user) {
-        (session.user as any) = token.user;
+        session.user = token.user;
       }
 
-      (session as any).accessToken = token.accessToken;
-      (session as any).refreshToken = token.refreshToken;
-      (session as any).error = (token as any).error;
+      session.accessToken = token.accessToken;
+      session.refreshToken = token.refreshToken;
+      session.error = token.error;
 
       return session;
     },

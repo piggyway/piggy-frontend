@@ -42,7 +42,7 @@ const preview: Preview = {
     (Story) => {
       // Mock Next.js modules
       if (typeof window !== "undefined") {
-        // @ts-ignore
+        // @ts-expect-error Storybook mock for legacy next router on window
         window.next = {
           router: {
             push: () => {},

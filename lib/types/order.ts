@@ -32,6 +32,22 @@ export interface OrderItem {
     | null;
 }
 
+export interface OrderAddressFields {
+  line1?: string;
+  line2?: string;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  country?: string;
+}
+
+export interface OrderAddress {
+  name?: string;
+  customer_name?: string;
+  phone?: string;
+  address?: OrderAddressFields;
+}
+
 export interface Order {
   id: number;
   uuid: string;
@@ -41,15 +57,15 @@ export interface Order {
   stripe_session_id: string | null;
   stripe_payment_intent_id: string | null;
   email: string;
-  shipping_address: any;
-  billing_address: any;
+  shipping_address: OrderAddress | null;
+  billing_address: OrderAddress | null;
   subtotal_amt: number;
   shipping_fee_amt: number;
   tax_amt: number;
   discount_amt: number;
   grand_total_amt: number;
   currency: string;
-  cart_snapshot: any;
+  cart_snapshot: Record<string, unknown> | null;
   paid_at: string | null;
   preview_image_url: string | null;
   delivery_method: string | null;

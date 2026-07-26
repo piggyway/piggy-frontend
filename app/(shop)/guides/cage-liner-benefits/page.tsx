@@ -96,8 +96,8 @@ export default function CageLinerBenefitsPage() {
         {/* Article Content */}
         <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-secondary-blue prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
-            If you're tired of buying bags of wood shavings, dealing with dust,
-            and constantly scooping mess, it's time to switch to fleece.
+            If you&apos;re tired of buying bags of wood shavings, dealing with dust,
+            and constantly scooping mess, it&apos;s time to switch to fleece.
           </p>
 
           <div className="not-prose my-10 grid gap-6 md:grid-cols-2">
@@ -130,7 +130,7 @@ export default function CageLinerBenefitsPage() {
           <h2>1. Healthier for Lungs</h2>
           <p>
             Guinea pigs have sensitive respiratory systems. Wood shavings—even
-            "safe" ones like aspen—can be dusty. Pine and cedar shavings contain
+            &quot;safe&quot; ones like aspen—can be dusty. Pine and cedar shavings contain
             aromatic oils (phenols) that can damage the liver and respiratory
             tract over time.
           </p>

@@ -21,12 +21,14 @@ interface UserProfile {
   avatarUrl?: string;
 }
 
+type UserProfileUpdate = Partial<UserProfile> & { displayName?: string };
+
 interface UserContextType {
   user: UserProfile | null;
   isLoading: boolean;
   isAuthenticated: boolean;
   isFirstLogin: boolean;
-  updateUser: (data: Partial<UserProfile>) => void;
+  updateUser: (data: UserProfileUpdate) => void;
   clearUser: () => void;
 }
 
@@ -40,10 +42,18 @@ export function UserProvider({ children }: { children: ReactNode }) {
   const isLoadingRef = useRef(false);
   const hasLoadedRef = useRef(false);
   const hasEnsuredCartRef = useRef(false);
+  const accessToken = session?.accessToken;
+  const sessionError = session?.error;
+
+  // Reset local user state when signed out (render-time adjust; avoids setState-in-effect)
+  if (status === "unauthenticated" && (user !== null || isFirstLogin)) {
+    setUser(null);
+    setIsFirstLogin(false);
+  }
 
   // Handle session errors (e.g. refresh failed)
   useEffect(() => {
-    if ((session as any)?.error === "RefreshAccessTokenError") {
+    if (sessionError === "RefreshAccessTokenError") {
       // Only redirect to login if on protected pages
       const protectedPaths = ["/account", "/checkout", "/cart"];
       const isProtected = protectedPaths.some((path) =>
@@ -57,21 +67,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
         signOut({ redirect: false });
       }
     }
-  }, [session, pathname]);
+  }, [sessionError, pathname]);
 
   // Always sync accessToken to localStorage as soon as it's available
   useEffect(() => {
     if (status !== "authenticated") return;
     if (typeof window === "undefined") return;
-
-    const accessToken = (session as any)?.accessToken;
     if (!accessToken) return;
 
     const authToken = accessToken.startsWith("Bearer")
       ? accessToken
       : `Bearer ${accessToken}`;
     localStorage.setItem("access_token", authToken);
-  }, [status, (session as any)?.accessToken]);
+  }, [status, accessToken]);
 
   // Ensure a default (empty) cart exists after login (for both new and returning users).
   // This is a fire-and-forget call: backend can create the cart lazily if missing.
@@ -81,7 +89,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    const accessToken = (session as any)?.accessToken;
     if (!accessToken) return;
     if (hasEnsuredCartRef.current) return;
 
@@ -97,11 +104,17 @@ export function UserProvider({ children }: { children: ReactNode }) {
     }).catch((err) => {
       console.warn("[UserContext] Failed to ensure default cart:", err);
     });
-  }, [status, (session as any)?.accessToken, user]);
+  }, [status, accessToken, user]);
 
   // Sync user data from session, backend API, and localStorage
   // Only run once when authenticated
   useEffect(() => {
+    if (status === "unauthenticated") {
+      hasLoadedRef.current = false;
+      isLoadingRef.current = false;
+      return;
+    }
+
     // Skip if already loaded or currently loading
     if (hasLoadedRef.current || isLoadingRef.current) {
       return;
@@ -109,7 +122,6 @@ export function UserProvider({ children }: { children: ReactNode }) {
 
     if (status === "authenticated") {
       // Wait until accessToken is available; otherwise backend calls will 401 and we'll mark as loaded incorrectly
-      const accessToken = (session as any)?.accessToken;
       if (!accessToken) {
         return;
       }
@@ -186,18 +198,19 @@ export function UserProvider({ children }: { children: ReactNode }) {
       };
 
       loadUserProfile();
-    } else if (status === "unauthenticated") {
-      setUser(null);
-      setIsFirstLogin(false);
-      hasLoadedRef.current = false;
-      isLoadingRef.current = false;
     }
-  }, [status, (session as any)?.accessToken]); // Depend on accessToken so first login can load after session is ready
+  }, [status, accessToken]);
 
   // Update user data (save to backend and localStorage only - no session update to avoid loops)
-  const updateUser = async (data: Partial<UserProfile>) => {
+  const updateUser = async (data: UserProfileUpdate) => {
     // Optimistically update local state
-    const updatedUser = { ...user, ...data };
+    const updatedUser: UserProfile = {
+      firstName: data.firstName ?? user?.firstName,
+      lastName: data.lastName ?? user?.lastName,
+      email: data.email ?? user?.email,
+      phone: data.phone ?? user?.phone,
+      avatarUrl: data.avatarUrl ?? user?.avatarUrl,
+    };
     setUser(updatedUser);
 
     let finalUser = updatedUser;
@@ -211,9 +224,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         lastName:
           data.lastName !== undefined ? data.lastName || null : undefined,
         displayName:
-          (data as any).displayName !== undefined
-            ? (data as any).displayName || null
-            : undefined,
+          data.displayName !== undefined ? data.displayName || null : undefined,
       });
 
       if (!result.success) {

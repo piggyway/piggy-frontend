@@ -63,13 +63,13 @@ export function TestimonialsSection() {
                 {/* Quote with decorative quotes */}
                 <div className="text-primary-navy flex items-start gap-0">
                   <span className="text-h4 w-[30px] shrink-0 leading-[42px] font-semibold tracking-[-0.21px]">
-                    "
+                    &quot;
                   </span>
                   <p className="text-p-ui flex-1 leading-[24px] font-medium">
                     {testimonial.quote}
                   </p>
                   <span className="text-h4 w-[20px] shrink-0 self-end leading-[0px] font-semibold tracking-[-0.21px]">
-                    "
+                    &quot;
                   </span>
                 </div>
 
