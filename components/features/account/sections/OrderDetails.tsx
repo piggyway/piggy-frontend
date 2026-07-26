@@ -227,6 +227,22 @@ export function OrderDetails({
                   <p className="text-[13px] text-slate-400">
                     {currencyFormatter.format(item.unit_price_cents / 100)} each
                   </p>
+                  {item.add_ons && item.add_ons.length > 0 && (
+                    <div className="mt-0.5 flex flex-col gap-0.5">
+                      {item.add_ons.map((addOn, addOnIdx) => (
+                        <p
+                          key={`${addOn.add_on_rid ?? addOn.name}-${addOnIdx}`}
+                          className="text-[12px] text-slate-400"
+                        >
+                          + {addOn.name} (
+                          {currencyFormatter.format(
+                            addOn.unit_price_cents / 100
+                          )}
+                          )
+                        </p>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <span className="text-[13px] text-slate-400">
                   × {item.quantity}

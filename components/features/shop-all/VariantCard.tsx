@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ShoppingCart } from "lucide-react";
 import type { VariantListItem } from "@/lib/types/product";
+import { buildVariantSearchParams } from "@/lib/utils/variant-search-params";
 import { useCart } from "@/components/features/cart/CartProvider";
 
 interface VariantCardProps {
@@ -30,15 +31,39 @@ export function VariantCard({
 
   const displayImage = variant.imageUrl ?? FALLBACK_IMAGE;
 
+  // Pre-order products are enquiry-only and never marked sold out even at zero
+  // stock; genuinely out-of-stock variants are shown muted with a "Sold Out"
+  // badge but remain clickable through to the PDP.
+  const isPreorder = variant.purchaseMode === "preorder";
+  const isSoldOut = !isPreorder && variant.stockQuantity <= 0;
+  const isPurchasable = !isPreorder && !isSoldOut;
+
   // Format option values for display (e.g., "Size: M, Color: Red")
   const optionSummary = variant.optionValues
     .filter((ov) => ov.optionName && ov.value)
     .map((ov) => `${ov.optionName}: ${ov.value}`)
     .join(", ");
 
+  const statusBadge = isPreorder ? (
+    <span className="bg-primary-gold text-primary-navy absolute top-2 left-2 z-10 rounded-full px-2.5 py-1 text-xs font-medium shadow-sm">
+      Pre-order
+    </span>
+  ) : isSoldOut ? (
+    <span className="bg-primary-navy absolute top-2 left-2 z-10 rounded-full px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+      Sold Out
+    </span>
+  ) : null;
+
+  const buttonLabel = isSoldOut
+    ? "Sold Out"
+    : isPreorder
+      ? "Pre-order"
+      : "Add to Cart";
+
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (!isPurchasable) return;
     setIsAdding(true);
 
     try {
@@ -50,8 +75,9 @@ export function VariantCard({
     }
   };
 
-  // Build href with variant query param
-  const href = `/shop/${variant.category?.slug || "product"}/${variant.productSlug}?variant=${variant.variantId}`;
+  const variantParams = buildVariantSearchParams(variant.optionValues);
+  const variantQuery = variantParams.toString();
+  const href = `/shop/${variant.category?.slug || "product"}/${variant.productSlug}${variantQuery ? `?${variantQuery}` : ""}`;
 
   const priceSection = (
     <div className="flex flex-col gap-1">
@@ -91,11 +117,12 @@ export function VariantCard({
             imageBgClassName ?? "bg-neutral-stroke"
           )}
         >
+          {statusBadge}
           <Image
             src={displayImage}
             alt={variant.productTitle}
             fill
-            className="object-contain"
+            className={cn("object-contain", isSoldOut && "opacity-50")}
             sizes="(max-width: 640px) 100px, 220px"
           />
         </div>
@@ -118,13 +145,11 @@ export function VariantCard({
         {/* Add to Cart Button */}
         <Button
           onClick={handleAddToCart}
-          disabled={isAdding || isMutating || !variant.isAvailable}
+          disabled={isAdding || isMutating || !isPurchasable}
           className="bg-primary-navy hover:bg-primary-navy-light flex shrink-0 items-center justify-center gap-2 rounded-[20px] px-3 py-2 text-sm text-white sm:w-[180px] sm:px-4"
         >
           <ShoppingCart className="size-4" />
-          <span className="hidden sm:inline">
-            {variant.isAvailable ? "Add to cart" : "Out of Stock"}
-          </span>
+          <span className="hidden sm:inline">{buttonLabel}</span>
         </Button>
       </Link>
     );
@@ -141,11 +166,12 @@ export function VariantCard({
       {/* Image Container */}
       <div className="flex w-full flex-col items-start gap-3.5">
         <div className="bg-neutral-stroke relative h-[160px] w-full overflow-hidden rounded-[24px] sm:h-[180px] sm:rounded-[28px] lg:h-[200px] lg:rounded-[33px]">
+          {statusBadge}
           <Image
             src={displayImage}
             alt={variant.productTitle}
             fill
-            className="object-contain"
+            className={cn("object-contain", isSoldOut && "opacity-50")}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 312px"
           />
         </div>
@@ -170,11 +196,11 @@ export function VariantCard({
       <div className="flex w-full flex-col items-start gap-3 sm:gap-4">
         <Button
           onClick={handleAddToCart}
-          disabled={isAdding || isMutating || !variant.isAvailable}
+          disabled={isAdding || isMutating || !isPurchasable}
           className="bg-primary-navy hover:bg-primary-navy-light flex w-full items-center justify-center gap-2 rounded-[16px] px-4 py-2.5 text-sm text-white sm:rounded-[20px] sm:text-base"
         >
           <ShoppingCart className="size-4" />
-          {variant.isAvailable ? "Add to Cart" : "Out of Stock"}
+          {buttonLabel}
         </Button>
       </div>
     </Link>

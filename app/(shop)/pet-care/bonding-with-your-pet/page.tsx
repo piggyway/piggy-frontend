@@ -121,9 +121,9 @@ export default function BondingPage() {
           </p>
           <div className="my-8 rounded-xl border border-gray-100 bg-gray-50 p-6">
             <p className="m-0 text-gray-700 italic">
-              "When a hide is placed over or beside the toilet area, they can
+              &quot;When a hide is placed over or beside the toilet area, they can
               eat and rest while feeling protected — a small detail that makes a
-              big emotional difference."
+              big emotional difference.&quot;
             </p>
           </div>
 

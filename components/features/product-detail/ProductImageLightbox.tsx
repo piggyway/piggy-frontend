@@ -9,6 +9,8 @@ interface ProductImageLightboxProps {
   alt: string;
   open: boolean;
   onClose: () => void;
+  /** Optional caption shown over the image (e.g. an add-on name). */
+  caption?: string;
 }
 
 const MIN_SCALE = 1;
@@ -24,6 +26,7 @@ export function ProductImageLightbox({
   alt,
   open,
   onClose,
+  caption,
 }: ProductImageLightboxProps) {
   const [scale, setScale] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
@@ -156,6 +159,13 @@ export function ProductImageLightbox({
           />
         </div>
       </div>
+
+      {/* Caption (e.g. add-on name) */}
+      {caption && (
+        <p className="absolute top-4 left-1/2 z-50 max-w-[70vw] -translate-x-1/2 truncate rounded-full bg-white/15 px-4 py-1.5 text-sm font-medium text-white backdrop-blur-sm">
+          {caption}
+        </p>
+      )}
 
       {/* Close button */}
       <button

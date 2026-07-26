@@ -26,7 +26,7 @@ export function TestimonialCard({
         <div className="text-primary-navy flex w-full items-start gap-0">
           {/* Opening Quote */}
           <div className="text-primary-navy text-h4 shrink-0 leading-[42px] font-semibold tracking-[-0.21px]">
-            "
+            &quot;
           </div>
 
           {/* Quote Text */}
@@ -36,7 +36,7 @@ export function TestimonialCard({
 
           {/* Closing Quote */}
           <div className="text-primary-navy text-h4 flex shrink-0 flex-col justify-end leading-0 font-semibold tracking-[-0.21px]">
-            "
+            &quot;
           </div>
         </div>
       </div>

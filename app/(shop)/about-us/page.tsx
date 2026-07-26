@@ -4,7 +4,6 @@ import { BackgroundBlobs } from "@/components/ui/background-blobs";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 import {
   Heart,
-  Shield,
   Sparkles,
   Smile,
   CheckCircle2,
@@ -104,10 +103,10 @@ export default function AboutPage() {
             pig carer.
           </p>
           <div className="mx-auto mt-8 max-w-3xl text-gray-600 italic">
-            "In our hardest moments, these small, gentle animals have given us
+            &quot;In our hardest moments, these small, gentle animals have given us
             comfort, stability, and quiet emotional support. They’ve reminded us
             to slow down, to care deeply, and to show up every day. That
-            connection is at the heart of Piggyway."
+            connection is at the heart of Piggyway.&quot;
           </div>
         </AnimatedSection>
       </section>
@@ -181,7 +180,7 @@ export default function AboutPage() {
                 Our Purpose
               </span>
               <h2 className="text-primary-navy text-3xl font-bold sm:text-4xl">
-                So Others Don't Have to Learn Through Fear
+                So Others Don&apos;t Have to Learn Through Fear
               </h2>
               <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
                 Our mission is to encourage responsible, informed guinea pig

@@ -159,6 +159,7 @@ export interface VariantListItemFromAPI {
   image_url: string | null;
   stock_quantity: number;
   is_available: boolean;
+  purchase_mode: PurchaseMode;
   option_values: Array<{
     option_name: string | null;
     option_slug: string | null;
@@ -184,6 +185,7 @@ export interface VariantListItem {
   imageUrl: string;
   stockQuantity: number;
   isAvailable: boolean;
+  purchaseMode: PurchaseMode;
   optionValues: VariantOptionDisplay[];
 }
 
@@ -309,8 +311,102 @@ export interface FeatureCard {
 }
 
 /**
+ * Product information section from API (snake_case)
+ */
+export interface InfoSectionFromAPI {
+  id: number;
+  title: string | null;
+  content: string | null;
+  sort: number | null;
+}
+
+/**
+ * Product information section for frontend (camelCase)
+ */
+export interface InfoSection {
+  id: number;
+  title: string;
+  content: string;
+}
+
+/**
+ * Add-on selection mode
+ */
+export type AddOnSelectionMode = "single" | "multiple";
+
+/**
+ * Add-on item from API (snake_case)
+ */
+export interface AddOnFromAPI {
+  id: number;
+  uuid: string | null;
+  name: string | null;
+  slug: string | null;
+  description: string | null;
+  price: number | null;
+  currency: CurrencyInfo | null;
+  image_url: string | null;
+  stock_quantity: number;
+  is_available: boolean;
+  sort: number | null;
+  group_id: number | null;
+}
+
+/**
+ * Add-on group from API (snake_case)
+ */
+export interface AddOnGroupFromAPI {
+  id: number;
+  uuid: string | null;
+  name: string | null;
+  selection_mode: string | null;
+  is_required: boolean;
+  sort: number | null;
+  add_ons: AddOnFromAPI[];
+}
+
+/**
+ * Add-on item for frontend (camelCase). price is in dollars.
+ */
+export interface AddOn {
+  id: number;
+  uuid: string | null;
+  name: string;
+  slug: string | null;
+  description: string | null;
+  price: number;
+  formattedPrice: string;
+  currency: CurrencyInfo | null;
+  imageUrl: string | null;
+  stockQuantity: number;
+  isAvailable: boolean;
+  sort: number;
+  groupId: number | null;
+}
+
+/**
+ * Add-on group for frontend (camelCase)
+ */
+export interface AddOnGroup {
+  id: number;
+  uuid: string | null;
+  name: string;
+  selectionMode: AddOnSelectionMode;
+  isRequired: boolean;
+  sort: number;
+  addOns: AddOn[];
+}
+
+/**
  * Product detail from API (snake_case)
  */
+/**
+ * How a product can be purchased. `standard` allows direct add-to-cart;
+ * `preorder` products are enquiry-only (no add-to-cart / checkout).
+ * Keys must match the CMS `product_info.purchase_mode` dropdown choices.
+ */
+export type PurchaseMode = "standard" | "preorder";
+
 export interface ProductDetailFromAPI {
   id: number;
   title: string | null;
@@ -324,6 +420,8 @@ export interface ProductDetailFromAPI {
   feature_section_subtitle: string | null;
   feature_section_description: string | null;
   feature_banner_text: string | null;
+  purchase_mode: PurchaseMode;
+  add_on_max_selections: number | null;
   slug: string | null;
   base_price: number | null;
   currency: CurrencyInfo | null;
@@ -334,6 +432,7 @@ export interface ProductDetailFromAPI {
   detail_information_files: string[];
   story_blocks: StoryBlockFromAPI[];
   feature_cards: FeatureCardFromAPI[];
+  info_sections: InfoSectionFromAPI[];
   options: Array<{
     id: number;
     name: string | null;
@@ -370,6 +469,8 @@ export interface ProductDetailFromAPI {
     }>;
     image_urls: string[];
   }>;
+  add_on_groups: AddOnGroupFromAPI[];
+  add_ons: AddOnFromAPI[];
 }
 
 /**
@@ -388,6 +489,8 @@ export interface ProductDetail {
   featureSectionSubtitle: string;
   featureSectionDescription: string;
   featureBannerText: string;
+  purchaseMode: PurchaseMode;
+  addOnMaxSelections: number | null;
   slug: string;
   basePrice: number;
   formattedPrice: string;
@@ -399,8 +502,11 @@ export interface ProductDetail {
   detailInformationFiles: string[];
   storyBlocks: StoryBlock[];
   featureCards: FeatureCard[];
+  infoSections: InfoSection[];
   options: ProductOption[];
   variants: ProductVariant[];
+  addOnGroups: AddOnGroup[];
+  addOns: AddOn[];
 }
 
 // ==================== Review Types ====================

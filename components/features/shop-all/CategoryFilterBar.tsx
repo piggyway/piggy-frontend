@@ -1,45 +1,54 @@
 "use client";
 
-import { ShoppingBag, Home, Grid3x3, Package } from "lucide-react";
+import Image from "next/image";
+import { ShoppingBag, Home, Grid3x3, Package, Cookie, Tag } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Category } from "@/lib/types/models";
 
-interface CategoryItem {
-  id: string;
-  label: string;
-  icon: React.ComponentType<{ className?: string }>;
-}
+/**
+ * Fallback icons per category slug, used when the CMS does not provide a
+ * nav_icon_url. Add a slug here to give a new category a bespoke icon;
+ * otherwise it falls back to DEFAULT_ICON. The CMS nav_icon_url always wins.
+ */
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  liner: ShoppingBag,
+  hideout: Home,
+  treat: Cookie,
+  "c-c-cage": Grid3x3,
+  combo: Package,
+};
 
-const categories: CategoryItem[] = [
-  { id: "liner", label: "Liner", icon: ShoppingBag },
-  { id: "hut", label: "Hut", icon: Home },
-  { id: "c-c-cage", label: "C&C Cage", icon: Grid3x3 },
-  { id: "combo", label: "Combos", icon: Package },
-];
+const DEFAULT_ICON: LucideIcon = Tag;
 
 interface CategoryFilterBarProps {
+  categories: Category[];
   activeCategory?: string | null;
   onCategoryChange?: (category: string | null) => void;
 }
 
 export function CategoryFilterBar({
+  categories,
   activeCategory = null,
   onCategoryChange,
 }: CategoryFilterBarProps) {
-  const handleCategoryClick = (categoryId: string) => {
-    const newCategory = activeCategory === categoryId ? null : categoryId;
+  const handleCategoryClick = (slug: string) => {
+    const newCategory = activeCategory === slug ? null : slug;
     onCategoryChange?.(newCategory);
   };
+
+  if (categories.length === 0) return null;
 
   return (
     <div className="mb-6 flex flex-wrap items-center gap-3 overflow-x-auto pb-2 sm:mb-8 sm:gap-4">
       {categories.map((category) => {
-        const Icon = category.icon;
-        const isActive = activeCategory === category.id;
+        const Icon = CATEGORY_ICONS[category.slug] ?? DEFAULT_ICON;
+        const isActive = activeCategory === category.slug;
 
         return (
           <button
-            key={category.id}
-            onClick={() => handleCategoryClick(category.id)}
+            key={category.slug}
+            onClick={() => handleCategoryClick(category.slug)}
             className={cn(
               "flex shrink-0 flex-col items-center gap-1.5 rounded-lg p-2.5 transition-all sm:gap-2 sm:p-3",
               "hover:bg-primary-purple/20",
@@ -48,17 +57,27 @@ export function CategoryFilterBar({
           >
             <div
               className={cn(
-                "flex h-10 w-10 items-center justify-center rounded-full transition-colors sm:h-12 sm:w-12",
+                "flex h-10 w-10 items-center justify-center overflow-hidden rounded-full transition-colors sm:h-12 sm:w-12",
                 "border-2 bg-white",
                 isActive ? "border-primary-navy" : "border-neutral-stroke"
               )}
             >
-              <Icon
-                className={cn(
-                  "h-5 w-5 sm:h-6 sm:w-6",
-                  isActive ? "text-primary-navy" : "text-primary-navy/60"
-                )}
-              />
+              {category.navIconUrl ? (
+                <Image
+                  src={category.navIconUrl}
+                  alt={category.name}
+                  width={24}
+                  height={24}
+                  className="h-5 w-5 object-contain sm:h-6 sm:w-6"
+                />
+              ) : (
+                <Icon
+                  className={cn(
+                    "h-5 w-5 sm:h-6 sm:w-6",
+                    isActive ? "text-primary-navy" : "text-primary-navy/60"
+                  )}
+                />
+              )}
             </div>
             <span
               className={cn(
@@ -66,7 +85,7 @@ export function CategoryFilterBar({
                 isActive ? "text-primary-navy" : "text-primary-navy/80"
               )}
             >
-              {category.label}
+              {category.name}
             </span>
           </button>
         );

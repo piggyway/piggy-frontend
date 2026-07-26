@@ -1,6 +1,6 @@
 "use client";
 
-import { Dog, Cat, Rabbit, Bird, Mouse, Circle } from "lucide-react";
+import { Dog, Cat, Rabbit, Bird, Mouse } from "lucide-react";
 import { GuineaPigIcon } from "@/components/icons/PetIcons";
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import type { SpeciesInfo } from "@/lib/types/product";
@@ -89,9 +89,6 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
       </AnimatedSection>
     );
   }
-
-  // Build emoji string from all species
-  const emojiString = displayPets.map((p) => p.emoji).join("");
 
   return (
     <AnimatedSection className="w-full">

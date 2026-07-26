@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "./CartProvider";
 import { PromoService } from "@/lib/services/promo";
+import { calculateOrderTotal } from "@/lib/utils/cart";
 import { useShippingConfig } from "@/hooks/useShippingConfig";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -183,10 +184,13 @@ export function CartSummary({
   const { cart, applyPromoCode, removePromoCode, isMutating } = useCart();
   const { freeShippingThreshold } = useShippingConfig();
 
-  const total = Math.max(
-    0,
-    grandTotal ?? subtotal + shippingEstimate + taxEstimate - discount
-  );
+  const total = calculateOrderTotal({
+    subtotal,
+    shippingEstimate,
+    taxEstimate,
+    discount,
+    grandTotal,
+  });
 
   const progress = Math.min((subtotal / freeShippingThreshold) * 100, 100);
   const remaining = Math.max(freeShippingThreshold - subtotal, 0);

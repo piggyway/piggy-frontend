@@ -26,10 +26,7 @@ type PaymentIntentRequestBody = {
   fulfillmentType?: "delivery" | "pickup";
   pickupLocationId?: number;
   pickupSlotId?: number;
-  cartId?: string | number;
-  currency?: string;
   promoCode?: string;
-  userId?: string;
   shippingAddress?: ShippingAddressPayload;
   paymentIntentId?: string;
 };
@@ -66,10 +63,7 @@ export async function POST(request: NextRequest) {
       fulfillment_type: body.fulfillmentType || "delivery",
       pickup_location_id: body.pickupLocationId,
       pickup_slot_id: body.pickupSlotId,
-      cart_id: body.cartId,
-      currency: body.currency || "aud",
       promo_code: body.promoCode,
-      user_id: body.userId,
       shipping_address: body.shippingAddress
         ? {
             name: body.shippingAddress.name,
@@ -86,11 +80,15 @@ export async function POST(request: NextRequest) {
     };
 
     const token = request.headers.get("authorization");
+    const sessionId = request.headers.get("x-session-id");
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
     };
     if (token) {
       headers.Authorization = token;
+    }
+    if (sessionId) {
+      headers["X-Session-Id"] = sessionId;
     }
 
     const res = await fetch(`${API_BASE_URL}/api/v1/checkout/payment-intent`, {

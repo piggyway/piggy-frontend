@@ -19,10 +19,11 @@ interface CategoriesAPIResponse {
 }
 
 /**
- * Mapping of Category to UI styles
- * Return the corresponding color and image based on the category slug or id
+ * Fallback UI styling per category slug, used only when the backend does not
+ * provide presentation data (theme_color / imageUrl). Keeps visual parity for
+ * existing categories. Data from the CMS always takes precedence.
  */
-const CATEGORY_STYLES: Record<
+const CATEGORY_STYLE_FALLBACKS: Record<
   string,
   { bgColor: string; textColor: string; image: string }
 > = {
@@ -31,7 +32,7 @@ const CATEGORY_STYLES: Record<
     textColor: "text-primary-navy",
     image: "/homepage-essentials/liner-example.png",
   },
-  hut: {
+  hideout: {
     bgColor: "bg-secondary-mint",
     textColor: "text-primary-navy",
     image: "/homepage-essentials/hut-example.png",
@@ -51,6 +52,15 @@ const CATEGORY_STYLES: Record<
     textColor: "text-primary-navy",
     image: "/homepage-essentials/combo-example.png",
   },
+};
+
+/**
+ * Default styling for any category without a slug-specific fallback.
+ */
+const DEFAULT_CATEGORY_STYLE = {
+  bgColor: "bg-neutral-grey-background",
+  textColor: "text-primary-navy",
+  image: "/default-category-image.png",
 };
 
 export class CategoryService {
@@ -98,15 +108,14 @@ export class CategoryService {
   }
 
   /**
-   * Business logic: Transform backend data to frontend format
+   * Business logic: Transform backend data to frontend format.
+   * Presentation fields (theme_color, nav_icon_url, care_cards, section
+   * titles) come straight from the CMS; bgColor/textColor/image fall back to
+   * the slug style map when the CMS does not provide them.
    */
   private static transformCategory(apiCategory: CategoryFromAPI): Category {
     const slug = this.normalizeSlug(apiCategory.slug);
-    const styles = CATEGORY_STYLES[slug] || {
-      bgColor: "bg-neutral-grey-background",
-      textColor: "text-primary-navy",
-      image: "/default-category-image.png",
-    };
+    const styles = CATEGORY_STYLE_FALLBACKS[slug] || DEFAULT_CATEGORY_STYLE;
 
     return {
       id: apiCategory.uuid,
@@ -116,15 +125,22 @@ export class CategoryService {
       image: apiCategory.imageUrl || styles.image,
       bgColor: styles.bgColor,
       textColor: styles.textColor,
+      themeColor: apiCategory.theme_color,
+      navIconUrl: apiCategory.nav_icon_url,
+      specSectionTitle: apiCategory.spec_section_title,
+      careSectionTitle: apiCategory.care_section_title,
+      careCards: Array.isArray(apiCategory.care_cards)
+        ? apiCategory.care_cards
+        : [],
     };
   }
 
   /**
    * Business logic: Check if the category is featured
-   * Currently only show categories in the style mapping
+   * Currently only show categories in the fallback style map
    */
   private static isFeatured(category: Category): boolean {
-    return this.normalizeSlug(category.slug) in CATEGORY_STYLES;
+    return this.normalizeSlug(category.slug) in CATEGORY_STYLE_FALLBACKS;
   }
 
   /**
@@ -138,35 +154,29 @@ export class CategoryService {
    * Business logic: Get default categories
    */
   private static getDefaultCategories(): Category[] {
-    return [
-      {
-        id: "liner",
-        slug: "liner",
-        name: "Liners",
-        title: "Liners",
-        ...CATEGORY_STYLES.liner,
-      },
-      {
-        id: "hut",
-        slug: "hut",
-        name: "Hut",
-        title: "Hut",
-        ...CATEGORY_STYLES.hut,
-      },
-      {
-        id: "c-c-cage",
-        slug: "c-c-cage",
-        name: "C&C Cage",
-        title: "C&C Cage",
-        ...CATEGORY_STYLES["c-c-cage"],
-      },
-      {
-        id: "combo",
-        slug: "combo",
-        name: "Combos",
-        title: "Combos",
-        ...CATEGORY_STYLES.combo,
-      },
+    const defaults: Array<{ slug: string; name: string }> = [
+      { slug: "liner", name: "Liners" },
+      { slug: "hideout", name: "Hideout" },
+      { slug: "c-c-cage", name: "C&C Cage" },
+      { slug: "combo", name: "Combos" },
     ];
+
+    return defaults.map(({ slug, name }) => {
+      const styles = CATEGORY_STYLE_FALLBACKS[slug] || DEFAULT_CATEGORY_STYLE;
+      return {
+        id: slug,
+        slug,
+        name,
+        title: name,
+        image: styles.image,
+        bgColor: styles.bgColor,
+        textColor: styles.textColor,
+        themeColor: null,
+        navIconUrl: null,
+        specSectionTitle: null,
+        careSectionTitle: null,
+        careCards: [],
+      };
+    });
   }
 }

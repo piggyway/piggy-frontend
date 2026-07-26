@@ -33,7 +33,8 @@ export function FloatingCartButton() {
     if (!isOpen) return;
     ensureLoaded().catch((err) => {
       // If auth is required, close the sheet and let CartProvider show the dialog.
-      if (String((err as any)?.message || err).includes("AUTH_REQUIRED")) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes("AUTH_REQUIRED")) {
         setIsOpen(false);
       }
     });

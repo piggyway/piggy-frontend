@@ -103,14 +103,18 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
   const view = params.view === "list" ? "list" : "grid";
 
   // Fetch server-side so product links are present in the initial HTML
-  const response = await ProductService.getVariants({
-    page,
-    page_size: PAGE_SIZE,
-    category,
-    q,
-    sort,
-    in_stock: "true",
-  });
+  const [response, categories] = await Promise.all([
+    // Out-of-stock variants are intentionally included so the grid can show a
+    // "Sold Out" state; the backend still excludes is_available=false variants.
+    ProductService.getVariants({
+      page,
+      page_size: PAGE_SIZE,
+      category,
+      q,
+      sort,
+    }),
+    CategoryService.getCategories(),
+  ]);
 
   return (
     <div className="bg-neutral-background-light relative min-h-screen">
@@ -130,6 +134,7 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
 
         {/* Category Filter and Products Section with URL State */}
         <ShopAllContent
+          categories={categories}
           variants={response.data}
           totalItems={response.pagination.total}
           totalPages={response.pagination.totalPages}

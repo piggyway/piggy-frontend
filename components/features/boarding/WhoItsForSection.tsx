@@ -15,8 +15,8 @@ export function WhoItsForSection() {
                 Who It&apos;s For
               </h2>
               <p className="text-primary-navy text-xl leading-8 font-normal sm:text-2xl">
-                Find out if our guinea pig boarding is the right fit for your
-                little ones.
+                Find out if our guinea pig boarding in Melbourne is the right
+                fit for your little ones.
               </p>
             </div>
             <div className="relative h-[42px] w-[62px] shrink-0">

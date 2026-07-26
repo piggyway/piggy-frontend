@@ -3,7 +3,6 @@ import { HeroSection } from "@/components/features/homepage/HeroSection";
 import { BoardingBannerSection } from "@/components/features/homepage/BoardingBannerSection";
 import { ShopByCategorySection } from "@/components/features/homepage/ShopByCategorySection";
 import { PetCareTipsSection } from "@/components/features/homepage/PetCareTipsSection";
-import { StarterKitsSection } from "@/components/features/homepage/StarterKitsSection";
 import { TestimonialsSection } from "@/components/features/homepage/TestimonialsSection";
 import { WhyShopSection } from "@/components/features/homepage/WhyShopSection";
 import { OurStorySection } from "@/components/features/homepage/OurStorySection";

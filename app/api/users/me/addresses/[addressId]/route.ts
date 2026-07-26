@@ -28,7 +28,7 @@ export async function GET(
     const { addressId } = await ctx.params;
 
     const res = await fetch(
-      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`,
+      `${API_BASE_URL}/api/v1/users/me/addresses/${encodeURIComponent(addressId)}`,
       {
         method: "GET",
         headers: {
@@ -68,7 +68,7 @@ export async function PATCH(
     const body = await request.json();
 
     const res = await fetch(
-      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`,
+      `${API_BASE_URL}/api/v1/users/me/addresses/${encodeURIComponent(addressId)}`,
       {
         method: "PATCH",
         headers: {
@@ -108,7 +108,7 @@ export async function DELETE(
     const { addressId } = await ctx.params;
 
     const res = await fetch(
-      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`,
+      `${API_BASE_URL}/api/v1/users/me/addresses/${encodeURIComponent(addressId)}`,
       {
         method: "DELETE",
         headers: {

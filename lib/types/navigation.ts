@@ -35,7 +35,7 @@ export const footerLinks: FooterLinkGroup[] = [
     title: "Categories",
     links: [
       { label: "Liners", href: "/shop-all?category=liner" },
-      { label: "Huts", href: "/shop-all?category=hut" },
+      { label: "Hideout", href: "/shop-all?category=hideout" },
       { label: "C&C Cages", href: "/shop-all?category=c-c-cage" },
       { label: "Combos", href: "/shop-all?category=combo" },
     ],

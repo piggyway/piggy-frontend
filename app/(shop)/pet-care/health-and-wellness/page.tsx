@@ -135,7 +135,7 @@ export default function HealthWellnessPage() {
           <h3>Nail Trimming</h3>
           <p>
             Overgrown nails can curl back into the footpad, causing pain and
-            infection. Trim tips every 2-4 weeks. If you're nervous, ask your
+            infection. Trim tips every 2-4 weeks. If you&apos;re nervous, ask your
             vet to demonstrate or use a file.
           </p>
 
@@ -148,8 +148,8 @@ export default function HealthWellnessPage() {
 
           <h3>Boar Cleaning (Guinea Pigs)</h3>
           <p>
-            Male guinea pigs need their "sac" cleaned occasionally to prevent
-            impaction. It's not glamorous, but it's necessary for their comfort.
+            Male guinea pigs need their &quot;sac&quot; cleaned occasionally to prevent
+            impaction. It&apos;s not glamorous, but it&apos;s necessary for their comfort.
           </p>
 
           <div className="my-8 rounded-r-lg border-l-4 border-red-500 bg-red-50 p-6">
@@ -167,9 +167,9 @@ export default function HealthWellnessPage() {
 
           <h2>Finding a Vet</h2>
           <p>
-            Not all vets see "exotics." Ensure you find a vet experienced with
+            Not all vets see &quot;exotics.&quot; Ensure you find a vet experienced with
             guinea pigs or rabbits <em>before</em> an emergency happens. Look
-            for "exotic animal" specialists.
+            for &quot;exotic animal&quot; specialists.
           </p>
 
           <h2>Weight Monitoring</h2>

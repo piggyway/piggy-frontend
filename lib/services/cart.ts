@@ -11,8 +11,9 @@ import type {
   Cart,
   CartFromAPI,
   CartItem,
+  CartItemAddOn,
+  CartItemAddOnFromAPI,
   CartItemFromAPI,
-  CartPaginationFromAPI,
   CartResponseFromAPI,
   CartTotals,
   CartTotalsFromAPI,
@@ -21,13 +22,51 @@ import type {
 
 const FALLBACK_IMAGE = "/default-product-image.png";
 
+/**
+ * User-friendly messages for backend add-on error codes.
+ */
+const ADD_ON_ERROR_MESSAGES: Record<string, string> = {
+  add_on_not_found: "One of the selected add-ons is no longer available.",
+  add_on_not_for_product:
+    "One of the selected add-ons is not available for this product.",
+  add_on_unavailable: "One of the selected add-ons is currently unavailable.",
+  add_on_insufficient_stock:
+    "One of the selected add-ons does not have enough stock for this quantity.",
+  add_on_group_single_selection_violation:
+    "Please pick only one option from this add-on group.",
+  add_ons_unavailable: "Some selected add-ons are no longer available.",
+  add_on_max_selections_exceeded:
+    "You have selected too many add-ons for this product.",
+  product_preorder_only:
+    "This product is pre-order only. Please contact us to enquire.",
+};
+
+/**
+ * Map a raw backend error to a friendly message. The backend may send either a
+ * bare error code ("add_on_insufficient_stock") or a code with a human detail
+ * ("add_on_insufficient_stock: Decoration Kit (requested 3, available 2)").
+ * For a bare known code we use the friendly copy; for a "code: detail" form we
+ * keep the (more specific) detail and drop the code prefix; unknown errors pass
+ * through unchanged.
+ */
+function mapAddOnError(rawError: string | undefined): string | undefined {
+  if (!rawError) return rawError;
+  if (ADD_ON_ERROR_MESSAGES[rawError]) return ADD_ON_ERROR_MESSAGES[rawError];
+  const match = rawError.match(/^([a-z_]+):\s*(.+)$/);
+  if (match && ADD_ON_ERROR_MESSAGES[match[1]]) {
+    return match[2].trim() || ADD_ON_ERROR_MESSAGES[match[1]];
+  }
+  return rawError;
+}
+
 export class CartService {
   /**
    * Fetch active cart with pagination support
    */
-  static async getCart(
-    pagination?: { cursor?: number; limit?: number }
-  ): Promise<Cart | null> {
+  static async getCart(pagination?: {
+    cursor?: number;
+    limit?: number;
+  }): Promise<Cart | null> {
     try {
       const params = new URLSearchParams();
       if (pagination?.cursor) {
@@ -99,19 +138,26 @@ export class CartService {
           variant_rid: payload.variantRid,
           quantity: payload.quantity ?? 1,
           notes: payload.notes,
+          ...(payload.addOnIds && payload.addOnIds.length > 0
+            ? { add_on_ids: payload.addOnIds }
+            : {}),
         }),
       });
 
       const data: CartResponseFromAPI = await response.json();
 
       if (!data.success || !data.data) {
-        throw new Error(data.error || "Failed to add cart item");
+        throw new Error(mapAddOnError(data.error) || "Failed to add cart item");
       }
 
       return this.transformCart(data.data);
     } catch (error) {
       console.error("[CartService] Failed to add cart item:", error);
-      return null;
+      // Re-throw so the caller can surface the (friendly) message instead of a
+      // generic fallback. Add-on stock/availability errors matter to the user.
+      throw error instanceof Error
+        ? error
+        : new Error("Failed to add cart item");
     }
   }
 
@@ -245,12 +291,33 @@ export class CartService {
       stockQuantity: item.stock_quantity,
       variantSku: item.variant_sku,
       variantOptions: item.variant_options || [],
+      addOns: (item.add_ons ?? []).map((addOn) =>
+        this.transformCartItemAddOn(addOn, cart.currency)
+      ),
       notes: item.notes,
       formattedUnitPrice: this.formatAmount(unitPriceCents, cart.currency),
       formattedLineSubtotal: this.formatAmount(
         item.line_subtotal_amt,
         cart.currency
       ),
+    };
+  }
+
+  /**
+   * Transform a cart item add-on. unit_price_amt is already in cents and is
+   * folded into the composite line total, so it is only a display breakdown.
+   */
+  private static transformCartItemAddOn(
+    addOn: CartItemAddOnFromAPI,
+    currency: string
+  ): CartItemAddOn {
+    const unitPriceCents = addOn.unit_price_amt ?? 0;
+    return {
+      id: addOn.id,
+      addOnRid: addOn.add_on_rid,
+      name: addOn.name || "Add-on",
+      unitPriceCents,
+      formattedUnitPrice: this.formatAmount(unitPriceCents, currency),
     };
   }
 

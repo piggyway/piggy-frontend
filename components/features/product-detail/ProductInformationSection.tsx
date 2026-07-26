@@ -12,6 +12,8 @@ import {
   Ban,
   type LucideIcon,
 } from "lucide-react";
+import type { CareCard } from "@/lib/types/models";
+import type { InfoSection } from "@/lib/types/product";
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import {
   Accordion,
@@ -34,125 +36,121 @@ interface ProductInformationSectionProps {
   specifications: string;
   careInstructions: string;
   detailInformationFiles: string[];
+  /** Category-driven presentation, sourced from the CMS product-category. */
+  specSectionTitle?: string | null;
+  careSectionTitle?: string | null;
+  careCards?: CareCard[];
+  /** CMS-driven sections; when present they replace the legacy three fields. */
+  infoSections?: InfoSection[];
 }
 
-const CARE_CARDS: {
-  icon: LucideIcon;
-  caption: string;
-  sub?: string;
-  bg: string;
-  forbidden?: boolean;
-}[] = [
-  {
-    icon: Sparkles,
-    caption: "Shake out daily for easy cleaning",
-    bg: "bg-neutral-pink-background",
-  },
-  {
-    icon: WashingMachine,
-    caption: "Machine wash",
-    sub: "(cold or warm)",
-    bg: "bg-secondary-mint",
-  },
-  {
-    icon: Wind,
-    caption: "Tumble dry or line dry",
-    bg: "bg-neutral-white",
-  },
-  {
-    icon: Brush,
-    caption: "Do not scrub with stiff brushes",
-    bg: "bg-neutral-stroke",
-    forbidden: true,
-  },
-  {
-    icon: Flame,
-    caption: "Do not tumble dry on high heat",
-    bg: "bg-neutral-background",
-    forbidden: true,
-  },
-  {
-    icon: FlaskConical,
-    caption: "Avoid bleach or fabric softeners",
-    bg: "bg-primary-purple",
-    forbidden: true,
-  },
-];
-
-// Maps the first two accordion items to a carousel image index
-const IMAGE_INDEX_BY_ITEM: Record<string, number> = {
-  features: 0,
-  specifications: 1,
+/**
+ * Maps a care card `icon` name (stored in the CMS `care_cards` JSON) to a
+ * lucide icon. Keys MUST match the CMS-allowed icon names one-to-one; adding
+ * an option is a two-side change (this map + the CMS choices). The fallback is
+ * defensive only.
+ */
+const CARE_ICON_MAP: Record<string, LucideIcon> = {
+  Sparkles,
+  WashingMachine,
+  Wind,
+  Brush,
+  Flame,
+  FlaskConical,
 };
+
+const DEFAULT_CARE_CARD_BG = "bg-neutral-background";
+
+interface AccordionItemData {
+  id: string;
+  title: string;
+  content: string;
+  /** True only for the legacy "care" item, which drives the care-grid panel. */
+  isCare: boolean;
+}
 
 export function ProductInformationSection({
   productFeatures,
   specifications,
   careInstructions,
   detailInformationFiles,
+  specSectionTitle,
+  careSectionTitle,
+  careCards = [],
+  infoSections = [],
 }: ProductInformationSectionProps) {
-  const defaultProductFeatures = `
-    <ul class="list-disc pl-5 space-y-2">
-      <li>Premium quality materials ensuring durability and comfort.</li>
-      <li>Designed with pet safety in mind, non-toxic and secure.</li>
-      <li>Easy to clean and maintain for long-lasting use.</li>
-      <li>Modern and stylish design that fits any home decor.</li>
-    </ul>
-  `;
-  const defaultSpecifications = `
-    <ul class="list-disc pl-5 space-y-2">
-      <li><strong>Dimensions:</strong> Please refer to product images</li>
-      <li><strong>Material:</strong> High-quality fabric</li>
-      <li><strong>Weight:</strong> Lightweight and portable</li>
-      <li><strong>Origin:</strong> Designed with love</li>
-    </ul>
-  `;
-  const defaultCareInstructions = `
-    <div class="space-y-4">
-      <div>
-        <h3 class="font-semibold mb-2">How to use</h3>
-        <p>Place in a comfortable spot for your pet. Ensure it is stable and accessible.</p>
-      </div>
-      <div>
-        <h3 class="font-semibold mb-2">Care instructions</h3>
-        <p>Machine wash cold on gentle cycle. Do not bleach. Tumble dry low. Do not iron.</p>
-      </div>
-    </div>
-  `;
-  const normalizeContent = (value: string, fallback: string) =>
-    value?.trim() ? value : fallback;
+  const hasInfoSections = infoSections.length > 0;
 
-  const accordionItems = [
-    {
-      id: "features",
-      title: "Product Features",
-      content: normalizeContent(productFeatures, defaultProductFeatures),
-    },
-    {
-      id: "specifications",
-      title: "Size guide",
-      content: normalizeContent(specifications, defaultSpecifications),
-    },
-    {
-      id: "care",
-      title: "Liner Care & Cleaning Guide",
-      content: normalizeContent(careInstructions, defaultCareInstructions),
-    },
-  ];
+  // CMS sections replace the legacy trio when present. Otherwise fall back to
+  // the three legacy fields, keeping only the ones that carry real content
+  // (no placeholder copy is ever rendered).
+  const accordionItems: AccordionItemData[] = hasInfoSections
+    ? infoSections.map((section) => ({
+        id: `section-${section.id}`,
+        title: section.title,
+        content: section.content,
+        isCare: false,
+      }))
+    : [
+        {
+          id: "features",
+          title: "Product Features",
+          content: productFeatures,
+          isCare: false,
+        },
+        {
+          id: "specifications",
+          title: specSectionTitle?.trim() || "Size guide",
+          content: specifications,
+          isCare: false,
+        },
+        {
+          id: "care",
+          title: careSectionTitle?.trim() || "Liner Care & Cleaning Guide",
+          content: careInstructions,
+          isCare: true,
+        },
+      ].filter((item) => item.content?.trim());
 
-  const carouselImages =
-    detailInformationFiles && detailInformationFiles.length > 0
-      ? detailInformationFiles
-      : ["/default-product-image.png"];
+  const hasCareCards = careCards.length > 0;
+  const hasImages = (detailInformationFiles?.length ?? 0) > 0;
+  const carouselImages = detailInformationFiles ?? [];
 
-  const [activeItem, setActiveItem] = useState("features");
+  const firstItemId = accordionItems[0]?.id ?? "";
+  const [activeItem, setActiveItem] = useState(firstItemId);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
 
-  // Sync the carousel to the active (non-care) accordion item
+  const activeIndex = accordionItems.findIndex(
+    (item) => item.id === activeItem
+  );
+
+  // Sync the carousel to the active accordion item, mapping section N -> image N
+  // (clamped). This preserves the legacy features/specifications behavior and
+  // extends naturally to dynamic sections.
   useEffect(() => {
-    if (!carouselApi || activeItem === "care") return;
-    carouselApi.scrollTo(IMAGE_INDEX_BY_ITEM[activeItem] ?? 0);
-  }, [carouselApi, activeItem]);
+    if (!carouselApi || carouselImages.length === 0) return;
+    const target = Math.min(
+      Math.max(activeIndex, 0),
+      carouselImages.length - 1
+    );
+    carouselApi.scrollTo(target);
+  }, [carouselApi, activeIndex, carouselImages.length]);
+
+  // Nothing meaningful to render.
+  if (accordionItems.length === 0 && !hasCareCards) {
+    return null;
+  }
+
+  const activeItemData = accordionItems.find((item) => item.id === activeItem);
+  const activeIsLegacyCare = activeItemData?.isCare ?? false;
+
+  // Right panel: care grid on the legacy care item, or statically for dynamic
+  // sections that have care cards but no images; carousel whenever images exist;
+  // otherwise no right panel at all.
+  const showCareGrid =
+    hasCareCards && (activeIsLegacyCare || (hasInfoSections && !hasImages));
+  const showCarousel = !showCareGrid && hasImages;
+  const showRightPanel = showCareGrid || showCarousel;
 
   return (
     <AnimatedSection className="w-full">
@@ -163,13 +161,18 @@ export function ProductInformationSection({
             Product Information
           </h2>
 
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
+          <div
+            className={cn(
+              "grid grid-cols-1 gap-8",
+              showRightPanel && "lg:grid-cols-2 lg:gap-12"
+            )}
+          >
             {/* Left: Detail Information */}
             <div className="space-y-4">
               <Accordion
                 type="single"
                 collapsible
-                defaultValue="features"
+                defaultValue={firstItemId}
                 onValueChange={(value) =>
                   setActiveItem(Array.isArray(value) ? (value[0] ?? "") : value)
                 }
@@ -198,75 +201,77 @@ export function ProductInformationSection({
               </Accordion>
             </div>
 
-            {/* Right: image carousel (Features / Specifications) or care grid (Care) */}
-            <div className="relative">
-              {activeItem === "care" ? (
-                <div className="grid grid-cols-3 gap-3 sm:gap-4">
-                  {CARE_CARDS.map((card) => {
-                    const Icon = card.icon;
-                    return (
-                      <div
-                        key={card.caption}
-                        className={cn(
-                          "flex flex-col items-center gap-3 rounded-[16px] p-4 text-center",
-                          card.bg
-                        )}
-                      >
-                        {card.forbidden ? (
-                          <div className="relative flex size-12 items-center justify-center">
+            {/* Right: image carousel or care grid */}
+            {showRightPanel && (
+              <div className="relative">
+                {showCareGrid ? (
+                  <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                    {careCards.map((card, index) => {
+                      const Icon = CARE_ICON_MAP[card.icon] ?? Sparkles;
+                      return (
+                        <div
+                          key={`${card.title}-${index}`}
+                          className={cn(
+                            "flex flex-col items-center gap-3 rounded-[16px] p-4 text-center",
+                            card.bg || DEFAULT_CARE_CARD_BG
+                          )}
+                        >
+                          {card.forbidden ? (
+                            <div className="relative flex size-12 items-center justify-center">
+                              <Icon
+                                className="size-6 text-slate-400"
+                                strokeWidth={1.5}
+                              />
+                              <Ban
+                                className="absolute inset-0 size-12 text-slate-400"
+                                strokeWidth={1.25}
+                              />
+                            </div>
+                          ) : (
                             <Icon
-                              className="size-6 text-slate-400"
+                              className="text-primary-navy size-12"
                               strokeWidth={1.5}
                             />
-                            <Ban
-                              className="absolute inset-0 size-12 text-slate-400"
-                              strokeWidth={1.25}
+                          )}
+                          <p className="text-primary-navy text-sm leading-5 font-medium">
+                            {card.title}
+                            {card.description && (
+                              <span className="text-primary-navy/70 mt-0.5 block text-xs font-normal">
+                                {card.description}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <Carousel className="w-full" setApi={setCarouselApi}>
+                    <CarouselContent>
+                      {carouselImages.map((image, index) => (
+                        <CarouselItem key={`${image}-${index}`}>
+                          <div className="bg-secondary-mint relative aspect-[4/3] overflow-hidden rounded-[20px] sm:rounded-[28px]">
+                            <Image
+                              src={image}
+                              alt={`Detail information ${index + 1}`}
+                              fill
+                              className="object-cover"
+                              sizes="(max-width: 1024px) 100vw, 460px"
                             />
                           </div>
-                        ) : (
-                          <Icon
-                            className="text-primary-navy size-12"
-                            strokeWidth={1.5}
-                          />
-                        )}
-                        <p className="text-primary-navy text-sm leading-5 font-medium">
-                          {card.caption}
-                          {card.sub && (
-                            <span className="text-primary-navy/70 mt-0.5 block text-xs font-normal">
-                              {card.sub}
-                            </span>
-                          )}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <Carousel className="w-full" setApi={setCarouselApi}>
-                  <CarouselContent>
-                    {carouselImages.map((image, index) => (
-                      <CarouselItem key={`${image}-${index}`}>
-                        <div className="bg-secondary-mint relative aspect-[4/3] overflow-hidden rounded-[20px] sm:rounded-[28px]">
-                          <Image
-                            src={image}
-                            alt={`Detail information ${index + 1}`}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 1024px) 100vw, 460px"
-                          />
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                  {carouselImages.length > 1 && (
-                    <>
-                      <CarouselPrevious className="text-primary-navy border-white/40 bg-white/90 hover:bg-white sm:-left-8 lg:-left-10" />
-                      <CarouselNext className="text-primary-navy border-white/40 bg-white/90 hover:bg-white sm:-right-8 lg:-right-10" />
-                    </>
-                  )}
-                </Carousel>
-              )}
-            </div>
+                        </CarouselItem>
+                      ))}
+                    </CarouselContent>
+                    {carouselImages.length > 1 && (
+                      <>
+                        <CarouselPrevious className="text-primary-navy border-white/40 bg-white/90 hover:bg-white sm:-left-8 lg:-left-10" />
+                        <CarouselNext className="text-primary-navy border-white/40 bg-white/90 hover:bg-white sm:-right-8 lg:-right-10" />
+                      </>
+                    )}
+                  </Carousel>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>

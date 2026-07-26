@@ -12,9 +12,11 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const forwardedFor = request.headers.get("x-forwarded-for");
     const realIp = request.headers.get("x-real-ip");
+    const requestIp =
+      "ip" in request && typeof request.ip === "string" ? request.ip : undefined;
     const ip = forwardedFor
       ? forwardedFor.split(",")[0]
-      : realIp || (request as any).ip;
+      : realIp || requestIp;
 
     // Proxy request to backend
     const res = await fetch(`${API_BASE_URL}/api/v1/contact`, {

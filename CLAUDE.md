@@ -3,6 +3,7 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 > **Read these `.claude/` rules first — they apply to this repo and are not repeated here:**
+>
 > - `.claude/rules/code-style.md` — function vs arrow declarations, component rules, file/folder naming.
 > - `.claude/rules/lessons-learned.md` — anti-patterns (reuse components, theme tokens, own your types, verify every usage).
 >
@@ -28,7 +29,7 @@ Tests are **story-based**: Vitest in browser mode via Playwright, wired through 
 
 Next.js 16 App Router + React 19, TypeScript strict, Tailwind v4. `@/*` aliases the repo root. Guinea pig / rabbit e-commerce storefront ("Piggy Way Crossing").
 
-The layering is: **Pages/components → `lib/services/` → `lib/api/client.ts` → `app/api/**/route.ts` → external backend**. UI never calls `fetch` or the backend directly — it imports a service.
+The layering is: **Pages/components → `lib/services/` → `lib/api/client.ts` → `app/api/**/route.ts`→ external backend**. UI never calls`fetch` or the backend directly — it imports a service.
 
 ### The API routes are a BFF proxy to an EXTERNAL backend
 
@@ -43,7 +44,7 @@ There is **no Directus SDK in the frontend** and no `lib/directus/`. Directus is
 
 ### Auth & session
 
-NextAuth v4. `authOptions` is defined **inline in `app/api/auth/[...nextauth]/route.ts`** (not a separate `lib/auth.ts`), with two providers: Google OAuth and a `CredentialsProvider` (id `"email"`) for email login. Both exchange with the backend (`/api/v1/auth/sso`, `/api/v1/auth/refresh`) and stash the backend access/refresh tokens onto the JWT in the `jwt` callback; the `session` callback copies them back onto `session.accessToken`/`session.refreshToken` (via `as any`, no module augmentation). The JWT auto-refreshes within 5 min of expiry. `app/api/auth/refresh/route.ts` + `hooks/useSessionRefresh.ts` drive client-side refresh; on `RefreshAccessTokenError` the user is signed out. `app/providers.tsx` wraps the tree in `SessionProvider` → `UserProvider` (`contexts/UserContext.tsx`, client user state). Root `app/layout.tsx` mounts `Providers` + the `sonner` `<Toaster>`.
+NextAuth v4. `authOptions` is defined **inline in `app/api/auth/[...nextauth]/route.ts`** (not a separate `lib/auth.ts`), with two providers: Google OAuth and a `CredentialsProvider` (id `"email"`) for email login. Both exchange with the backend (`/api/v1/auth/sso`, `/api/v1/auth/refresh`) and stash the backend access/refresh tokens onto the JWT in the `jwt` callback; the `session` callback copies them back onto `session.accessToken`/`session.refreshToken` (via `as any`, no module augmentation). The JWT auto-refreshes within 5 min of expiry. Separately, `fetchWithAuth` in `lib/api/client.ts` refreshes once on a 401 and retries; if refresh fails it signs out. `app/providers.tsx` wraps the tree in `SessionProvider` → `UserProvider` (`contexts/UserContext.tsx`, client user state). Root `app/layout.tsx` mounts `Providers` + the `sonner` `<Toaster>`.
 
 ### Routing & layouts
 
@@ -60,6 +61,7 @@ Tailwind v4 (`@tailwindcss/postcss`). Tokens are CSS custom properties in `app/g
 ## External services & env
 
 Configure in `.env.local` (template: `.env.example`):
+
 - **Backend** — `API_BASE_URL` (server) / `NEXT_PUBLIC_API_BASE_URL`, plus `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SITE_URL`.
 - **Stripe** — `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (`lib/stripe.ts`, `app/api/checkout/`).
 - **NextAuth** — `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.

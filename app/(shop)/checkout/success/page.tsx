@@ -25,6 +25,11 @@ interface OrderReceipt {
     unit_price_cents: number;
     line_total_cents: number;
     image_url: string | null;
+    add_ons?: Array<{
+      add_on_rid: number | null;
+      name: string;
+      unit_price_cents: number;
+    }>;
   }>;
 }
 
@@ -187,12 +192,18 @@ export default async function SuccessPage({
         title: item.description ?? "",
         quantity: item.quantity ?? 0,
         amountCents: item.amount_total,
+        addOns: [] as Array<{
+          add_on_rid: number | null;
+          name: string;
+          unit_price_cents: number;
+        }>,
       }))
     : (receipt?.items ?? []).map((item, index) => ({
         key: `${item.variant_sku ?? item.product_title}-${index}`,
         title: item.product_title,
         quantity: item.quantity,
         amountCents: item.line_total_cents,
+        addOns: item.add_ons ?? [],
       }));
 
   if (paymentFailed) {
@@ -266,19 +277,34 @@ export default async function SuccessPage({
                 <div className="bg-neutral-stroke h-px w-full" />
 
                 {receiptRows.map((row, index) => (
-                  <div key={row.key} className="flex items-center gap-3">
-                    <span
-                      className={`size-10 shrink-0 rounded-[10px] ${THUMB_COLORS[index % THUMB_COLORS.length]}`}
-                    />
-                    <span className="text-primary-navy min-w-0 flex-1 truncate text-[14px]">
-                      {row.title}
-                    </span>
-                    <span className="text-[13px] text-slate-400">
-                      ×{row.quantity}
-                    </span>
-                    <span className="text-primary-navy text-[14px] font-medium">
-                      {formatAmount(row.amountCents, currency)}
-                    </span>
+                  <div key={row.key} className="flex flex-col gap-1">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className={`size-10 shrink-0 rounded-[10px] ${THUMB_COLORS[index % THUMB_COLORS.length]}`}
+                      />
+                      <span className="text-primary-navy min-w-0 flex-1 truncate text-[14px]">
+                        {row.title}
+                      </span>
+                      <span className="text-[13px] text-slate-400">
+                        ×{row.quantity}
+                      </span>
+                      <span className="text-primary-navy text-[14px] font-medium">
+                        {formatAmount(row.amountCents, currency)}
+                      </span>
+                    </div>
+                    {row.addOns.length > 0 && (
+                      <div className="flex flex-col gap-0.5 pl-[52px]">
+                        {row.addOns.map((addOn, addOnIndex) => (
+                          <span
+                            key={`${addOn.add_on_rid ?? addOn.name}-${addOnIndex}`}
+                            className="text-[12px] text-slate-400"
+                          >
+                            + {addOn.name} (
+                            {formatAmount(addOn.unit_price_cents, currency)})
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </>

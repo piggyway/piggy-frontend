@@ -16,8 +16,14 @@ import type {
   ProductDetail,
   StoryBlock,
   FeatureCard,
+  InfoSection,
   ProductOption,
   ProductVariant,
+  AddOn,
+  AddOnFromAPI,
+  AddOnGroup,
+  AddOnGroupFromAPI,
+  AddOnSelectionMode,
   VariantListParams,
   VariantListItemFromAPI,
   VariantListItem,
@@ -93,13 +99,22 @@ export class ProductService {
   ): Promise<ProductDetail | null> {
     try {
       const params: Record<string, string | number | boolean> = {};
+      const headers: Record<string, string> = {};
       if (options?.includeDraft) {
         params.include_draft = true;
+        // Draft reads only happen server-side, where the route requires the
+        // preview secret before it will return unpublished products.
+        if (typeof window === "undefined" && process.env.PREVIEW_SECRET) {
+          headers["x-preview-secret"] = process.env.PREVIEW_SECRET;
+        }
       }
 
       const response = await apiClient.get<ProductDetailFromAPI>(
         API_ENDPOINTS.PRODUCT_BY_ID(slug),
-        { params: Object.keys(params).length > 0 ? params : undefined }
+        {
+          params: Object.keys(params).length > 0 ? params : undefined,
+          headers: Object.keys(headers).length > 0 ? headers : undefined,
+        }
       );
 
       if (!response.id) {
@@ -166,10 +181,15 @@ export class ProductService {
   ): ProductDetail {
     const price = product.base_price || 0;
     const currencySlug = product.currency?.slug || DEFAULT_CURRENCY;
-    const options =
-      product.options.length > 0
-        ? product.options.map((option) => this.transformOption(option))
-        : this.buildOptionsFromVariants(product.variants);
+    let options: ProductOption[];
+    if (product.options.length > 0) {
+      options = product.options.map((option) => this.transformOption(option));
+    } else {
+      console.error(
+        `[ProductService] Product ${product.id} (${product.slug || product.title || "Untitled Product"}) is missing options; deriving from variants.`
+      );
+      options = this.buildOptionsFromVariants(product.variants);
+    }
 
     return {
       id: product.id,
@@ -184,6 +204,9 @@ export class ProductService {
       featureSectionSubtitle: product.feature_section_subtitle || "",
       featureSectionDescription: product.feature_section_description || "",
       featureBannerText: product.feature_banner_text || "",
+      purchaseMode:
+        product.purchase_mode === "preorder" ? "preorder" : "standard",
+      addOnMaxSelections: product.add_on_max_selections ?? null,
       slug: product.slug || `product-${product.id}`,
       basePrice: price,
       formattedPrice: this.formatPrice(price, currencySlug),
@@ -223,10 +246,66 @@ export class ProductService {
         .filter(
           (card): card is FeatureCard => card.icon !== "" && card.label !== ""
         ),
+      infoSections: (product.info_sections ?? [])
+        .map((section) => ({
+          id: section.id,
+          title: section.title || "",
+          content: section.content || "",
+        }))
+        .filter(
+          (section): section is InfoSection =>
+            section.title !== "" && section.content !== ""
+        ),
       options,
       variants: product.variants.map((variant) =>
         this.transformVariant(variant)
       ),
+      addOnGroups: (product.add_on_groups ?? [])
+        .map((group) => this.transformAddOnGroup(group))
+        .filter((group) => group.addOns.length > 0),
+      addOns: (product.add_ons ?? []).map((addOn) =>
+        this.transformAddOn(addOn)
+      ),
+    };
+  }
+
+  /**
+   * Transform an add-on group from API format
+   */
+  private static transformAddOnGroup(group: AddOnGroupFromAPI): AddOnGroup {
+    const selectionMode: AddOnSelectionMode =
+      group.selection_mode === "single" ? "single" : "multiple";
+    return {
+      id: group.id,
+      uuid: group.uuid,
+      name: group.name || "Add-ons",
+      selectionMode,
+      isRequired: group.is_required,
+      sort: group.sort ?? 0,
+      addOns: (group.add_ons ?? []).map((addOn) => this.transformAddOn(addOn)),
+    };
+  }
+
+  /**
+   * Transform an add-on from API format. Price stays in dollars.
+   */
+  private static transformAddOn(addOn: AddOnFromAPI): AddOn {
+    const price = addOn.price ?? 0;
+    const currencySlug = addOn.currency?.slug || DEFAULT_CURRENCY;
+    return {
+      id: addOn.id,
+      uuid: addOn.uuid,
+      name: addOn.name || "Add-on",
+      slug: addOn.slug,
+      description: addOn.description,
+      price,
+      formattedPrice: this.formatPrice(price, currencySlug),
+      currency: addOn.currency,
+      imageUrl: normalizeImageUrl(addOn.image_url),
+      stockQuantity: addOn.stock_quantity,
+      isAvailable: addOn.is_available,
+      sort: addOn.sort ?? 0,
+      groupId: addOn.group_id,
     };
   }
 
@@ -483,6 +562,7 @@ export class ProductService {
     // Calculate discount percentage
     if (
       originalPrice !== null &&
+      originalPrice > 0 &&
       discountedPrice !== null &&
       discountedPrice < originalPrice
     ) {
@@ -507,6 +587,8 @@ export class ProductService {
       imageUrl: normalizeImageUrl(variant.image_url) || DEFAULT_PRODUCT_IMAGE,
       stockQuantity: variant.stock_quantity,
       isAvailable: variant.is_available,
+      purchaseMode:
+        variant.purchase_mode === "preorder" ? "preorder" : "standard",
       optionValues: variant.option_values.map((ov) => ({
         optionName: ov.option_name,
         optionSlug: ov.option_slug,

@@ -56,7 +56,7 @@ export default function FAQPage() {
             Frequently Asked Questions
           </h1>
           <p className="mb-12 text-center text-lg text-gray-600">
-            Have a question? We're here to help!
+            Have a question? We&apos;re here to help!
           </p>
 
           <div className="space-y-10">
@@ -90,7 +90,7 @@ export default function FAQPage() {
 
           <div className="mt-12 text-center">
             <p className="text-gray-600">
-              Can't find what you're looking for?{" "}
+              Can&apos;t find what you&apos;re looking for?{" "}
               <a
                 href="/contact"
                 className="text-primary-navy font-semibold hover:underline"

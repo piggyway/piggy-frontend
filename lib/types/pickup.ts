@@ -15,16 +15,18 @@ export interface PickupSlot {
   endAt: string;
 }
 
+export type PickupApiError = string | Record<string, unknown>;
+
 export interface PickupLocationsResponse {
   success: boolean;
   data: PickupLocation[];
-  error?: any;
+  error?: PickupApiError;
   message?: string;
 }
 
 export interface PickupSlotsResponse {
   success: boolean;
   data: PickupSlot[];
-  error?: any;
+  error?: PickupApiError;
   message?: string;
 }

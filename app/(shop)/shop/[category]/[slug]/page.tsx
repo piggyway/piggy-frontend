@@ -9,6 +9,7 @@ import { ProductFeaturesSection } from "@/components/features/product-detail/Pro
 import { TestimonialsSection } from "@/components/features/shop/TestimonialsSection";
 import { RelatedProductsSection } from "@/components/features/product-detail/RelatedProductsSection";
 import { ProductService } from "@/lib/services/products";
+import { CategoryService } from "@/lib/services/categories";
 import { getBaseUrl, getProductUrl, getCategoryUrl } from "@/lib/utils/seo";
 import { FloatingCartButton } from "@/components/features/cart/FloatingCartButton";
 
@@ -97,6 +98,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product) {
     notFound();
   }
+
+  // Resolve the full category (care cards, section titles) for the
+  // category-driven product information section. Falls back gracefully when
+  // the category is missing.
+  const categories = await CategoryService.getCategories();
+  const productCategory = categories.find(
+    (cat) => cat.slug === product.category?.slug
+  );
 
   const baseUrl = getBaseUrl();
   const productUrl = getProductUrl(
@@ -220,12 +229,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Pet Icons - based on product species */}
         <PetIconsSection species={product.species} />
 
-        {/* Product Information - hardcoded for now */}
+        {/* Product Information - category-driven presentation from the CMS */}
         <ProductInformationSection
           productFeatures={product.productFeatures}
           specifications={product.specifications}
           careInstructions={product.careInstructions}
           detailInformationFiles={product.detailInformationFiles}
+          specSectionTitle={productCategory?.specSectionTitle}
+          careSectionTitle={productCategory?.careSectionTitle}
+          careCards={productCategory?.careCards}
+          infoSections={product.infoSections}
         />
 
         {/* Product Features story - image/text blocks from CMS */}

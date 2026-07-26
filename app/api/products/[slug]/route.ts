@@ -21,17 +21,26 @@ export async function GET(
     const { slug } = await params;
     const token = request.headers.get("authorization");
     const previewSecret = process.env.PREVIEW_SECRET;
-    
+
     // Check draft mode from cookies
     const { isEnabled: isDraftMode } = await draftMode();
-    
-    // Also check if include_draft is passed as query param (for server-side rendering)
-    const includeDraftParam = request.nextUrl.searchParams.get("include_draft") === "true";
 
-    // Allow draft when: draft mode enabled via cookies OR include_draft param passed with valid secret
-    const allowDraft = (isDraftMode || includeDraftParam) && previewSecret;
+    // Server components fetch this route without the draft-mode cookie, so they
+    // ask for drafts with include_draft plus the preview secret. The secret is
+    // required: the query parameter alone must never expose unpublished data.
+    const includeDraftParam =
+      request.nextUrl.searchParams.get("include_draft") === "true";
+    const presentedSecret = request.headers.get("x-preview-secret");
+    const paramAuthorized =
+      includeDraftParam &&
+      Boolean(previewSecret) &&
+      presentedSecret === previewSecret;
 
-    const url = new URL(`${API_BASE_URL}/api/v1/products/${slug}`);
+    const allowDraft = (isDraftMode || paramAuthorized) && previewSecret;
+
+    const url = new URL(
+      `${API_BASE_URL}/api/v1/products/${encodeURIComponent(slug)}`
+    );
     if (allowDraft) {
       url.searchParams.set("include_draft", "true");
     }

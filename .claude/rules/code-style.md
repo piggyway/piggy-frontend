@@ -79,7 +79,7 @@ There is **no `src/`** — `@/*` aliases the repo root (`tsconfig.json` → `"@/
 
 ### `contexts/` and `hooks/`
 
-- Context files are PascalCase (`UserContext.tsx`). Hook files are camelCase matching the hook name (`useSessionRefresh.ts`).
+- Context files are PascalCase (`UserContext.tsx`). Hook files are camelCase matching the hook name (`useShippingConfig.ts`).
 
 ### `lib/` (api, services, types, utils, validators, constants, design-tokens, mock)
 
