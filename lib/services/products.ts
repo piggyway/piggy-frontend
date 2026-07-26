@@ -172,10 +172,15 @@ export class ProductService {
   ): ProductDetail {
     const price = product.base_price || 0;
     const currencySlug = product.currency?.slug || DEFAULT_CURRENCY;
-    const options =
-      product.options.length > 0
-        ? product.options.map((option) => this.transformOption(option))
-        : this.buildOptionsFromVariants(product.variants);
+    let options: ProductOption[];
+    if (product.options.length > 0) {
+      options = product.options.map((option) => this.transformOption(option));
+    } else {
+      console.error(
+        `[ProductService] Product ${product.id} (${product.slug || product.title || "Untitled Product"}) is missing options; deriving from variants.`
+      );
+      options = this.buildOptionsFromVariants(product.variants);
+    }
 
     return {
       id: product.id,
@@ -548,6 +553,7 @@ export class ProductService {
     // Calculate discount percentage
     if (
       originalPrice !== null &&
+      originalPrice > 0 &&
       discountedPrice !== null &&
       discountedPrice < originalPrice
     ) {

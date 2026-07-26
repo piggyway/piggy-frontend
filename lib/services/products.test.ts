@@ -162,6 +162,7 @@ describe("ProductService", () => {
   });
 
   it("transforms detail collections, derives options, and excludes invalid content", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
     getMock.mockResolvedValue(
       createDetail({
         purchase_mode: "preorder",
@@ -309,6 +310,64 @@ describe("ProductService", () => {
     ]);
   });
 
+  it("reports missing option metadata once and derives options from variants", async () => {
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
+    getMock.mockResolvedValue(
+      createDetail({
+        id: 8,
+        slug: "fallback-options",
+        variants: [
+          {
+            id: 3,
+            sku: null,
+            uuid: null,
+            original_price: 20,
+            discounted_price: 15,
+            currency: null,
+            stock_quantity: 0,
+            is_available: false,
+            weight: null,
+            weight_unit: null,
+            length: null,
+            width: null,
+            height: null,
+            length_unit: null,
+            width_unit: null,
+            height_unit: null,
+            option_values: [
+              {
+                option_id: 5,
+                option_name: "Colour",
+                value_id: 9,
+                value: "Blue",
+              },
+            ],
+            image_urls: [],
+          },
+        ],
+      })
+    );
+
+    await expect(
+      ProductService.getProductBySlug("fallback-options")
+    ).resolves.toMatchObject({
+      options: [
+        {
+          id: 5,
+          name: "Colour",
+          slug: null,
+          values: [{ id: 9, value: "Blue", colorHex: null, variantIds: [] }],
+        },
+      ],
+    });
+    expect(errorSpy).toHaveBeenCalledOnce();
+    expect(errorSpy).toHaveBeenCalledWith(
+      "[ProductService] Product 8 (fallback-options) is missing options; deriving from variants."
+    );
+  });
+
   it("returns null for missing detail IDs and request failures", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     getMock
@@ -323,22 +382,17 @@ describe("ProductService", () => {
     ).resolves.toBeNull();
   });
 
-  it("calculates discounts only below the original price and keeps no-price fields null", async () => {
+  it("calculates discounts below the original price and keeps no-price fields null", async () => {
     getMock.mockResolvedValueOnce({
       data: [
         createVariant(),
-        createVariant({
-          variant_id: 11,
-          original_price: 0,
-          discounted_price: -1,
-        }),
         createVariant({
           variant_id: 12,
           original_price: null,
           discounted_price: null,
         }),
       ],
-      pagination: { page: 1, page_size: 3, total: 3, total_pages: 1 },
+      pagination: { page: 1, page_size: 2, total: 2, total_pages: 1 },
     });
 
     const result = await ProductService.getVariants();
@@ -351,12 +405,30 @@ describe("ProductService", () => {
       ])
     ).toEqual([
       ["€100.00", "€75.00", "25% OFF"],
-      ["€0.00", "€-1.00", "Infinity% OFF"],
       [null, null, null],
     ]);
   });
 
+  it("does not calculate discounts from a zero original price", async () => {
+    getMock.mockResolvedValueOnce({
+      data: [
+        createVariant({
+          original_price: 0,
+          discounted_price: -1,
+        }),
+      ],
+      pagination: { page: 1, page_size: 1, total: 1, total_pages: 1 },
+    });
+
+    await expect(ProductService.getVariants()).resolves.toMatchObject({
+      data: [{ discountPercentage: null }],
+    });
+  });
+
   it("preserves explicit option metadata and normalizes Cloudinary images", async () => {
+    const errorSpy = vi
+      .spyOn(console, "error")
+      .mockImplementation(() => undefined);
     getMock.mockResolvedValue(
       createDetail({
         images: ["https://res.cloudinary.com/demo/image/upload/v1/product.png"],
@@ -390,6 +462,7 @@ describe("ProductService", () => {
         },
       ],
     });
+    expect(errorSpy).not.toHaveBeenCalled();
   });
 
   it("maps variant titles, slugs, options, and preorder mode", async () => {
