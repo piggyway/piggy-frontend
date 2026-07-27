@@ -189,6 +189,10 @@ export function BoardingBookingPage() {
               dropOffLabel={dropOffLabel}
               pickUpLabel={pickUpLabel}
               nightsLabel={nightsLabel}
+              dropOffDate={startDate}
+              dropOffTime={startTime}
+              pickUpDate={endDate}
+              pickUpTime={endTime}
               onBack={() => goToStep("pickup")}
               onSubmitted={handleSubmitted}
             />

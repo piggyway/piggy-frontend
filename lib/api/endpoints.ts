@@ -34,6 +34,10 @@ export const API_ENDPOINTS = {
   ORDERS: "/api/orders",
   ORDER_BY_NUMBER: (orderNumber: string) => `/api/orders/${orderNumber}`,
 
+  // Boarding
+  BOARDING: "/api/boarding",
+  BOARDING_BY_REFERENCE: (reference: string) => `/api/boarding/${reference}`,
+
   // Add more endpoints as needed
   // Users
   // USERS: "/api/users",

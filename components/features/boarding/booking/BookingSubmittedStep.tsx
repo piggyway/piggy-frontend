@@ -43,8 +43,8 @@ export function BookingSubmittedStep({
     {
       icon: Package,
       iconBg: "bg-primary-light-gold",
-      title: "Confirmation email",
-      subtitle: "Dates, pricing and checklist",
+      title: "We email you back",
+      subtitle: "Our team replies within 24 hours with dates and pricing",
     },
     {
       icon: CalendarCheck,
@@ -105,8 +105,8 @@ export function BookingSubmittedStep({
 
         <div className="bg-secondary-mint rounded-[12px] px-3.5 py-2.5">
           <p className="text-primary-navy text-[13px] font-medium">
-            Confirmation and final pricing will be emailed to {submission.email}
-            .
+            Our team will email {submission.email} with the confirmation and
+            final pricing.
           </p>
         </div>
       </div>
