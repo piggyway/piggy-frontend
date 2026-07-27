@@ -7,6 +7,8 @@ import { formatStayLabel, keyToDate, toDateKey } from "./stay-dates";
 
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
+// Must stay in sync with the backend's BOARDING_TIME_SLOTS: it rejects any
+// other time with a 400, so changing one side requires changing the other.
 const TIME_SLOTS = [
   "08:00",
   "09:00",
@@ -56,6 +58,19 @@ export function StayCalendarCard({
     const base = selectedDate ? keyToDate(selectedDate) : new Date();
     return { year: base.getFullYear(), month: base.getMonth() };
   });
+
+  // Both calendars stay mounted, so the pick-up view can be left behind on an
+  // earlier month once a later drop-off date pushes minDate forward. Adjust the
+  // view during render (React's recommended pattern) instead of in an effect,
+  // and only when minDate actually changes so manual paging still works.
+  const [prevMinDate, setPrevMinDate] = useState(minDate);
+  if (minDate !== prevMinDate) {
+    setPrevMinDate(minDate);
+    const min = keyToDate(minDate);
+    if (min.getFullYear() * 12 + min.getMonth() > view.year * 12 + view.month) {
+      setView({ year: min.getFullYear(), month: min.getMonth() });
+    }
+  }
 
   const changeMonth = (offset: number) => {
     setView((prev) => {

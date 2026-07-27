@@ -1,8 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
-import { Turnstile } from "@marsidev/react-turnstile";
-import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +13,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUser } from "@/contexts/UserContext";
+import {
+  BoardingApiError,
+  createBoardingBooking,
+} from "@/lib/services/boarding";
+import type {
+  BoardingPetDesexed,
+  BoardingPetSex,
+  BoardingPetType,
+} from "@/lib/types/boarding";
 import { cn } from "@/lib/utils";
 import { StaySummaryCard } from "./StaySummaryCard";
 
@@ -50,61 +57,17 @@ const EMPTY_PET: PetForm = {
   medicalNotes: "",
 };
 
-const PET_TYPES = ["Guinea pig", "Rabbit", "Other"];
-const PET_SEXES = ["Female", "Male", "Unknown"];
-const DESEXED_OPTIONS = ["Yes", "No", "Not sure"];
+const PET_TYPES: BoardingPetType[] = ["Guinea pig", "Rabbit", "Other"];
+const PET_SEXES: BoardingPetSex[] = ["Female", "Male", "Unknown"];
+const DESEXED_OPTIONS: BoardingPetDesexed[] = ["Yes", "No", "Not sure"];
 
 const inputClassName = "h-12 rounded-[12px] px-4 text-[15px]";
 const cardClassName =
   "border-neutral-stroke flex flex-col gap-5 rounded-[24px] border bg-white px-6 py-7 sm:px-9 sm:py-8";
 
-interface RequestMessageInput {
-  reference: string;
-  dropOff: string;
-  pickUp: string;
-  nights: string;
-  phone: string;
-  pets: PetForm[];
-  emergency: { name: string; phone: string; notes: string };
-}
-
-function buildRequestMessage(input: RequestMessageInput): string {
-  const lines = [
-    `Boarding request ${input.reference}`,
-    "",
-    `Drop-off: ${input.dropOff}`,
-    `Pick-up: ${input.pickUp}`,
-    `Nights: ${input.nights}`,
-    `Contact phone: ${input.phone}`,
-  ];
-  input.pets.forEach((pet, idx) => {
-    lines.push("", `Pet ${idx + 1}: ${pet.name.trim()}`);
-    const fields: [string, string][] = [
-      ["Type", pet.type],
-      ["Breed", pet.breed],
-      ["Age", pet.age],
-      ["Sex", pet.sex],
-      ["Weight", pet.weight],
-      ["Desexed", pet.desexed],
-      ["Vet contact", pet.vetContact],
-      ["Feeding routine", pet.feedingRoutine],
-      ["Medical / special needs", pet.medicalNotes],
-    ];
-    fields.forEach(([label, value]) => {
-      if (value.trim()) lines.push(`- ${label}: ${value.trim()}`);
-    });
-  });
-  const emergencyContact = [
-    input.emergency.name.trim(),
-    input.emergency.phone.trim(),
-  ]
-    .filter(Boolean)
-    .join(" / ");
-  if (emergencyContact)
-    lines.push("", `Emergency contact: ${emergencyContact}`);
-  if (input.emergency.notes.trim())
-    lines.push("", `Additional notes: ${input.emergency.notes.trim()}`);
-  return lines.join("\n");
+/** Optional fields are empty strings in the form; the API expects null. */
+function toNullable(value: string): string | null {
+  return value.trim() || null;
 }
 
 function buildPetsLabel(pets: PetForm[]): string {
@@ -147,6 +110,10 @@ interface BookingDetailsStepProps {
   dropOffLabel: string;
   pickUpLabel: string;
   nightsLabel: string;
+  dropOffDate: string | null;
+  dropOffTime: string | null;
+  pickUpDate: string | null;
+  pickUpTime: string | null;
   onBack: () => void;
   onSubmitted: (submission: BookingSubmission) => void;
 }
@@ -155,6 +122,10 @@ export function BookingDetailsStep({
   dropOffLabel,
   pickUpLabel,
   nightsLabel,
+  dropOffDate,
+  dropOffTime,
+  pickUpDate,
+  pickUpTime,
   onBack,
   onSubmitted,
 }: BookingDetailsStepProps) {
@@ -174,9 +145,6 @@ export function BookingDetailsStep({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
-  const turnstileRef = useRef<TurnstileInstance | null>(null);
-  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   // Prefill contact details once the signed-in profile loads (adjust state
   // during render — only empty fields are filled, user edits are kept).
@@ -227,59 +195,58 @@ export function BookingDetailsStep({
   };
 
   const handleSubmit = async () => {
-    if (!validate()) {
-      toast.error("Please fill in the required fields.");
+    if (!dropOffDate || !dropOffTime || !pickUpDate || !pickUpTime) {
+      toast.error("Please pick your drop-off and pick-up dates first.");
       return;
     }
-    if (turnstileSiteKey && !turnstileToken) {
-      toast.error("Please complete the verification first.");
+    if (!validate()) {
+      toast.error("Please fill in the required fields.");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const reference = `PB-${Date.now().toString(36).toUpperCase()}`;
-      const message = buildRequestMessage({
-        reference,
-        dropOff: dropOffLabel,
-        pickUp: pickUpLabel,
-        nights: nightsLabel,
+      const { booking } = await createBoardingBooking({
+        firstName: contact.firstName.trim(),
+        lastName: contact.lastName.trim(),
+        email: contact.email.trim(),
         phone: contact.phone.trim(),
-        pets,
-        emergency,
+        dropOffDate,
+        dropOffTime,
+        pickUpDate,
+        pickUpTime,
+        pets: pets.map((pet) => ({
+          name: pet.name.trim(),
+          type: pet.type as BoardingPetType,
+          breed: toNullable(pet.breed),
+          age: toNullable(pet.age),
+          sex: toNullable(pet.sex) as BoardingPetSex | null,
+          weight: toNullable(pet.weight),
+          desexed: toNullable(pet.desexed) as BoardingPetDesexed | null,
+          vetContact: toNullable(pet.vetContact),
+          feedingRoutine: toNullable(pet.feedingRoutine),
+          medicalNotes: toNullable(pet.medicalNotes),
+        })),
+        emergencyName: toNullable(emergency.name),
+        emergencyPhone: toNullable(emergency.phone),
+        emergencyNotes: toNullable(emergency.notes),
       });
-
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: contact.firstName.trim(),
-          lastName: contact.lastName.trim(),
-          email: contact.email.trim(),
-          subject: `Boarding request ${reference}`,
-          message,
-        }),
-      });
-      const result = await res.json().catch(() => ({}));
-
-      if (!res.ok) {
-        if (res.status === 429) {
-          throw new Error("Too many requests. Please try again later.");
-        }
-        throw new Error(result.error || "Failed to submit your request");
-      }
 
       onSubmitted({
-        reference,
+        reference: booking.reference,
         email: contact.email.trim(),
         petsLabel: buildPetsLabel(pets),
       });
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Something went wrong"
-      );
-      setTurnstileToken(null);
-      turnstileRef.current?.reset();
+      if (error instanceof BoardingApiError && error.status === 429) {
+        toast.error(
+          "You've sent a few requests already. Please wait a minute and try again."
+        );
+      } else if (error instanceof BoardingApiError && error.status === 400) {
+        toast.error(error.message);
+      } else {
+        toast.error("We couldn't submit your request. Please try again.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -548,15 +515,6 @@ export function BookingDetailsStep({
             />
           </Field>
         </div>
-
-        {turnstileSiteKey && (
-          <Turnstile
-            ref={turnstileRef}
-            siteKey={turnstileSiteKey}
-            onSuccess={setTurnstileToken}
-            onExpire={() => setTurnstileToken(null)}
-          />
-        )}
 
         {/* Actions */}
         <div className="flex items-center justify-between gap-3.5">
