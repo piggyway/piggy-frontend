@@ -1,4 +1,4 @@
-# Piggyway Frontend
+#    Piggyway Frontend
 
 The Piggy Way Crossing storefront is built with Next.js, React, TypeScript,
 Tailwind CSS, and Storybook.
