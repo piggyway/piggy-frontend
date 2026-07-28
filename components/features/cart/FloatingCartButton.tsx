@@ -111,7 +111,8 @@ export function FloatingCartButton() {
                             </span>
                           )}
                         </h4>
-                        {item.variantOptions && item.variantOptions.length > 0 ? (
+                        {item.variantOptions &&
+                        item.variantOptions.length > 0 ? (
                           <div className="flex flex-col gap-0.5">
                             {item.variantOptions.map((opt, i) => (
                               <p
@@ -195,7 +196,7 @@ export function FloatingCartButton() {
               <Button
                 variant="default"
                 asChild
-                className="bg-primary-navy w-full text-white hover:bg-primary-navy/90"
+                className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
                 onClick={() => setIsOpen(false)}
               >
                 <Link href="/cart">View Cart</Link>

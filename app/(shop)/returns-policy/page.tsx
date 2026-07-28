@@ -95,8 +95,8 @@ export default function ReturnsPage() {
                 </li>
                 <li className="pl-2">
                   <span className="block font-normal text-gray-700">
-                    We&apos;ll send you a Returns Authorisation form and shipping
-                    label.
+                    We&apos;ll send you a Returns Authorisation form and
+                    shipping label.
                   </span>
                 </li>
                 <li className="pl-2">
@@ -107,8 +107,8 @@ export default function ReturnsPage() {
                 </li>
                 <li className="pl-2">
                   <span className="block font-normal text-gray-700">
-                    Once received, we&apos;ll process your refund within 3-5 business
-                    days.
+                    Once received, we&apos;ll process your refund within 3-5
+                    business days.
                   </span>
                 </li>
               </ol>

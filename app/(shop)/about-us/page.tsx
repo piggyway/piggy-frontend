@@ -2,13 +2,7 @@ import { Metadata } from "next";
 import Image from "next/image";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
-import {
-  Heart,
-  Sparkles,
-  Smile,
-  CheckCircle2,
-  HelpCircle,
-} from "lucide-react";
+import { Heart, Sparkles, Smile, CheckCircle2, HelpCircle } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About Us - Small Pet Supplies & Care",
@@ -103,9 +97,9 @@ export default function AboutPage() {
             pig carer.
           </p>
           <div className="mx-auto mt-8 max-w-3xl text-gray-600 italic">
-            &quot;In our hardest moments, these small, gentle animals have given us
-            comfort, stability, and quiet emotional support. They’ve reminded us
-            to slow down, to care deeply, and to show up every day. That
+            &quot;In our hardest moments, these small, gentle animals have given
+            us comfort, stability, and quiet emotional support. They’ve reminded
+            us to slow down, to care deeply, and to show up every day. That
             connection is at the heart of Piggyway.&quot;
           </div>
         </AnimatedSection>

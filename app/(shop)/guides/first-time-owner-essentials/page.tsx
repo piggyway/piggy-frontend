@@ -133,8 +133,8 @@ export default function FirstTimeOwnerPage() {
           <p>
             Your pigs need room to zoom! Skip the small pet store cages and opt
             for a C&C cage or a Midwest habitat. For bedding, fleece liners are
-            the modern standard—they&apos;re reusable, save money over time, and are
-            much cleaner than wood shavings.
+            the modern standard—they&apos;re reusable, save money over time, and
+            are much cleaner than wood shavings.
           </p>
 
           <h2>2. Diet Basics</h2>
@@ -174,8 +174,8 @@ export default function FirstTimeOwnerPage() {
                 New Piggy Parent Starter Kit
               </h4>
               <p className="mb-6 text-lg text-white/80">
-                We&apos;ve bundled our best-selling fleece liners, a cozy hideout,
-                and a hay bag into one convenient, discounted package.
+                We&apos;ve bundled our best-selling fleece liners, a cozy
+                hideout, and a hay bag into one convenient, discounted package.
               </p>
               <Link
                 href="/shop-all"

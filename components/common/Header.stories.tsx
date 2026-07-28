@@ -74,7 +74,10 @@ export const WithContentBelow: Story = {
           dropdown menu will appear above this content when opened.
         </p>
         <div className="space-y-2 text-sm text-gray-500">
-          <p>• Dropdown menu appears when hovering over or clicking &quot;Shop&quot;</p>
+          <p>
+            • Dropdown menu appears when hovering over or clicking
+            &quot;Shop&quot;
+          </p>
           <p>• Menu items include: Liners, Hut, Snack, and View all</p>
           <p>• Design matches Figma specifications exactly</p>
           <p>• Uses Radix UI Navigation Menu for accessibility</p>

@@ -14,22 +14,23 @@ export default function CanceledPage() {
           Payment Canceled
         </h1>
         <p className="mb-8 text-slate-600">
-          It looks like you canceled the payment process. No worries, your order hasn&apos;t been processed and no charges were made.
+          It looks like you canceled the payment process. No worries, your order
+          hasn&apos;t been processed and no charges were made.
         </p>
 
         <div className="space-y-3">
           <Link href="/cart" className="block">
-            <Button className="bg-primary-navy w-full gap-2 text-white hover:bg-primary-navy/90">
+            <Button className="bg-primary-navy hover:bg-primary-navy/90 w-full gap-2 text-white">
               <ShoppingCart className="h-4 w-4" />
               Return to Cart
             </Button>
           </Link>
-          
+
           <Link href="/contact" className="block">
-             <Button variant="outline" className="w-full gap-2">
-               <MessageCircleQuestion className="h-4 w-4" />
-               Contact Support
-             </Button>
+            <Button variant="outline" className="w-full gap-2">
+              <MessageCircleQuestion className="h-4 w-4" />
+              Contact Support
+            </Button>
           </Link>
 
           <Link href="/shop-all" className="block">
@@ -42,4 +43,3 @@ export default function CanceledPage() {
     </div>
   );
 }
-
