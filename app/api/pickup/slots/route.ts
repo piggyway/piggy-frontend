@@ -10,11 +10,11 @@ const API_BASE_URL =
 export async function GET(request: NextRequest) {
   try {
     const token = request.headers.get("authorization");
-    
+
     // Build URL with query params
     const searchParams = request.nextUrl.searchParams;
     const url = new URL(`${API_BASE_URL}/api/v1/pickup/slots/by-date`);
-    
+
     searchParams.forEach((value, key) => {
       url.searchParams.append(key, value);
     });
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     });
 
     const data = await res.json();
-    return NextResponse.json(data);
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
     console.error("[API Route Error]", error);
     return NextResponse.json(
@@ -35,4 +35,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

@@ -1,18 +1,19 @@
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import { ProductService } from "@/lib/services/products";
-import { ProductCardClient } from "./ProductCardClient";
+import { VariantCard } from "@/components/features/shop-all/VariantCard";
 
 export async function StarterKitsSection() {
-  // Fetch 3 most recently updated products
-  const response = await ProductService.getProducts({
+  // Fetch 3 most recently updated variants
+  const response = await ProductService.getVariants({
     sort: "-date_created", // Sort by creation date descending (newest first)
     page_size: 3,
+    in_stock: "true",
   });
 
-  const products = response.data;
+  const variants = response.data;
 
   // If no products, return null
-  if (products.length === 0) {
+  if (variants.length === 0) {
     return null;
   }
 
@@ -24,15 +25,15 @@ export async function StarterKitsSection() {
           <p className="text-primary-navy mb-2 text-lg leading-relaxed sm:text-xl">
             Everything You Need to Begin
           </p>
-          <h2 className="text-primary-navy-light text-[32px] leading-tight font-semibold sm:text-[42px]">
+          <h2 className="text-primary-navy-light text-large sm:text-h4 leading-tight font-semibold">
             Starter Kits & Bundles
           </h2>
         </div>
 
         {/* Products Grid */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
-            <ProductCardClient key={product.id} product={product} />
+          {variants.map((variant) => (
+            <VariantCard key={variant.variantId} variant={variant} />
           ))}
         </div>
       </div>

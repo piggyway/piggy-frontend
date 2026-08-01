@@ -5,14 +5,16 @@ import { ArrowLeft, ChevronRight, Check, X } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
 export const metadata: Metadata = {
-  title: "Why Fleece Cage Liners Are a Game-Changer | Piggy Way Crossing",
+  title: "Why Fleece Cage Liners Are a Game-Changer",
   description:
     "Still using wood shavings? Discover why fleece cage liners are the cleaner, healthier, and eco-friendly choice for guinea pigs.",
+  alternates: { canonical: "/guides/cage-liner-benefits" },
   openGraph: {
     title: "Why Fleece Cage Liners Are a Game-Changer",
     description:
       "Still using wood shavings? Discover why fleece cage liners are the cleaner, healthier choice.",
     type: "article",
+    images: ["/shop-with-us/default.png"],
     publishedTime: "2024-03-18T00:00:00.000Z",
     authors: ["Piggy Way Crossing Team"],
     tags: ["Fleece Liners", "Cage Cleaning", "Sustainable Pet Care"],
@@ -94,8 +96,9 @@ export default function CageLinerBenefitsPage() {
         {/* Article Content */}
         <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-secondary-blue prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
-            If you're tired of buying bags of wood shavings, dealing with dust,
-            and constantly scooping mess, it's time to switch to fleece.
+            If you&apos;re tired of buying bags of wood shavings, dealing with
+            dust, and constantly scooping mess, it&apos;s time to switch to
+            fleece.
           </p>
 
           <div className="not-prose my-10 grid gap-6 md:grid-cols-2">
@@ -128,9 +131,9 @@ export default function CageLinerBenefitsPage() {
           <h2>1. Healthier for Lungs</h2>
           <p>
             Guinea pigs have sensitive respiratory systems. Wood shavings—even
-            "safe" ones like aspen—can be dusty. Pine and cedar shavings contain
-            aromatic oils (phenols) that can damage the liver and respiratory
-            tract over time.
+            &quot;safe&quot; ones like aspen—can be dusty. Pine and cedar
+            shavings contain aromatic oils (phenols) that can damage the liver
+            and respiratory tract over time.
           </p>
           <p>
             Fleece is virtually dust-free, making it the safest option for your

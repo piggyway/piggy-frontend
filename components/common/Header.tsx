@@ -4,21 +4,19 @@ import { Suspense, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ShoppingCart, ChevronDown, Search, Menu, X } from "lucide-react";
+import { ShoppingCart, Search, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { UserButton } from "@/components/common/UserButton";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { NavigationMenuContent as CustomMenuContent } from "@/components/ui/navigation-menu-content";
 import { headerNavigation } from "@/lib/types/navigation";
 import { cn } from "@/lib/utils";
+import { useShippingConfig } from "@/hooks/useShippingConfig";
 
 function SearchQueryUpdater({
   setSearchQuery,
@@ -43,6 +41,7 @@ function SearchQueryUpdater({
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { freeShippingThreshold } = useShippingConfig();
   // Removed useSearchParams from here
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -102,7 +101,7 @@ export function Header() {
       <div className="bg-primary-purple w-full py-3">
         <div className="mx-auto max-w-[1160px] px-4 text-center">
           <p className="text-primary-navy text-sm font-medium">
-            Free shipping over $199
+            Free shipping over ${freeShippingThreshold}
           </p>
         </div>
       </div>
@@ -169,33 +168,16 @@ export function Header() {
 
                     return (
                       <NavigationMenuItem key={item.href} value={item.href}>
-                        {item.hasDropdown && item.dropdownItems ? (
-                          <>
-                            <NavigationMenuTrigger
-                              className={cn(
-                                "hover:bg-primary-purple/20 flex items-center gap-1 rounded-full bg-transparent px-4 py-2 text-sm font-medium transition-colors",
-                                "data-[state=open]:bg-primary-purple/20 text-[#1a327e]",
-                                isActive && "bg-primary-purple/30"
-                              )}
-                            >
-                              {item.label}
-                            </NavigationMenuTrigger>
-                            <NavigationMenuContent asChild>
-                              <CustomMenuContent items={item.dropdownItems} />
-                            </NavigationMenuContent>
-                          </>
-                        ) : (
-                          <NavigationMenuLink
-                            asChild
-                            className={cn(
-                              "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                              "text-primary-navy hover:bg-primary-purple/20",
-                              isActive && "bg-primary-purple/30"
-                            )}
-                          >
-                            <Link href={item.href}>{item.label}</Link>
-                          </NavigationMenuLink>
-                        )}
+                        <NavigationMenuLink
+                          asChild
+                          className={cn(
+                            "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                            "text-primary-navy hover:bg-primary-purple/20",
+                            isActive && "bg-primary-purple/30"
+                          )}
+                        >
+                          <Link href={item.href}>{item.label}</Link>
+                        </NavigationMenuLink>
                       </NavigationMenuItem>
                     );
                   })}
@@ -283,7 +265,7 @@ export function Header() {
                         setMobileSearchOpen(false);
                       }
                     }}
-                    className="focus-visible:ring-0 focus-visible:ring-offset-0 h-9 w-full rounded-[20px] border-slate-300 bg-white py-1 pr-8 pl-3 text-sm placeholder:text-slate-400"
+                    className="h-9 w-full rounded-[20px] border-slate-300 bg-white py-1 pr-8 pl-3 text-sm placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0"
                     autoFocus
                   />
                   <button

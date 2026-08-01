@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "./CartProvider";
 import { PromoService } from "@/lib/services/promo";
+import { calculateOrderTotal } from "@/lib/utils/cart";
+import { useShippingConfig } from "@/hooks/useShippingConfig";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-
-const DEFAULT_EMAIL = "zianwang9911@gmail.com";
 
 interface PromoCodeInputProps {
   onApply: (code: string) => Promise<void>;
@@ -58,7 +58,7 @@ function PromoCodeInput({
       } else {
         setValidationError(result.message || "Invalid promo code");
       }
-    } catch (error) {
+    } catch {
       setValidationError("Failed to validate promo code");
     } finally {
       setIsValidating(false);
@@ -150,8 +150,6 @@ export interface CartSummaryProps {
   className?: string;
 }
 
-const FREE_SHIPPING_THRESHOLD = 50;
-
 function CheckoutButtonSection() {
   const { cart } = useCart();
   const [isLoading, setIsLoading] = useState(false);
@@ -163,19 +161,14 @@ function CheckoutButtonSection() {
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      <Button
-        onClick={handleCheckout}
-        disabled={isLoading || !cart || cart.items.length === 0}
-        className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
-        size="lg"
-      >
-        {isLoading ? "Processing..." : "Checkout"}
-      </Button>
-      <p className="text-center text-xs text-slate-500">
-        Shipping & taxes calculated at checkout
-      </p>
-    </div>
+    <Button
+      onClick={handleCheckout}
+      disabled={isLoading || !cart || cart.items.length === 0}
+      className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
+      size="lg"
+    >
+      {isLoading ? "Processing..." : "Checkout"}
+    </Button>
   );
 }
 
@@ -189,15 +182,19 @@ export function CartSummary({
   className,
 }: CartSummaryProps) {
   const { cart, applyPromoCode, removePromoCode, isMutating } = useCart();
+  const { freeShippingThreshold } = useShippingConfig();
 
-  const total = Math.max(
-    0,
-    grandTotal ?? subtotal + shippingEstimate + taxEstimate - discount
-  );
+  const total = calculateOrderTotal({
+    subtotal,
+    shippingEstimate,
+    taxEstimate,
+    discount,
+    grandTotal,
+  });
 
-  const progress = Math.min((subtotal / FREE_SHIPPING_THRESHOLD) * 100, 100);
-  const remaining = Math.max(FREE_SHIPPING_THRESHOLD - subtotal, 0);
-  const isFreeShipping = subtotal >= FREE_SHIPPING_THRESHOLD;
+  const progress = Math.min((subtotal / freeShippingThreshold) * 100, 100);
+  const remaining = Math.max(freeShippingThreshold - subtotal, 0);
+  const isFreeShipping = subtotal >= freeShippingThreshold;
 
   return (
     <Card className={cn("flex flex-col gap-6 p-6", className)}>
@@ -213,7 +210,7 @@ export function CartSummary({
               transition={{ type: "spring", stiffness: 500, damping: 15 }}
               className="font-medium text-green-600"
             >
-              You've unlocked Free Shipping! 🎉
+              You&apos;ve unlocked Free Shipping! 🎉
             </motion.span>
           ) : (
             <span className="text-slate-600">
@@ -257,13 +254,20 @@ export function CartSummary({
             </span>
           </div>
         )}
-        <div className="flex justify-between text-base">
-          <span className="text-slate-500">Shipping estimate</span>
-          <span className="text-primary-navy font-medium">
-            {shippingEstimate === 0
-              ? "Free"
-              : `${currencySymbol}${shippingEstimate.toFixed(2)}`}
-          </span>
+        <div className="flex items-center justify-between gap-3 text-base">
+          <span className="shrink-0 text-slate-500">Shipping</span>
+          {isFreeShipping ? (
+            <span className="text-primary-navy font-medium">Free</span>
+          ) : shippingEstimate > 0 ? (
+            <span className="text-primary-navy font-medium">
+              {currencySymbol}
+              {shippingEstimate.toFixed(2)}
+            </span>
+          ) : (
+            <span className="text-right text-sm whitespace-nowrap text-slate-500">
+              Calculated at checkout
+            </span>
+          )}
         </div>
         <div className="flex justify-between text-base">
           <span className="text-slate-500">Tax estimate</span>
@@ -274,7 +278,9 @@ export function CartSummary({
         </div>
       </div>
 
-      <div className="bg-neutral-stroke h-px w-full" />
+      {/* mt-auto pins the total/checkout/promo group to the card bottom when
+          the card is stretched to match the items column on lg screens */}
+      <div className="bg-neutral-stroke h-px w-full lg:mt-auto" />
 
       <div className="flex justify-between text-lg font-semibold">
         <span className="text-primary-navy">Order total</span>

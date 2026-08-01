@@ -1,6 +1,6 @@
 "use client";
 
-import { Dog, Cat, Rabbit, Bird, Mouse, Circle } from "lucide-react";
+import { Dog, Cat, Rabbit, Bird, Mouse } from "lucide-react";
 import { GuineaPigIcon } from "@/components/icons/PetIcons";
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import type { SpeciesInfo } from "@/lib/types/product";
@@ -77,9 +77,9 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
   // If no species provided or no matching species found, show default message
   if (displayPets.length === 0) {
     return (
-      <AnimatedSection className="w-full py-12 sm:py-16">
+      <AnimatedSection className="w-full">
         <div className="container mx-auto max-w-[1160px] px-4">
-          <h2 className="text-primary-navy-light mb-8 text-center text-[28px] font-semibold sm:text-[32px]">
+          <h2 className="text-primary-navy-light text-large sm:text-large mb-8 text-center font-semibold">
             Suitable for small pets and more 🐰🐹
           </h2>
           <p className="text-primary-navy text-center text-base">
@@ -90,16 +90,12 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
     );
   }
 
-  // Build emoji string from all species
-  const emojiString = displayPets.map((p) => p.emoji).join("");
-
   return (
-    <AnimatedSection className="w-full py-12 sm:py-16">
+    <AnimatedSection className="w-full">
       <div className="container mx-auto max-w-[1160px] px-4">
         {/* Title */}
-        <h2 className="text-primary-navy-light mb-8 text-center text-[28px] font-semibold sm:text-[32px]">
-          Suitable for {displayPets.map((p) => p.name).join(" & ")}{" "}
-          {emojiString}
+        <h2 className="text-primary-navy-light text-large sm:text-large mb-8 text-center font-semibold">
+          Suitable for small pets and more 🐰🐹
         </h2>
 
         {/* Pet Icons */}
@@ -109,11 +105,11 @@ export function PetIconsSection({ species = [] }: PetIconsSectionProps) {
             return (
               <div
                 key={pet.id}
-                className={`${pet.bgColor} flex h-20 w-20 items-center justify-center rounded-full sm:h-24 sm:w-24`}
+                className={`${pet.bgColor} flex h-20 w-20 items-center justify-center rounded-[24px] sm:h-[90px] sm:w-[90px]`}
                 title={pet.name}
               >
                 <Icon
-                  className="text-primary-navy h-10 w-10 sm:h-12 sm:w-12"
+                  className="text-primary-navy h-10 w-10 sm:h-11 sm:w-11"
                   strokeWidth={1.5}
                 />
               </div>

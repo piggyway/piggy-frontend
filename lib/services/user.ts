@@ -152,7 +152,10 @@ export class UserService {
   ): Promise<Address | null> {
     try {
       // Avoid accidentally sending `id` in the payload
-      const { id: _ignored, ...body } = payload ?? {};
+      const body: UpdateAddressPayload & { id?: string } = {
+        ...(payload ?? {}),
+      };
+      delete body.id;
       const response = await fetchWithAuth(
         `/api/users/me/addresses/${addressId}`,
         {

@@ -107,7 +107,7 @@ export default function CheckoutButton({
         onError?.(message);
         console.error(message, data);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Checkout error:", err);
       onError?.("Something went wrong starting checkout. Please try again.");
     } finally {

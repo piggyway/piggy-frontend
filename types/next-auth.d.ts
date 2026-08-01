@@ -5,6 +5,7 @@ declare module "next-auth" {
     user: UserProfile;
     accessToken?: string;
     refreshToken?: string;
+    error?: "RefreshAccessTokenError";
   }
 
   interface User extends UserProfile {

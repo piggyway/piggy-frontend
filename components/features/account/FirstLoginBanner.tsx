@@ -39,7 +39,7 @@ export function FirstLoginBanner({
             Welcome to PiggyWay!
           </h3>
           <p className="mb-4 text-gray-600">
-            Let's get started! Please enter your first and last name to
+            Let&apos;s get started! Please enter your first and last name to
             personalize your shopping experience.
           </p>
 

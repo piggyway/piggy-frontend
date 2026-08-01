@@ -33,7 +33,8 @@ export function FloatingCartButton() {
     if (!isOpen) return;
     ensureLoaded().catch((err) => {
       // If auth is required, close the sheet and let CartProvider show the dialog.
-      if (String((err as any)?.message || err).includes("AUTH_REQUIRED")) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes("AUTH_REQUIRED")) {
         setIsOpen(false);
       }
     });
@@ -104,8 +105,14 @@ export function FloatingCartButton() {
                       <div>
                         <h4 className="line-clamp-1 font-medium">
                           {item.productTitle}
+                          {item.productSubtitle && (
+                            <span className="text-muted-foreground ml-1 font-normal">
+                              | {item.productSubtitle}
+                            </span>
+                          )}
                         </h4>
-                        {item.variantOptions && item.variantOptions.length > 0 ? (
+                        {item.variantOptions &&
+                        item.variantOptions.length > 0 ? (
                           <div className="flex flex-col gap-0.5">
                             {item.variantOptions.map((opt, i) => (
                               <p
@@ -189,7 +196,7 @@ export function FloatingCartButton() {
               <Button
                 variant="default"
                 asChild
-                className="bg-primary-navy w-full text-white hover:bg-primary-navy/90"
+                className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
                 onClick={() => setIsOpen(false)}
               >
                 <Link href="/cart">View Cart</Link>

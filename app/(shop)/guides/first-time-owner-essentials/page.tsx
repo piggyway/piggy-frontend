@@ -5,15 +5,16 @@ import { ArrowLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
 export const metadata: Metadata = {
-  title:
-    "First-Time Guinea Pig Owner: Complete Essentials Checklist | Piggy Way Crossing",
+  title: "First-Time Guinea Pig Owner: Complete Essentials Checklist",
   description:
     "Bringing home your first guinea pigs? Here's the ultimate checklist of everything you need for a happy, healthy start.",
+  alternates: { canonical: "/guides/first-time-owner-essentials" },
   openGraph: {
     title: "First-Time Guinea Pig Owner: Complete Essentials Checklist",
     description:
       "Bringing home your first guinea pigs? Here's the ultimate checklist of everything you need.",
     type: "article",
+    images: ["/shop-with-us/default.png"],
     publishedTime: "2024-03-15T00:00:00.000Z",
     authors: ["Piggy Way Crossing Team"],
     tags: ["New Owner Guide", "Guinea Pig Essentials", "Checklist"],
@@ -96,7 +97,7 @@ export default function FirstTimeOwnerPage() {
         <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-primary-gold prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
             Congratulations on your new furry family members! To make your
-            shopping trip easier, we've compiled the definitive list of
+            shopping trip easier, we&apos;ve compiled the definitive list of
             must-haves for day one.
           </p>
 
@@ -132,8 +133,8 @@ export default function FirstTimeOwnerPage() {
           <p>
             Your pigs need room to zoom! Skip the small pet store cages and opt
             for a C&C cage or a Midwest habitat. For bedding, fleece liners are
-            the modern standard—they're reusable, save money over time, and are
-            much cleaner than wood shavings.
+            the modern standard—they&apos;re reusable, save money over time, and
+            are much cleaner than wood shavings.
           </p>
 
           <h2>2. Diet Basics</h2>
@@ -144,7 +145,7 @@ export default function FirstTimeOwnerPage() {
           <p>
             For pellets, look for plain Timothy-based pellets (like Oxbow).
             Avoid the colorful mixes with seeds and dried fruit; they are
-            unhealthy "junk food."
+            unhealthy &quot;junk food.&quot;
           </p>
 
           <h2>3. Hideouts & Comfort</h2>
@@ -173,8 +174,8 @@ export default function FirstTimeOwnerPage() {
                 New Piggy Parent Starter Kit
               </h4>
               <p className="mb-6 text-lg text-white/80">
-                We've bundled our best-selling fleece liners, a cozy hideout,
-                and a hay bag into one convenient, discounted package.
+                We&apos;ve bundled our best-selling fleece liners, a cozy
+                hideout, and a hay bag into one convenient, discounted package.
               </p>
               <Link
                 href="/shop-all"

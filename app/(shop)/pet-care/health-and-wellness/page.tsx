@@ -5,14 +5,16 @@ import { ArrowLeft, ChevronRight } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
 export const metadata: Metadata = {
-  title: "Small Pet Health & Wellness Guide | Piggy Way Crossing",
+  title: "Small Pet Health & Wellness Guide",
   description:
     "Essential health guide for guinea pigs and rabbits. Learn to recognize common ailments, grooming tips, and when to visit the vet.",
+  alternates: { canonical: "/pet-care/health-and-wellness" },
   openGraph: {
     title: "Small Pet Health & Wellness Guide",
     description:
       "Essential health guide for guinea pigs and rabbits. Learn to recognize common ailments, grooming tips, and when to visit the vet.",
     type: "article",
+    images: ["/pet-care-tips/default1.png"],
     publishedTime: "2024-03-20T00:00:00.000Z",
     authors: ["Piggy Way Crossing Team"],
     tags: ["Pet Health", "Guinea Pig Care", "Rabbit Care", "Wellness"],
@@ -104,8 +106,8 @@ export default function HealthWellnessPage() {
 
           <h2>Daily Health Checks</h2>
           <p>
-            Make health checks part of your daily cuddle routine. It only takes a
-            minute but can save a life.
+            Make health checks part of your daily cuddle routine. It only takes
+            a minute but can save a life.
           </p>
           <ul>
             <li>
@@ -133,8 +135,8 @@ export default function HealthWellnessPage() {
           <h3>Nail Trimming</h3>
           <p>
             Overgrown nails can curl back into the footpad, causing pain and
-            infection. Trim tips every 2-4 weeks. If you're nervous, ask your
-            vet to demonstrate or use a file.
+            infection. Trim tips every 2-4 weeks. If you&apos;re nervous, ask
+            your vet to demonstrate or use a file.
           </p>
 
           <h3>Brushing</h3>
@@ -146,8 +148,9 @@ export default function HealthWellnessPage() {
 
           <h3>Boar Cleaning (Guinea Pigs)</h3>
           <p>
-            Male guinea pigs need their "sac" cleaned occasionally to prevent
-            impaction. It's not glamorous, but it's necessary for their comfort.
+            Male guinea pigs need their &quot;sac&quot; cleaned occasionally to
+            prevent impaction. It&apos;s not glamorous, but it&apos;s necessary
+            for their comfort.
           </p>
 
           <div className="my-8 rounded-r-lg border-l-4 border-red-500 bg-red-50 p-6">
@@ -165,9 +168,9 @@ export default function HealthWellnessPage() {
 
           <h2>Finding a Vet</h2>
           <p>
-            Not all vets see "exotics." Ensure you find a vet experienced with
-            guinea pigs or rabbits <em>before</em> an emergency happens. Look
-            for "exotic animal" specialists.
+            Not all vets see &quot;exotics.&quot; Ensure you find a vet
+            experienced with guinea pigs or rabbits <em>before</em> an emergency
+            happens. Look for &quot;exotic animal&quot; specialists.
           </p>
 
           <h2>Weight Monitoring</h2>

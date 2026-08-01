@@ -12,7 +12,7 @@ export function CTASection() {
           {/* Pink Button */}
           <Button
             size="lg"
-            className="bg-secondary-pink hover:bg-secondary-pink/90 h-[60px] min-w-[240px] rounded-full px-10 py-6 text-[18px] font-semibold text-white"
+            className="bg-secondary-pink hover:bg-secondary-pink/90 text-p-ui h-[60px] min-w-[240px] rounded-full px-10 py-6 font-semibold text-white"
           >
             Book a Piggy Pop-up
           </Button>
@@ -25,7 +25,7 @@ export function CTASection() {
           {/* Gold Button */}
           <Button
             size="lg"
-            className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 h-[60px] min-w-[240px] rounded-full px-10 py-6 text-[18px] font-semibold"
+            className="bg-primary-gold text-primary-navy hover:bg-primary-gold/90 text-p-ui h-[60px] min-w-[240px] rounded-full px-10 py-6 font-semibold"
           >
             Loved by Our Piggies
           </Button>

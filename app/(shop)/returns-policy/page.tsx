@@ -3,9 +3,10 @@ import { RefreshCw, CheckCircle, AlertCircle } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 
 export const metadata: Metadata = {
-  title: "Returns Policy | Piggy Way Crossing",
+  title: "Returns Policy",
   description:
     "Our simple 30-day return policy. If you or your pet aren't satisfied, we're here to help.",
+  alternates: { canonical: "/returns-policy" },
 };
 
 export default function ReturnsPage() {
@@ -88,14 +89,14 @@ export default function ReturnsPage() {
               <ol className="text-primary-navy list-decimal space-y-4 pl-5 font-medium">
                 <li className="pl-2">
                   <span className="block font-normal text-gray-700">
-                    Contact our support team at returns@piggyway.com.au with your
-                    order number.
+                    Contact our support team at returns@piggyway.com.au with
+                    your order number.
                   </span>
                 </li>
                 <li className="pl-2">
                   <span className="block font-normal text-gray-700">
-                    We'll send you a Returns Authorisation form and shipping
-                    label.
+                    We&apos;ll send you a Returns Authorisation form and
+                    shipping label.
                   </span>
                 </li>
                 <li className="pl-2">
@@ -106,8 +107,8 @@ export default function ReturnsPage() {
                 </li>
                 <li className="pl-2">
                   <span className="block font-normal text-gray-700">
-                    Once received, we'll process your refund within 3-5 business
-                    days.
+                    Once received, we&apos;ll process your refund within 3-5
+                    business days.
                   </span>
                 </li>
               </ol>

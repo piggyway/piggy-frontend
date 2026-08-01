@@ -9,7 +9,7 @@ export function HeroSection() {
         <div className="flex flex-col items-center gap-8 lg:flex-row lg:gap-12">
           {/* Left Side - Text Content */}
           <div className="w-full flex-1">
-            <h1 className="text-primary-navy-light mb-6 text-[32px] leading-tight font-semibold sm:text-[42px] lg:text-[48px]">
+            <h1 className="text-primary-navy-light text-large sm:text-h4 lg:text-h3 mb-6 leading-tight font-semibold">
               Guinea Pig & Rabbit Essentials
             </h1>
             <p className="text-primary-navy text-lg leading-relaxed sm:text-xl">

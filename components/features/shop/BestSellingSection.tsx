@@ -16,8 +16,8 @@ export function BestSellingSection() {
     },
     {
       id: 2,
-      title: "Hut",
-      slug: "hut",
+      title: "Hideout",
+      slug: "hideout",
       image: "/homepage-essentials/hut-example.png",
       bgColor: "bg-secondary-mint",
     },
@@ -36,7 +36,7 @@ export function BestSellingSection() {
         {/* Header with Piggy Icon */}
         <div className="mb-8 flex items-start justify-between sm:mb-10">
           <div>
-            <p className="text-primary-navy mb-2 text-[20px] leading-[32px] font-normal sm:text-[24px]">
+            <p className="text-primary-navy text-p-ui sm:text-lead mb-2 leading-[32px] font-normal">
               Our best 😊
             </p>
             <p className="text-primary-navy max-w-2xl text-lg leading-relaxed">

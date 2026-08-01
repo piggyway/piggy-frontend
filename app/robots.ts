@@ -1,58 +1,26 @@
 import type { MetadataRoute } from "next";
 import { getBaseUrl } from "@/lib/utils/seo";
 
+/**
+ * Crawling policy.
+ *
+ * Only truly non-page endpoints are disallowed here. Utility pages
+ * (cart, checkout, account, login) are controlled with page-level
+ * `robots: { index: false }` metadata instead - a robots.txt disallow
+ * would prevent crawlers from ever seeing that noindex.
+ *
+ * Note: AI-crawler policy is decided at the Cloudflare level
+ * ("Managed robots.txt" / bot-blocking settings), not in this file.
+ */
 export default function robots(): MetadataRoute.Robots {
   const baseUrl = getBaseUrl();
 
   return {
     rules: [
-      // General rules for all crawlers
       {
         userAgent: "*",
         allow: "/",
-        disallow: [
-          "/api/",
-          "/admin/",
-          "/cart",
-          "/checkout",
-          "/account",
-          "/orders",
-          "/_next/",
-          "/pet-care",
-          "/guides",
-          "/returns-policy",
-          "/terms",
-          "/privacy",
-          "/about",
-        ],
-      },
-      // Explicitly allow AI crawlers
-      {
-        userAgent: [
-          "GPTBot",
-          "ChatGPT-User",
-          "Google-Extended",
-          "Claude-Web",
-          "Anthropic",
-          "CCBot",
-          "PerplexityBot",
-          "Bytespider",
-        ],
-        allow: "/",
-        disallow: [
-          "/api/",
-          "/admin/",
-          "/cart",
-          "/checkout",
-          "/account",
-          "/orders",
-          "/pet-care",
-          "/guides",
-          "/returns-policy",
-          "/terms",
-          "/privacy",
-          "/about",
-        ],
+        disallow: ["/api/", "/admin/"],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,

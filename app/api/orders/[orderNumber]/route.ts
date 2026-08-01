@@ -29,9 +29,12 @@ export async function GET(
       headers.Authorization = token;
     }
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/orders/${orderNumber}`, {
-      headers,
-    });
+    const res = await fetch(
+      `${API_BASE_URL}/api/v1/orders/${encodeURIComponent(orderNumber)}`,
+      {
+        headers,
+      }
+    );
 
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
@@ -43,5 +46,3 @@ export async function GET(
     );
   }
 }
-
-

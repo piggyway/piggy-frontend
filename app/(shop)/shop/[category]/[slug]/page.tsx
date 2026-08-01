@@ -1,13 +1,15 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Script from "next/script";
+import { draftMode } from "next/headers";
 import { ProductDetailContent } from "@/components/features/product-detail/ProductDetailContent";
 import { ProductInformationSection } from "@/components/features/product-detail/ProductInformationSection";
 import { PetIconsSection } from "@/components/features/product-detail/PetIconsSection";
+import { ProductFeaturesSection } from "@/components/features/product-detail/ProductFeaturesSection";
 import { TestimonialsSection } from "@/components/features/shop/TestimonialsSection";
 import { RelatedProductsSection } from "@/components/features/product-detail/RelatedProductsSection";
 import { ProductService } from "@/lib/services/products";
+import { CategoryService } from "@/lib/services/categories";
 import { getBaseUrl, getProductUrl, getCategoryUrl } from "@/lib/utils/seo";
 import { FloatingCartButton } from "@/components/features/cart/FloatingCartButton";
 
@@ -25,18 +27,24 @@ export async function generateMetadata({
   params,
 }: ProductPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = await ProductService.getProductBySlug(slug);
 
+  // Check draft mode and pass to service
+  const draftModeResult = await draftMode();
+  const isDraftMode = draftModeResult.isEnabled;
+
+  const product = await ProductService.getProductBySlug(slug, {
+    includeDraft: isDraftMode,
+  });
   if (!product) {
     return {
-      title: "Product not found | Piggy Way Crossing",
+      title: "Product not found",
       robots: { index: false, follow: false },
     };
   }
 
   const baseUrl = getBaseUrl();
   const url = getProductUrl(product.category?.slug, product.slug, baseUrl);
-  const title = `${product.title}${product.subtitle ? ` - ${product.subtitle}` : ""} | Piggy Way Crossing`;
+  const title = `${product.title}${product.subtitle ? ` - ${product.subtitle}` : ""}`;
   const description =
     product.description ||
     product.subtitle ||
@@ -77,13 +85,27 @@ export async function generateMetadata({
 export default async function ProductPage({ params }: ProductPageProps) {
   const { slug } = await params;
 
-  // Fetch product data from API
-  const product = await ProductService.getProductBySlug(slug);
+  // Check draft mode and pass to service
+  const draftModeResult = await draftMode();
+  const isDraftMode = draftModeResult.isEnabled;
+
+  // Fetch product data from API with draft mode support
+  const product = await ProductService.getProductBySlug(slug, {
+    includeDraft: isDraftMode,
+  });
 
   // If product not found, show 404 page
   if (!product) {
     notFound();
   }
+
+  // Resolve the full category (care cards, section titles) for the
+  // category-driven product information section. Falls back gracefully when
+  // the category is missing.
+  const categories = await CategoryService.getCategories();
+  const productCategory = categories.find(
+    (cat) => cat.slug === product.category?.slug
+  );
 
   const baseUrl = getBaseUrl();
   const productUrl = getProductUrl(
@@ -94,6 +116,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const categoryUrl = getCategoryUrl(product.category?.slug, baseUrl);
 
   // Prepare Product JSON-LD
+  const priceCurrency = product.currency?.slug?.toUpperCase() || "AUD";
+  const availability = product.variants?.some(
+    (v) => v.isAvailable && v.stockQuantity > 0
+  )
+    ? "https://schema.org/InStock"
+    : "https://schema.org/OutOfStock";
+  const variantPrices = (product.variants ?? [])
+    .map((v) => v.discountedPrice ?? v.originalPrice)
+    .filter((price): price is number => price !== null);
+
   const productJsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -112,17 +144,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
           "@type": "Brand",
           name: "Piggy Way Crossing",
         },
-    offers: {
-      "@type": "Offer",
-      url: productUrl,
-      priceCurrency: product.currency?.slug?.toUpperCase() || "AUD",
-      price: product.basePrice.toString(),
-      availability: product.variants?.some(
-        (v) => v.isAvailable && v.stockQuantity > 0
-      )
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-    },
+    // AggregateOffer covers the price range across variants; fall back to a
+    // single Offer with the base price when no variant prices exist
+    offers:
+      variantPrices.length > 1
+        ? {
+            "@type": "AggregateOffer",
+            url: productUrl,
+            priceCurrency,
+            lowPrice: Math.min(...variantPrices).toString(),
+            highPrice: Math.max(...variantPrices).toString(),
+            offerCount: variantPrices.length,
+            availability,
+          }
+        : {
+            "@type": "Offer",
+            url: productUrl,
+            priceCurrency,
+            price: (variantPrices[0] ?? product.basePrice).toString(),
+            availability,
+          },
   };
 
   // Prepare BreadcrumbList JSON-LD
@@ -151,17 +192,26 @@ export default async function ProductPage({ params }: ProductPageProps) {
     ],
   };
 
+  // Fetch reviews for the first variant (default)
+  // This is server-side fetching directly from backend service
+  const firstVariantId = product.variants?.[0]?.id;
+  const reviewsResponse = firstVariantId
+    ? await ProductService.getVariantReviews(firstVariantId)
+    : null;
+  const reviews = reviewsResponse?.reviews || [];
+
   return (
     <div className="bg-neutral-background-light min-h-screen">
-      {/* Structured Data */}
-      <Script
+      {/* Structured Data - plain script tags so JSON-LD is present in the
+          server-rendered HTML (next/script injects after hydration only) */}
+      <script
         id="product-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(productJsonLd),
         }}
       />
-      <Script
+      <script
         id="breadcrumb-jsonld"
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -169,27 +219,51 @@ export default async function ProductPage({ params }: ProductPageProps) {
         }}
       />
 
-      {/* Main Product Section */}
-      <div className="container mx-auto max-w-[1160px] px-4 py-6 sm:py-8">
-        <ProductDetailContent product={product} />
-      </div>
+      {/* Sections stack with a uniform 80px gap (design spec; root font-size is 20px, so gap-16 = 4rem = 80px) */}
+      <div className="flex flex-col gap-16 pb-16">
+        {/* Main Product Section */}
+        <div className="container mx-auto max-w-[1160px] px-4 pt-6 sm:pt-8">
+          <ProductDetailContent product={product} />
+        </div>
 
-      {/* Product Information - hardcoded for now */}
-      <ProductInformationSection />
+        {/* Pet Icons - based on product species */}
+        <PetIconsSection species={product.species} />
 
-      {/* Pet Icons - based on product species */}
-      <PetIconsSection species={product.species} />
-
-      {/* Testimonials - hardcoded for now */}
-      <TestimonialsSection />
-
-      {/* Related Products */}
-      <Suspense fallback={<div className="h-[400px]" />}>
-        <RelatedProductsSection
-          categorySlug={product.category?.slug}
-          excludeProductId={product.id}
+        {/* Product Information - category-driven presentation from the CMS */}
+        <ProductInformationSection
+          productFeatures={product.productFeatures}
+          specifications={product.specifications}
+          careInstructions={product.careInstructions}
+          detailInformationFiles={product.detailInformationFiles}
+          specSectionTitle={productCategory?.specSectionTitle}
+          careSectionTitle={productCategory?.careSectionTitle}
+          careCards={productCategory?.careCards}
+          infoSections={product.infoSections}
         />
-      </Suspense>
+
+        {/* Product Features story - image/text blocks from CMS */}
+        <ProductFeaturesSection
+          productName={product.title}
+          subtitle={product.subtitle}
+          description={product.featureSectionDescription}
+          featureSectionTitle={product.featureSectionTitle}
+          featureSectionSubtitle={product.featureSectionSubtitle}
+          featureBannerText={product.featureBannerText}
+          featureCards={product.featureCards}
+          storyBlocks={product.storyBlocks}
+        />
+
+        {/* Testimonials - specific to product variant */}
+        <TestimonialsSection reviews={reviews} />
+
+        {/* Related Products */}
+        <Suspense fallback={<div className="h-[400px]" />}>
+          <RelatedProductsSection
+            categorySlug={product.category?.slug}
+            excludeProductId={product.id}
+          />
+        </Suspense>
+      </div>
       <FloatingCartButton />
     </div>
   );

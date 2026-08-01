@@ -3,6 +3,7 @@
  * Fetches product detail by slug from backend
  */
 
+import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 
 const API_BASE_URL =
@@ -19,11 +20,40 @@ export async function GET(
   try {
     const { slug } = await params;
     const token = request.headers.get("authorization");
+    const previewSecret = process.env.PREVIEW_SECRET;
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/products/${slug}`, {
-      headers: {
-        Authorization: token || "",
-      },
+    // Check draft mode from cookies
+    const { isEnabled: isDraftMode } = await draftMode();
+
+    // Server components fetch this route without the draft-mode cookie, so they
+    // ask for drafts with include_draft plus the preview secret. The secret is
+    // required: the query parameter alone must never expose unpublished data.
+    const includeDraftParam =
+      request.nextUrl.searchParams.get("include_draft") === "true";
+    const presentedSecret = request.headers.get("x-preview-secret");
+    const paramAuthorized =
+      includeDraftParam &&
+      Boolean(previewSecret) &&
+      presentedSecret === previewSecret;
+
+    const allowDraft = (isDraftMode || paramAuthorized) && previewSecret;
+
+    const url = new URL(
+      `${API_BASE_URL}/api/v1/products/${encodeURIComponent(slug)}`
+    );
+    if (allowDraft) {
+      url.searchParams.set("include_draft", "true");
+    }
+
+    const fetchHeaders: Record<string, string> = {
+      Authorization: token || "",
+    };
+    if (allowDraft) {
+      fetchHeaders["x-preview-secret"] = previewSecret as string;
+    }
+
+    const res = await fetch(url.toString(), {
+      headers: fetchHeaders,
     });
 
     if (!res.ok) {
