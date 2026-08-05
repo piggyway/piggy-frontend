@@ -77,7 +77,21 @@ export function VariantCard({
 
   const variantParams = buildVariantSearchParams(variant.optionValues);
   const variantQuery = variantParams.toString();
-  const href = `/shop/${variant.category?.slug || "product"}/${variant.productSlug}${variantQuery ? `?${variantQuery}` : ""}`;
+
+  /**
+   * The product's canonical URL, with no variant query string.
+   *
+   * The card body links to `href` so a shopper landing on the PDP sees the
+   * variant they clicked, but the title must link to `canonicalHref`:
+   * otherwise every link in the catalogue carries a `?size=&color=` query and
+   * the canonical product URL appears nowhere in the HTML, leaving crawlers
+   * unable to discover it (Search Console reports "URL is unknown to Google").
+   */
+  const canonicalHref = `/shop/${variant.category?.slug || "product"}/${variant.productSlug}`;
+  const href = canonicalHref + (variantQuery ? `?${variantQuery}` : "");
+  const variantLabel = optionSummary
+    ? `${variant.productTitle} (${optionSummary})`
+    : variant.productTitle;
 
   const priceSection = (
     <div className="flex flex-col gap-1">
@@ -103,13 +117,19 @@ export function VariantCard({
 
   if (layout === "list") {
     return (
-      <Link
-        href={href}
+      <div
         className={cn(
-          "flex w-full cursor-pointer items-center gap-4 rounded-[28px] bg-white p-4 transition-shadow hover:shadow-lg sm:gap-6 sm:p-6",
+          "relative flex w-full cursor-pointer items-center gap-4 rounded-[28px] bg-white p-4 transition-shadow hover:shadow-lg sm:gap-6 sm:p-6",
           className
         )}
       >
+        {/* Covers the whole card so any non-interactive area opens the variant */}
+        <Link
+          href={href}
+          aria-label={variantLabel}
+          className="absolute inset-0 rounded-[28px]"
+        />
+
         {/* Image Container */}
         <div
           className={cn(
@@ -131,7 +151,9 @@ export function VariantCard({
         <div className="text-primary-navy flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex flex-col">
             <h3 className="text-lg leading-6 font-medium sm:text-xl">
-              {variant.productTitle}
+              <Link href={canonicalHref} className="relative hover:underline">
+                {variant.productTitle}
+              </Link>
             </h3>
             {optionSummary && (
               <p className="text-sm leading-6 font-normal sm:text-base">
@@ -146,23 +168,29 @@ export function VariantCard({
         <Button
           onClick={handleAddToCart}
           disabled={isAdding || isMutating || !isPurchasable}
-          className="bg-primary-navy hover:bg-primary-navy-light flex shrink-0 items-center justify-center gap-2 rounded-[20px] px-3 py-2 text-sm text-white sm:w-[180px] sm:px-4"
+          className="bg-primary-navy hover:bg-primary-navy-light relative flex shrink-0 items-center justify-center gap-2 rounded-[20px] px-3 py-2 text-sm text-white sm:w-[180px] sm:px-4"
         >
           <ShoppingCart className="size-4" />
           <span className="hidden sm:inline">{buttonLabel}</span>
         </Button>
-      </Link>
+      </div>
     );
   }
 
   return (
-    <Link
-      href={href}
+    <div
       className={cn(
-        "flex h-full w-full cursor-pointer flex-col justify-between gap-5 rounded-[28px] bg-white p-6 transition-shadow hover:shadow-lg",
+        "relative flex h-full w-full cursor-pointer flex-col justify-between gap-5 rounded-[28px] bg-white p-6 transition-shadow hover:shadow-lg",
         className
       )}
     >
+      {/* Covers the whole card so any non-interactive area opens the variant */}
+      <Link
+        href={href}
+        aria-label={variantLabel}
+        className="absolute inset-0 rounded-[28px]"
+      />
+
       {/* Image Container */}
       <div className="flex w-full flex-col items-start gap-3.5">
         <div className="bg-neutral-stroke relative h-[160px] w-full overflow-hidden rounded-[24px] sm:h-[180px] sm:rounded-[28px] lg:h-[200px] lg:rounded-[33px]">
@@ -179,7 +207,9 @@ export function VariantCard({
         {/* Title and Options */}
         <div className="text-primary-navy flex w-full flex-col items-start gap-0">
           <h3 className="w-full text-lg leading-6 font-medium sm:text-xl">
-            {variant.productTitle}
+            <Link href={canonicalHref} className="relative hover:underline">
+              {variant.productTitle}
+            </Link>
           </h3>
           {optionSummary && (
             <p className="w-full text-sm leading-6 font-normal text-slate-500">
@@ -193,7 +223,7 @@ export function VariantCard({
       {priceSection}
 
       {/* Add to Cart Button */}
-      <div className="flex w-full flex-col items-start gap-3 sm:gap-4">
+      <div className="relative flex w-full flex-col items-start gap-3 sm:gap-4">
         <Button
           onClick={handleAddToCart}
           disabled={isAdding || isMutating || !isPurchasable}
@@ -203,6 +233,6 @@ export function VariantCard({
           {buttonLabel}
         </Button>
       </div>
-    </Link>
+    </div>
   );
 }

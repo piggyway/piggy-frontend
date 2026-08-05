@@ -32,6 +32,11 @@ const CATEGORY_STYLE_FALLBACKS: Record<
     textColor: "text-primary-navy",
     image: "/homepage-essentials/liner-example.png",
   },
+  hut: {
+    bgColor: "bg-secondary-mint",
+    textColor: "text-primary-navy",
+    image: "/homepage-essentials/hut-example.png",
+  },
   hideout: {
     bgColor: "bg-secondary-mint",
     textColor: "text-primary-navy",
@@ -101,9 +106,13 @@ export class CategoryService {
 
       return categories;
     } catch (error) {
+      // Deliberately NOT falling back to a hardcoded list. The previous
+      // fallback invented categories that do not exist in the backend, so a
+      // failed fetch silently produced a category filter bar and footer full
+      // of links to empty result pages. Every caller already handles an empty
+      // list, so surface the failure instead of masking it.
       console.error("[CategoryService] Failed to fetch categories:", error);
-      // Return default categories
-      return this.getDefaultCategories();
+      return [];
     }
   }
 
@@ -148,35 +157,5 @@ export class CategoryService {
    */
   private static normalizeSlug(slug: string): string {
     return slug.toLowerCase().replace(/\s+/g, "-").replace(/_/g, "-");
-  }
-
-  /**
-   * Business logic: Get default categories
-   */
-  private static getDefaultCategories(): Category[] {
-    const defaults: Array<{ slug: string; name: string }> = [
-      { slug: "liner", name: "Liners" },
-      { slug: "hideout", name: "Hideout" },
-      { slug: "c-c-cage", name: "C&C Cage" },
-      { slug: "combo", name: "Combos" },
-    ];
-
-    return defaults.map(({ slug, name }) => {
-      const styles = CATEGORY_STYLE_FALLBACKS[slug] || DEFAULT_CATEGORY_STYLE;
-      return {
-        id: slug,
-        slug,
-        name,
-        title: name,
-        image: styles.image,
-        bgColor: styles.bgColor,
-        textColor: styles.textColor,
-        themeColor: null,
-        navIconUrl: null,
-        specSectionTitle: null,
-        careSectionTitle: null,
-        careCards: [],
-      };
-    });
   }
 }

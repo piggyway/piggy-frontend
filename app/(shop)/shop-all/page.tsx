@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { BreadcrumbsNav } from "@/components/features/shop-all/BreadcrumbsNav";
 import { ShopAllContent } from "@/components/features/shop-all/ShopAllContent";
 // import { StarterKitsSection } from "@/components/features/shop/StarterKitsSection";
@@ -115,6 +116,23 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
     }),
     CategoryService.getCategories(),
   ]);
+
+  // Unknown categories and pages past the end used to render an empty grid
+  // under a 200, which crawlers treat as a soft 404 and keep re-crawling.
+  // A search with no hits is a real empty state, so it stays a 200.
+  //
+  // An empty `categories` means the fetch failed, not that the slug is bogus -
+  // 404ing there would turn a backend outage into 404s on valid category pages.
+  if (
+    category &&
+    categories.length > 0 &&
+    !categories.some((item) => item.slug === category)
+  ) {
+    notFound();
+  }
+  if (page > 1 && page > response.pagination.totalPages) {
+    notFound();
+  }
 
   return (
     <div className="bg-neutral-background-light relative min-h-screen">

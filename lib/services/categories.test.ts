@@ -68,7 +68,7 @@ describe("CategoryService", () => {
     });
   });
 
-  it("does not limit for zero and returns default categories for invalid or rejected responses", async () => {
+  it("does not limit for zero and returns an empty list for invalid or rejected responses", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     getMock
       .mockResolvedValueOnce({
@@ -108,64 +108,10 @@ describe("CategoryService", () => {
         careCards: [],
       },
     ]);
-    await expect(CategoryService.getCategories()).resolves.toEqual([
-      {
-        id: "liner",
-        slug: "liner",
-        name: "Liners",
-        title: "Liners",
-        image: "/homepage-essentials/liner-example.png",
-        bgColor: "bg-neutral-pink-background",
-        textColor: "text-primary-navy",
-        themeColor: null,
-        navIconUrl: null,
-        specSectionTitle: null,
-        careSectionTitle: null,
-        careCards: [],
-      },
-      {
-        id: "hideout",
-        slug: "hideout",
-        name: "Hideout",
-        title: "Hideout",
-        image: "/homepage-essentials/hut-example.png",
-        bgColor: "bg-secondary-mint",
-        textColor: "text-primary-navy",
-        themeColor: null,
-        navIconUrl: null,
-        specSectionTitle: null,
-        careSectionTitle: null,
-        careCards: [],
-      },
-      {
-        id: "c-c-cage",
-        slug: "c-c-cage",
-        name: "C&C Cage",
-        title: "C&C Cage",
-        image: "/homepage-essentials/cage-example.png",
-        bgColor: "bg-primary-navy-light",
-        textColor: "text-white",
-        themeColor: null,
-        navIconUrl: null,
-        specSectionTitle: null,
-        careSectionTitle: null,
-        careCards: [],
-      },
-      {
-        id: "combo",
-        slug: "combo",
-        name: "Combos",
-        title: "Combos",
-        image: "/homepage-essentials/combo-example.png",
-        bgColor: "bg-primary-gold",
-        textColor: "text-primary-navy",
-        themeColor: null,
-        navIconUrl: null,
-        specSectionTitle: null,
-        careSectionTitle: null,
-        careCards: [],
-      },
-    ]);
-    await expect(CategoryService.getCategories()).resolves.toHaveLength(4);
+    // A malformed response and a network failure must both surface as "no
+    // categories". Inventing a fallback list here is what previously produced
+    // navigation links to categories the backend does not have.
+    await expect(CategoryService.getCategories()).resolves.toEqual([]);
+    await expect(CategoryService.getCategories()).resolves.toEqual([]);
   });
 });
