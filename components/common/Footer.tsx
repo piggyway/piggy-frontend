@@ -4,9 +4,30 @@ import {
   footerLinks,
   socialMediaLinks,
   paymentMethods,
+  FOOTER_CATEGORIES_TITLE,
 } from "@/lib/types/navigation";
+import { CategoryService } from "@/lib/services/categories";
 
-export function Footer() {
+export async function Footer() {
+  const categories = await CategoryService.getCategories();
+
+  // Resolve the placeholder category group against the real backend categories
+  // so the footer can never link to a category that does not exist. Drop the
+  // group entirely when the fetch failed, rather than render a bare heading.
+  const groups = footerLinks
+    .map((group) =>
+      group.title === FOOTER_CATEGORIES_TITLE
+        ? {
+            ...group,
+            links: categories.map((category) => ({
+              label: category.name,
+              href: `/shop-all?category=${category.slug}`,
+            })),
+          }
+        : group
+    )
+    .filter((group) => group.links.length > 0);
+
   return (
     <footer className="w-full">
       {/* Main Footer Section */}
@@ -39,7 +60,7 @@ export function Footer() {
 
           {/* Footer Links */}
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:flex lg:gap-10">
-            {footerLinks.map((group, index) => (
+            {groups.map((group, index) => (
               <div key={index} className="flex flex-col gap-2 sm:gap-3 lg:w-40">
                 {group.title && (
                   <h3 className="text-p-ui font-semibold text-white">

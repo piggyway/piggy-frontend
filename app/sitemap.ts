@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { ProductService } from "@/lib/services/products";
-import { CategoryService } from "@/lib/services/categories";
-import { getBaseUrl, getProductUrl, getCategoryUrl } from "@/lib/utils/seo";
+import { getBaseUrl, getProductUrl } from "@/lib/utils/seo";
 
 /**
  * Regenerate the sitemap at runtime (hourly) instead of freezing it at build
@@ -81,23 +80,12 @@ async function getProductEntries(
   return entries;
 }
 
-async function getCategoryEntries(
-  baseUrl: string
-): Promise<MetadataRoute.Sitemap> {
-  const categories = await CategoryService.getCategories();
-
-  if (categories.length === 0) {
-    console.error(
-      "[Sitemap] Categories fetch returned 0 items - category URLs omitted from sitemap"
-    );
-    return [];
-  }
-
-  return categories.map((category) => ({
-    url: getCategoryUrl(category.slug, baseUrl),
-  }));
-}
-
+/**
+ * Category URLs (`/shop-all?category=<slug>`) are deliberately absent. They are
+ * filtered views of `/shop-all` with no content of their own, so submitting
+ * them only offers Google near-duplicates of a page already in the sitemap.
+ * They stay crawlable through the footer and the category filter bar.
+ */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = getBaseUrl();
 
@@ -105,16 +93,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}${path}`,
   }));
 
-  const [productEntries, categoryEntries] = await Promise.all([
-    getProductEntries(baseUrl).catch((error): MetadataRoute.Sitemap => {
+  const productEntries = await getProductEntries(baseUrl).catch(
+    (error): MetadataRoute.Sitemap => {
       console.error("[Sitemap] Failed to build product entries:", error);
       return [];
-    }),
-    getCategoryEntries(baseUrl).catch((error): MetadataRoute.Sitemap => {
-      console.error("[Sitemap] Failed to build category entries:", error);
-      return [];
-    }),
-  ]);
+    }
+  );
 
-  return [...staticEntries, ...productEntries, ...categoryEntries];
+  return [...staticEntries, ...productEntries];
 }

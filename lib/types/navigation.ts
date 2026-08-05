@@ -12,6 +12,9 @@ export interface FooterLinkGroup {
   links: NavLink[];
 }
 
+/** Identifies the footer group whose links come from the backend categories. */
+export const FOOTER_CATEGORIES_TITLE = "Categories";
+
 export const headerNavigation: NavLink[] = [
   { label: "Boarding", href: "/piggyway-boarding" },
   { label: "Shop", href: "/shop-all" },
@@ -31,14 +34,14 @@ export const footerLinks: FooterLinkGroup[] = [
     ],
   },
   {
-    // Slugs must match real backend categories (see CategoryFilterBar)
-    title: "Categories",
-    links: [
-      { label: "Liners", href: "/shop-all?category=liner" },
-      { label: "Hideout", href: "/shop-all?category=hideout" },
-      { label: "C&C Cages", href: "/shop-all?category=c-c-cage" },
-      { label: "Combos", href: "/shop-all?category=combo" },
-    ],
+    /**
+     * Placeholder. `Footer` fills these links from the real backend
+     * categories, matched on this title - hardcoding slugs here produced a
+     * footer pointing at categories that do not exist, so every link led to
+     * an empty result page.
+     */
+    title: FOOTER_CATEGORIES_TITLE,
+    links: [],
   },
   {
     title: "Helps",
