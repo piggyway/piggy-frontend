@@ -32,11 +32,6 @@ const CATEGORY_STYLE_FALLBACKS: Record<
     textColor: "text-primary-navy",
     image: "/homepage-essentials/liner-example.png",
   },
-  hut: {
-    bgColor: "bg-secondary-mint",
-    textColor: "text-primary-navy",
-    image: "/homepage-essentials/hut-example.png",
-  },
   hideout: {
     bgColor: "bg-secondary-mint",
     textColor: "text-primary-navy",
