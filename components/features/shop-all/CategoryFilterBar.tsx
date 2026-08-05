@@ -13,7 +13,6 @@ import type { Category } from "@/lib/types/models";
  */
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
   liner: ShoppingBag,
-  hut: Home,
   hideout: Home,
   treat: Cookie,
   "c-c-cage": Grid3x3,
