@@ -30,11 +30,18 @@ interface ShopConfigAPIResponse {
 export interface ShippingConfig {
   freeShippingThreshold: number;
   standardShippingFee: number;
+  /**
+   * True when the values are the local constants rather than the backend's.
+   * Display can happily use the fallback, but structured data must not: it
+   * would state a shipping rate as fact that the shop may not actually charge.
+   */
+  isFallback: boolean;
 }
 
 export const FALLBACK_SHIPPING_CONFIG: ShippingConfig = {
   freeShippingThreshold: FREE_SHIPPING_THRESHOLD,
   standardShippingFee: STANDARD_SHIPPING_FEE,
+  isFallback: true,
 };
 
 export class ConfigService {
@@ -57,6 +64,7 @@ export class ConfigService {
           response.data.shipping.free_shipping_threshold_cents / 100,
         standardShippingFee:
           response.data.shipping.standard_shipping_fee_cents / 100,
+        isFallback: false,
       };
     } catch (error) {
       console.error("[ConfigService] Failed to fetch shop config:", error);

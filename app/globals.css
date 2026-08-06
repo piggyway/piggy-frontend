@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/*
+ * Supplies the `prose*` utilities used by the pet-care and guides articles.
+ * Those classes were written long before the plugin was installed, so every
+ * one of them was silently inert - the articles rendered with none of their
+ * intended typography.
+ */
+@plugin "@tailwindcss/typography";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

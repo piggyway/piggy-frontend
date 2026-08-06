@@ -4,6 +4,18 @@ import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
+/**
+ * Dates taken from this file's git history: PUBLISHED_ON is the commit that
+ * created the article, UPDATED_ON the last one that changed its copy.
+ *
+ * The previous values claimed March 2024, which is before this repository
+ * existed (first commit 2025-10-27), so they were placeholders rather than
+ * real dates. The byline, the OpenGraph tags and the Article JSON-LD all read
+ * these constants so they cannot disagree.
+ */
+const PUBLISHED_ON = "2025-12-20";
+const UPDATED_ON = "2026-08-06";
+
 export const metadata: Metadata = {
   title: "Setting Up the Perfect Habitat for Small Pets",
   description:
@@ -15,7 +27,7 @@ export const metadata: Metadata = {
       "Learn how to create a safe, comfortable, and enriching environment for your guinea pigs or rabbits.",
     type: "article",
     images: ["/pet-care-tips/default1.png"],
-    publishedTime: "2024-03-22T00:00:00.000Z",
+    publishedTime: `${PUBLISHED_ON}T00:00:00.000Z`,
     authors: ["Piggy Way Crossing Team"],
     tags: ["Habitat Setup", "Cage Ideas", "Small Animal Care"],
   },
@@ -40,8 +52,8 @@ export default function HabitatSetupPage() {
         url: "https://piggyway.com.au/header-logo.png",
       },
     },
-    datePublished: "2024-03-22",
-    dateModified: "2024-03-22",
+    datePublished: PUBLISHED_ON,
+    dateModified: UPDATED_ON,
     description:
       "Learn how to create a safe, comfortable, and enriching environment for your guinea pigs or rabbits. From cage size to bedding choices.",
   };
@@ -76,7 +88,14 @@ export default function HabitatSetupPage() {
               Piggy Way Crossing Team
             </span>
             <span className="hidden sm:inline">•</span>
-            <span>March 22, 2024</span>
+            <span>
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "UTC",
+              })}
+            </span>
             <span className="hidden sm:inline">•</span>
             <span>6 min read</span>
           </div>
@@ -94,11 +113,12 @@ export default function HabitatSetupPage() {
         </div>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-headings:text-primary-navy prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-p:text-lg prose-p:leading-8 prose-a:text-primary-purple prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-headings:text-primary-navy prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-p:text-lg prose-p:leading-8 prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
-            Your pet&apos;s habitat is their entire world. It&apos;s where they sleep,
-            eat, play, and exercise. Creating a spacious, safe, and stimulating
-            environment is key to their physical health and mental well-being.
+            Your pet&apos;s habitat is their entire world. It&apos;s where they
+            sleep, eat, play, and exercise. Creating a spacious, safe, and
+            stimulating environment is key to their physical health and mental
+            well-being.
           </p>
 
           <hr className="my-10 border-gray-200" />
@@ -116,8 +136,8 @@ export default function HabitatSetupPage() {
             </li>
             <li>
               <strong>Rabbits:</strong> Ideally should be free-roam or have an
-              exercise pen (x-pen) setup. A standard &quot;hutch&quot; is rarely enough
-              room for a bunny to hop and binky.
+              exercise pen (x-pen) setup. A standard &quot;hutch&quot; is rarely
+              enough room for a bunny to hop and binky.
             </li>
           </ul>
 
@@ -131,7 +151,11 @@ export default function HabitatSetupPage() {
             Reusable fleece liners are eco-friendly, soft on sensitive paws, and
             dust-free (great for respiratory health). They wick moisture away to
             an absorbent layer underneath, keeping the surface dry. Plus, they
-            look adorable!
+            look adorable! Our{" "}
+            <Link href="/shop-all?category=liner">fleece liner range</Link>{" "}
+            starts with the{" "}
+            <Link href="/shop/liner/comfy-base-liner">Comfy Base Liner</Link>{" "}
+            for everyday use.
           </p>
           <h3>Other Options</h3>
           <ul>
@@ -160,10 +184,15 @@ export default function HabitatSetupPage() {
               Provide at least one hideout per animal to prevent squabbles.
             </li>
             <li>
-              Mix it up with wooden huts, fleece tunnels, and cuddle sacks.
+              Mix it up with wooden huts, fleece tunnels, and cuddle sacks. The{" "}
+              <Link href="/shop/hideout/piggy-wooden-house">
+                Piggy Wooden House
+              </Link>{" "}
+              is a solid-walled option that blocks out light and noise.
             </li>
             <li>
-              Open-ended tunnels are great for running through during &quot;zoomies.&quot;
+              Open-ended tunnels are great for running through during
+              &quot;zoomies.&quot;
             </li>
           </ul>
 
@@ -195,8 +224,8 @@ export default function HabitatSetupPage() {
           </div>
           <p>
             Place them in a family area (like a living room) so they feel part
-            of the &quot;herd,&quot; but avoid high-noise areas like right next to a TV or
-            stereo.
+            of the &quot;herd,&quot; but avoid high-noise areas like right next
+            to a TV or stereo.
           </p>
         </article>
 
@@ -207,7 +236,7 @@ export default function HabitatSetupPage() {
           </h3>
           <div className="grid gap-6 sm:grid-cols-2">
             <Link
-              href="/shop-all"
+              href="/shop-all?category=liner"
               className="group hover:border-primary-purple block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
               <h4 className="text-primary-navy group-hover:text-primary-purple mb-2 text-lg font-bold transition-colors">
@@ -222,17 +251,17 @@ export default function HabitatSetupPage() {
             </Link>
 
             <Link
-              href="/shop-all"
+              href="/shop/hideout/piggy-wooden-house"
               className="group hover:border-secondary-pink block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
               <h4 className="text-primary-navy group-hover:text-secondary-pink mb-2 text-lg font-bold transition-colors">
-                Cozy Hideouts
+                Piggy Wooden House
               </h4>
               <p className="mb-4 text-sm text-gray-600">
-                Safe spaces for sleeping and snuggling.
+                A safe space for sleeping and snuggling.
               </p>
               <span className="text-secondary-pink flex items-center gap-1 text-sm font-semibold">
-                View Collection <ChevronRight className="h-4 w-4" />
+                View Product <ChevronRight className="h-4 w-4" />
               </span>
             </Link>
           </div>

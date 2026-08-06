@@ -50,3 +50,23 @@ export const FEATURE_FLAGS = {
  */
 export const FREE_SHIPPING_THRESHOLD = 120;
 export const STANDARD_SHIPPING_FEE = 18;
+
+/**
+ * Delivery and returns terms.
+ *
+ * These are read in two places that must never disagree: the customer-facing
+ * copy on `/shipping-delivery` and `/returns-policy`, and the `Product`
+ * JSON-LD (`OfferShippingDetails` / `MerchantReturnPolicy`) on the product
+ * pages. Telling Google something the policy page contradicts is a merchant
+ * listing violation, so both sides read these constants rather than repeating
+ * the numbers.
+ */
+export const DISPATCH_MAX_BUSINESS_DAYS = 1;
+
+export const DELIVERY_ZONES = [
+  { label: "Metro Areas (East Coast)", minDays: 2, maxDays: 4 },
+  { label: "Regional Areas", minDays: 4, maxDays: 7 },
+  { label: "Western Australia & NT", minDays: 7, maxDays: 10 },
+] as const;
+
+export const RETURN_WINDOW_DAYS = 30;

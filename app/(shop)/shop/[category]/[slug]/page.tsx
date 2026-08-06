@@ -10,6 +10,12 @@ import { TestimonialsSection } from "@/components/features/shop/TestimonialsSect
 import { RelatedProductsSection } from "@/components/features/product-detail/RelatedProductsSection";
 import { ProductService } from "@/lib/services/products";
 import { CategoryService } from "@/lib/services/categories";
+import { ConfigService } from "@/lib/services/config";
+import {
+  DELIVERY_ZONES,
+  DISPATCH_MAX_BUSINESS_DAYS,
+  RETURN_WINDOW_DAYS,
+} from "@/lib/constants";
 import { getBaseUrl, getProductUrl, getCategoryUrl } from "@/lib/utils/seo";
 import { FloatingCartButton } from "@/components/features/cart/FloatingCartButton";
 
@@ -107,6 +113,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     (cat) => cat.slug === product.category?.slug
   );
 
+  const shippingConfig = await ConfigService.getShippingConfig();
+
   const baseUrl = getBaseUrl();
   const productUrl = getProductUrl(
     product.category?.slug,
@@ -130,6 +138,63 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const variantPrices = (product.variants ?? [])
     .map((v) => v.discountedPrice ?? v.originalPrice)
     .filter((price): price is number => price !== null);
+
+  /**
+   * Shipping terms for the merchant listing.
+   *
+   * Omitted entirely when the shop config came from the local fallback: the
+   * rate would then be a guess, and a shipping cost Google shows but the
+   * checkout does not charge is a merchant listing violation.
+   *
+   * The transit window spans every delivery zone (fastest metro lower bound to
+   * slowest WA/NT upper bound) because the destination is unknown at render
+   * time. The rate is always the standard fee - free shipping depends on the
+   * order total, not on this one product, so claiming free delivery here could
+   * overstate what a shopper actually gets.
+   */
+  const shippingDetails = shippingConfig.isFallback
+    ? undefined
+    : {
+        "@type": "OfferShippingDetails",
+        shippingRate: {
+          "@type": "MonetaryAmount",
+          value: shippingConfig.standardShippingFee.toString(),
+          currency: priceCurrency,
+        },
+        shippingDestination: {
+          "@type": "DefinedRegion",
+          addressCountry: "AU",
+        },
+        deliveryTime: {
+          "@type": "ShippingDeliveryTime",
+          handlingTime: {
+            "@type": "QuantitativeValue",
+            minValue: 0,
+            maxValue: DISPATCH_MAX_BUSINESS_DAYS,
+            unitCode: "DAY",
+          },
+          transitTime: {
+            "@type": "QuantitativeValue",
+            minValue: Math.min(...DELIVERY_ZONES.map((z) => z.minDays)),
+            maxValue: Math.max(...DELIVERY_ZONES.map((z) => z.maxDays)),
+            unitCode: "DAY",
+          },
+        },
+      };
+
+  /**
+   * Returns terms, mirroring `/returns-policy`. `returnFees` is deliberately
+   * absent: the policy page says we send a shipping label but never states who
+   * bears the cost, and declaring FreeReturn without that in writing would
+   * promise something the policy does not.
+   */
+  const returnPolicy = {
+    "@type": "MerchantReturnPolicy",
+    applicableCountry: "AU",
+    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+    merchantReturnDays: RETURN_WINDOW_DAYS,
+    returnMethod: "https://schema.org/ReturnByMail",
+  };
 
   const productJsonLd = {
     "@context": "https://schema.org",
@@ -161,6 +226,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             highPrice: Math.max(...variantPrices).toString(),
             offerCount: variantPrices.length,
             availability,
+            ...(shippingDetails ? { shippingDetails } : {}),
+            hasMerchantReturnPolicy: returnPolicy,
           }
         : {
             "@type": "Offer",
@@ -168,6 +235,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             priceCurrency,
             price: (variantPrices[0] ?? product.basePrice).toString(),
             availability,
+            ...(shippingDetails ? { shippingDetails } : {}),
+            hasMerchantReturnPolicy: returnPolicy,
           },
   };
 

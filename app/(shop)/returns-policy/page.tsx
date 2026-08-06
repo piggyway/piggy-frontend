@@ -1,11 +1,11 @@
 import { Metadata } from "next";
 import { RefreshCw, CheckCircle, AlertCircle } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
+import { RETURN_WINDOW_DAYS } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Returns Policy",
-  description:
-    "Our simple 30-day return policy. If you or your pet aren't satisfied, we're here to help.",
+  description: `Our simple ${RETURN_WINDOW_DAYS}-day return policy. If you or your pet aren't satisfied, we're here to help.`,
   alternates: { canonical: "/returns-policy" },
 };
 
@@ -25,12 +25,12 @@ export default function ReturnsPage() {
               </div>
               <div>
                 <h3 className="text-primary-navy text-xl font-bold">
-                  30-Day Hassle-Free Returns
+                  {RETURN_WINDOW_DAYS}-Day Hassle-Free Returns
                 </h3>
                 <p className="text-gray-600">
                   Not quite right? No problem. Return any unused item in its
-                  original packaging within 30 days for a full refund or
-                  exchange.
+                  original packaging within {RETURN_WINDOW_DAYS} days for a full
+                  refund or exchange.
                 </p>
               </div>
             </div>
@@ -95,8 +95,8 @@ export default function ReturnsPage() {
                 </li>
                 <li className="pl-2">
                   <span className="block font-normal text-gray-700">
-                    We&apos;ll send you a Returns Authorisation form and shipping
-                    label.
+                    We&apos;ll send you a Returns Authorisation form and
+                    shipping label.
                   </span>
                 </li>
                 <li className="pl-2">
@@ -107,8 +107,8 @@ export default function ReturnsPage() {
                 </li>
                 <li className="pl-2">
                   <span className="block font-normal text-gray-700">
-                    Once received, we&apos;ll process your refund within 3-5 business
-                    days.
+                    Once received, we&apos;ll process your refund within 3-5
+                    business days.
                   </span>
                 </li>
               </ol>

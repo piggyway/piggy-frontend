@@ -2,6 +2,18 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
+/**
+ * Dates taken from this file's git history: PUBLISHED_ON is the commit that
+ * created the article, UPDATED_ON the last one that changed its copy.
+ *
+ * The previous values claimed March 2024, which is before this repository
+ * existed (first commit 2025-10-27), so they were placeholders rather than
+ * real dates. The byline, the OpenGraph tags and the Article JSON-LD all read
+ * these constants so they cannot disagree.
+ */
+const PUBLISHED_ON = "2025-12-20";
+const UPDATED_ON = "2026-08-06";
+
 export const metadata: Metadata = {
   title: "Everything You Need to Begin",
   description:
@@ -12,7 +24,7 @@ export const metadata: Metadata = {
     description:
       "Guinea pigs have a way of stealing hearts — and they deserve thoughtful care in return. Learn about the commitment, daily care, and philosophy of keeping guinea pigs.",
     type: "article",
-    publishedTime: "2024-03-28T00:00:00.000Z",
+    publishedTime: `${PUBLISHED_ON}T00:00:00.000Z`,
     authors: ["Piggy Way Crossing Team"],
     tags: ["Guinea Pig Care", "Beginner Guide", "Philosophy"],
     images: ["/shop-with-us/default.png"],
@@ -38,8 +50,8 @@ export default function BeginnerGuidePage() {
         url: "https://piggyway.com.au/header-logo.png",
       },
     },
-    datePublished: "2024-03-28",
-    dateModified: "2024-03-28",
+    datePublished: PUBLISHED_ON,
+    dateModified: UPDATED_ON,
     description:
       "Guinea pigs have a way of stealing hearts — and they deserve thoughtful care in return.",
   };
@@ -74,17 +86,18 @@ export default function BeginnerGuidePage() {
             </span>
             <span className="text-gray-300">•</span>
             <span>
-              {new Date().toLocaleDateString("en-US", {
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
+                timeZone: "UTC",
               })}
             </span>
           </div>
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
           <p className="mb-10 text-xl leading-relaxed font-normal text-gray-600">
             Guinea pigs have a way of stealing hearts — and they deserve
             thoughtful care in return.
@@ -160,8 +173,9 @@ export default function BeginnerGuidePage() {
             you’re away.
             <br />
             If you ever need support, our boarding service{" "}
-            <strong>Guineapig_Boarding</strong> is here to help — you can
-            contact us directly via email to arrange boarding care.
+            <Link href="/piggyway-boarding">Guineapig_Boarding</Link> is here to
+            help — you can contact us directly via email to arrange boarding
+            care.
           </p>
           <p>
             And like all animals, they may need medical attention.
@@ -214,6 +228,16 @@ export default function BeginnerGuidePage() {
               </span>
             </p>
           </div>
+
+          <p>
+            Setting up their home? Start with a{" "}
+            <Link href="/shop-all?category=liner">fleece cage liner</Link> for a
+            dust-free floor, and add the{" "}
+            <Link href="/shop/hideout/piggy-wooden-house">
+              Piggy Wooden House
+            </Link>{" "}
+            so they have somewhere to retreat.
+          </p>
         </article>
       </div>
     </div>

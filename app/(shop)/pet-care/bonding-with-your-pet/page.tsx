@@ -2,6 +2,18 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 
+/**
+ * Dates taken from this file's git history: PUBLISHED_ON is the commit that
+ * created the article, UPDATED_ON the last one that changed its copy.
+ *
+ * The previous values claimed March 2024, which is before this repository
+ * existed (first commit 2025-10-27), so they were placeholders rather than
+ * real dates. The byline, the OpenGraph tags and the Article JSON-LD all read
+ * these constants so they cannot disagree.
+ */
+const PUBLISHED_ON = "2025-12-20";
+const UPDATED_ON = "2026-08-06";
+
 export const metadata: Metadata = {
   title: "Bonding & Building Trust with Your Guinea Pig",
   description:
@@ -13,7 +25,7 @@ export const metadata: Metadata = {
       "Bonding with a guinea pig is a quiet, emotional process. Learn how to build trust through patience, consistency, and gentle everyday moments.",
     type: "article",
     images: ["/pet-care-tips/default1.png"],
-    publishedTime: "2024-03-25T00:00:00.000Z",
+    publishedTime: `${PUBLISHED_ON}T00:00:00.000Z`,
     authors: ["Piggy Way Crossing Team"],
     tags: ["Bonding", "Guinea Pig Care", "Trust Training"],
   },
@@ -38,8 +50,8 @@ export default function BondingPage() {
         url: "https://piggyway.com.au/header-logo.png",
       },
     },
-    datePublished: "2024-03-25",
-    dateModified: "2024-03-25",
+    datePublished: PUBLISHED_ON,
+    dateModified: UPDATED_ON,
     description:
       "Bonding with a guinea pig is a quiet, emotional process built through everyday moments.",
   };
@@ -74,17 +86,18 @@ export default function BondingPage() {
             </span>
             <span className="text-gray-300">•</span>
             <span>
-              {new Date().toLocaleDateString("en-US", {
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
+                timeZone: "UTC",
               })}
             </span>
           </div>
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
           <p className="mb-10 text-xl leading-relaxed font-normal text-gray-600">
             Bonding with a guinea pig is a quiet, emotional process built
             through everyday moments. Trust grows when their world feels safe,
@@ -117,13 +130,17 @@ export default function BondingPage() {
             Soft, well-sized hideouts allow them to rest without fear. Many
             guinea pigs instinctively choose corners for toileting, so setting
             up clean, thoughtfully arranged toilet areas in those spots supports
-            both comfort and routine.
+            both comfort and routine. A solid-walled hide such as the{" "}
+            <Link href="/shop/hideout/piggy-wooden-house">
+              Piggy Wooden House
+            </Link>{" "}
+            gives them a retreat that blocks out light and noise.
           </p>
           <div className="my-8 rounded-xl border border-gray-100 bg-gray-50 p-6">
             <p className="m-0 text-gray-700 italic">
-              &quot;When a hide is placed over or beside the toilet area, they can
-              eat and rest while feeling protected — a small detail that makes a
-              big emotional difference.&quot;
+              &quot;When a hide is placed over or beside the toilet area, they
+              can eat and rest while feeling protected — a small detail that
+              makes a big emotional difference.&quot;
             </p>
           </div>
 
