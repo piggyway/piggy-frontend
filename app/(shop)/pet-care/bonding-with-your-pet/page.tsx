@@ -117,13 +117,20 @@ export default function BondingPage() {
             Soft, well-sized hideouts allow them to rest without fear. Many
             guinea pigs instinctively choose corners for toileting, so setting
             up clean, thoughtfully arranged toilet areas in those spots supports
-            both comfort and routine.
+            both comfort and routine. A solid-walled hide such as the{" "}
+            <Link
+              href="/shop/hideout/piggy-wooden-house"
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
+            >
+              Piggy Wooden House
+            </Link>{" "}
+            gives them a retreat that blocks out light and noise.
           </p>
           <div className="my-8 rounded-xl border border-gray-100 bg-gray-50 p-6">
             <p className="m-0 text-gray-700 italic">
-              &quot;When a hide is placed over or beside the toilet area, they can
-              eat and rest while feeling protected — a small detail that makes a
-              big emotional difference.&quot;
+              &quot;When a hide is placed over or beside the toilet area, they
+              can eat and rest while feeling protected — a small detail that
+              makes a big emotional difference.&quot;
             </p>
           </div>
 

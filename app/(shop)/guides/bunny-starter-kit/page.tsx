@@ -160,8 +160,14 @@ export default function BeginnerGuidePage() {
             you’re away.
             <br />
             If you ever need support, our boarding service{" "}
-            <strong>Guineapig_Boarding</strong> is here to help — you can
-            contact us directly via email to arrange boarding care.
+            <Link
+              href="/piggyway-boarding"
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
+            >
+              Guineapig_Boarding
+            </Link>{" "}
+            is here to help — you can contact us directly via email to arrange
+            boarding care.
           </p>
           <p>
             And like all animals, they may need medical attention.
@@ -214,6 +220,24 @@ export default function BeginnerGuidePage() {
               </span>
             </p>
           </div>
+
+          <p>
+            Setting up their home? Start with a{" "}
+            <Link
+              href="/shop-all?category=liner"
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
+            >
+              fleece cage liner
+            </Link>{" "}
+            for a dust-free floor, and add the{" "}
+            <Link
+              href="/shop/hideout/piggy-wooden-house"
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
+            >
+              Piggy Wooden House
+            </Link>{" "}
+            so they have somewhere to retreat.
+          </p>
         </article>
       </div>
     </div>

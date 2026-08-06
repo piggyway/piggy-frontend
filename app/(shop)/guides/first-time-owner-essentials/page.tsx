@@ -133,8 +133,22 @@ export default function FirstTimeOwnerPage() {
           <p>
             Your pigs need room to zoom! Skip the small pet store cages and opt
             for a C&C cage or a Midwest habitat. For bedding, fleece liners are
-            the modern standard—they&apos;re reusable, save money over time, and are
-            much cleaner than wood shavings.
+            the modern standard—they&apos;re reusable, save money over time, and
+            are much cleaner than wood shavings. Our{" "}
+            <Link
+              href="/shop-all?category=liner"
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
+            >
+              fleece liners
+            </Link>{" "}
+            come in several sizes, starting with the{" "}
+            <Link
+              href="/shop/liner/comfy-base-liner"
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
+            >
+              Comfy Base Liner
+            </Link>
+            .
           </p>
 
           <h2>2. Diet Basics</h2>
@@ -152,7 +166,14 @@ export default function FirstTimeOwnerPage() {
           <p>
             Guinea pigs are prey animals and need to feel secure. A simple
             plastic igloo is fine, but soft fleece hideouts and tunnels provide
-            extra comfort and warmth.
+            extra comfort and warmth. For something sturdier, the{" "}
+            <Link
+              href="/shop/hideout/piggy-wooden-house"
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
+            >
+              Piggy Wooden House
+            </Link>{" "}
+            has solid walls that block out light and noise.
           </p>
 
           <h2>4. Health Kit</h2>
@@ -174,8 +195,8 @@ export default function FirstTimeOwnerPage() {
                 New Piggy Parent Starter Kit
               </h4>
               <p className="mb-6 text-lg text-white/80">
-                We&apos;ve bundled our best-selling fleece liners, a cozy hideout,
-                and a hay bag into one convenient, discounted package.
+                We&apos;ve bundled our best-selling fleece liners, a cozy
+                hideout, and a hay bag into one convenient, discounted package.
               </p>
               <Link
                 href="/shop-all"

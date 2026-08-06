@@ -96,8 +96,9 @@ export default function CageLinerBenefitsPage() {
         {/* Article Content */}
         <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-secondary-blue prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
-            If you&apos;re tired of buying bags of wood shavings, dealing with dust,
-            and constantly scooping mess, it&apos;s time to switch to fleece.
+            If you&apos;re tired of buying bags of wood shavings, dealing with
+            dust, and constantly scooping mess, it&apos;s time to switch to
+            fleece.
           </p>
 
           <div className="not-prose my-10 grid gap-6 md:grid-cols-2">
@@ -130,9 +131,9 @@ export default function CageLinerBenefitsPage() {
           <h2>1. Healthier for Lungs</h2>
           <p>
             Guinea pigs have sensitive respiratory systems. Wood shavings—even
-            &quot;safe&quot; ones like aspen—can be dusty. Pine and cedar shavings contain
-            aromatic oils (phenols) that can damage the liver and respiratory
-            tract over time.
+            &quot;safe&quot; ones like aspen—can be dusty. Pine and cedar
+            shavings contain aromatic oils (phenols) that can damage the liver
+            and respiratory tract over time.
           </p>
           <p>
             Fleece is virtually dust-free, making it the safest option for your
@@ -176,6 +177,23 @@ export default function CageLinerBenefitsPage() {
               leaks.
             </li>
           </ul>
+          <p>
+            If absorbency matters most to you, the{" "}
+            <Link
+              href="/shop/liner/bouncy-fluffy-liner"
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
+            >
+              Bouncy Fluffy Liner
+            </Link>{" "}
+            is the softest of the range. Browse the{" "}
+            <Link
+              href="/shop-all?category=liner"
+              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
+            >
+              full liner range
+            </Link>{" "}
+            to compare sizes and colours.
+          </p>
         </article>
 
         {/* Read Next Section */}
@@ -185,14 +203,15 @@ export default function CageLinerBenefitsPage() {
           </h3>
           <div className="grid gap-6 sm:grid-cols-2">
             <Link
-              href="/shop-all"
+              href="/shop/liner/comfy-base-liner"
               className="group hover:border-secondary-blue block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
               <h4 className="text-primary-navy group-hover:text-secondary-blue mb-2 text-lg font-bold transition-colors">
-                Shop C&C Cage Liners
+                Comfy Base Liner
               </h4>
               <p className="mb-4 text-sm text-gray-600">
-                Perfectly sized for standard C&C grid cages.
+                A budget-friendly everyday liner, easy to use and simple to
+                clean.
               </p>
               <span className="text-secondary-blue flex items-center gap-1 text-sm font-semibold">
                 Shop Now <ChevronRight className="h-4 w-4" />
@@ -200,14 +219,15 @@ export default function CageLinerBenefitsPage() {
             </Link>
 
             <Link
-              href="/shop-all"
+              href="/shop/liner/cool-breeze-liner"
               className="group hover:border-secondary-blue block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
               <h4 className="text-primary-navy group-hover:text-secondary-blue mb-2 text-lg font-bold transition-colors">
-                Shop MidWest Liners
+                Cool Breeze Liner
               </h4>
               <p className="mb-4 text-sm text-gray-600">
-                Custom fit for the popular MidWest Habitat.
+                A premium cool-touch liner that resists hay and fur and shakes
+                clean easily.
               </p>
               <span className="text-secondary-blue flex items-center gap-1 text-sm font-semibold">
                 Shop Now <ChevronRight className="h-4 w-4" />
