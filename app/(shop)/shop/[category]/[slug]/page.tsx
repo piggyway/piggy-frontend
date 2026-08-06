@@ -117,11 +117,16 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   // Prepare Product JSON-LD
   const priceCurrency = product.currency?.slug?.toUpperCase() || "AUD";
-  const availability = product.variants?.some(
-    (v) => v.isAvailable && v.stockQuantity > 0
-  )
-    ? "https://schema.org/InStock"
-    : "https://schema.org/OutOfStock";
+  // `purchaseMode` wins over stock: a made-to-order product is not out of
+  // stock, it is never stocked. Reporting OutOfStock for it contradicts the
+  // "Pre-order only" badge shown on the page and makes Google suppress the
+  // product's rich result.
+  const availability =
+    product.purchaseMode === "preorder"
+      ? "https://schema.org/PreOrder"
+      : product.variants?.some((v) => v.isAvailable && v.stockQuantity > 0)
+        ? "https://schema.org/InStock"
+        : "https://schema.org/OutOfStock";
   const variantPrices = (product.variants ?? [])
     .map((v) => v.discountedPrice ?? v.originalPrice)
     .filter((price): price is number => price !== null);
