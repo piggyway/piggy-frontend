@@ -2,6 +2,18 @@ import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 
+/**
+ * Dates taken from this file's git history: PUBLISHED_ON is the commit that
+ * created the article, UPDATED_ON the last one that changed its copy.
+ *
+ * The previous values claimed March 2024, which is before this repository
+ * existed (first commit 2025-10-27), so they were placeholders rather than
+ * real dates. The byline, the OpenGraph tags and the Article JSON-LD all read
+ * these constants so they cannot disagree.
+ */
+const PUBLISHED_ON = "2025-12-20";
+const UPDATED_ON = "2026-01-15";
+
 export const metadata: Metadata = {
   title: "Guinea Pig Diet Guide",
   description:
@@ -12,19 +24,12 @@ export const metadata: Metadata = {
     description:
       "A clear, practical guide to feeding guinea pigs well — at every life stage. Learn about hay, vegetables, pellets, and essential supplements.",
     type: "article",
-    publishedTime: "2024-03-20T00:00:00.000Z",
+    publishedTime: `${PUBLISHED_ON}T00:00:00.000Z`,
     authors: ["Piggy Way Crossing Team"],
     tags: ["Guinea Pig Diet", "Pet Nutrition", "Small Animal Care"],
     images: ["/pet-care-tips/default1.png"],
   },
 };
-
-/**
- * Single source for the date shown to readers and the date given to Google.
- * They previously disagreed: the byline rendered `new Date()`, so the page
- * claimed to be published today while its JSON-LD said 2024-03-20.
- */
-const PUBLISHED_ON = "2024-03-20";
 
 export default function DietGuidePage() {
   const jsonLd = {
@@ -46,7 +51,7 @@ export default function DietGuidePage() {
       },
     },
     datePublished: PUBLISHED_ON,
-    dateModified: PUBLISHED_ON,
+    dateModified: UPDATED_ON,
     description:
       "A clear, practical guide to feeding guinea pigs well — at every life stage.",
   };

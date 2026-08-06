@@ -4,6 +4,18 @@ import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
+/**
+ * Dates taken from this file's git history: PUBLISHED_ON is the commit that
+ * created the article, UPDATED_ON the last one that changed its copy.
+ *
+ * The previous values claimed March 2024, which is before this repository
+ * existed (first commit 2025-10-27), so they were placeholders rather than
+ * real dates. The byline, the OpenGraph tags and the Article JSON-LD all read
+ * these constants so they cannot disagree.
+ */
+const PUBLISHED_ON = "2025-12-24";
+const UPDATED_ON = "2025-12-24";
+
 export const metadata: Metadata = {
   title: "Small Pet Health & Wellness Guide",
   description:
@@ -15,7 +27,7 @@ export const metadata: Metadata = {
       "Essential health guide for guinea pigs and rabbits. Learn to recognize common ailments, grooming tips, and when to visit the vet.",
     type: "article",
     images: ["/pet-care-tips/default1.png"],
-    publishedTime: "2024-03-20T00:00:00.000Z",
+    publishedTime: `${PUBLISHED_ON}T00:00:00.000Z`,
     authors: ["Piggy Way Crossing Team"],
     tags: ["Pet Health", "Guinea Pig Care", "Rabbit Care", "Wellness"],
   },
@@ -40,8 +52,8 @@ export default function HealthWellnessPage() {
         url: "https://piggyway.com.au/header-logo.png",
       },
     },
-    datePublished: "2024-03-20",
-    dateModified: "2024-03-20",
+    datePublished: PUBLISHED_ON,
+    dateModified: UPDATED_ON,
     description:
       "Essential health guide for guinea pigs and rabbits. Learn to recognize common ailments, grooming tips, and when to visit the vet.",
   };
@@ -76,7 +88,14 @@ export default function HealthWellnessPage() {
               Piggy Way Crossing Team
             </span>
             <span className="hidden sm:inline">•</span>
-            <span>March 20, 2024</span>
+            <span>
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "UTC",
+              })}
+            </span>
             <span className="hidden sm:inline">•</span>
             <span>6 min read</span>
           </div>

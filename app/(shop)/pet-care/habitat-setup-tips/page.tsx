@@ -4,6 +4,18 @@ import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
+/**
+ * Dates taken from this file's git history: PUBLISHED_ON is the commit that
+ * created the article, UPDATED_ON the last one that changed its copy.
+ *
+ * The previous values claimed March 2024, which is before this repository
+ * existed (first commit 2025-10-27), so they were placeholders rather than
+ * real dates. The byline, the OpenGraph tags and the Article JSON-LD all read
+ * these constants so they cannot disagree.
+ */
+const PUBLISHED_ON = "2025-12-20";
+const UPDATED_ON = "2026-08-06";
+
 export const metadata: Metadata = {
   title: "Setting Up the Perfect Habitat for Small Pets",
   description:
@@ -15,7 +27,7 @@ export const metadata: Metadata = {
       "Learn how to create a safe, comfortable, and enriching environment for your guinea pigs or rabbits.",
     type: "article",
     images: ["/pet-care-tips/default1.png"],
-    publishedTime: "2024-03-22T00:00:00.000Z",
+    publishedTime: `${PUBLISHED_ON}T00:00:00.000Z`,
     authors: ["Piggy Way Crossing Team"],
     tags: ["Habitat Setup", "Cage Ideas", "Small Animal Care"],
   },
@@ -40,8 +52,8 @@ export default function HabitatSetupPage() {
         url: "https://piggyway.com.au/header-logo.png",
       },
     },
-    datePublished: "2024-03-22",
-    dateModified: "2024-03-22",
+    datePublished: PUBLISHED_ON,
+    dateModified: UPDATED_ON,
     description:
       "Learn how to create a safe, comfortable, and enriching environment for your guinea pigs or rabbits. From cage size to bedding choices.",
   };
@@ -76,7 +88,14 @@ export default function HabitatSetupPage() {
               Piggy Way Crossing Team
             </span>
             <span className="hidden sm:inline">•</span>
-            <span>March 22, 2024</span>
+            <span>
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "UTC",
+              })}
+            </span>
             <span className="hidden sm:inline">•</span>
             <span>6 min read</span>
           </div>
