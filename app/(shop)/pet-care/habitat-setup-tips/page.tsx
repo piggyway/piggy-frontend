@@ -94,7 +94,7 @@ export default function HabitatSetupPage() {
         </div>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-headings:text-primary-navy prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-p:text-lg prose-p:leading-8 prose-a:text-primary-purple prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-headings:text-primary-navy prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-p:text-lg prose-p:leading-8 prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
             Your pet&apos;s habitat is their entire world. It&apos;s where they
             sleep, eat, play, and exercise. Creating a spacious, safe, and
@@ -133,19 +133,9 @@ export default function HabitatSetupPage() {
             dust-free (great for respiratory health). They wick moisture away to
             an absorbent layer underneath, keeping the surface dry. Plus, they
             look adorable! Our{" "}
-            <Link
-              href="/shop-all?category=liner"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
-              fleece liner range
-            </Link>{" "}
+            <Link href="/shop-all?category=liner">fleece liner range</Link>{" "}
             starts with the{" "}
-            <Link
-              href="/shop/liner/comfy-base-liner"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
-              Comfy Base Liner
-            </Link>{" "}
+            <Link href="/shop/liner/comfy-base-liner">Comfy Base Liner</Link>{" "}
             for everyday use.
           </p>
           <h3>Other Options</h3>
@@ -176,10 +166,7 @@ export default function HabitatSetupPage() {
             </li>
             <li>
               Mix it up with wooden huts, fleece tunnels, and cuddle sacks. The{" "}
-              <Link
-                href="/shop/hideout/piggy-wooden-house"
-                className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-              >
+              <Link href="/shop/hideout/piggy-wooden-house">
                 Piggy Wooden House
               </Link>{" "}
               is a solid-walled option that blocks out light and noise.

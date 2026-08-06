@@ -94,7 +94,7 @@ export default function HealthWellnessPage() {
         </div>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-headings:text-primary-navy prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-p:text-lg prose-p:leading-8 prose-a:text-secondary-mint prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-headings:text-primary-navy prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-p:text-lg prose-p:leading-8 prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
             Prevention is always better than cure. Because small pets like
             guinea pigs and rabbits are prey animals, they are experts at hiding
@@ -135,8 +135,8 @@ export default function HealthWellnessPage() {
           <h3>Nail Trimming</h3>
           <p>
             Overgrown nails can curl back into the footpad, causing pain and
-            infection. Trim tips every 2-4 weeks. If you&apos;re nervous, ask your
-            vet to demonstrate or use a file.
+            infection. Trim tips every 2-4 weeks. If you&apos;re nervous, ask
+            your vet to demonstrate or use a file.
           </p>
 
           <h3>Brushing</h3>
@@ -148,8 +148,9 @@ export default function HealthWellnessPage() {
 
           <h3>Boar Cleaning (Guinea Pigs)</h3>
           <p>
-            Male guinea pigs need their &quot;sac&quot; cleaned occasionally to prevent
-            impaction. It&apos;s not glamorous, but it&apos;s necessary for their comfort.
+            Male guinea pigs need their &quot;sac&quot; cleaned occasionally to
+            prevent impaction. It&apos;s not glamorous, but it&apos;s necessary
+            for their comfort.
           </p>
 
           <div className="my-8 rounded-r-lg border-l-4 border-red-500 bg-red-50 p-6">
@@ -167,9 +168,9 @@ export default function HealthWellnessPage() {
 
           <h2>Finding a Vet</h2>
           <p>
-            Not all vets see &quot;exotics.&quot; Ensure you find a vet experienced with
-            guinea pigs or rabbits <em>before</em> an emergency happens. Look
-            for &quot;exotic animal&quot; specialists.
+            Not all vets see &quot;exotics.&quot; Ensure you find a vet
+            experienced with guinea pigs or rabbits <em>before</em> an emergency
+            happens. Look for &quot;exotic animal&quot; specialists.
           </p>
 
           <h2>Weight Monitoring</h2>

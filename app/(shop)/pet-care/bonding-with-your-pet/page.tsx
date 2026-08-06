@@ -92,7 +92,7 @@ export default function BondingPage() {
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
           <p className="mb-10 text-xl leading-relaxed font-normal text-gray-600">
             Bonding with a guinea pig is a quiet, emotional process built
             through everyday moments. Trust grows when their world feels safe,
@@ -126,10 +126,7 @@ export default function BondingPage() {
             guinea pigs instinctively choose corners for toileting, so setting
             up clean, thoughtfully arranged toilet areas in those spots supports
             both comfort and routine. A solid-walled hide such as the{" "}
-            <Link
-              href="/shop/hideout/piggy-wooden-house"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
+            <Link href="/shop/hideout/piggy-wooden-house">
               Piggy Wooden House
             </Link>{" "}
             gives them a retreat that blocks out light and noise.

@@ -94,7 +94,7 @@ export default function CageLinerBenefitsPage() {
         </div>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-secondary-blue prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-headings:text-primary-navy prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
             If you&apos;re tired of buying bags of wood shavings, dealing with
             dust, and constantly scooping mess, it&apos;s time to switch to
@@ -179,20 +179,12 @@ export default function CageLinerBenefitsPage() {
           </ul>
           <p>
             If absorbency matters most to you, the{" "}
-            <Link
-              href="/shop/liner/bouncy-fluffy-liner"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
+            <Link href="/shop/liner/bouncy-fluffy-liner">
               Bouncy Fluffy Liner
             </Link>{" "}
             is the softest of the range. Browse the{" "}
-            <Link
-              href="/shop-all?category=liner"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
-              full liner range
-            </Link>{" "}
-            to compare sizes and colours.
+            <Link href="/shop-all?category=liner">full liner range</Link> to
+            compare sizes and colours.
           </p>
         </article>
 

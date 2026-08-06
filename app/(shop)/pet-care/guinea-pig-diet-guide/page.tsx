@@ -92,7 +92,7 @@ export default function DietGuidePage() {
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
           <p className="mb-6 text-xl leading-relaxed font-normal text-gray-600">
             <em>
               A clear, practical guide to feeding guinea pigs well — at every

@@ -94,7 +94,7 @@ export default function FirstTimeOwnerPage() {
         </div>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-primary-gold prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-headings:text-primary-navy prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
             Congratulations on your new furry family members! To make your
             shopping trip easier, we&apos;ve compiled the definitive list of
@@ -135,20 +135,9 @@ export default function FirstTimeOwnerPage() {
             for a C&C cage or a Midwest habitat. For bedding, fleece liners are
             the modern standard—they&apos;re reusable, save money over time, and
             are much cleaner than wood shavings. Our{" "}
-            <Link
-              href="/shop-all?category=liner"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
-              fleece liners
-            </Link>{" "}
-            come in several sizes, starting with the{" "}
-            <Link
-              href="/shop/liner/comfy-base-liner"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
-              Comfy Base Liner
-            </Link>
-            .
+            <Link href="/shop-all?category=liner">fleece liners</Link> come in
+            several sizes, starting with the{" "}
+            <Link href="/shop/liner/comfy-base-liner">Comfy Base Liner</Link>.
           </p>
 
           <h2>2. Diet Basics</h2>
@@ -167,10 +156,7 @@ export default function FirstTimeOwnerPage() {
             Guinea pigs are prey animals and need to feel secure. A simple
             plastic igloo is fine, but soft fleece hideouts and tunnels provide
             extra comfort and warmth. For something sturdier, the{" "}
-            <Link
-              href="/shop/hideout/piggy-wooden-house"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
+            <Link href="/shop/hideout/piggy-wooden-house">
               Piggy Wooden House
             </Link>{" "}
             has solid walls that block out light and noise.

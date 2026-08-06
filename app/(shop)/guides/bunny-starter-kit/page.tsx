@@ -92,7 +92,7 @@ export default function BeginnerGuidePage() {
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
           <p className="mb-10 text-xl leading-relaxed font-normal text-gray-600">
             Guinea pigs have a way of stealing hearts — and they deserve
             thoughtful care in return.
@@ -168,14 +168,9 @@ export default function BeginnerGuidePage() {
             you’re away.
             <br />
             If you ever need support, our boarding service{" "}
-            <Link
-              href="/piggyway-boarding"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
-              Guineapig_Boarding
-            </Link>{" "}
-            is here to help — you can contact us directly via email to arrange
-            boarding care.
+            <Link href="/piggyway-boarding">Guineapig_Boarding</Link> is here to
+            help — you can contact us directly via email to arrange boarding
+            care.
           </p>
           <p>
             And like all animals, they may need medical attention.
@@ -231,17 +226,9 @@ export default function BeginnerGuidePage() {
 
           <p>
             Setting up their home? Start with a{" "}
-            <Link
-              href="/shop-all?category=liner"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
-              fleece cage liner
-            </Link>{" "}
-            for a dust-free floor, and add the{" "}
-            <Link
-              href="/shop/hideout/piggy-wooden-house"
-              className="text-primary-navy hover:text-primary-navy-light font-medium underline underline-offset-4"
-            >
+            <Link href="/shop-all?category=liner">fleece cage liner</Link> for a
+            dust-free floor, and add the{" "}
+            <Link href="/shop/hideout/piggy-wooden-house">
               Piggy Wooden House
             </Link>{" "}
             so they have somewhere to retreat.
