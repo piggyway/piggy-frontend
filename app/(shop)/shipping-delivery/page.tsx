@@ -2,6 +2,7 @@ import { Metadata } from "next";
 import { Truck, Clock, Globe } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 import { ConfigService } from "@/lib/services/config";
+import { DELIVERY_ZONES } from "@/lib/constants";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { freeShippingThreshold } = await ConfigService.getShippingConfig();
@@ -86,9 +87,11 @@ export default async function ShippingPage() {
                 vary based on your location:
               </p>
               <ul className="list-disc space-y-2 pl-5">
-                <li>Metro Areas (East Coast): 2-4 business days</li>
-                <li>Regional Areas: 4-7 business days</li>
-                <li>Western Australia & NT: 7-10 business days</li>
+                {DELIVERY_ZONES.map((zone) => (
+                  <li key={zone.label}>
+                    {zone.label}: {zone.minDays}-{zone.maxDays} business days
+                  </li>
+                ))}
               </ul>
             </section>
 

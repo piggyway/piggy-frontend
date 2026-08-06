@@ -28,9 +28,12 @@ describe("ConfigService.getShippingConfig", () => {
       },
     });
 
+    // isFallback must be false on a real response - the Product JSON-LD only
+    // publishes shipping terms when the values came from the backend.
     await expect(ConfigService.getShippingConfig()).resolves.toEqual({
       freeShippingThreshold: 125,
       standardShippingFee: 9.95,
+      isFallback: false,
     });
   });
 
@@ -48,6 +51,7 @@ describe("ConfigService.getShippingConfig", () => {
     await expect(ConfigService.getShippingConfig()).resolves.toEqual({
       freeShippingThreshold: 0,
       standardShippingFee: 0,
+      isFallback: false,
     });
   });
 
