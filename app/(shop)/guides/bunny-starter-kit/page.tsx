@@ -19,6 +19,13 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Single source for the date shown to readers and the date given to Google.
+ * They previously disagreed: the byline rendered `new Date()`, so the page
+ * claimed to be published today while its JSON-LD said 2024-03-28.
+ */
+const PUBLISHED_ON = "2024-03-28";
+
 export default function BeginnerGuidePage() {
   const jsonLd = {
     "@context": "https://schema.org",
@@ -38,8 +45,8 @@ export default function BeginnerGuidePage() {
         url: "https://piggyway.com.au/header-logo.png",
       },
     },
-    datePublished: "2024-03-28",
-    dateModified: "2024-03-28",
+    datePublished: PUBLISHED_ON,
+    dateModified: PUBLISHED_ON,
     description:
       "Guinea pigs have a way of stealing hearts — and they deserve thoughtful care in return.",
   };
@@ -74,10 +81,11 @@ export default function BeginnerGuidePage() {
             </span>
             <span className="text-gray-300">•</span>
             <span>
-              {new Date().toLocaleDateString("en-US", {
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
+                timeZone: "UTC",
               })}
             </span>
           </div>
