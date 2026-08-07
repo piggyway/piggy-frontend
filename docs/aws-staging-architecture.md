@@ -1,41 +1,51 @@
 # AWS staging architecture and delivery plan
 
-**Linear issue:** PIG-10  
-**Status:** Proposed for approval  
-**Region:** Australia (Sydney), `ap-southeast-2`  
-**Cost profile:** Low-cost staging  
-**Last reviewed:** 2026-08-05
+**Status:** Proposed for approval
+
+**Region:** Australia (Sydney), `ap-southeast-2`
+
+**Cost profile:** Cost-conscious managed staging
+
+**Last reviewed:** 2026-08-07
 
 ## 1. Purpose
 
 This document defines the target design submitted for approval for a dedicated
 AWS staging environment for the Piggyway frontend and backend. Once approved,
-it is the implementation contract for PIG-11 and the later application
-delivery work.
+it is the shared technical reference for infrastructure provisioning,
+application delivery, operations, and future staging changes.
 
-This design does not authorize resource creation or application deployment.
-The approval gates in section 16 must be closed first.
+This is a design document rather than an execution log. The readiness checklist
+in section 16 is completed before resource creation begins.
+
+The architecture includes the PostgreSQL and Directus services required by the
+applications so that networking, security, delivery order, recovery, and cost
+are reviewed as one system.
 
 ## 2. Decisions
 
-| Area                  | Decision                                                                                                         | Reason                                                                                                                                                                    |
-| --------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| AWS Region            | `ap-southeast-2` (Sydney)                                                                                        | Closest AWS Region to the Australian business and users.                                                                                                                  |
-| AWS account           | Use the existing Piggyway AWS account, with a dedicated staging VPC, roles, secrets, repositories, and cost tags | Avoids the administration overhead of a second account while preserving resource-level isolation. Revisit separate accounts before production.                            |
-| Frontend domain       | `staging.piggyway.com.au`                                                                                        | Confirmed for PIG-10.                                                                                                                                                     |
-| Backend domain        | `api-staging.piggyway.com.au`                                                                                    | Confirmed for PIG-10.                                                                                                                                                     |
-| Compute               | Amazon ECS on Fargate, one service for the frontend and one for the backend                                      | Both repositories already have production-style Dockerfiles and listen on port 3000.                                                                                      |
-| Ingress               | One internet-facing Application Load Balancer with host-based routing                                            | Meets both domain requirements without paying for two load balancers.                                                                                                     |
-| Service networking    | Fargate tasks in private subnets with no public IPs                                                              | Prevents direct access to containers. Only the ALB and the frontend service may reach the backend.                                                                        |
-| Outbound access       | One managed NAT Gateway for the staging VPC                                                                      | Backend requires Stripe, Resend, Turnstile, Cloudinary, and an externally hosted database. A single NAT is the low-cost managed option; it is intentionally not multi-AZ. |
-| Service discovery     | AWS Cloud Map private namespace for frontend-to-backend traffic                                                  | Allows the Next.js BFF to call the backend privately instead of hairpinning through the public ALB.                                                                       |
-| Container registry    | One private ECR repository per application                                                                       | Keeps image lifecycle and deploy permissions independent.                                                                                                                 |
-| IaC                   | Terraform in a dedicated `piggy-infrastructure` repository                                                       | Keeps shared infrastructure ownership separate from application release cadence.                                                                                          |
-| Terraform state       | Versioned, encrypted S3 backend with native S3 lockfile                                                          | Provides remote state recovery and locking without the deprecated DynamoDB locking pattern.                                                                               |
-| Delivery identity     | GitHub Actions OIDC to narrowly scoped AWS IAM roles                                                             | Avoids long-lived AWS access keys in GitHub.                                                                                                                              |
-| Minimum capacity      | One frontend task and one backend task                                                                           | Appropriate for a budget-constrained staging environment. Rolling deployments may temporarily run two tasks per service.                                                  |
-| Rollback              | ECS rolling deployment circuit breaker with rollback, alarm-based rollback, and a workflow smoke-test fallback   | Returns to the last completed task definition when a release cannot become healthy.                                                                                       |
-| Directus and database | Existing external hosting remains unchanged                                                                      | Directus and database hosting changes are explicitly outside PIG-10. Only connectivity is in scope.                                                                       |
+| Area                  | Decision                                                                                                                | Reason                                                                                                                                             |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| AWS Region            | `ap-southeast-2` (Sydney)                                                                                               | Closest AWS Region to the Australian business and users.                                                                                           |
+| AWS account           | Use the developer-owned AWS account, with a dedicated staging VPC, roles, secrets, repositories, and cost tags          | Confirmed for staging. Resource-level isolation is proportionate for the two-person project; revisit a dedicated production account before launch. |
+| DNS ownership         | Cloudflare manages the `piggyway.com.au` DNS zone                                                                       | Confirmed by the developer and mentor. The developer prepares changes and the mentor approves them.                                                |
+| Frontend domain       | `staging.piggyway.com.au`                                                                                               | Confirmed staging hostname.                                                                                                                        |
+| Backend domain        | `api-staging.piggyway.com.au`                                                                                           | Confirmed staging hostname.                                                                                                                        |
+| Directus domain       | `cms-staging.piggyway.com.au`, protected for the developer and mentor with Cloudflare Access                            | Gives the staging CMS an explicit, restricted administration endpoint without purchasing another load balancer.                                    |
+| Application compute   | Amazon ECS on Fargate, with separate frontend, backend, and Directus services                                           | The services are container workloads with independent deployment and scaling needs; no project member must maintain host operating systems.        |
+| Database              | Amazon RDS for PostgreSQL, Single-AZ, initially `db.t4g.micro` with 20 GiB gp3 and seven-day automated backup retention | The mentor selected managed PostgreSQL. This is a reasonable staging balance between reliability, maintenance effort, and cost.                    |
+| Ingress               | One internet-facing Application Load Balancer with host-based routing                                                   | Serves all three staging domains without paying for separate load balancers.                                                                       |
+| Service networking    | Fargate tasks and RDS in private subnets with no public IPs                                                             | Prevents direct access to containers and PostgreSQL. Public traffic enters only through the ALB.                                                   |
+| Outbound access       | One managed NAT Gateway for the staging VPC                                                                             | The applications require external HTTPS services. A single NAT is the cost-conscious managed option and is intentionally not multi-AZ.             |
+| Service discovery     | AWS Cloud Map private namespace for frontend-to-backend traffic                                                         | Allows the Next.js BFF to call the backend privately instead of hairpinning through the public ALB.                                                |
+| Container registry    | One private ECR repository per Fargate service                                                                          | Keeps image lifecycle and deploy permissions independent.                                                                                          |
+| Directus file storage | Persist staging uploads in the approved Cloudinary staging configuration; do not use Fargate local storage              | The application already uses Cloudinary, while Fargate ephemeral storage cannot safely retain CMS uploads.                                         |
+| IaC                   | Terraform in a dedicated `piggy-infrastructure` repository                                                              | Keeps shared infrastructure ownership separate from application release cadence.                                                                   |
+| Terraform state       | Versioned, encrypted S3 backend with native S3 lockfile                                                                 | Provides remote state recovery and locking without the deprecated DynamoDB locking pattern.                                                        |
+| Delivery identity     | GitHub Actions OIDC to narrowly scoped AWS IAM roles                                                                    | Avoids long-lived AWS access keys in GitHub.                                                                                                       |
+| Minimum capacity      | One task for each Fargate service and one Single-AZ RDS instance                                                        | Appropriate for staging. Rolling application deployments may temporarily run two tasks per service.                                                |
+| Rollback              | ECS rolling deployment circuit breaker with rollback, alarm-based rollback, and a workflow smoke-test fallback          | Returns an application service to the last completed task definition when a release cannot become healthy.                                         |
+| Delivery sequence     | Provision shared AWS foundations, then RDS and Directus, then backend and frontend application releases                 | The backend needs a working schema and staging data before its end-to-end smoke tests can pass.                                                    |
 
 ## 3. Application facts that drive the design
 
@@ -67,22 +77,37 @@ The approval gates in section 16 must be closed first.
   task requires accepting per-task limits or moving shared state to a managed
   store in a separate change.
 
+### Directus and PostgreSQL dependency
+
+- Directus is a separate CMS application; it is not the PostgreSQL database.
+- The backend and Directus connect to the same dedicated staging PostgreSQL
+  database, but use separate credentials with only the permissions each
+  service requires.
+- Directus runs as its own Fargate service so that it can be deployed,
+  restarted, sized, and rolled back without affecting the frontend or backend.
+- Directus uploads must use the approved Cloudinary staging configuration.
+  Files written only to Fargate ephemeral storage would be lost when a task is
+  replaced.
+- RDS and Directus provisioning and database initialization are prerequisites
+  for a fully functioning backend deployment.
+
 ## 4. Architecture
 
 ```mermaid
 flowchart TB
   user["Customers and testers"]
+  admins["Developer and mentor"]
   stripe["Stripe webhooks"]
-  dns["Existing authoritative DNS provider"]
+  dns["Cloudflare DNS<br/>and Access for CMS"]
   github["GitHub Actions<br/>frontend, backend, infrastructure"]
-  external["Existing external services<br/>PostgreSQL / Directus, Stripe, Resend,<br/>Turnstile, Cloudinary"]
+  external["External services<br/>Stripe, Resend, Turnstile, Cloudinary"]
 
   subgraph aws["Piggyway AWS account — ap-southeast-2"]
     oidc["GitHub OIDC + least-privilege IAM roles"]
-    ecr["Private ECR<br/>frontend + backend"]
-    acm["ACM certificate<br/>2 staging SANs"]
+    ecr["Private ECR<br/>frontend + backend + Directus"]
+    acm["ACM certificate<br/>3 staging SANs"]
     cw["CloudWatch Logs, metrics, alarms<br/>EventBridge + SNS notifications"]
-    secrets["Secrets Manager<br/>frontend + backend JSON secrets"]
+    secrets["Secrets Manager<br/>application secrets + RDS credentials"]
 
     subgraph vpc["Dedicated staging VPC — 2 Availability Zones"]
       subgraph public["Public subnets"]
@@ -93,45 +118,64 @@ flowchart TB
       subgraph private["Private application subnets"]
         frontend["ECS Fargate frontend<br/>Next.js :3000<br/>desired count 1"]
         backend["ECS Fargate backend<br/>Bun/Hono :3000<br/>desired count 1"]
+        directus["ECS Fargate Directus<br/>:8055, desired count 1"]
         discovery["Cloud Map private DNS"]
+      end
+
+      subgraph data["Private database subnets"]
+        rds["RDS PostgreSQL<br/>Single-AZ, no public access<br/>7-day backups"]
       end
     end
   end
 
-  dns -->|"staging and api-staging records"| alb
+  dns -->|"3 staging records"| alb
   user -->|"HTTPS 443"| alb
+  admins -->|"Cloudflare Access"| dns
   stripe -->|"HTTPS webhook"| alb
   alb -->|"Host: staging.piggyway.com.au"| frontend
   alb -->|"Host: api-staging.piggyway.com.au"| backend
+  alb -->|"Host: cms-staging.piggyway.com.au"| directus
   frontend -->|"Resolve backend name"| discovery
   discovery -.-> backend
   frontend -->|"Private BFF calls :3000"| backend
   frontend --> nat
   backend --> nat
+  directus --> nat
+  backend -->|"PostgreSQL :5432"| rds
+  directus -->|"PostgreSQL :5432"| rds
   nat --> external
   github -->|"Temporary credentials"| oidc
   oidc --> ecr
   oidc --> frontend
   oidc --> backend
+  oidc --> directus
   acm --> alb
   secrets --> frontend
   secrets --> backend
+  secrets --> directus
+  secrets --> rds
   frontend --> cw
   backend --> cw
+  directus --> cw
 ```
 
 ## 5. Request and trust boundaries
 
 ### Public ingress
 
-1. DNS records for both staging domains resolve to the shared ALB.
+1. Cloudflare-proxied DNS records for all three staging domains resolve to the
+   shared ALB. Cloudflare uses Full (strict) TLS to the ALB origin.
 2. Port 80 only redirects to HTTPS 443.
-3. The HTTPS listener uses an ACM certificate containing both exact domain
+3. The HTTPS listener uses an ACM certificate containing all three exact domain
    names.
-4. Listener host rules route the frontend hostname to the frontend target
-   group and the API hostname to the backend target group.
+4. Listener host rules route the frontend, API, and CMS hostnames to their
+   corresponding target groups.
 5. Requests with any other host receive a fixed HTTP 404 response.
 6. Stripe reaches `/api/v1/checkout/webhook` through the API hostname.
+7. Cloudflare Access restricts the CMS hostname to the developer and mentor.
+   Direct service-to-service traffic does not use the public CMS hostname.
+8. ALB ingress is restricted to Cloudflare's published proxy IP ranges so that
+   the CMS Access policy cannot be bypassed by addressing the ALB directly.
 
 AWS Shield Standard protection is included by default. AWS WAF is not included
 in the first staging iteration because of the budget; add it if the public API
@@ -139,10 +183,15 @@ experiences abuse that application rate limits cannot control.
 
 ### Private service access
 
-- Neither ECS service receives a public IP.
-- The ALB security group is the only general ingress source for both services.
+- No ECS service or RDS instance receives a public IP.
+- The ALB security group is the only general ingress source for the three
+  Fargate services.
 - The frontend security group is additionally allowed to reach backend port
   3000 through the backend security group.
+- Only the backend and Directus security groups may reach RDS on TCP 5432.
+- RDS uses a DB subnet group covering two private database subnets and
+  `publicly_accessible = false`. Single-AZ describes database availability, not
+  the subnet-group requirement.
 - The frontend runtime `API_BASE_URL` uses the Cloud Map backend name, for
   example `http://backend.piggyway-staging.local:3000`.
 - The browser-visible `NEXT_PUBLIC_API_BASE_URL` remains
@@ -151,58 +200,65 @@ experiences abuse that application rate limits cannot control.
   deliberate staging availability trade-off: loss of the NAT Availability
   Zone interrupts outbound calls until recovery, but avoids the cost of a
   second NAT Gateway.
-- The database egress rule must be restricted to the confirmed database
-  destination and port 5432 where the provider supplies stable CIDRs. If it
-  does not, document the provider constraint and restrict all other egress as
-  far as practical.
+- PostgreSQL traffic remains inside the VPC and does not traverse the NAT
+  Gateway or public internet.
 
 ### Security groups
 
-| Security group                 | Inbound                                             | Outbound                                                                 |
-| ------------------------------ | --------------------------------------------------- | ------------------------------------------------------------------------ |
-| `piggyway-staging-alb-sg`      | TCP 80 and 443 from the internet; 80 redirects only | TCP 3000 to frontend and backend task security groups                    |
-| `piggyway-staging-frontend-sg` | TCP 3000 from ALB security group only               | TCP 3000 to backend security group; TCP 443 through NAT; DNS             |
-| `piggyway-staging-backend-sg`  | TCP 3000 from ALB and frontend security groups only | TCP 443 through NAT; TCP 5432 to the confirmed database destination; DNS |
+| Security group                 | Inbound                                                                  | Outbound                                                    |
+| ------------------------------ | ------------------------------------------------------------------------ | ----------------------------------------------------------- |
+| `piggyway-staging-alb-sg`      | TCP 80 and 443 from published Cloudflare proxy ranges; 80 redirects only | Application ports to frontend, backend, and Directus groups |
+| `piggyway-staging-frontend-sg` | TCP 3000 from ALB security group only                                    | TCP 3000 to backend group; TCP 443 through NAT; DNS         |
+| `piggyway-staging-backend-sg`  | TCP 3000 from ALB and frontend security groups only                      | TCP 443 through NAT; TCP 5432 to RDS group; DNS             |
+| `piggyway-staging-directus-sg` | TCP 8055 from ALB security group only                                    | TCP 443 through NAT; TCP 5432 to RDS group; DNS             |
+| `piggyway-staging-rds-sg`      | TCP 5432 from backend and Directus groups only                           | No application-initiated internet egress required           |
 
 ## 6. Resource inventory
 
 Names are proposed and may receive an AWS account suffix where global
-uniqueness is required.
+uniqueness is required. The inventory describes the complete target staging
+environment, regardless of the order in which resources are provisioned.
 
-| Service         | Resource                                       |       Count | Proposed name / configuration                                                                     |
-| --------------- | ---------------------------------------------- | ----------: | ------------------------------------------------------------------------------------------------- |
-| VPC             | VPC                                            |           1 | `piggyway-staging-vpc`, IPv4 CIDR selected during PIG-11 without overlapping the database network |
-| VPC             | Public subnets                                 |           2 | One per Availability Zone for ALB and NAT                                                         |
-| VPC             | Private application subnets                    |           2 | One per Availability Zone for Fargate tasks                                                       |
-| VPC             | Internet Gateway                               |           1 | Attached to staging VPC                                                                           |
-| VPC             | NAT Gateway and Elastic IP                     |      1 each | Public subnet in the primary AZ                                                                   |
-| ELB             | Application Load Balancer                      |           1 | `piggyway-staging-alb`, internet-facing, two public subnets                                       |
-| ELB             | Target groups                                  |           2 | `piggyway-staging-frontend-tg`, `piggyway-staging-backend-tg`, IP targets, port 3000              |
-| ACM             | Public certificate                             |           1 | SANs for both confirmed staging domains, DNS validation                                           |
-| ECS             | Cluster                                        |           1 | `piggyway-staging`                                                                                |
-| ECS             | Services                                       |           2 | `piggyway-staging-frontend`, `piggyway-staging-backend`                                           |
-| ECS             | Task definitions                               |  2 families | Immutable revisions for frontend and backend                                                      |
-| Cloud Map       | Private namespace and backend service          |      1 each | `piggyway-staging.local`, service `backend`                                                       |
-| ECR             | Private repositories                           |           2 | `piggyway-staging-frontend`, `piggyway-staging-backend`                                           |
-| Secrets Manager | JSON secrets                                   |           2 | `piggyway/staging/frontend`, `piggyway/staging/backend`                                           |
-| CloudWatch      | Log groups                                     |           2 | `/ecs/piggyway/staging/frontend`, `/ecs/piggyway/staging/backend`, 14-day retention               |
-| CloudWatch      | Dashboard                                      |           1 | ALB, target health, ECS CPU/memory, task count, 4xx/5xx, response time                            |
-| CloudWatch      | Alarms                                         | Initial set | Unhealthy targets, target 5xx, deployment failure, sustained CPU/memory, no running tasks         |
-| EventBridge/SNS | Deployment failure rule and notification topic |      1 each | Notify the project developer and mentor; no secret values in messages                             |
-| IAM             | ECS execution roles                            |           2 | Separate frontend/backend roles scoped to their ECR repo, log group, and secret                   |
-| IAM             | ECS task roles                                 |           2 | No AWS API permissions initially; add explicit actions only when application code needs them      |
-| IAM             | GitHub deployment roles                        |           2 | One role per application repository and staging GitHub environment                                |
-| IAM             | Terraform plan/apply roles                     |           2 | Read-only plan role and approval-gated apply role                                                 |
-| S3              | Terraform state bucket                         |           1 | Versioned, blocked public access, SSE-S3, native lockfile                                         |
-| Budgets         | Monthly cost budget                            |           1 | Alert at 80% and 100% of the approved staging budget                                              |
+| Service         | Resource                                       |       Count | Proposed name / configuration                                                                |
+| --------------- | ---------------------------------------------- | ----------: | -------------------------------------------------------------------------------------------- |
+| VPC             | VPC                                            |           1 | `piggyway-staging-vpc`, an approved non-overlapping RFC1918 IPv4 CIDR                        |
+| VPC             | Public subnets                                 |           2 | One per Availability Zone for ALB and NAT                                                    |
+| VPC             | Private application subnets                    |           2 | One per Availability Zone for Fargate tasks                                                  |
+| VPC             | Private database subnets                       |           2 | One per Availability Zone for the RDS DB subnet group; no default internet route             |
+| VPC             | Internet Gateway                               |           1 | Attached to staging VPC                                                                      |
+| VPC             | NAT Gateway and Elastic IP                     |      1 each | Public subnet in the primary AZ                                                              |
+| ELB             | Application Load Balancer                      |           1 | `piggyway-staging-alb`, internet-facing, two public subnets                                  |
+| ELB             | Target groups                                  |           3 | Frontend/backend on port 3000 and Directus on port 8055; IP targets                          |
+| ACM             | Public certificate                             |           1 | SANs for frontend, API, and CMS staging domains; Cloudflare DNS validation                   |
+| ECS             | Cluster                                        |           1 | `piggyway-staging`                                                                           |
+| ECS             | Services                                       |           3 | `piggyway-staging-frontend`, `piggyway-staging-backend`, and `piggyway-staging-directus`     |
+| ECS             | Task definitions                               |  3 families | Immutable revisions for frontend, backend, and Directus                                      |
+| Cloud Map       | Private namespace and backend service          |      1 each | `piggyway-staging.local`, service `backend`                                                  |
+| ECR             | Private repositories                           |           3 | One immutable, lifecycle-managed repository per service                                      |
+| Secrets Manager | Application JSON secrets                       |           3 | `piggyway/staging/frontend`, `piggyway/staging/backend`, and `piggyway/staging/directus`     |
+| Secrets Manager | RDS-managed master credential                  |           1 | Generated and rotated by RDS; never stored in Terraform input or output                      |
+| RDS             | PostgreSQL DB instance                         |           1 | Single-AZ `db.t4g.micro`, 20 GiB gp3, private, encrypted, seven-day backups                  |
+| RDS             | DB subnet and parameter groups                 |      1 each | Two private database subnets and a pinned supported PostgreSQL major version                 |
+| CloudWatch      | Log groups                                     |           3 | One per Fargate service with 14-day retention                                                |
+| CloudWatch      | Dashboard                                      |           1 | ALB, target health, ECS CPU/memory, task count, 4xx/5xx, response time                       |
+| CloudWatch      | Alarms                                         | Initial set | Application health/deployment alarms plus RDS CPU, storage, connections, and freeable memory |
+| EventBridge/SNS | Deployment failure rule and notification topic |      1 each | Notify the project developer and mentor; no secret values in messages                        |
+| IAM             | ECS execution roles                            |           3 | One per service, scoped to its ECR repository, log group, and secret                         |
+| IAM             | ECS task roles                                 |           3 | No AWS API permissions initially; add explicit actions only when application code needs them |
+| IAM             | GitHub deployment roles                        |           3 | One per deployed service/repository and protected staging environment                        |
+| IAM             | Terraform plan/apply roles                     |           2 | Read-only plan role and approval-gated apply role                                            |
+| S3              | Terraform state bucket                         |           1 | Versioned, blocked public access, SSE-S3, native lockfile                                    |
+| Budgets         | Monthly cost budget                            |           1 | Alert at 80% and 100% of the approved staging budget                                         |
 
-### Explicitly excluded resources
+### Architecture boundaries
 
-- No RDS, Aurora, or other database is created.
-- No Directus service, task, image, or storage is created.
-- No application deployment is performed by PIG-10.
-- PIG-16 and PIG-17 may later add self-hosted monitoring and centralized
-  logging. CloudWatch remains the minimum AWS operational baseline.
+- This design covers the AWS staging environment and its delivery path; it does
+  not create resources by itself.
+- Production infrastructure, production data migration, and production
+  availability requirements require a separate architecture review.
+- Self-hosted monitoring or centralized logging may later augment the design.
+  CloudWatch remains the minimum AWS operational baseline and retains the
+  signals used by deployment rollback.
 
 ## 7. Task sizing and availability
 
@@ -210,11 +266,13 @@ uniqueness is required.
 | -------- | --------: | ------: | --------------------: | -----------------: | --------------------------------------------------- |
 | Frontend |  0.5 vCPU |   1 GiB |                     1 |      2 temporarily | `GET /api/health` — must be added before deployment |
 | Backend  | 0.25 vCPU | 0.5 GiB |                     1 |      2 temporarily | `GET /health` — already implemented                 |
+| Directus | 0.25 vCPU |   1 GiB |                     1 |      2 temporarily | `GET /server/health`                                |
 
-Both tasks use Linux/x86_64 initially and the Fargate-provided 20 GiB ephemeral
-storage. CPU and memory alarms are used to validate these starting sizes. Move
-to ARM64 only after both Docker images and dependencies pass staging tests on
-ARM; it is a later cost optimization, not part of the initial rollout.
+All Fargate tasks use Linux/x86_64 initially and the Fargate-provided 20 GiB
+ephemeral storage. CPU and memory alarms are used to validate these starting
+sizes. Move to ARM64 only after all three images and their dependencies pass
+staging tests on ARM; it is a later cost optimization, not part of the initial
+rollout.
 
 For rolling updates use desired count 1, `minimumHealthyPercent = 100`, and
 `maximumPercent = 200`. ECS starts the candidate task and waits for health
@@ -225,11 +283,19 @@ a staging outage. That is accepted for the low-cost environment.
 Autoscaling is not enabled initially. A human-reviewed change may raise desired
 count or task size after CloudWatch shows sustained pressure.
 
+RDS starts as a Single-AZ `db.t4g.micro` PostgreSQL instance with 20 GiB of gp3
+storage, storage autoscaling bounded by an approved maximum, encryption at
+rest, deletion protection, seven-day automated backup retention, and a final
+snapshot required before an intentional destroy. CloudWatch freeable-memory,
+connection, CPU, and free-storage alarms determine whether it must be resized
+to `db.t4g.small`; staging does not start with Multi-AZ.
+
 ## 8. Health checks and smoke tests
 
 ### ALB checks
 
-- Protocol: HTTP from ALB to the task on port 3000.
+- Protocol: HTTP from ALB to the configured target port: 3000 for frontend and
+  backend, or 8055 for Directus.
 - Interval: 30 seconds.
 - Timeout: 5 seconds.
 - Healthy threshold: 2.
@@ -237,6 +303,7 @@ count or task size after CloudWatch shows sustained pressure.
 - Success code: 200.
 - Frontend path: `/api/health`, containing no backend or database dependency.
 - Backend path: `/health`, containing no database mutation.
+- Directus path: `/server/health`, containing no database mutation.
 
 ### Post-deployment smoke tests
 
@@ -244,20 +311,25 @@ After ECS reaches a stable state, the deployment workflow performs:
 
 1. `GET https://staging.piggyway.com.au/api/health`.
 2. `GET https://api-staging.piggyway.com.au/health`.
-3. One read-only product/category request through the frontend BFF to verify
+3. An authenticated health check for
+   `https://cms-staging.piggyway.com.au/server/health` from the Directus
+   deployment workflow. Its Cloudflare Access credential must be retrieved at
+   runtime and never committed or printed.
+4. One read-only product/category request through the frontend BFF to verify
    frontend-to-backend and backend-to-database connectivity.
-4. A response-header check for HTTPS and the expected staging host.
+5. A response-header check for HTTPS and the expected staging host.
 
 Authentication, payment, email, and webhook tests remain manual release checks
 because they touch third-party test accounts.
 
 ## 9. Secrets and configuration
 
-Use one JSON secret per application to reduce Secrets Manager cost while
-retaining separate frontend/backend access control. ECS task definitions inject
-individual JSON keys. Secret values must never be Terraform variables, image
-build arguments, Terraform outputs, GitHub secrets, workflow logs, or source
-files.
+Use one JSON secret per Fargate application to reduce Secrets Manager cost
+while retaining separate frontend/backend/Directus access control. RDS manages
+its generated master credential in a separate Secrets Manager secret. ECS task
+definitions inject individual JSON keys. Secret values must never be Terraform
+variables, image build arguments, Terraform outputs, GitHub secrets, workflow
+logs, or source files.
 
 Terraform creates only the empty secret containers and IAM policies. After
 provisioning, the project developer populates secret versions through an
@@ -283,6 +355,17 @@ force-new-deployment so new tasks receive the new values.
 - `CLOUDINARY_API_SECRET`
 - `PREVIEW_SECRET`
 
+### Directus runtime secret keys
+
+- Directus `SECRET`
+- Dedicated staging database username/password
+- Initial administrator bootstrap credential, removed or rotated after setup
+- Cloudinary staging API credentials
+
+The backend and Directus must not use the RDS master user during normal
+operation. The database/bootstrap procedure creates dedicated users and stores
+their credentials only in the matching application secret.
+
 ### Non-secret runtime/build configuration
 
 This includes ports, hostnames, `TOKEN_ISS`, `TOKEN_AUD`, `FRONTEND_URL`,
@@ -296,14 +379,15 @@ build arguments.
 
 Before staging deployment, rotate any populated credential-like value that has
 ever appeared in a tracked example environment file, then replace it with an
-empty placeholder. Rotation completion is recorded in the relevant ticket
-without recording the value.
+empty placeholder. Record completion in the project change history without
+recording the value.
 
 ## 10. Least-privilege IAM
 
 ### ECS execution roles
 
-Create separate execution roles for the frontend and backend. Each role may:
+Create separate execution roles for the frontend, backend, and Directus. Each
+role may:
 
 - pull only from its own ECR repository;
 - write only to its own CloudWatch log group;
@@ -313,8 +397,10 @@ Create separate execution roles for the frontend and backend. Each role may:
 ### ECS task roles
 
 Application code currently uses external HTTP services and PostgreSQL rather
-than AWS APIs. Start both task roles with no application permissions. Do not
-reuse the execution role as the task role.
+than AWS APIs. Start all task roles with no application permissions. Do not
+reuse an execution role as a task role. Add a narrowly scoped AWS permission
+only if a future approved Directus storage design replaces Cloudinary with an
+AWS service.
 
 ### GitHub application deployment roles
 
@@ -327,8 +413,8 @@ branch, and the protected GitHub `staging` environment. Each role may:
 - update and describe only its ECS service;
 - read deployment state and relevant logs/alarms needed to verify rollout.
 
-It may not read runtime secret values, change networking/IAM, or deploy the
-other application.
+It may not read runtime secret values, change networking/IAM, or deploy another
+service.
 
 ### Terraform roles
 
@@ -357,6 +443,7 @@ piggy-infrastructure/
 │   ├── network/
 │   ├── load-balancer/
 │   ├── ecs-service/
+│   ├── database/
 │   ├── ecr/
 │   ├── observability/
 │   └── github-oidc/
@@ -412,8 +499,38 @@ review process.
 ## 12. Application delivery plan
 
 The existing frontend and backend staging workflows are quality gates only.
-Add a separate deploy job/workflow to each repository after PIG-11 provisions
-the roles and resources.
+Add a deploy job/workflow to each application repository after the AWS roles
+and shared resources are available. Manage the pinned Directus image and its
+deployment workflow from `piggy-infrastructure` until a dedicated Directus
+repository is justified.
+
+### Database and Directus initialization
+
+The new RDS instance starts empty. Initialize it through a controlled,
+repeatable process before the first backend release:
+
+1. Generate the RDS master credential through RDS and create distinct Directus
+   and backend database users. Normal application tasks never use the master
+   user.
+2. Run a one-off Directus bootstrap task against RDS to create the Directus
+   system tables and initial administrator.
+3. Store the reviewed Directus schema snapshot under `directus/schema/` in the
+   backend repository because backend types and queries depend on that schema.
+   Apply the snapshot from an auditable one-off task rather than a developer
+   laptop.
+4. Load a small, versioned staging seed dataset for required products,
+   categories, roles, and configuration. Schema snapshots do not contain
+   content records.
+5. Use synthetic or explicitly sanitized seed data. Do not copy production
+   customer, order, authentication, or payment data into staging.
+6. Verify Directus login, a read-only backend query, and the frontend product
+   flow, then rotate or remove the initial administrator bootstrap credential.
+
+Schema changes are reviewed with the backend code that depends on them. Prefer
+backward-compatible additions, take a manual snapshot before destructive
+changes, apply schema changes before code that requires them, and validate the
+restore procedure periodically. Frontend and backend release workflows never
+run an implicit schema push.
 
 ### Trigger and review
 
@@ -444,13 +561,14 @@ the roles and resources.
 10. Record commit SHA, image digest, task-definition revision, initiator, and
     result in the GitHub deployment summary.
 
-Application releases do not run `db:push`, create schemas, or deploy Directus.
-Any required database or Directus change follows a separate reviewed process.
+Frontend and backend releases do not run `db:push`, create schemas, or redeploy
+Directus. Database schema and Directus releases use their own reviewed workflow
+and complete before dependent backend code is released.
 
 ## 13. Rollback policy
 
 Enable the ECS rolling deployment circuit breaker with automatic rollback for
-both services. Also associate deployment alarms where supported.
+all three services. Also associate deployment alarms where supported.
 
 A deployment is failed and rolled back when any of these occurs:
 
@@ -477,49 +595,54 @@ After rollback:
 4. Require a new commit or an explicitly approved redeploy after the cause is
    understood.
 
-Database rollback is not coupled to ECS rollback because database and Directus
-changes are outside this delivery path.
+Application rollback is not coupled to database rollback. Schema changes need
+a reviewed, backward-compatible migration and restore procedure; an ECS task
+rollback must never automatically restore an RDS snapshot.
 
 ## 14. Logging, monitoring, and retention
 
-- Send container stdout/stderr to separate CloudWatch log groups through the
-  `awslogs` driver.
+- Send each Fargate service's stdout/stderr to a separate CloudWatch log group
+  through the `awslogs` driver.
 - Use JSON or structured single-line logs where possible and propagate the
   existing `X-Request-Id` across ALB, frontend BFF, and backend.
 - Retain application logs for 14 days initially. Do not log tokens, cookies,
   authorization headers, secret values, payment data, or full customer
   addresses.
-- Dashboard metrics include desired/running task count, CPU, memory, ALB target
-  response time, healthy host count, 4xx, 5xx, and NAT bytes.
+- Dashboard metrics include desired/running task count, Fargate CPU/memory,
+  ALB target response time, healthy host count, 4xx, 5xx, NAT bytes, and RDS
+  CPU, freeable memory, connections, free storage, and backup failures.
 - Alerts notify only actionable conditions: service unavailable, failed
   deployment, sustained resource exhaustion, and budget thresholds.
-- PIG-16 and PIG-17 may replace or augment visualization and log aggregation,
-  but must not remove the CloudWatch signals used for ECS rollback.
+- Future visualization and centralized logging may augment this baseline but
+  must not remove the CloudWatch signals used for ECS rollback.
 
 ## 15. Initial monthly cost estimate
 
-This is a planning estimate in USD for Sydney, dated 2026-08-05. It assumes 730
-hours/month, low staging traffic, one always-running task per service, 5–10 GB
-of monthly outbound/NAT processing, 14-day logs, two JSON secrets, and no
-database/Directus cost. AWS prices and usage vary; PIG-11 must produce and
-attach an AWS Pricing Calculator estimate immediately before resource creation.
+This is a planning estimate in USD for Sydney, dated 2026-08-07. It assumes 730
+hours/month, low staging traffic, one always-running task per Fargate service,
+one Single-AZ RDS instance, 5–10 GB of monthly outbound/NAT processing, 14-day
+logs, three application JSON secrets, and one RDS-managed credential. AWS
+prices and usage vary; refresh and review an AWS Pricing Calculator estimate
+immediately before resource creation.
 
-| Item                                                        | Assumption                                              |   Estimated USD/month |
-| ----------------------------------------------------------- | ------------------------------------------------------- | --------------------: |
-| Fargate frontend                                            | 0.5 vCPU, 1 GiB, 24×7                                   |                 20–25 |
-| Fargate backend                                             | 0.25 vCPU, 0.5 GiB, 24×7                                |                 10–13 |
-| Application Load Balancer                                   | One ALB plus low LCU usage                              |                 20–27 |
-| NAT Gateway                                                 | One gateway plus low data processing                    |                 43–50 |
-| Public IPv4 addresses                                       | ALB addresses and one NAT Elastic IP                    |                  8–12 |
-| CloudWatch/EventBridge/SNS                                  | Low log volume, dashboard, alarms, notifications        |                   3–8 |
-| Secrets Manager                                             | Two JSON secrets and low API volume                     |               About 1 |
-| ECR                                                         | Two repositories, lifecycle-capped image storage        |                   1–3 |
-| Cloud Map, S3 state, DNS validation, miscellaneous transfer | Low usage                                               |                   2–6 |
-| **Expected total**                                          | Excludes tax, external services, database, and Directus | **108–145 USD/month** |
+| Item                                                        | Assumption                                         |   Estimated USD/month |
+| ----------------------------------------------------------- | -------------------------------------------------- | --------------------: |
+| Fargate frontend                                            | 0.5 vCPU, 1 GiB, 24×7                              |                 20–25 |
+| Fargate backend                                             | 0.25 vCPU, 0.5 GiB, 24×7                           |                 10–13 |
+| Fargate Directus                                            | 0.25 vCPU, 1 GiB, 24×7                             |                 12–18 |
+| RDS PostgreSQL                                              | Single-AZ `db.t4g.micro`, 20 GiB gp3, backups      |                 25–45 |
+| Application Load Balancer                                   | One ALB plus low LCU usage                         |                 20–27 |
+| NAT Gateway                                                 | One gateway plus low data processing               |                 43–50 |
+| Public IPv4 addresses                                       | ALB addresses and one NAT Elastic IP               |                  8–12 |
+| CloudWatch/EventBridge/SNS                                  | Three services, RDS metrics, dashboard, alarms     |                  4–10 |
+| Secrets Manager                                             | Three JSON secrets, RDS credential, low API volume |                   1–3 |
+| ECR                                                         | Three repositories, lifecycle-capped image storage |                   1–4 |
+| Cloud Map, S3 state, DNS validation, miscellaneous transfer | Low usage                                          |                   2–6 |
+| **Expected total**                                          | Excludes tax and non-AWS external service charges  | **145–215 USD/month** |
 
-Set the initial AWS Budget at **150 USD/month**, with email alerts at 80% and
+Set the initial AWS Budget at **220 USD/month**, with email alerts at 80% and
 100% sent to both the developer and mentor. The mentor must approve this cap
-before PIG-11 creates resources.
+before resources are created.
 
 ### Cost controls
 
@@ -529,9 +652,12 @@ before PIG-11 creates resources.
 - Use one NAT Gateway; accept the documented staging availability trade-off.
 - Use SSE-S3 and AWS-managed service keys rather than paid customer-managed KMS
   keys unless compliance requirements change.
-- After initial stabilization, optionally schedule both ECS services to desired
-  count zero outside agreed testing hours. This reduces Fargate cost but does
-  not remove the fixed ALB/NAT cost.
+- After initial stabilization, optionally schedule the three ECS services to
+  desired count zero outside agreed testing hours. This reduces Fargate cost
+  but does not remove the fixed ALB/NAT/RDS cost. RDS may be stopped manually
+  for short periods, but AWS automatically restarts a stopped DB instance after
+  its maximum supported stop duration, so scheduling assumptions must not rely
+  on indefinite RDS shutdown.
 - Review Cost Explorer monthly by the required tags.
 
 Do not move Fargate tasks to public subnets merely to save NAT cost without a
@@ -539,7 +665,7 @@ new security review. A NAT instance can reduce fixed cost but adds patching,
 failover, throughput, and operational ownership; it is not the approved
 baseline.
 
-## 16. Ownership and approval gates
+## 16. Ownership and readiness
 
 ### Two-person ownership model
 
@@ -548,15 +674,15 @@ the implementer and day-to-day maintainer; the mentor is the accountable
 technical and cost approver. This avoids inventing separate platform, DevOps,
 frontend, backend, and product teams that do not exist.
 
-| Area                         | Implementer       | Accountable approver | Responsibility                                                                                                                  |
-| ---------------------------- | ----------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| Infrastructure and Terraform | Project developer | Mentor               | Developer authors plans and applies approved changes; mentor reviews architecture, plan, IAM, networking, and apply             |
-| Frontend application         | Project developer | Mentor               | Developer owns image, health route, configuration, deploy, and smoke test; mentor approves the release policy                   |
-| Backend application          | Project developer | Mentor               | Developer owns image, health, database compatibility, webhook, deploy, and smoke test                                           |
-| Secrets                      | Project developer | Mentor               | Developer populates/rotates AWS secrets; mentor confirms provider ownership and that exposed values were rotated                |
-| DNS and domain               | Project developer | Mentor               | Mentor confirms the DNS provider/access; developer prepares records. If neither has access, mentor coordinates the domain owner |
-| Database/Directus            | Project developer | Mentor               | Mentor confirms the non-production target and access; developer configures and verifies connectivity                            |
-| Cost                         | Project developer | Mentor               | Developer monitors usage; mentor approves the 150 USD monthly budget; both receive alerts                                       |
+| Area                         | Implementer       | Accountable approver | Responsibility                                                                                                        |
+| ---------------------------- | ----------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| Infrastructure and Terraform | Project developer | Mentor               | Developer authors plans and applies approved changes; mentor reviews architecture, plan, IAM, networking, and apply   |
+| Frontend application         | Project developer | Mentor               | Developer owns image, health route, configuration, deploy, and smoke test; mentor approves the release policy         |
+| Backend application          | Project developer | Mentor               | Developer owns image, health, database compatibility, webhook, deploy, and smoke test                                 |
+| Secrets                      | Project developer | Mentor               | Developer populates/rotates AWS secrets; mentor confirms provider ownership and that exposed values were rotated      |
+| DNS and domain               | Project developer | Mentor               | Cloudflare is authoritative; developer prepares the three records and CMS Access policy, and mentor reviews them      |
+| Database/Directus            | Project developer | Mentor               | Developer implements RDS/Directus, initialization, backups, credentials, and connectivity; mentor reviews the changes |
+| Cost                         | Project developer | Mentor               | Developer monitors usage; mentor approves the 220 USD monthly budget; both receive alerts                             |
 
 When `piggy-infrastructure` is created, both GitHub accounts are listed in
 `CODEOWNERS`. The protected `main` branch requires one non-author approving
@@ -564,22 +690,23 @@ review, which in the normal developer-authored flow is the mentor. The
 protected GitHub `staging` environment names the mentor as the required
 Terraform apply reviewer.
 
-### Hard gates before PIG-11 applies Terraform
+### Readiness checklist before provisioning
 
-- [ ] Mentor confirms the AWS account ID, grants the developer the approved
-      role, and accepts responsibility for infrastructure approval.
-- [ ] Mentor identifies the authoritative DNS provider and confirms whether
-      either project member can update it; if not, mentor identifies the
-      external domain contact.
-- [ ] Confirm permission to create both staging DNS records and ACM validation
-      records.
-- [ ] Mentor confirms the exact non-production PostgreSQL/Directus endpoint
-      and access path; do not connect staging to production customer/order data
-      by assumption.
-- [ ] Confirm the database network route/allow-list from the staging NAT IP and
-      its connection capacity for up to 20 temporary backend connections during
-      rolling deployment.
-- [ ] Mentor approves the 150 USD/month budget; both project members are added
+- [ ] Record the developer-owned AWS account ID, configure MFA/approved human
+      access, and confirm the mentor's infrastructure approval responsibility.
+- [ ] Confirm both project members have the required Cloudflare access to add
+      the three staging DNS records, ACM validation records, and the restricted
+      CMS Access policy.
+- [ ] Confirm the new RDS database contains staging-only data and that no
+      production customer/order data is copied by assumption.
+- [ ] Review the initial RDS size, seven-day backup retention, deletion/final
+      snapshot behaviour, separate application users, and maximum connections
+      for rolling backend and Directus deployments.
+- [ ] Confirm the Directus staging Cloudinary configuration and verify that no
+      required upload is stored only on Fargate ephemeral storage.
+- [ ] Review the version-controlled Directus schema snapshot, sanitized seed
+      data, one-off bootstrap process, and initial administrator rotation.
+- [ ] Mentor approves the 220 USD/month budget; both project members are added
       as alert recipients.
 - [ ] Rotate credential-like values previously tracked in example environment
       files and confirm only placeholders remain.
@@ -588,22 +715,9 @@ Terraform apply reviewer.
       `https://api-staging.piggyway.com.au/api/v1/checkout/webhook`.
 - [ ] Add and test the frontend `GET /api/health` route.
 - [ ] Mentor reviews and approves this architecture; the developer records that
-      approval in PIG-10.
+      approval in the project change history.
 
-## 17. PIG-10 acceptance mapping
-
-| Acceptance criterion                                                        | Evidence / status                                                                                                |
-| --------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Approved architecture diagram and resource inventory exist                  | Diagram in section 4 and inventory in section 6 exist. Mentor approval remains pending in section 16.            |
-| Public ingress, private service access, and least-privilege IAM are defined | Sections 5 and 10.                                                                                               |
-| IaC tool, state storage, review flow, and ownership are explicit            | Sections 11 and 16.                                                                                              |
-| Required staging domains and DNS ownership are confirmed                    | Domain names are confirmed. Mentor must confirm the DNS provider/access or identify the external domain contact. |
-| Cost estimate and rollback plan are reviewed before resource creation       | Sections 13 and 15 define both. Mentor cost and architecture approval remains a hard gate.                       |
-
-PIG-10 may move to approved/done only after the mentor confirmations in section
-16 are recorded. PIG-11 remains blocked until then.
-
-## 18. References
+## 17. References
 
 - [AWS Fargate pricing](https://aws.amazon.com/fargate/pricing/)
 - [Elastic Load Balancing pricing](https://aws.amazon.com/elasticloadbalancing/pricing/)
@@ -613,5 +727,8 @@ PIG-10 may move to approved/done only after the mentor confirmations in section
 - [AWS ECS deployment circuit breaker](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/deployment-circuit-breaker.html)
 - [AWS Secrets Manager pricing](https://aws.amazon.com/secrets-manager/pricing/)
 - [Amazon ECR pricing](https://aws.amazon.com/ecr/pricing/)
+- [Amazon RDS for PostgreSQL](https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_PostgreSQL.html)
+- [Amazon RDS for PostgreSQL pricing](https://aws.amazon.com/rds/postgresql/pricing/)
+- [Cloudflare Access applications](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/)
 - [GitHub Actions OIDC with AWS](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws)
 - [Terraform S3 backend and native lockfile](https://developer.hashicorp.com/terraform/language/backend/s3)
