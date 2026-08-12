@@ -10,6 +10,7 @@ export const BOARDING_ASSETS = {
 
 export const BOARDING_ROUTES = {
   book: "/piggyway-boarding/book",
+  lookup: "/piggyway-boarding/lookup",
   story: "/about-us",
 } as const;
 

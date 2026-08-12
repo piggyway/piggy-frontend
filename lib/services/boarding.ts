@@ -5,6 +5,7 @@ import type {
   BoardingBookingList,
   BoardingBookingListMeta,
   BoardingBookingPet,
+  BoardingLookupResult,
   BoardingPetDesexed,
   BoardingPetSex,
   BoardingPetType,
@@ -270,4 +271,52 @@ export async function getBoardingBookingByReference(
   const data: { data: BoardingBookingResponse } = await response.json();
 
   return transformBooking(data.data);
+}
+
+interface BoardingLookupResponse {
+  reference: string;
+  status: BoardingStatus;
+  first_name: string;
+  drop_off_date: string;
+  drop_off_time: string;
+  pick_up_date: string;
+  pick_up_time: string;
+  nights: number;
+  pets: Array<{ name: string; type: string }>;
+}
+
+/**
+ * Guest lookup by reference + email. No auth required; email is the credential.
+ */
+export async function lookupBoardingBooking(
+  reference: string,
+  email: string
+): Promise<BoardingLookupResult> {
+  const response = await fetchWithAuth(API_ENDPOINTS.BOARDING_LOOKUP, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reference, email }),
+    redirectOnAuthError: false,
+  });
+
+  if (!response.ok) {
+    const error = await readError(response, "Failed to look up booking");
+    console.error("[BoardingService] Failed to look up booking:", error);
+    throw error;
+  }
+
+  const data: { data: BoardingLookupResponse } = await response.json();
+  const booking = data.data;
+
+  return {
+    reference: booking.reference,
+    status: booking.status,
+    firstName: booking.first_name,
+    dropOffDate: booking.drop_off_date,
+    dropOffTime: booking.drop_off_time,
+    pickUpDate: booking.pick_up_date,
+    pickUpTime: booking.pick_up_time,
+    nights: booking.nights,
+    pets: booking.pets ?? [],
+  };
 }

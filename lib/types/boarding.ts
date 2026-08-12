@@ -89,6 +89,19 @@ export interface CreateBoardingBookingResult {
   userNotificationSent: boolean;
 }
 
+/** Sanitized guest lookup result - no phone, emergency, medical, or internal ids. */
+export interface BoardingLookupResult {
+  reference: string;
+  status: BoardingStatus;
+  firstName: string;
+  dropOffDate: string;
+  dropOffTime: string;
+  pickUpDate: string;
+  pickUpTime: string;
+  nights: number;
+  pets: Array<{ name: string; type: string }>;
+}
+
 export interface BoardingBookingListMeta {
   total: number;
   limit: number;

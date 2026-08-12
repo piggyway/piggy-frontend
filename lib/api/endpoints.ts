@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
   // Boarding
   BOARDING: "/api/boarding",
   BOARDING_BY_REFERENCE: (reference: string) => `/api/boarding/${reference}`,
+  BOARDING_LOOKUP: "/api/boarding/lookup",
 
   // Add more endpoints as needed
   // Users

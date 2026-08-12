@@ -6,37 +6,11 @@ import { Home, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getBoardingBookings } from "@/lib/services/boarding";
-import type { BoardingBooking, BoardingStatus } from "@/lib/types/boarding";
-
-// Keys must stay in sync with the Directus `boarding_bookings.status` dropdown choices.
-const statusPill: Record<BoardingStatus, { label: string; className: string }> =
-  {
-    pending: {
-      label: "Pending",
-      className: "bg-primary-gold/20 text-primary-navy",
-    },
-    confirmed: {
-      label: "Confirmed",
-      className: "bg-secondary-mint text-green-600",
-    },
-    declined: {
-      label: "Declined",
-      className: "bg-neutral-pink-background text-rose-600",
-    },
-    cancelled: {
-      label: "Cancelled",
-      className: "bg-neutral-grey-background text-slate-600",
-    },
-    completed: {
-      label: "Completed",
-      className: "bg-secondary-blue/40 text-primary-navy",
-    },
-  };
-
-const UNKNOWN_STATUS_PILL = {
-  label: "Unknown",
-  className: "border-neutral-stroke border bg-white text-slate-600",
-};
+import type { BoardingBooking } from "@/lib/types/boarding";
+import {
+  BOARDING_STATUS_PILL,
+  UNKNOWN_BOARDING_STATUS_PILL,
+} from "@/components/features/boarding/status-pill";
 
 function formatBookingDate(value: string): string {
   const parsed = new Date(value);
@@ -141,7 +115,9 @@ export function Boarding() {
       {!isLoading && !error && bookings.length > 0 && (
         <div className="flex flex-col gap-6">
           {bookings.map((booking) => {
-            const pill = statusPill[booking.status] ?? UNKNOWN_STATUS_PILL;
+            const pill =
+              BOARDING_STATUS_PILL[booking.status] ??
+              UNKNOWN_BOARDING_STATUS_PILL;
             const petNames = booking.pets.map((pet) => pet.name).join(", ");
 
             return (

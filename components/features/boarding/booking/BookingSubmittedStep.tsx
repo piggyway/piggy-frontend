@@ -5,6 +5,7 @@ import Link from "next/link";
 import { CalendarCheck, Check, Copy, Mail, Package } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { BOARDING_ROUTES } from "@/components/features/boarding/constants";
 import { StepIndicator } from "./StepIndicator";
 import type { BookingSubmission } from "./BookingDetailsStep";
 
@@ -179,12 +180,19 @@ export function BookingSubmittedStep({
           asChild
           className="h-[50px] rounded-full px-9 text-[15px] font-semibold"
         >
-          <Link href="/account">View in My Account</Link>
+          <Link href={BOARDING_ROUTES.lookup}>Track your request</Link>
         </Button>
         <Button
           asChild
           variant="outline"
           className="border-primary-navy text-primary-navy h-[50px] rounded-full border-[1.5px] px-9 text-[15px] font-semibold"
+        >
+          <Link href="/account">View in My Account</Link>
+        </Button>
+        <Button
+          asChild
+          variant="outline"
+          className="border-neutral-stroke h-[50px] rounded-full px-9 text-[15px] font-medium"
         >
           <Link href="/">Back to Home</Link>
         </Button>
