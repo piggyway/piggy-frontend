@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Home, Plus } from "lucide-react";
+import { ChevronRight, Home, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getBoardingBookings } from "@/lib/services/boarding";
@@ -18,7 +18,11 @@ function formatBookingDate(value: string): string {
   return parsed.toLocaleDateString("en-AU");
 }
 
-export function Boarding() {
+interface BoardingProps {
+  onBookingClick?: (reference: string) => void;
+}
+
+export function Boarding({ onBookingClick }: BoardingProps) {
   const [bookings, setBookings] = useState<BoardingBooking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -119,24 +123,54 @@ export function Boarding() {
               BOARDING_STATUS_PILL[booking.status] ??
               UNKNOWN_BOARDING_STATUS_PILL;
             const petNames = booking.pets.map((pet) => pet.name).join(", ");
+            const interactive = typeof onBookingClick === "function";
 
             return (
               <div
                 key={booking.uuid}
-                className="border-neutral-stroke flex flex-col gap-5 rounded-[20px] border bg-white px-6 py-[26px] sm:px-8"
+                role={interactive ? "button" : undefined}
+                tabIndex={interactive ? 0 : undefined}
+                onClick={
+                  interactive
+                    ? () => onBookingClick(booking.reference)
+                    : undefined
+                }
+                onKeyDown={
+                  interactive
+                    ? (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          onBookingClick(booking.reference);
+                        }
+                      }
+                    : undefined
+                }
+                className={cn(
+                  "border-neutral-stroke flex flex-col gap-5 rounded-[20px] border bg-white px-6 py-[26px] sm:px-8",
+                  interactive &&
+                    "focus-visible:ring-primary-navy cursor-pointer transition-shadow hover:shadow-sm focus-visible:ring-2 focus-visible:outline-none"
+                )}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3.5">
                   <span className="text-primary-navy text-[16px] font-semibold">
                     {booking.reference}
                   </span>
-                  <span
-                    className={cn(
-                      "rounded-full px-3.5 py-[5px] text-[12px] font-semibold",
-                      pill.className
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={cn(
+                        "rounded-full px-3.5 py-[5px] text-[12px] font-semibold",
+                        pill.className
+                      )}
+                    >
+                      {pill.label}
+                    </span>
+                    {interactive && (
+                      <ChevronRight
+                        className="size-4 text-slate-400"
+                        aria-hidden
+                      />
                     )}
-                  >
-                    {pill.label}
-                  </span>
+                  </div>
                 </div>
 
                 <div className="bg-neutral-stroke h-px w-full" />

@@ -9,7 +9,8 @@ export type AccountSection =
   | "orders"
   | "order-details"
   | "track"
-  | "boarding";
+  | "boarding"
+  | "boarding-details";
 
 interface AccountSidebarProps {
   currentSection: AccountSection;
