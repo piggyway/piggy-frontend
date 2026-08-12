@@ -203,12 +203,18 @@ export async function createBoardingBooking(
     throw error;
   }
 
-  const data: { data: BoardingBookingResponse; notification_sent: boolean } =
-    await response.json();
+  const data: {
+    data: BoardingBookingResponse;
+    notification_sent: boolean;
+    user_notification_sent: boolean;
+  } = await response.json();
 
   return {
     booking: transformBooking(data.data),
     notificationSent: data.notification_sent,
+    // Default true when the field is missing so an older backend deploy does
+    // not flash the "could not send receipt" warning for every booking.
+    userNotificationSent: data.user_notification_sent ?? true,
   };
 }
 

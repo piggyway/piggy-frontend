@@ -29,6 +29,7 @@ export interface BookingSubmission {
   reference: string;
   email: string;
   petsLabel: string;
+  userNotificationSent: boolean;
 }
 
 interface PetForm {
@@ -206,7 +207,7 @@ export function BookingDetailsStep({
 
     setIsSubmitting(true);
     try {
-      const { booking } = await createBoardingBooking({
+      const { booking, userNotificationSent } = await createBoardingBooking({
         firstName: contact.firstName.trim(),
         lastName: contact.lastName.trim(),
         email: contact.email.trim(),
@@ -236,6 +237,7 @@ export function BookingDetailsStep({
         reference: booking.reference,
         email: contact.email.trim(),
         petsLabel: buildPetsLabel(pets),
+        userNotificationSent,
       });
     } catch (error) {
       if (error instanceof BoardingApiError && error.status === 429) {
