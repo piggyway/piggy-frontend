@@ -367,7 +367,9 @@ export async function cancelBoardingBooking(
       nights: booking.nights,
       pets: booking.pets ?? [],
     },
-    userNotificationSent: data.user_notification_sent,
-    adminNotificationSent: data.admin_notification_sent,
+    // Default true when the field is missing so an older backend deploy does
+    // not flash a false "email failed" state for every cancel.
+    userNotificationSent: data.user_notification_sent ?? true,
+    adminNotificationSent: data.admin_notification_sent ?? true,
   };
 }

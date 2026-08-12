@@ -80,13 +80,38 @@ describe("POST /api/boarding/cancel", () => {
     );
 
     const [, options] = fetchMock.mock.calls[0];
-    expect(options?.headers).toMatchObject({
+    expect(options?.headers).toEqual({
       "Content-Type": "application/json",
       "x-forwarded-for": "203.0.113.9",
     });
   });
 
-  it("forwards a 409 status from the backend", async () => {
+  it("falls back to the real-ip header when no forwarded chain is present", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(okResponse());
+
+    await POST(request(cancelBody, { "x-real-ip": "198.51.100.7" }));
+
+    const [, options] = fetchMock.mock.calls[0];
+    expect(options?.headers).toEqual({
+      "Content-Type": "application/json",
+      "x-forwarded-for": "198.51.100.7",
+    });
+  });
+
+  it("omits the ip header entirely when the caller ip is unknown", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(okResponse());
+
+    await POST(request(cancelBody));
+
+    const [, options] = fetchMock.mock.calls[0];
+    expect(options?.headers).toEqual({ "Content-Type": "application/json" });
+  });
+
+  it("preserves an upstream 409", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(
         JSON.stringify({
@@ -98,6 +123,46 @@ describe("POST /api/boarding/cancel", () => {
     );
 
     const response = await POST(request(cancelBody));
+
     expect(response.status).toBe(409);
+    await expect(response.json()).resolves.toEqual({
+      success: false,
+      error: "This booking can no longer be cancelled online.",
+    });
+  });
+
+  it("preserves an upstream 429", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          error: "Too many boarding requests, please try again later.",
+        }),
+        { status: 429, headers: { "Content-Type": "application/json" } }
+      )
+    );
+
+    const response = await POST(request(cancelBody));
+
+    expect(response.status).toBe(429);
+    await expect(response.json()).resolves.toEqual({
+      error: "Too many boarding requests, please try again later.",
+    });
+  });
+
+  it("returns a 500 envelope when the backend response is unreadable", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response("<html>gateway</html>", {
+        status: 502,
+        headers: { "Content-Type": "text/html" },
+      })
+    );
+
+    const response = await POST(request(cancelBody));
+
+    expect(response.status).toBe(500);
+    await expect(response.json()).resolves.toEqual({
+      error: "Failed to cancel boarding booking",
+    });
   });
 });

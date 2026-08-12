@@ -35,6 +35,12 @@ export function BoardingLookupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<BoardingLookupResult | null>(null);
+  // Credentials that produced the current result - cancel must not use the
+  // live inputs, which the user may edit after a successful lookup.
+  const [lookupCredentials, setLookupCredentials] = useState<{
+    reference: string;
+    email: string;
+  } | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
@@ -53,6 +59,7 @@ export function BoardingLookupPage() {
     setError(null);
     setCancelError(null);
     setResult(null);
+    setLookupCredentials(null);
 
     try {
       const booking = await lookupBoardingBooking(
@@ -60,6 +67,10 @@ export function BoardingLookupPage() {
         trimmedEmail
       );
       setResult(booking);
+      setLookupCredentials({
+        reference: trimmedReference,
+        email: trimmedEmail,
+      });
     } catch (err) {
       if (err instanceof BoardingApiError && err.status === 404) {
         setError(
@@ -76,14 +87,14 @@ export function BoardingLookupPage() {
   };
 
   const handleCancel = async () => {
-    if (!result) return;
+    if (!result || !lookupCredentials) return;
     setIsCancelling(true);
     setCancelError(null);
 
     try {
       const cancelled = await cancelBoardingBooking(
-        result.reference,
-        email.trim()
+        lookupCredentials.reference,
+        lookupCredentials.email
       );
       setResult(cancelled.booking);
       setConfirmOpen(false);
@@ -91,6 +102,15 @@ export function BoardingLookupPage() {
     } catch (err) {
       if (err instanceof BoardingApiError && err.status === 409) {
         setCancelError("This booking can no longer be cancelled online.");
+        try {
+          const refreshed = await lookupBoardingBooking(
+            lookupCredentials.reference,
+            lookupCredentials.email
+          );
+          setResult(refreshed);
+        } catch {
+          // Keep the 409 banner; leave the card as-is if refresh fails.
+        }
       } else if (err instanceof BoardingApiError && err.status === 404) {
         setCancelError(
           "Booking not found. Check your reference and email, then try again."
@@ -265,8 +285,12 @@ export function BoardingLookupPage() {
 
       <CancelBookingDialog
         open={confirmOpen}
-        onOpenChange={setConfirmOpen}
-        reference={result?.reference ?? reference}
+        onOpenChange={(open) => {
+          if (!isCancelling) setConfirmOpen(open);
+        }}
+        reference={
+          result?.reference ?? lookupCredentials?.reference ?? reference
+        }
         isSubmitting={isCancelling}
         onConfirm={handleCancel}
       />

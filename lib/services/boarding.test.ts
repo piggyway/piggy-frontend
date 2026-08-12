@@ -308,6 +308,22 @@ describe("cancelBoardingBooking", () => {
     });
   });
 
+  it("defaults notification flags to true when the backend omits them", async () => {
+    fetchWithAuthMock.mockResolvedValue(
+      response({
+        success: true,
+        data: { ...snakeCaseLookup, status: "cancelled" },
+      })
+    );
+
+    await expect(
+      cancelBoardingBooking("PB-TEST-0001", "ada@example.com")
+    ).resolves.toMatchObject({
+      userNotificationSent: true,
+      adminNotificationSent: true,
+    });
+  });
+
   it("maps a 409 into BoardingApiError when cancel is no longer allowed", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     fetchWithAuthMock.mockResolvedValue(

@@ -111,6 +111,14 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
     } catch (err) {
       if (err instanceof BoardingApiError && err.status === 409) {
         setCancelError("This booking can no longer be cancelled online.");
+        try {
+          const refreshed = await getBoardingBookingByReference(
+            booking.reference
+          );
+          setBooking(refreshed);
+        } catch {
+          // Keep the 409 banner; leave the card as-is if refresh fails.
+        }
       } else if (err instanceof BoardingApiError && err.status === 429) {
         setCancelError(
           "Too many attempts. Please wait a minute and try again."
@@ -322,7 +330,9 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
 
       <CancelBookingDialog
         open={confirmOpen}
-        onOpenChange={setConfirmOpen}
+        onOpenChange={(open) => {
+          if (!isCancelling) setConfirmOpen(open);
+        }}
         reference={booking.reference}
         isSubmitting={isCancelling}
         onConfirm={handleCancel}
