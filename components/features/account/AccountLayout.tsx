@@ -9,6 +9,7 @@ import { OrderHistory } from "./sections/OrderHistory";
 import { OrderDetails } from "./sections/OrderDetails";
 import { TrackOrder } from "./sections/TrackOrder";
 import { Boarding } from "./sections/Boarding";
+import { BoardingDetails } from "./sections/BoardingDetails";
 import { FirstLoginBanner } from "./FirstLoginBanner";
 import { useUser } from "@/contexts/UserContext";
 import { Loader2 } from "lucide-react";
@@ -22,6 +23,9 @@ export function AccountLayout() {
   const [selectedOrderNumber, setSelectedOrderNumber] = useState<string | null>(
     null
   );
+  const [selectedBoardingReference, setSelectedBoardingReference] = useState<
+    string | null
+  >(null);
   const [trackOrderNumber, setTrackOrderNumber] = useState<string | null>(null);
   // First-time login banner: captured once at mount, same as the previous
   // run-once effect behaviour.
@@ -126,6 +130,27 @@ export function AccountLayout() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  const handleBoardingClick = (reference: string) => {
+    setSelectedBoardingReference(reference);
+    setCurrentSection("boarding-details");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleBackToBoarding = () => {
+    setSelectedBoardingReference(null);
+    setCurrentSection("boarding");
+  };
+
+  const handleSectionChange = (section: AccountSection) => {
+    if (section === "boarding") {
+      setSelectedBoardingReference(null);
+    }
+    if (section === "orders") {
+      setSelectedOrderNumber(null);
+    }
+    setCurrentSection(section);
+  };
+
   const renderContent = () => {
     switch (currentSection) {
       case "profile":
@@ -151,7 +176,17 @@ export function AccountLayout() {
       case "track":
         return <TrackOrder initialOrderNumber={trackOrderNumber} />;
       case "boarding":
-        return <Boarding />;
+        return <Boarding onBookingClick={handleBoardingClick} />;
+      case "boarding-details":
+        if (!selectedBoardingReference) {
+          return <Boarding onBookingClick={handleBoardingClick} />;
+        }
+        return (
+          <BoardingDetails
+            reference={selectedBoardingReference}
+            onBack={handleBackToBoarding}
+          />
+        );
       default:
         return (
           <ProfileInfo
@@ -187,8 +222,14 @@ export function AccountLayout() {
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
         <aside className="w-full shrink-0 lg:w-[300px]">
           <AccountSidebar
-            currentSection={currentSection}
-            onSectionChange={setCurrentSection}
+            currentSection={
+              currentSection === "boarding-details"
+                ? "boarding"
+                : currentSection === "order-details"
+                  ? "orders"
+                  : currentSection
+            }
+            onSectionChange={handleSectionChange}
             onLogout={handleLogout}
             isLoggingOut={isLoggingOut}
           />
