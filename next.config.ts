@@ -39,3 +39,9 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+// Enables Cloudflare bindings during `next dev` when available.
+// Safe no-op if the package is not installed yet in pure Node tooling.
+import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
+initOpenNextCloudflareForDev();
+
