@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import {
   BoardingApiError,
+  cancelBoardingBooking,
   lookupBoardingBooking,
 } from "@/lib/services/boarding";
 import type { BoardingLookupResult } from "@/lib/types/boarding";
@@ -15,6 +17,7 @@ import {
   UNKNOWN_BOARDING_STATUS_PILL,
 } from "@/components/features/boarding/status-pill";
 import { BOARDING_ROUTES } from "@/components/features/boarding/constants";
+import { CancelBookingDialog } from "@/components/features/boarding/CancelBookingDialog";
 
 function formatBookingDate(value: string): string {
   const parsed = new Date(value);
@@ -32,6 +35,15 @@ export function BoardingLookupPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<BoardingLookupResult | null>(null);
+  // Credentials that produced the current result - cancel must not use the
+  // live inputs, which the user may edit after a successful lookup.
+  const [lookupCredentials, setLookupCredentials] = useState<{
+    reference: string;
+    email: string;
+  } | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -45,7 +57,9 @@ export function BoardingLookupPage() {
 
     setIsLoading(true);
     setError(null);
+    setCancelError(null);
     setResult(null);
+    setLookupCredentials(null);
 
     try {
       const booking = await lookupBoardingBooking(
@@ -53,6 +67,10 @@ export function BoardingLookupPage() {
         trimmedEmail
       );
       setResult(booking);
+      setLookupCredentials({
+        reference: trimmedReference,
+        email: trimmedEmail,
+      });
     } catch (err) {
       if (err instanceof BoardingApiError && err.status === 404) {
         setError(
@@ -68,6 +86,48 @@ export function BoardingLookupPage() {
     }
   };
 
+  const handleCancel = async () => {
+    if (!result || !lookupCredentials) return;
+    setIsCancelling(true);
+    setCancelError(null);
+
+    try {
+      const cancelled = await cancelBoardingBooking(
+        lookupCredentials.reference,
+        lookupCredentials.email
+      );
+      setResult(cancelled.booking);
+      setConfirmOpen(false);
+      toast.success("Your boarding request has been cancelled.");
+    } catch (err) {
+      if (err instanceof BoardingApiError && err.status === 409) {
+        setCancelError("This booking can no longer be cancelled online.");
+        try {
+          const refreshed = await lookupBoardingBooking(
+            lookupCredentials.reference,
+            lookupCredentials.email
+          );
+          setResult(refreshed);
+        } catch {
+          // Keep the 409 banner; leave the card as-is if refresh fails.
+        }
+      } else if (err instanceof BoardingApiError && err.status === 404) {
+        setCancelError(
+          "Booking not found. Check your reference and email, then try again."
+        );
+      } else if (err instanceof BoardingApiError && err.status === 429) {
+        setCancelError(
+          "Too many attempts. Please wait a minute and try again."
+        );
+      } else {
+        setCancelError("We couldn't cancel this request. Please try again.");
+      }
+      setConfirmOpen(false);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
+
   const pill = result
     ? (BOARDING_STATUS_PILL[result.status] ?? UNKNOWN_BOARDING_STATUS_PILL)
     : null;
@@ -76,6 +136,8 @@ export function BoardingLookupPage() {
     result && result.pets.length > 0
       ? result.pets.map((pet) => `${pet.name} (${pet.type})`).join(", ")
       : null;
+
+  const canCancel = result?.status === "pending";
 
   return (
     <div className="container mx-auto flex flex-col items-center gap-8 px-4 pt-16 pb-24 sm:px-6 lg:px-8">
@@ -198,8 +260,40 @@ export function BoardingLookupPage() {
               </span>
             </div>
           )}
+
+          {cancelError && (
+            <p className="rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13px] font-medium text-rose-800">
+              {cancelError}
+            </p>
+          )}
+
+          {canCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setCancelError(null);
+                setConfirmOpen(true);
+              }}
+              className="h-[46px] w-full rounded-full border-[1.5px] border-rose-300 text-[14px] font-semibold text-rose-700 hover:bg-rose-50"
+            >
+              Cancel request
+            </Button>
+          )}
         </div>
       )}
+
+      <CancelBookingDialog
+        open={confirmOpen}
+        onOpenChange={(open) => {
+          if (!isCancelling) setConfirmOpen(open);
+        }}
+        reference={
+          result?.reference ?? lookupCredentials?.reference ?? reference
+        }
+        isSubmitting={isCancelling}
+        onConfirm={handleCancel}
+      />
 
       <div className="flex flex-wrap items-center justify-center gap-3.5">
         <Button

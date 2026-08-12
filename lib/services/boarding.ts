@@ -320,3 +320,56 @@ export async function lookupBoardingBooking(
     pets: booking.pets ?? [],
   };
 }
+
+export interface BoardingCancelResult {
+  booking: BoardingLookupResult;
+  userNotificationSent: boolean;
+  adminNotificationSent: boolean;
+}
+
+/**
+ * Cancel a pending booking. Same credentials as lookup (reference + email).
+ * Non-pending bookings return BoardingApiError with status 409.
+ */
+export async function cancelBoardingBooking(
+  reference: string,
+  email: string
+): Promise<BoardingCancelResult> {
+  const response = await fetchWithAuth(API_ENDPOINTS.BOARDING_CANCEL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ reference, email }),
+    redirectOnAuthError: false,
+  });
+
+  if (!response.ok) {
+    const error = await readError(response, "Failed to cancel booking");
+    console.error("[BoardingService] Failed to cancel booking:", error);
+    throw error;
+  }
+
+  const data: {
+    data: BoardingLookupResponse;
+    user_notification_sent: boolean;
+    admin_notification_sent: boolean;
+  } = await response.json();
+  const booking = data.data;
+
+  return {
+    booking: {
+      reference: booking.reference,
+      status: booking.status,
+      firstName: booking.first_name,
+      dropOffDate: booking.drop_off_date,
+      dropOffTime: booking.drop_off_time,
+      pickUpDate: booking.pick_up_date,
+      pickUpTime: booking.pick_up_time,
+      nights: booking.nights,
+      pets: booking.pets ?? [],
+    },
+    // Default true when the field is missing so an older backend deploy does
+    // not flash a false "email failed" state for every cancel.
+    userNotificationSent: data.user_notification_sent ?? true,
+    adminNotificationSent: data.admin_notification_sent ?? true,
+  };
+}
