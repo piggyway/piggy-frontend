@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -34,7 +35,7 @@ export async function POST(request: NextRequest) {
       headers["x-forwarded-for"] = ip;
     }
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/boarding`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/boarding`, {
       method: "POST",
       headers,
       body: JSON.stringify(body),
@@ -75,7 +76,7 @@ export async function GET(request: NextRequest) {
     if (limit) url.searchParams.set("limit", limit);
     if (offset) url.searchParams.set("offset", offset);
 
-    const res = await fetch(url.toString(), { headers });
+    const res = await backendFetch(url.toString(), { headers });
     const data = await res.json();
 
     return NextResponse.json(data, { status: res.status });

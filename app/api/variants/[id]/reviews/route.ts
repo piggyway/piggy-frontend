@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -15,7 +16,7 @@ export async function GET(
     const { id } = await params;
     const token = request.headers.get("authorization");
 
-    const res = await fetch(
+    const res = await backendFetch(
       `${API_BASE_URL}/api/v1/variants/${encodeURIComponent(id)}/reviews`,
       {
         headers: {

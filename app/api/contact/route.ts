@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -13,13 +14,13 @@ export async function POST(request: NextRequest) {
     const forwardedFor = request.headers.get("x-forwarded-for");
     const realIp = request.headers.get("x-real-ip");
     const requestIp =
-      "ip" in request && typeof request.ip === "string" ? request.ip : undefined;
-    const ip = forwardedFor
-      ? forwardedFor.split(",")[0]
-      : realIp || requestIp;
+      "ip" in request && typeof request.ip === "string"
+        ? request.ip
+        : undefined;
+    const ip = forwardedFor ? forwardedFor.split(",")[0] : realIp || requestIp;
 
     // Proxy request to backend
-    const res = await fetch(`${API_BASE_URL}/api/v1/contact`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/contact`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -5,6 +5,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -15,7 +16,7 @@ const API_BASE_URL =
  */
 export async function GET() {
   try {
-    const res = await fetch(`${API_BASE_URL}/api/v1/config`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/config`, {
       // Config rarely changes; cache upstream responses for 5 minutes
       next: { revalidate: 300 },
     });

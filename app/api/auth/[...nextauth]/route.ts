@@ -2,6 +2,7 @@ import NextAuth, { NextAuthOptions, Account, Profile, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL = process.env.API_BASE_URL!; // e.g. http://localhost:3000
 
@@ -50,7 +51,7 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       return { ...token, error: "RefreshAccessTokenError" as const };
     }
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
       method: "POST",
       headers: {
         Cookie: `rt=${token.refreshToken}`,
@@ -156,7 +157,7 @@ export const authOptions: NextAuthOptions = {
 
       try {
         const accountWithUserId = account as Account & { userId?: string };
-        const res = await fetch(`${API_BASE_URL}/api/v1/auth/sso`, {
+        const res = await backendFetch(`${API_BASE_URL}/api/v1/auth/sso`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({

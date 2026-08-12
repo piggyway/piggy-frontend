@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -22,7 +23,7 @@ export async function PATCH(
     const sessionId = request.headers.get("x-session-id") || undefined;
     const body = await request.json();
 
-    const res = await fetch(
+    const res = await backendFetch(
       `${API_BASE_URL}/api/v1/cart/items/${encodeURIComponent(itemId)}`,
       {
         method: "PATCH",
@@ -59,7 +60,7 @@ export async function DELETE(
     const token = request.headers.get("authorization") || undefined;
     const sessionId = request.headers.get("x-session-id") || undefined;
 
-    const res = await fetch(
+    const res = await backendFetch(
       `${API_BASE_URL}/api/v1/cart/items/${encodeURIComponent(itemId)}`,
       {
         method: "DELETE",

@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getToken, JWT } from "next-auth/jwt";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 export const dynamic = "force-dynamic";
 
@@ -54,7 +55,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/auth/refresh`, {
       method: "POST",
       headers: {
         // Backend expects refresh token in cookie named "rt"

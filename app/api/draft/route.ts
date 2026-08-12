@@ -5,6 +5,7 @@
 
 import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 // Secret token for validating preview requests from Directus
 const PREVIEW_SECRET = process.env.PREVIEW_SECRET;
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
           );
           backendUrl.searchParams.set("include_draft", "true");
 
-          const res = await fetch(backendUrl.toString(), {
+          const res = await backendFetch(backendUrl.toString(), {
             headers: {
               "x-preview-secret": PREVIEW_SECRET,
             },

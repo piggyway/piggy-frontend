@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -59,7 +60,7 @@ export async function POST(request: NextRequest) {
       headers["X-Session-Id"] = sessionId;
     }
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/checkout/session`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/checkout/session`, {
       method: "POST",
       headers,
       body: JSON.stringify(backendPayload),
