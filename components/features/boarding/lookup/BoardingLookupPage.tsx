@@ -165,7 +165,7 @@ export function BoardingLookupPage() {
           <div className="bg-neutral-stroke h-px w-full" />
 
           <div className="flex items-center justify-between">
-            <span className="text-subtle text-slate-600">Hi</span>
+            <span className="text-subtle text-slate-600">Name</span>
             <span className="text-subtle-medium text-primary-navy">
               {result.firstName}
             </span>
