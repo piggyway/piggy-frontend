@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { fetchWithAuth } from "@/lib/api/client";
 import {
   BoardingApiError,
+  cancelBoardingBooking,
   getBoardingBookingByReference,
   lookupBoardingBooking,
 } from "@/lib/services/boarding";
@@ -259,5 +260,91 @@ describe("getBoardingBookingByReference", () => {
     expect((error as BoardingApiError).message).toBe(
       "Failed to get booking detail"
     );
+  });
+});
+
+describe("cancelBoardingBooking", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
+
+  it("maps the cancelled booking and email flags", async () => {
+    fetchWithAuthMock.mockResolvedValue(
+      response({
+        success: true,
+        data: { ...snakeCaseLookup, status: "cancelled" },
+        user_notification_sent: true,
+        admin_notification_sent: false,
+      })
+    );
+
+    await expect(
+      cancelBoardingBooking("PB-TEST-0001", "ada@example.com")
+    ).resolves.toEqual({
+      booking: {
+        reference: "PB-TEST-0001",
+        status: "cancelled",
+        firstName: "Ada",
+        dropOffDate: "2026-08-30",
+        dropOffTime: "09:00",
+        pickUpDate: "2026-09-02",
+        pickUpTime: "17:00",
+        nights: 3,
+        pets: [{ name: "Nibbles", type: "Guinea pig" }],
+      },
+      userNotificationSent: true,
+      adminNotificationSent: false,
+    });
+
+    expect(fetchWithAuthMock).toHaveBeenCalledWith("/api/boarding/cancel", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        reference: "PB-TEST-0001",
+        email: "ada@example.com",
+      }),
+      redirectOnAuthError: false,
+    });
+  });
+
+  it("maps a 409 into BoardingApiError when cancel is no longer allowed", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    fetchWithAuthMock.mockResolvedValue(
+      response(
+        {
+          success: false,
+          error: "This booking can no longer be cancelled online.",
+        },
+        false,
+        409
+      )
+    );
+
+    const error = await cancelBoardingBooking(
+      "PB-TEST-0001",
+      "ada@example.com"
+    ).catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(BoardingApiError);
+    expect((error as BoardingApiError).status).toBe(409);
+    expect((error as BoardingApiError).message).toBe(
+      "This booking can no longer be cancelled online."
+    );
+  });
+
+  it("maps a 404 into BoardingApiError for identity mismatch", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => undefined);
+    fetchWithAuthMock.mockResolvedValue(
+      response({ success: false, error: "Booking not found" }, false, 404)
+    );
+
+    const error = await cancelBoardingBooking(
+      "PB-TEST-0001",
+      "wrong@example.com"
+    ).catch((e: unknown) => e);
+
+    expect(error).toBeInstanceOf(BoardingApiError);
+    expect((error as BoardingApiError).status).toBe(404);
   });
 });

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
   BoardingApiError,
+  cancelBoardingBooking,
   getBoardingBookingByReference,
 } from "@/lib/services/boarding";
 import type { BoardingBooking } from "@/lib/types/boarding";
@@ -14,6 +15,7 @@ import {
   BOARDING_STATUS_PILL,
   UNKNOWN_BOARDING_STATUS_PILL,
 } from "@/components/features/boarding/status-pill";
+import { CancelBookingDialog } from "@/components/features/boarding/CancelBookingDialog";
 
 interface BoardingDetailsProps {
   reference: string;
@@ -50,6 +52,9 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
   const [error, setError] = useState<string | null>(null);
   const [isNotFound, setIsNotFound] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -90,6 +95,32 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
       window.setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Couldn't copy the reference. Please copy it manually.");
+    }
+  };
+
+  const handleCancel = async () => {
+    if (!booking) return;
+    setIsCancelling(true);
+    setCancelError(null);
+
+    try {
+      await cancelBoardingBooking(booking.reference, booking.email);
+      setBooking({ ...booking, status: "cancelled" });
+      setConfirmOpen(false);
+      toast.success("Your boarding request has been cancelled.");
+    } catch (err) {
+      if (err instanceof BoardingApiError && err.status === 409) {
+        setCancelError("This booking can no longer be cancelled online.");
+      } else if (err instanceof BoardingApiError && err.status === 429) {
+        setCancelError(
+          "Too many attempts. Please wait a minute and try again."
+        );
+      } else {
+        setCancelError("We couldn't cancel this request. Please try again.");
+      }
+      setConfirmOpen(false);
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -156,6 +187,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
 
   const pill =
     BOARDING_STATUS_PILL[booking.status] ?? UNKNOWN_BOARDING_STATUS_PILL;
+  const canCancel = booking.status === "pending";
 
   return (
     <div className="flex flex-col items-start gap-6">
@@ -183,15 +215,36 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
           </div>
           <p className="text-subtle text-slate-600">Boarding request details</p>
         </div>
-        <span
-          className={cn(
-            "rounded-full px-3.5 py-[5px] text-[12px] font-semibold",
-            pill.className
+        <div className="flex flex-wrap items-center gap-3">
+          <span
+            className={cn(
+              "rounded-full px-3.5 py-[5px] text-[12px] font-semibold",
+              pill.className
+            )}
+          >
+            {pill.label}
+          </span>
+          {canCancel && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => {
+                setCancelError(null);
+                setConfirmOpen(true);
+              }}
+              className="h-9 rounded-full border-[1.5px] border-rose-300 px-4 text-[13px] font-semibold text-rose-700 hover:bg-rose-50"
+            >
+              Cancel request
+            </Button>
           )}
-        >
-          {pill.label}
-        </span>
+        </div>
       </div>
+
+      {cancelError && (
+        <p className="w-full rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13px] font-medium text-rose-800">
+          {cancelError}
+        </p>
+      )}
 
       <div className="border-neutral-stroke flex w-full flex-col gap-5 rounded-[20px] border bg-white px-6 py-[26px] sm:px-8">
         <h3 className="text-primary-navy text-[16px] font-semibold">Stay</h3>
@@ -266,6 +319,14 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
           ))}
         </div>
       </div>
+
+      <CancelBookingDialog
+        open={confirmOpen}
+        onOpenChange={setConfirmOpen}
+        reference={booking.reference}
+        isSubmitting={isCancelling}
+        onConfirm={handleCancel}
+      />
     </div>
   );
 }
