@@ -86,6 +86,7 @@ export interface CreateBoardingBookingInput {
 export interface CreateBoardingBookingResult {
   booking: BoardingBooking;
   notificationSent: boolean;
+  userNotificationSent: boolean;
 }
 
 export interface BoardingBookingListMeta {

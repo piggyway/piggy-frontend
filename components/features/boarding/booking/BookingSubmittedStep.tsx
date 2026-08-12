@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import { CalendarCheck, Check, Mail, Package } from "lucide-react";
+import { CalendarCheck, Check, Copy, Mail, Package } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { StepIndicator } from "./StepIndicator";
 import type { BookingSubmission } from "./BookingDetailsStep";
@@ -26,6 +30,8 @@ export function BookingSubmittedStep({
   pickUp,
   nights,
 }: BookingSubmittedStepProps) {
+  const [copied, setCopied] = useState(false);
+
   const rows = [
     { label: "Drop-off", value: dropOff },
     { label: "Pick-up", value: pickUp },
@@ -53,6 +59,17 @@ export function BookingSubmittedStep({
       subtitle: `See you ${dropOff}`,
     },
   ];
+
+  const handleCopyReference = async () => {
+    try {
+      await navigator.clipboard.writeText(submission.reference);
+      setCopied(true);
+      toast.success("Reference copied to clipboard");
+      window.setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.error("Couldn't copy the reference. Please copy it manually.");
+    }
+  };
 
   return (
     <div className="container mx-auto flex flex-col items-center gap-7 px-4 pt-16 pb-24 sm:px-6 lg:px-8">
@@ -83,9 +100,24 @@ export function BookingSubmittedStep({
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-col gap-0.5">
             <span className="text-[12px] text-slate-400">Reference</span>
-            <span className="text-primary-navy text-[16px] font-semibold">
-              #{submission.reference}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-primary-navy text-[20px] font-semibold tracking-wide">
+                {submission.reference}
+              </span>
+              <button
+                type="button"
+                onClick={handleCopyReference}
+                className="hover:text-primary-navy text-slate-400 transition-colors"
+                title="Copy reference"
+                aria-label="Copy reference"
+              >
+                {copied ? (
+                  <Check className="size-4" />
+                ) : (
+                  <Copy className="size-4" />
+                )}
+              </button>
+            </div>
           </div>
           <span className="bg-primary-gold/20 border-primary-gold text-primary-navy rounded-full border px-3.5 py-1.5 text-[12px] font-semibold">
             Pending review
@@ -103,12 +135,22 @@ export function BookingSubmittedStep({
           </div>
         ))}
 
-        <div className="bg-secondary-mint rounded-[12px] px-3.5 py-2.5">
-          <p className="text-primary-navy text-[13px] font-medium">
-            Our team will email {submission.email} with the confirmation and
-            final pricing.
-          </p>
-        </div>
+        {submission.userNotificationSent ? (
+          <div className="bg-secondary-mint rounded-[12px] px-3.5 py-2.5">
+            <p className="text-primary-navy text-[13px] font-medium">
+              We&apos;ve emailed a receipt to {submission.email} — check your
+              inbox and spam folder. Keep this reference to track your request.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-[12px] border border-amber-200 bg-amber-50 px-3.5 py-2.5">
+            <p className="text-[13px] font-medium text-amber-900">
+              We couldn&apos;t send a receipt email to {submission.email}.
+              Please save this reference number now — you&apos;ll need it to
+              track your request.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Next steps */}

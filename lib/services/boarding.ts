@@ -203,12 +203,16 @@ export async function createBoardingBooking(
     throw error;
   }
 
-  const data: { data: BoardingBookingResponse; notification_sent: boolean } =
-    await response.json();
+  const data: {
+    data: BoardingBookingResponse;
+    notification_sent: boolean;
+    user_notification_sent: boolean;
+  } = await response.json();
 
   return {
     booking: transformBooking(data.data),
     notificationSent: data.notification_sent,
+    userNotificationSent: data.user_notification_sent,
   };
 }
 
