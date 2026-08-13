@@ -71,11 +71,11 @@ export function CartItem({
       {/* Product Details */}
       <div className="flex flex-1 flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex flex-col gap-1">
-          <h3 className="text-primary-navy text-lg font-medium">{title}</h3>
+          <h3 className="text-primary-navy text-p-ui">{title}</h3>
           {variantOptions && variantOptions.length > 0 ? (
             <div className="flex flex-wrap gap-x-3 gap-y-1">
               {variantOptions.map((opt, i) => (
-                <p key={i} className="text-sm text-slate-500">
+                <p key={i} className="text-p text-slate-500">
                   <span className="text-slate-400">{opt.name}:</span>{" "}
                   {opt.value}
                 </p>
@@ -86,7 +86,7 @@ export function CartItem({
             !variant.match(/^[\w-]+$/) && ( // Hide if it looks like a SKU code
               <div className="flex flex-col gap-1">
                 {variant.split(",").map((v, i) => (
-                  <p key={i} className="text-sm text-slate-500 capitalize">
+                  <p key={i} className="text-p text-slate-500 capitalize">
                     {v.trim()}
                   </p>
                 ))}
@@ -98,7 +98,7 @@ export function CartItem({
               {addOns.map((addOn) => (
                 <li
                   key={addOn.id}
-                  className="flex items-center justify-between gap-3 text-sm text-slate-500"
+                  className="text-p flex items-center justify-between gap-3 text-slate-500"
                 >
                   <span className="truncate">+ {addOn.name}</span>
                   <span className="shrink-0 text-slate-400">

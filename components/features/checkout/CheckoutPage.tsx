@@ -126,7 +126,7 @@ export function CheckoutPage() {
   if (!isLoading && (!cart || cart.items.length === 0)) {
     return (
       <div className="container mx-auto max-w-6xl px-4 py-12 text-center lg:py-16">
-        <h1 className="text-primary-navy mb-4 text-3xl font-bold">
+        <h1 className="text-primary-navy text-large mb-4">
           Your Cart is Empty
         </h1>
         <Button onClick={() => router.push("/")} className="mt-4">
@@ -156,23 +156,23 @@ export function CheckoutPage() {
           ← Back to cart
         </Link>
 
-        <h1 className="text-primary-navy text-[40px] leading-none font-semibold">
+        <h1 className="text-primary-navy text-large">
           Checkout
         </h1>
 
         {/* Step Indicators */}
-        <div className="flex items-center gap-3">
+        <div className="flex w-full min-w-0 max-w-full items-center gap-1 sm:w-auto sm:gap-3">
           {STEPS.map((step, index) => {
             const isCompleted = currentStep > step.id;
             const isActive = currentStep === step.id;
             return (
               <React.Fragment key={step.id}>
                 {index > 0 && (
-                  <div className="h-0.5 w-7 rounded-full bg-slate-300" />
+                  <div className="h-0.5 min-w-2 flex-1 rounded-full bg-slate-300 sm:w-7 sm:flex-none" />
                 )}
                 <div
                   className={cn(
-                    "flex items-center gap-2 rounded-full px-[18px] py-2",
+                    "flex shrink-0 items-center gap-2 rounded-full px-2 py-2 sm:px-[18px]",
                     isCompleted && "bg-primary-navy border border-green-600",
                     isActive && "bg-primary-navy",
                     !isCompleted &&
@@ -182,7 +182,7 @@ export function CheckoutPage() {
                 >
                   <span
                     className={cn(
-                      "flex size-5 items-center justify-center rounded-full text-[11px] font-semibold",
+                      "text-detail flex size-5 items-center justify-center rounded-full font-semibold",
                       isCompleted && "bg-green-600 text-white",
                       isActive && "bg-primary-gold text-primary-navy",
                       !isCompleted &&
@@ -194,6 +194,7 @@ export function CheckoutPage() {
                   </span>
                   <span
                     className={cn(
+                      "hidden sm:inline",
                       isCompleted && "text-subtle-semibold text-green-600",
                       isActive && "text-subtle-semibold text-white",
                       !isCompleted &&
@@ -243,7 +244,7 @@ export function CheckoutPage() {
 
           {/* Right Column: Order Summary */}
           <div className="w-full lg:w-[400px] lg:shrink-0">
-            <div className="border-neutral-stroke sticky top-8 flex flex-col rounded-[24px] border bg-white px-8 py-7 lg:min-h-[640px]">
+            <div className="border-neutral-stroke sticky top-8 flex flex-col rounded-[24px] border bg-white px-6 py-10 sm:px-8 sm:py-12 lg:min-h-[640px]">
               <CheckoutSummary
                 fulfillmentType={fulfillmentType}
                 confirmedAmounts={currentStep === 3 ? amounts : null}

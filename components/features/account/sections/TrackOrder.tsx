@@ -223,10 +223,10 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
               <div className="border-neutral-stroke flex flex-col gap-6 rounded-[20px] border bg-white px-6 py-7 sm:px-8">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-col gap-[3px]">
-                    <h3 className="text-primary-navy text-[18px] font-semibold">
+                    <h3 className="text-primary-navy text-p-ui font-semibold">
                       Order {trackingData.order_number}
                     </h3>
-                    <p className="text-[13px] text-slate-400">
+                    <p className="text-subtle text-slate-400">
                       Placed on{" "}
                       {new Date(trackingData.date_created).toLocaleDateString(
                         "en-AU"
@@ -236,7 +236,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                   {pill && (
                     <span
                       className={cn(
-                        "rounded-full px-4 py-1.5 text-[13px] font-semibold",
+                        "text-subtle rounded-full px-4 py-1.5 font-semibold",
                         pill.className
                       )}
                     >
@@ -284,7 +284,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                           >
                             <p
                               className={cn(
-                                "text-[15px] font-semibold",
+                                "text-p font-semibold",
                                 reached ? "text-primary-navy" : "text-slate-400"
                               )}
                             >
@@ -292,7 +292,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                             </p>
                             <p
                               className={cn(
-                                "text-[13px]",
+                                "text-subtle",
                                 reached ? "text-slate-600" : "text-slate-400"
                               )}
                             >
@@ -301,7 +301,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                             {step.key === "shipped" &&
                               reached &&
                               trackingData.shipped_at && (
-                                <p className="text-[12px] text-slate-400">
+                                <p className="text-detail text-slate-400">
                                   {new Date(
                                     trackingData.shipped_at
                                   ).toLocaleDateString("en-AU")}{" "}
@@ -323,7 +323,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
 
                 <div className="bg-neutral-stroke h-px w-full" />
 
-                <p className="text-[12px] text-slate-400">
+                <p className="text-detail text-slate-400">
                   Last updated{" "}
                   {new Date(trackingData.date_updated).toLocaleDateString(
                     "en-AU"
@@ -349,12 +349,12 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
             <div className="flex w-full flex-col gap-5 lg:w-[340px] lg:shrink-0">
               {!isPickup && address && (
                 <div className="border-neutral-stroke flex flex-col gap-3.5 rounded-[20px] border bg-white px-6 py-[22px]">
-                  <h4 className="text-primary-navy text-[16px] font-semibold">
+                  <h4 className="text-primary-navy text-p font-semibold">
                     Delivery address
                   </h4>
                   {address.name && (
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[12px] text-slate-400">
+                      <span className="text-subtle text-slate-400">
                         Recipient
                       </span>
                       <span className="text-subtle-medium text-primary-navy">
@@ -364,7 +364,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                   )}
                   {addr && (
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[12px] text-slate-400">
+                      <span className="text-subtle text-slate-400">
                         Address
                       </span>
                       <span className="text-subtle-medium text-primary-navy">
@@ -383,7 +383,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                   )}
                   {address.phone && (
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-[12px] text-slate-400">Phone</span>
+                      <span className="text-subtle text-slate-400">Phone</span>
                       <span className="text-subtle-medium text-primary-navy">
                         {address.phone}
                       </span>
@@ -396,11 +396,11 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                 <div className="border-neutral-stroke flex flex-col gap-2.5 rounded-[20px] border bg-white px-6 py-[22px]">
                   <div className="flex items-center gap-2.5">
                     <Store className="text-primary-navy size-[18px]" />
-                    <h4 className="text-primary-navy text-[16px] font-semibold">
+                    <h4 className="text-primary-navy text-p font-semibold">
                       Pickup order
                     </h4>
                   </div>
-                  <p className="text-[13px] text-slate-600">
+                  <p className="text-subtle text-slate-600">
                     This is a pickup order. Please collect from our store when
                     ready.
                   </p>
@@ -408,10 +408,10 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
               )}
 
               <div className="border-neutral-stroke flex flex-col items-start gap-2.5 rounded-[20px] border bg-white px-6 py-[22px]">
-                <h4 className="text-primary-navy text-[16px] font-semibold">
+                <h4 className="text-primary-navy text-p font-semibold">
                   Need a hand?
                 </h4>
-                <p className="text-[13px] text-slate-600">
+                <p className="text-subtle text-slate-600">
                   Questions about your delivery — we usually reply within a day.
                 </p>
                 <Link

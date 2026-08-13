@@ -35,7 +35,7 @@ export function FirstLoginBanner({
 
         {/* Content */}
         <div className="flex-1 pr-8">
-          <h3 className="text-primary-navy mb-2 text-xl font-semibold">
+          <h3 className="text-primary-navy text-lead mb-2">
             Welcome to PiggyWay!
           </h3>
           <p className="mb-4 text-gray-600">
@@ -44,13 +44,13 @@ export function FirstLoginBanner({
           </p>
 
           {/* Progress Indicator */}
-          <div className="mb-4 flex items-center gap-2 text-sm text-gray-500">
-            <div className="bg-primary-navy flex h-6 w-6 items-center justify-center rounded-full text-xs font-semibold text-white">
+          <div className="text-p mb-4 flex items-center gap-2 text-gray-500">
+            <div className="bg-primary-navy text-detail flex h-6 w-6 items-center justify-center rounded-full font-semibold text-white">
               1
             </div>
             <span>Profile Information</span>
             <span className="mx-2">•</span>
-            <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-gray-300 text-xs font-semibold text-gray-400">
+            <div className="text-detail flex h-6 w-6 items-center justify-center rounded-full border-2 border-gray-300 font-semibold text-gray-400">
               2
             </div>
             <span className="text-gray-400">Address (Later)</span>

@@ -184,13 +184,13 @@ export function ProductInformationSection({
                     className="border-white/20"
                   >
                     <AccordionTrigger className="[&>svg]:text-primary-navy w-full text-left text-white [&>svg]:ml-auto [&>svg]:!h-8 [&>svg]:!w-8 [&>svg]:rounded-full [&>svg]:bg-white [&>svg]:p-2">
-                      <h2 className="text-primary-purple text-p-ui font-medium">
+                      <h2 className="text-primary-purple text-lead">
                         {item.title}
                       </h2>
                     </AccordionTrigger>
                     <AccordionContent>
                       <div
-                        className="text-body-medium [&_h2]:text-p [&_h3]:text-subtle leading-relaxed text-white/90 [&_a]:underline [&_a]:underline-offset-4 [&_h2]:font-semibold [&_h2]:text-white [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
+                        className="text-p text-white/90 [&_a]:underline [&_a]:underline-offset-4 [&_h2]:text-p [&_h2]:font-semibold [&_h2]:text-white [&_h3]:text-p [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
                         dangerouslySetInnerHTML={{
                           __html: item.content,
                         }}
@@ -233,10 +233,10 @@ export function ProductInformationSection({
                               strokeWidth={1.5}
                             />
                           )}
-                          <p className="text-primary-navy text-sm leading-5 font-medium">
+                          <p className="text-primary-navy text-p font-medium">
                             {card.title}
                             {card.description && (
-                              <span className="text-primary-navy/70 mt-0.5 block text-xs font-normal">
+                              <span className="text-primary-navy/70 mt-0.5 block text-subtle font-normal">
                                 {card.description}
                               </span>
                             )}

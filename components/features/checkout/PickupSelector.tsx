@@ -51,6 +51,12 @@ function formatLocationArea(address: string): string {
   return parts.length > 3 ? parts.slice(-3).join(", ") : address;
 }
 
+function hasPickupInstructions(value?: string | null): boolean {
+  if (!value) return false;
+  const normalized = value.trim().toLowerCase();
+  return normalized !== "" && normalized !== "none" && normalized !== "null";
+}
+
 function formatSlotTime(slot: PickupSlot, field: "startAt" | "endAt") {
   const date = new Date(`${slot.slotDate}T${slot[field]}`);
   return date.toLocaleTimeString([], {
@@ -170,6 +176,7 @@ export function PickupSelector({
   };
 
   const selectedLocation = locations.find((l) => l.id === selectedLocationId);
+  const pickupInstructions = selectedLocation?.instructions;
   const selectedSlot = slots.find((s) => s.id === selectedSlotId);
   const availableSet = React.useMemo(
     () => new Set(availableDates),
@@ -208,7 +215,7 @@ export function PickupSelector({
     <div className="flex w-full flex-col gap-6">
       {/* Pickup location */}
       <div className="flex flex-col gap-2">
-        <label className="text-subtle-medium text-primary-navy">
+        <label className="text-p font-medium text-primary-navy">
           Pickup location
         </label>
         <Select
@@ -216,7 +223,7 @@ export function PickupSelector({
           onValueChange={handleLocationChange}
           disabled={loadingLocations}
         >
-          <SelectTrigger className="border-neutral-stroke h-12 rounded-[12px] pr-3.5 pl-4 text-[15px] text-slate-600">
+          <SelectTrigger className="border-neutral-stroke text-p h-12 rounded-[12px] pr-3.5 pl-4 text-slate-600">
             {/* flex! beats SelectTrigger's [&>span]:line-clamp-1, which would
                 otherwise stack the icon above the text */}
             <span className="flex! min-w-0 items-center gap-2.5">
@@ -232,10 +239,8 @@ export function PickupSelector({
             ))}
           </SelectContent>
         </Select>
-        {selectedLocation?.instructions && (
-          <p className="text-[13px] text-slate-400">
-            {selectedLocation.instructions}
-          </p>
+        {hasPickupInstructions(pickupInstructions) && (
+          <p className="text-subtle text-slate-400">{pickupInstructions}</p>
         )}
       </div>
 
@@ -248,10 +253,10 @@ export function PickupSelector({
                 <CalendarIcon className="text-primary-navy size-[17px]" />
               </span>
               <div className="flex min-w-0 flex-col gap-0.5">
-                <span className="text-primary-navy text-[16px] font-semibold">
+                <span className="text-primary-navy text-lead">
                   Pickup
                 </span>
-                <span className="text-[13px] text-slate-400">
+                <span className="text-subtle text-slate-400">
                   {headSubtitle}
                 </span>
               </div>
@@ -267,7 +272,7 @@ export function PickupSelector({
               >
                 <ChevronLeft className="text-primary-navy size-3" />
               </button>
-              <span className="text-primary-navy text-[15px] font-semibold">
+              <span className="text-primary-navy text-p-ui font-semibold">
                 {monthLabel}
               </span>
               <button
@@ -282,7 +287,7 @@ export function PickupSelector({
 
             {/* Day grid */}
             {loadingDates ? (
-              <p className="text-[13px] text-slate-400">
+              <p className="text-subtle text-slate-400">
                 Loading available dates...
               </p>
             ) : (
@@ -291,7 +296,7 @@ export function PickupSelector({
                   {WEEKDAYS.map((wd) => (
                     <span
                       key={wd}
-                      className="flex h-6 flex-1 items-center justify-center text-[11px] font-medium text-slate-400"
+                      className="text-detail flex h-6 flex-1 items-center justify-center font-medium text-slate-400"
                     >
                       {wd}
                     </span>
@@ -311,7 +316,7 @@ export function PickupSelector({
                             disabled={!isAvailable}
                             onClick={() => handleDateSelect(key)}
                             className={cn(
-                              "flex h-[38px] flex-1 items-center justify-center rounded-[10px] text-[13px]",
+                              "text-p flex h-[38px] flex-1 items-center justify-center rounded-[10px] transition-colors",
                               isSelected
                                 ? "bg-primary-navy font-semibold text-white"
                                 : isAvailable
@@ -331,18 +336,18 @@ export function PickupSelector({
             <div className="bg-neutral-stroke h-px w-full" />
 
             <div className="flex items-center justify-between">
-              <span className="text-primary-navy text-[13px] font-medium">
+              <span className="text-primary-navy text-p font-semibold">
                 Pickup time slot
               </span>
-              <span className="text-[11px] text-slate-400">1-hour blocks</span>
+              <span className="text-detail text-slate-400">1-hour blocks</span>
             </div>
 
             {!selectedDate ? (
-              <p className="text-[13px] text-slate-400">
+              <p className="text-subtle text-slate-400">
                 Select a date to see available time slots.
               </p>
             ) : loadingSlots ? (
-              <p className="text-[13px] text-slate-400">Loading slots...</p>
+              <p className="text-subtle text-slate-400">Loading slots...</p>
             ) : slots.length > 0 ? (
               <div className="grid grid-cols-4 gap-2">
                 {slots.map((slot) => {
@@ -353,10 +358,10 @@ export function PickupSelector({
                       type="button"
                       onClick={() => onSlotChange(slot.id)}
                       className={cn(
-                        "flex h-9 items-center justify-center rounded-full text-[13px]",
+                        "text-p flex h-9 items-center justify-center rounded-full transition-colors",
                         isSelected
                           ? "bg-primary-navy font-semibold text-white"
-                          : "border-neutral-stroke hover:border-primary-navy border bg-white text-slate-600"
+                          : "border-neutral-stroke border bg-white text-slate-600 hover:border-slate-300"
                       )}
                     >
                       {formatSlotTime(slot, "startAt")}
@@ -365,7 +370,7 @@ export function PickupSelector({
                 })}
               </div>
             ) : (
-              <p className="text-[13px] text-slate-400">
+              <p className="text-subtle text-slate-400">
                 No available slots for this date.
               </p>
             )}
@@ -373,8 +378,8 @@ export function PickupSelector({
 
           {selectedSlot && (
             <div className="bg-secondary-mint flex w-full flex-col gap-1 rounded-[16px] px-5 py-4">
-              <span className="text-[12px] text-slate-600">Your pickup</span>
-              <span className="text-primary-navy text-[17px] font-semibold">
+              <span className="text-subtle text-slate-600">Your pickup</span>
+              <span className="text-primary-navy text-p font-semibold">
                 {formatDateLabel(selectedDate)} ·{" "}
                 {formatSlotTime(selectedSlot, "startAt")}–
                 {formatSlotTime(selectedSlot, "endAt")}

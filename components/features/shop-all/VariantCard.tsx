@@ -45,11 +45,11 @@ export function VariantCard({
     .join(", ");
 
   const statusBadge = isPreorder ? (
-    <span className="bg-primary-gold text-primary-navy absolute top-2 left-2 z-10 rounded-full px-2.5 py-1 text-xs font-medium shadow-sm">
+    <span className="bg-primary-gold text-primary-navy text-detail absolute top-2 left-2 z-10 rounded-full px-2.5 py-1 font-medium shadow-sm">
       Pre-order
     </span>
   ) : isSoldOut ? (
-    <span className="bg-primary-navy absolute top-2 left-2 z-10 rounded-full px-2.5 py-1 text-xs font-medium text-white shadow-sm">
+    <span className="bg-primary-navy text-detail absolute top-2 left-2 z-10 rounded-full px-2.5 py-1 font-medium text-white shadow-sm">
       Sold Out
     </span>
   ) : null;
@@ -96,19 +96,19 @@ export function VariantCard({
   const priceSection = (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-2">
-        <p className="text-primary-navy w-auto text-lg leading-6 font-medium sm:text-xl">
+        <p className="text-primary-navy text-p-ui w-auto">
           {variant.formattedDiscountedPrice ||
             variant.formattedOriginalPrice ||
             "Price TBD"}
         </p>
         {variant.formattedOriginalPrice && variant.discountPercentage && (
-          <p className="text-sm text-neutral-400 line-through decoration-neutral-400/80">
+          <p className="text-subtle text-neutral-400 line-through decoration-neutral-400/80">
             {variant.formattedOriginalPrice}
           </p>
         )}
       </div>
       {variant.discountPercentage && (
-        <span className="w-fit rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 text-xs font-medium text-[#FF4D4F]">
+        <span className="text-detail w-fit rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 font-medium text-[#FF4D4F]">
           {variant.discountPercentage}
         </span>
       )}
@@ -127,7 +127,7 @@ export function VariantCard({
         <Link
           href={href}
           aria-label={variantLabel}
-          className="absolute inset-0 rounded-[28px]"
+          className="absolute inset-0 z-10 rounded-[28px]"
         />
 
         {/* Image Container */}
@@ -150,15 +150,13 @@ export function VariantCard({
         {/* Content */}
         <div className="text-primary-navy flex min-w-0 flex-1 flex-col gap-2">
           <div className="flex flex-col">
-            <h3 className="text-lg leading-6 font-medium sm:text-xl">
+            <h3 className="text-p-ui">
               <Link href={canonicalHref} className="relative hover:underline">
                 {variant.productTitle}
               </Link>
             </h3>
             {optionSummary && (
-              <p className="text-sm leading-6 font-normal sm:text-base">
-                {optionSummary}
-              </p>
+              <p className="text-subtle">{optionSummary}</p>
             )}
           </div>
           {priceSection}
@@ -168,7 +166,10 @@ export function VariantCard({
         <Button
           onClick={handleAddToCart}
           disabled={isAdding || isMutating || !isPurchasable}
-          className="bg-primary-navy hover:bg-primary-navy-light relative flex shrink-0 items-center justify-center gap-2 rounded-[20px] px-3 py-2 text-sm text-white sm:w-[180px] sm:px-4"
+          className={cn(
+            "bg-primary-navy hover:bg-primary-navy-light text-p relative flex shrink-0 items-center justify-center gap-2 rounded-[20px] px-3 py-2 text-white sm:w-[180px] sm:px-4",
+            isPurchasable && "z-20"
+          )}
         >
           <ShoppingCart className="size-4" />
           <span className="hidden sm:inline">{buttonLabel}</span>
@@ -188,7 +189,7 @@ export function VariantCard({
       <Link
         href={href}
         aria-label={variantLabel}
-        className="absolute inset-0 rounded-[28px]"
+        className="absolute inset-0 z-10 rounded-[28px]"
       />
 
       {/* Image Container */}
@@ -199,22 +200,23 @@ export function VariantCard({
             src={displayImage}
             alt={variant.productTitle}
             fill
-            className={cn("object-contain", isSoldOut && "opacity-50")}
+            className={cn(
+              "object-cover sm:object-contain",
+              isSoldOut && "opacity-50"
+            )}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 312px"
           />
         </div>
 
         {/* Title and Options */}
         <div className="text-primary-navy flex w-full flex-col items-start gap-0">
-          <h3 className="w-full text-lg leading-6 font-medium sm:text-xl">
+          <h3 className="text-p-ui w-full">
             <Link href={canonicalHref} className="relative hover:underline">
               {variant.productTitle}
             </Link>
           </h3>
           {optionSummary && (
-            <p className="w-full text-sm leading-6 font-normal text-slate-500">
-              {optionSummary}
-            </p>
+            <p className="text-subtle w-full text-slate-500">{optionSummary}</p>
           )}
         </div>
       </div>
@@ -223,11 +225,16 @@ export function VariantCard({
       {priceSection}
 
       {/* Add to Cart Button */}
-      <div className="relative flex w-full flex-col items-start gap-3 sm:gap-4">
+      <div
+        className={cn(
+          "relative flex w-full flex-col items-start gap-3 sm:gap-4",
+          isPurchasable && "z-20"
+        )}
+      >
         <Button
           onClick={handleAddToCart}
           disabled={isAdding || isMutating || !isPurchasable}
-          className="bg-primary-navy hover:bg-primary-navy-light flex w-full items-center justify-center gap-2 rounded-[16px] px-4 py-2.5 text-sm text-white sm:rounded-[20px] sm:text-base"
+          className="bg-primary-navy hover:bg-primary-navy-light text-p flex w-full items-center justify-center gap-2 rounded-[16px] px-4 py-2.5 text-white sm:rounded-[20px]"
         >
           <ShoppingCart className="size-4" />
           {buttonLabel}

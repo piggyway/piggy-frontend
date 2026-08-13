@@ -201,7 +201,7 @@ export function AccountLayout() {
     <div className="container mx-auto px-4 pt-12 pb-24 sm:px-6 lg:px-8">
       {/* Page title */}
       <div className="mb-8 flex flex-col gap-2">
-        <h1 className="text-primary-navy text-[40px] leading-none font-semibold">
+        <h1 className="text-primary-navy text-h4">
           My Account
         </h1>
         <p className="text-p text-slate-600">

@@ -127,7 +127,7 @@ export function AddressFormDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Address Type */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-p font-medium text-gray-700">
               Address Type <span className="text-red-500">*</span>
             </label>
             <select
@@ -135,7 +135,7 @@ export function AddressFormDialog({
               onChange={(e) =>
                 handleChange("type", e.target.value as AddressType)
               }
-              className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+              className="text-p w-full rounded-md border border-gray-200 bg-white px-3 py-2"
             >
               <option value="shipping">Shipping</option>
               <option value="billing">Billing</option>
@@ -145,7 +145,7 @@ export function AddressFormDialog({
 
           {/* Recipient Name */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-p font-medium text-gray-700">
               Recipient Name
             </label>
             <Input
@@ -159,7 +159,7 @@ export function AddressFormDialog({
 
           {/* Address */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-p font-medium text-gray-700">
               Address <span className="text-red-500">*</span>
             </label>
             <Input
@@ -169,14 +169,14 @@ export function AddressFormDialog({
               className={errors.addressText ? "border-red-500" : ""}
             />
             {errors.addressText && (
-              <p className="text-xs text-red-500">{errors.addressText}</p>
+              <p className="text-subtle text-red-500">{errors.addressText}</p>
             )}
           </div>
 
           {/* Postal / CountryCode */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-p font-medium text-gray-700">
                 Postal Code <span className="text-red-500">*</span>
               </label>
               <Input
@@ -185,12 +185,12 @@ export function AddressFormDialog({
                 className={errors.postalCode ? "border-red-500" : ""}
               />
               {errors.postalCode && (
-                <p className="text-xs text-red-500">{errors.postalCode}</p>
+                <p className="text-subtle text-red-500">{errors.postalCode}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-p font-medium text-gray-700">
                 Country Code <span className="text-red-500">*</span>
               </label>
               <Input
@@ -202,14 +202,14 @@ export function AddressFormDialog({
                 className={errors.countryCode ? "border-red-500" : ""}
               />
               {errors.countryCode && (
-                <p className="text-xs text-red-500">{errors.countryCode}</p>
+                <p className="text-subtle text-red-500">{errors.countryCode}</p>
               )}
             </div>
           </div>
 
           {/* Phone */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-p font-medium text-gray-700">
               Phone (AU)
             </label>
             <Input
@@ -228,7 +228,7 @@ export function AddressFormDialog({
               onChange={(e) => handleChange("isDefault", e.target.checked)}
               className="h-4 w-4 rounded border-gray-300"
             />
-            <label htmlFor="isDefault" className="text-sm text-gray-700">
+            <label htmlFor="isDefault" className="text-p text-gray-700">
               Set as default address
             </label>
           </div>

@@ -151,7 +151,7 @@ export function ProfileInfo({
       {/* Profile information */}
       <div className="border-neutral-stroke flex flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-primary-navy text-[22px] font-semibold">
+          <h2 className="text-primary-navy text-lead">
             Profile information
           </h2>
           {!autoEdit && (
@@ -198,12 +198,12 @@ export function ProfileInfo({
                 value={user[field]}
                 onChange={(e) => handleFieldChange(field, e.target.value)}
                 placeholder={field === "phone" ? "+61 400 000 000" : undefined}
-                className={`h-12 rounded-[12px] bg-white px-4 text-[15px] text-slate-600 disabled:opacity-100 ${
+                className={`text-p h-12 rounded-[12px] bg-white px-4 text-slate-600 disabled:opacity-100 ${
                   errors[field] ? "border-red-500" : ""
                 }`}
               />
               {errors[field] && (
-                <p className="text-[12px] text-red-500">{errors[field]}</p>
+                <p className="text-subtle text-red-500">{errors[field]}</p>
               )}
             </div>
           ))}

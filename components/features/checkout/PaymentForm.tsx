@@ -121,7 +121,7 @@ function PaymentFormInner({
       className="border-neutral-stroke flex w-full flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9 lg:min-h-[640px]"
     >
       <div className="flex flex-col gap-1.5">
-        <h2 className="text-primary-navy text-[22px] font-semibold">Payment</h2>
+        <h2 className="text-primary-navy text-lead">Payment</h2>
         <p className="text-subtle text-slate-600">
           All transactions are secure and encrypted. Card details go directly to
           Stripe and never touch our servers.
@@ -135,7 +135,7 @@ function PaymentFormInner({
       {errorMessage && (
         <p
           role="alert"
-          className="rounded-[12px] bg-red-50 px-4 py-3 text-[14px] text-red-600"
+          className="text-subtle rounded-[12px] bg-red-50 px-4 py-3 text-red-600"
         >
           {errorMessage}
         </p>
@@ -156,7 +156,7 @@ function PaymentFormInner({
         <Button
           type="submit"
           disabled={!stripe || !elements || isSubmitting}
-          className="h-[52px] rounded-full px-8 text-[16px] font-semibold"
+          className="text-p h-[52px] rounded-full px-8 font-semibold"
         >
           {isSubmitting ? (
             <span className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />

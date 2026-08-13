@@ -72,13 +72,13 @@ function FulfillmentOption({
           )}
         </span>
       </div>
-      <span className="text-primary-navy text-[16px] font-semibold">
+      <span className="text-primary-navy text-p font-semibold">
         {title}
       </span>
       {meta && (
-        <span className="text-[13px] font-medium text-slate-600">{meta}</span>
+        <span className="text-subtle font-medium text-slate-600">{meta}</span>
       )}
-      {note && <span className="text-[12px] text-slate-400">{note}</span>}
+      {note && <span className="text-subtle text-slate-400">{note}</span>}
     </button>
   );
 }
@@ -126,8 +126,8 @@ export function AddressStep({
           <Check className="size-3.5 text-white" />
         </span>
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-[12px] text-slate-400">Contact</span>
-          <span className="text-primary-navy truncate text-[15px] font-medium">
+          <span className="text-subtle text-slate-400">Contact</span>
+          <span className="text-primary-navy text-p truncate font-medium">
             {email}
           </span>
         </div>
@@ -143,10 +143,10 @@ export function AddressStep({
       {/* Delivery method card */}
       <div className="border-neutral-stroke flex w-full flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9 lg:min-h-[640px]">
         <div className="flex flex-col gap-1.5">
-          <h2 className="text-primary-navy text-[22px] font-semibold">
+          <h2 className="text-primary-navy text-lead">
             Delivery method
           </h2>
-          <p className="text-subtle text-slate-600">
+          <p className="text-p text-slate-600">
             Choose how you&apos;d like to receive your order.
           </p>
         </div>
@@ -174,7 +174,7 @@ export function AddressStep({
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-name"
-                  className="text-subtle-medium text-primary-navy"
+                  className="text-p font-medium text-primary-navy"
                 >
                   Full name
                 </label>
@@ -184,13 +184,13 @@ export function AddressStep({
                   onChange={(e) => setField("name", e.target.value)}
                   placeholder="Jane Smith"
                   autoComplete="name"
-                  className="h-12 rounded-[12px] bg-white px-4 text-[15px] placeholder:text-slate-400"
+                  className="text-p h-12 rounded-[12px] bg-white px-4 placeholder:text-slate-400"
                 />
               </div>
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-phone"
-                  className="text-subtle-medium text-primary-navy"
+                  className="text-p font-medium text-primary-navy"
                 >
                   Phone <span className="text-slate-400">(optional)</span>
                 </label>
@@ -201,7 +201,7 @@ export function AddressStep({
                   onChange={(e) => setField("phone", e.target.value)}
                   placeholder="0400 000 000"
                   autoComplete="tel"
-                  className="h-12 rounded-[12px] bg-white px-4 text-[15px] placeholder:text-slate-400"
+                  className="text-p h-12 rounded-[12px] bg-white px-4 placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -209,7 +209,7 @@ export function AddressStep({
             <div className="flex flex-col gap-2">
               <label
                 htmlFor="shipping-line1"
-                className="text-subtle-medium text-primary-navy"
+                className="text-p font-medium text-primary-navy"
               >
                 Address
               </label>
@@ -219,14 +219,14 @@ export function AddressStep({
                 onChange={(e) => setField("line1", e.target.value)}
                 placeholder="123 Example Street"
                 autoComplete="address-line1"
-                className="h-12 rounded-[12px] bg-white px-4 text-[15px] placeholder:text-slate-400"
+                className="text-p h-12 rounded-[12px] bg-white px-4 placeholder:text-slate-400"
               />
             </div>
 
             <div className="flex flex-col gap-2">
               <label
                 htmlFor="shipping-line2"
-                className="text-subtle-medium text-primary-navy"
+                className="text-p font-medium text-primary-navy"
               >
                 Apartment, suite, etc.{" "}
                 <span className="text-slate-400">(optional)</span>
@@ -237,7 +237,7 @@ export function AddressStep({
                 onChange={(e) => setField("line2", e.target.value)}
                 placeholder="Unit 4"
                 autoComplete="address-line2"
-                className="h-12 rounded-[12px] bg-white px-4 text-[15px] placeholder:text-slate-400"
+                className="text-p h-12 rounded-[12px] bg-white px-4 placeholder:text-slate-400"
               />
             </div>
 
@@ -245,7 +245,7 @@ export function AddressStep({
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-city"
-                  className="text-subtle-medium text-primary-navy"
+                  className="text-p font-medium text-primary-navy"
                 >
                   Suburb
                 </label>
@@ -255,13 +255,13 @@ export function AddressStep({
                   onChange={(e) => setField("city", e.target.value)}
                   placeholder="Cranbourne"
                   autoComplete="address-level2"
-                  className="h-12 rounded-[12px] bg-white px-4 text-[15px] placeholder:text-slate-400"
+                  className="text-p h-12 rounded-[12px] bg-white px-4 placeholder:text-slate-400"
                 />
               </div>
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-state"
-                  className="text-subtle-medium text-primary-navy"
+                  className="text-p font-medium text-primary-navy"
                 >
                   State
                 </label>
@@ -271,7 +271,7 @@ export function AddressStep({
                 >
                   <SelectTrigger
                     id="shipping-state"
-                    className="h-12 w-full rounded-[12px] bg-white px-4 text-[15px]"
+                    className="text-p h-12 w-full rounded-[12px] bg-white px-4"
                   >
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
@@ -287,7 +287,7 @@ export function AddressStep({
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-postcode"
-                  className="text-subtle-medium text-primary-navy"
+                  className="text-p font-medium text-primary-navy"
                 >
                   Postcode
                 </label>
@@ -299,7 +299,7 @@ export function AddressStep({
                   onChange={(e) => setField("postalCode", e.target.value)}
                   placeholder="3977"
                   autoComplete="postal-code"
-                  className="h-12 rounded-[12px] bg-white px-4 text-[15px] placeholder:text-slate-400"
+                  className="text-p h-12 rounded-[12px] bg-white px-4 placeholder:text-slate-400"
                 />
               </div>
             </div>
@@ -326,7 +326,7 @@ export function AddressStep({
           <Button
             onClick={onNext}
             disabled={!canContinue || isLoading}
-            className="h-[52px] rounded-full px-8 text-[16px] font-semibold"
+            className="text-p h-[52px] rounded-full px-8 font-semibold"
           >
             {isLoading ? (
               <span className="size-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />

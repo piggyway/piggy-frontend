@@ -59,16 +59,16 @@ export function AccountSidebar({
       {/* Identity */}
       <div className="flex items-center gap-3 pb-3 pl-2">
         <div className="bg-primary-purple flex size-[52px] shrink-0 items-center justify-center rounded-full">
-          <span className="text-primary-navy text-[17px] font-semibold">
+          <span className="text-primary-navy text-p font-semibold">
             {initials}
           </span>
         </div>
         <div className="flex min-w-0 flex-col gap-0.5">
-          <span className="text-primary-navy truncate text-[16px] font-semibold">
+          <span className="text-primary-navy text-p truncate font-semibold">
             {displayName}
           </span>
           {user?.email && (
-            <span className="truncate text-[12px] text-slate-400">
+            <span className="text-subtle truncate text-slate-400">
               {user.email}
             </span>
           )}

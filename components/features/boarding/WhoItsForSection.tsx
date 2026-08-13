@@ -11,10 +11,10 @@ export function WhoItsForSection() {
         <div className="flex flex-col gap-10 rounded-[32px] bg-white p-6 sm:p-10">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row">
             <div className="flex flex-col gap-2">
-              <h2 className="text-large sm:text-h4 leading-[38px] font-semibold tracking-[-0.21px] text-[#405aab] sm:leading-[42px]">
+              <h2 className="text-large sm:text-h4 tracking-[-0.21px] text-[#405aab]">
                 Who It&apos;s For
               </h2>
-              <p className="text-primary-navy text-xl leading-8 font-normal sm:text-2xl">
+              <p className="text-primary-navy text-lead sm:text-large font-normal">
                 Find out if our guinea pig boarding in Melbourne is the right
                 fit for your little ones.
               </p>
@@ -33,18 +33,16 @@ export function WhoItsForSection() {
             {WHO_ITS_FOR_ITEMS.map((item, index) => (
               <article
                 key={index}
-                className={`${item.colorClass} flex h-[190px] flex-col gap-5 rounded-[28px] p-6`}
+                className={`${item.colorClass} flex h-full min-h-[190px] flex-col gap-2 rounded-[28px] p-6`}
               >
                 <div className="flex items-center">
-                  <h3 className="text-p-ui sm:text-lead leading-[28px] font-semibold text-[#050451] sm:leading-[32px]">
+                  <h3 className="text-p-ui sm:text-lead font-semibold text-[#050451]">
                     {item.title}
                   </h3>
                 </div>
-                <div className="flex flex-1 items-end">
-                  <p className="text-body-medium sm:text-p leading-[24px] font-normal text-[#050451]">
-                    {item.description}
-                  </p>
-                </div>
+                <p className="text-p text-[#050451]">
+                  {item.description}
+                </p>
               </article>
             ))}
           </div>

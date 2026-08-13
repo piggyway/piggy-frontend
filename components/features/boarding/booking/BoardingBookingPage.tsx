@@ -75,7 +75,7 @@ export function BoardingBookingPage() {
       <div className="flex flex-col gap-8">
         {/* Title */}
         <div className="flex flex-col gap-2">
-          <h1 className="text-primary-navy text-[40px] leading-tight font-semibold">
+          <h1 className="text-primary-navy text-h4">
             {step === "details" ? "Boarding Details" : "Book a Boarding Stay"}
           </h1>
           <p className="text-p text-slate-600">
@@ -124,7 +124,7 @@ export function BoardingBookingPage() {
               <Button
                 onClick={() => goToStep("pickup")}
                 disabled={!canContinueToPickup}
-                className="h-[50px] w-full rounded-full text-[15px] font-semibold"
+                className="text-p h-[50px] w-full rounded-full font-semibold"
               >
                 Continue to Pick-up →
               </Button>
@@ -166,14 +166,14 @@ export function BoardingBookingPage() {
                 <Button
                   onClick={() => goToStep("details")}
                   disabled={!canContinue}
-                  className="h-[50px] w-full rounded-full text-[15px] font-semibold"
+                  className="text-p h-[50px] w-full rounded-full font-semibold"
                 >
                   Continue to Details →
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => goToStep("dropoff")}
-                  className="border-neutral-stroke h-[50px] w-full rounded-full text-[15px] font-medium"
+                  className="border-neutral-stroke text-p h-[50px] w-full rounded-full font-medium"
                 >
                   ← Back to Drop-off
                 </Button>

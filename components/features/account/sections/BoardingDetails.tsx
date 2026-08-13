@@ -36,7 +36,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   if (value === null || value === undefined || value === "") return null;
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-      <span className="text-[12px] text-slate-400 sm:min-w-[140px]">
+      <span className="text-subtle text-slate-400 sm:min-w-[140px]">
         {label}
       </span>
       <span className="text-subtle-medium text-primary-navy sm:text-right">
@@ -162,7 +162,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
           <div className="bg-secondary-mint flex size-12 items-center justify-center rounded-full">
             <Home className="text-primary-navy size-5" />
           </div>
-          <h3 className="text-primary-navy text-[16px] font-semibold">
+          <h3 className="text-primary-navy text-p font-semibold">
             Booking not found
           </h3>
           <p className="text-subtle max-w-md text-slate-600">
@@ -204,7 +204,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
       <div className="flex w-full flex-wrap items-center justify-between gap-3.5">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-primary-navy text-[24px] font-semibold tracking-wide">
+            <h2 className="text-primary-navy text-lead tracking-wide">
               {booking.reference}
             </h2>
             <button
@@ -226,7 +226,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
         <div className="flex flex-wrap items-center gap-3">
           <span
             className={cn(
-              "rounded-full px-3.5 py-[5px] text-[12px] font-semibold",
+              "text-detail rounded-full px-3.5 py-[5px] font-semibold",
               pill.className
             )}
           >
@@ -240,7 +240,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
                 setCancelError(null);
                 setConfirmOpen(true);
               }}
-              className="h-9 rounded-full border-[1.5px] border-rose-300 px-4 text-[13px] font-semibold text-rose-700 hover:bg-rose-50"
+              className="text-subtle h-9 rounded-full border-[1.5px] border-rose-300 px-4 font-semibold text-rose-700 hover:bg-rose-50"
             >
               Cancel request
             </Button>
@@ -249,13 +249,13 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
       </div>
 
       {cancelError && (
-        <p className="w-full rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13px] font-medium text-rose-800">
+        <p className="text-subtle w-full rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 font-medium text-rose-800">
           {cancelError}
         </p>
       )}
 
       <div className="border-neutral-stroke flex w-full flex-col gap-5 rounded-[20px] border bg-white px-6 py-[26px] sm:px-8">
-        <h3 className="text-primary-navy text-[16px] font-semibold">Stay</h3>
+        <h3 className="text-primary-navy text-p font-semibold">Stay</h3>
         <div className="flex flex-col gap-3">
           <InfoRow
             label="Drop-off"
@@ -273,7 +273,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
       </div>
 
       <div className="border-neutral-stroke flex w-full flex-col gap-5 rounded-[20px] border bg-white px-6 py-[26px] sm:px-8">
-        <h3 className="text-primary-navy text-[16px] font-semibold">Contact</h3>
+        <h3 className="text-primary-navy text-p font-semibold">Contact</h3>
         <div className="flex flex-col gap-3">
           <InfoRow
             label="Name"
@@ -288,7 +288,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
         booking.emergencyPhone ||
         booking.emergencyNotes) && (
         <div className="border-neutral-stroke flex w-full flex-col gap-5 rounded-[20px] border bg-white px-6 py-[26px] sm:px-8">
-          <h3 className="text-primary-navy text-[16px] font-semibold">
+          <h3 className="text-primary-navy text-p font-semibold">
             Emergency contact
           </h3>
           <div className="flex flex-col gap-3">
@@ -300,7 +300,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
       )}
 
       <div className="border-neutral-stroke flex w-full flex-col gap-5 rounded-[20px] border bg-white px-6 py-[26px] sm:px-8">
-        <h3 className="text-primary-navy text-[16px] font-semibold">
+        <h3 className="text-primary-navy text-p font-semibold">
           Pets ({booking.pets.length})
         </h3>
         <div className="flex flex-col gap-4">
@@ -309,7 +309,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
               key={pet.id}
               className="border-neutral-stroke rounded-[16px] border px-4 py-4"
             >
-              <p className="text-primary-navy mb-3 text-[15px] font-semibold">
+              <p className="text-primary-navy text-p mb-3 font-semibold">
                 {index + 1}. {pet.name}
               </p>
               <div className="flex flex-col gap-2.5">

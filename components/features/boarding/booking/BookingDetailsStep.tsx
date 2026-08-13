@@ -62,7 +62,7 @@ const PET_TYPES: BoardingPetType[] = ["Guinea pig", "Rabbit", "Other"];
 const PET_SEXES: BoardingPetSex[] = ["Female", "Male", "Unknown"];
 const DESEXED_OPTIONS: BoardingPetDesexed[] = ["Yes", "No", "Not sure"];
 
-const inputClassName = "h-12 rounded-[12px] px-4 text-[15px]";
+const inputClassName = "text-p h-12 rounded-[12px] px-4";
 const cardClassName =
   "border-neutral-stroke flex flex-col gap-5 rounded-[24px] border bg-white px-6 py-7 sm:px-9 sm:py-8";
 
@@ -89,7 +89,7 @@ function Field({ label, error, children }: FieldProps) {
     <div className="flex min-w-0 flex-1 flex-col gap-2">
       <label className="text-subtle-medium text-primary-navy">{label}</label>
       {children}
-      {error && <p className="text-xs text-red-500">{error}</p>}
+      {error && <p className="text-subtle text-red-500">{error}</p>}
     </div>
   );
 }
@@ -100,7 +100,7 @@ interface PetChipProps {
 
 function PetChip({ label }: PetChipProps) {
   return (
-    <span className="bg-secondary-mint text-primary-navy flex items-center gap-1.5 rounded-full px-3 py-1 text-[12px] font-semibold">
+    <span className="bg-secondary-mint text-primary-navy text-detail flex items-center gap-1.5 rounded-full px-3 py-1 font-semibold">
       <span className="bg-primary-navy size-2 rounded-full" />
       {label}
     </span>
@@ -259,7 +259,7 @@ export function BookingDetailsStep({
       <div className="flex min-w-0 flex-1 flex-col gap-6">
         {/* Your details */}
         <div className={cardClassName}>
-          <h2 className="text-primary-navy text-[22px] font-semibold">
+          <h2 className="text-primary-navy text-lead">
             Your details
           </h2>
           <div className="flex flex-col gap-5 sm:flex-row">
@@ -311,7 +311,7 @@ export function BookingDetailsStep({
         {/* Pet details */}
         <div className={cardClassName}>
           <div className="flex items-center gap-3">
-            <h2 className="text-primary-navy text-[22px] font-semibold">
+            <h2 className="text-primary-navy text-lead">
               Pet details
             </h2>
             {pets.length === 1 && <PetChip label="Pet 1" />}
@@ -450,7 +450,7 @@ export function BookingDetailsStep({
                     setPetField(i, "feedingRoutine", e.target.value)
                   }
                   placeholder="Usual food, amount, and timing..."
-                  className="min-h-[84px] rounded-[12px] px-4 py-3.5 text-[15px]"
+                  className="text-p min-h-[84px] rounded-[12px] px-4 py-3.5"
                 />
               </Field>
               <Field label="Medical / special needs">
@@ -460,7 +460,7 @@ export function BookingDetailsStep({
                     setPetField(i, "medicalNotes", e.target.value)
                   }
                   placeholder="Medication, allergies, behaviour notes..."
-                  className="min-h-[84px] rounded-[12px] px-4 py-3.5 text-[15px]"
+                  className="text-p min-h-[84px] rounded-[12px] px-4 py-3.5"
                 />
               </Field>
               {i < pets.length - 1 && (
@@ -472,7 +472,7 @@ export function BookingDetailsStep({
           <Button
             variant="outline"
             onClick={addPet}
-            className="border-primary-navy text-primary-navy h-11 w-fit rounded-full border-[1.5px] px-6 text-[14px] font-semibold"
+            className="border-primary-navy text-primary-navy text-p h-11 w-fit rounded-full border-[1.5px] px-6 font-semibold"
           >
             + Add another pet
           </Button>
@@ -480,7 +480,7 @@ export function BookingDetailsStep({
 
         {/* Emergency contact & notes */}
         <div className={cardClassName}>
-          <h2 className="text-primary-navy text-[22px] font-semibold">
+          <h2 className="text-primary-navy text-lead">
             Emergency contact &amp; notes
           </h2>
           <div className="flex flex-col gap-5 sm:flex-row">
@@ -513,7 +513,7 @@ export function BookingDetailsStep({
                 setEmergency((prev) => ({ ...prev, notes: e.target.value }))
               }
               placeholder="Special requests, drop-off details..."
-              className="min-h-[84px] rounded-[12px] px-4 py-3.5 text-[15px]"
+              className="text-p min-h-[84px] rounded-[12px] px-4 py-3.5"
             />
           </Field>
         </div>
@@ -523,14 +523,14 @@ export function BookingDetailsStep({
           <Button
             variant="outline"
             onClick={onBack}
-            className="border-neutral-stroke text-subtle-medium h-12 rounded-full px-7"
+            className="border-neutral-stroke text-p h-12 rounded-full px-7 font-medium"
           >
             ← Back
           </Button>
           <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="h-[52px] rounded-full px-9 text-[15px] font-semibold"
+            className="text-p h-[52px] rounded-full px-9 font-semibold"
           >
             {isSubmitting ? "Submitting..." : "Submit Request"}
           </Button>

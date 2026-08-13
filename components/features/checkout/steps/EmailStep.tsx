@@ -30,9 +30,9 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
   const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
   return (
-    <div className="border-neutral-stroke flex w-full flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9 lg:min-h-[640px]">
+    <div className="border-neutral-stroke flex w-full flex-col gap-8 rounded-[24px] border bg-white px-6 py-10 sm:px-10 sm:py-12 lg:min-h-[640px]">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-primary-navy text-[22px] font-semibold">
+        <h2 className="text-primary-navy text-lead">
           Contact information
         </h2>
         {!isAuthenticated && (
@@ -45,8 +45,8 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
         )}
       </div>
 
-      <div className="flex flex-col gap-2">
-        <label htmlFor="email" className="text-subtle-medium text-primary-navy">
+      <div className="flex flex-col gap-3">
+        <label htmlFor="email" className="text-p font-medium text-primary-navy">
           Email address
         </label>
         <Input
@@ -56,12 +56,12 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           readOnly={!!lockedEmail}
-          className={`h-12 rounded-[12px] px-4 text-[15px] placeholder:text-slate-400 ${
+          className={`text-p h-12 rounded-[12px] px-4 placeholder:text-slate-400 ${
             lockedEmail ? "bg-neutral-100" : "bg-white"
           }`}
         />
         {isAuthenticated && user ? (
-          <p className="text-[13px] text-slate-400">
+          <p className="text-subtle text-slate-400">
             You are logged in as{" "}
             {user.firstName
               ? `${user.firstName} ${user.lastName || ""}`.trim()
@@ -69,7 +69,7 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
             .
           </p>
         ) : (
-          <p className="text-[13px] text-slate-400">
+          <p className="text-subtle text-slate-400">
             We&apos;ll send your receipt and order updates here.
           </p>
         )}
@@ -90,17 +90,16 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
         </span>
       </label>
 
-      {/* lg:mt-auto pins the divider and button to the card bottom when the
-          card is stretched to match the order summary column */}
-      <div className="bg-neutral-stroke h-px w-full lg:mt-auto" />
-
-      <Button
-        onClick={onNext}
-        disabled={!isValidEmail}
-        className="h-[52px] w-full rounded-full text-[16px] font-semibold"
-      >
-        Continue to Shipping →
-      </Button>
+      <div className="flex flex-col gap-6 pt-2 lg:mt-auto">
+        <div className="bg-neutral-stroke h-px w-full" />
+        <Button
+          onClick={onNext}
+          disabled={!isValidEmail}
+          className="text-p h-[52px] w-full rounded-full font-semibold"
+        >
+          Continue to Shipping →
+        </Button>
+      </div>
     </div>
   );
 }

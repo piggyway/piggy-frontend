@@ -355,7 +355,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             <DialogTitle className="text-primary-navy">
               Sign in to continue?
             </DialogTitle>
-            <p className="text-primary-navy/80 mt-2 text-sm">
+            <p className="text-primary-navy/80 text-p mt-2">
               {loginPromptIntent
                 ? `To help you ${loginPromptIntent} and keep your items safe, please sign in or create an account first.`
                 : "To save your cart items and sync them across your devices, please sign in or create an account first."}

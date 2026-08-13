@@ -10,7 +10,7 @@ export function OurStorySection() {
     <AnimatedSection className="w-full">
       <div className="container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
         {/* White Container */}
-        <div className="rounded-[32px] bg-white p-6 sm:p-8 md:p-10">
+        <div className="min-w-0 overflow-hidden rounded-[32px] bg-white p-6 sm:p-8 md:p-10">
           {/* Desktop Layout */}
           <div className="hidden items-center gap-10 lg:flex">
             {/* Left Side - Text Content with decorative characters */}
@@ -92,7 +92,7 @@ export function OurStorySection() {
           </div>
 
           {/* Mobile/Tablet Layout */}
-          <div className="flex flex-col gap-6 lg:hidden">
+          <div className="flex min-w-0 flex-col gap-6 lg:hidden">
             <h2 className="text-primary-navy text-large sm:text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
               Our Story
             </h2>
@@ -104,10 +104,9 @@ export function OurStorySection() {
               make life easier, healthier, and happier for pets and their humans
             </p>
 
-            {/* Simplified card for mobile */}
             <Link
               href="/about-us"
-              className="bg-primary-navy relative flex min-h-[200px] items-end justify-end overflow-hidden rounded-[32px] p-6 transition-transform active:scale-[0.98]"
+              className="bg-primary-navy relative block aspect-[4/3] w-full min-w-0 overflow-hidden rounded-[32px] transition-transform active:scale-[0.98]"
             >
               <Image
                 src="https://res.cloudinary.com/davy7cgyi/image/upload/v1780289236/709e9afff06075a1e2577fb7c0eb39ca8ed4ced6_l9smol.png"
@@ -116,7 +115,7 @@ export function OurStorySection() {
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 319px"
               />
-              <div className="border-neutral-stroke relative z-10 flex items-center justify-center rounded-full border bg-white p-3">
+              <div className="border-neutral-stroke absolute right-6 bottom-6 z-10 flex items-center justify-center rounded-full border bg-white p-3">
                 <ArrowUpRight className="text-primary-navy h-4 w-4" />
               </div>
             </Link>

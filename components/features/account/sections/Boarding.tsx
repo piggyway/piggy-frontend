@@ -57,7 +57,7 @@ export function Boarding({ onBookingClick }: BoardingProps) {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-primary-navy text-[24px] font-semibold">
+          <h2 className="text-primary-navy text-lead">
             My boarding
           </h2>
           <p className="text-subtle text-slate-600">
@@ -88,7 +88,7 @@ export function Boarding({ onBookingClick }: BoardingProps) {
           <div className="rounded-full bg-red-50 p-3">
             <Home className="size-5 text-red-500" />
           </div>
-          <h3 className="text-primary-navy text-[16px] font-semibold">
+          <h3 className="text-primary-navy text-p font-semibold">
             Couldn&apos;t load your bookings
           </h3>
           <p className="text-subtle text-red-500">{error}</p>
@@ -107,7 +107,7 @@ export function Boarding({ onBookingClick }: BoardingProps) {
           <div className="bg-secondary-mint flex size-12 items-center justify-center rounded-full">
             <Home className="text-primary-navy size-5" />
           </div>
-          <h3 className="text-primary-navy text-[16px] font-semibold">
+          <h3 className="text-primary-navy text-p font-semibold">
             No boarding bookings yet
           </h3>
           <p className="text-subtle text-slate-400">
@@ -152,13 +152,13 @@ export function Boarding({ onBookingClick }: BoardingProps) {
                 )}
               >
                 <div className="flex flex-wrap items-center justify-between gap-3.5">
-                  <span className="text-primary-navy text-[16px] font-semibold">
+                  <span className="text-primary-navy text-p font-semibold">
                     {booking.reference}
                   </span>
                   <div className="flex items-center gap-2">
                     <span
                       className={cn(
-                        "rounded-full px-3.5 py-[5px] text-[12px] font-semibold",
+                        "text-detail rounded-full px-3.5 py-[5px] font-semibold",
                         pill.className
                       )}
                     >
@@ -177,11 +177,11 @@ export function Boarding({ onBookingClick }: BoardingProps) {
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex flex-col gap-0.5">
-                    <span className="text-primary-navy text-[15px] font-medium">
+                    <span className="text-primary-navy text-p font-medium">
                       {formatBookingDate(booking.dropOffDate)} &rarr;{" "}
                       {formatBookingDate(booking.pickUpDate)}
                     </span>
-                    <span className="text-[13px] text-slate-400">
+                    <span className="text-subtle text-slate-400">
                       {booking.nights}{" "}
                       {booking.nights === 1 ? "night" : "nights"}
                     </span>
