@@ -52,6 +52,19 @@ pnpm deploy
 
 Or configure CI (GitHub Actions / Cloudflare Builds) with these env vars.
 
+## 2.1 Workers Builds commands
+
+Production already uses OpenNext. Preview / non-production branches must too.
+`pnpm run build` is `next build` and does not emit `.open-next/worker.js`.
+
+| Environment | Build command | Deploy command |
+|-------------|---------------|----------------|
+| Production (`production` branch) | `npx opennextjs-cloudflare build` | `npx wrangler deploy` |
+| Preview (all other branches) | `npx opennextjs-cloudflare build` | `npx wrangler versions upload` |
+
+Set these in Workers -> piggy-frontend -> Settings -> Build.
+Workers Builds ignores `wrangler.jsonc` custom `build.command`.
+
 ## 3. Preview locally on workerd
 
 ```bash
