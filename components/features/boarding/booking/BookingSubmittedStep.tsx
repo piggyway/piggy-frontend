@@ -87,7 +87,7 @@ export function BookingSubmittedStep({
       </div>
 
       <div className="flex flex-col items-center gap-2.5 text-center">
-        <h1 className="text-primary-navy text-[36px] leading-tight font-semibold">
+        <h1 className="text-primary-navy text-large">
           Request submitted!
         </h1>
         <p className="text-p text-slate-600">
@@ -100,9 +100,9 @@ export function BookingSubmittedStep({
       <div className="border-neutral-stroke flex w-full max-w-[600px] flex-col gap-[18px] rounded-[24px] border bg-white px-8 py-7">
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-col gap-0.5">
-            <span className="text-[12px] text-slate-400">Reference</span>
+            <span className="text-subtle text-slate-400">Reference</span>
             <div className="flex items-center gap-2">
-              <span className="text-primary-navy text-[20px] font-semibold tracking-wide">
+              <span className="text-primary-navy text-p-ui font-semibold tracking-wide">
                 {submission.reference}
               </span>
               <button
@@ -120,7 +120,7 @@ export function BookingSubmittedStep({
               </button>
             </div>
           </div>
-          <span className="bg-primary-gold/20 border-primary-gold text-primary-navy rounded-full border px-3.5 py-1.5 text-[12px] font-semibold">
+          <span className="bg-primary-gold/20 border-primary-gold text-primary-navy text-detail rounded-full border px-3.5 py-1.5 font-semibold">
             Pending review
           </span>
         </div>
@@ -130,7 +130,7 @@ export function BookingSubmittedStep({
         {rows.map((row) => (
           <div key={row.label} className="flex items-center justify-between">
             <span className="text-subtle text-slate-600">{row.label}</span>
-            <span className="text-subtle-medium text-primary-navy">
+            <span className="text-p font-medium text-primary-navy">
               {row.value}
             </span>
           </div>
@@ -138,14 +138,14 @@ export function BookingSubmittedStep({
 
         {submission.userNotificationSent ? (
           <div className="bg-secondary-mint rounded-[12px] px-3.5 py-2.5">
-            <p className="text-primary-navy text-[13px] font-medium">
+            <p className="text-primary-navy text-subtle font-medium">
               We&apos;ve emailed a receipt to {submission.email} — check your
               inbox and spam folder. Keep this reference to track your request.
             </p>
           </div>
         ) : (
           <div className="rounded-[12px] border border-amber-200 bg-amber-50 px-3.5 py-2.5">
-            <p className="text-[13px] font-medium text-amber-900">
+            <p className="text-subtle font-medium text-amber-900">
               We couldn&apos;t send a receipt email to {submission.email}.
               Please save this reference number now — you&apos;ll need it to
               track your request.
@@ -166,10 +166,10 @@ export function BookingSubmittedStep({
             >
               <step.icon className="text-primary-navy size-[18px]" />
             </div>
-            <p className="text-primary-navy text-[14px] font-semibold">
+            <p className="text-primary-navy text-subtle font-semibold">
               {step.title}
             </p>
-            <p className="text-[12px] text-slate-400">{step.subtitle}</p>
+            <p className="text-subtle text-slate-400">{step.subtitle}</p>
           </div>
         ))}
       </div>
@@ -178,21 +178,21 @@ export function BookingSubmittedStep({
       <div className="flex flex-wrap items-center justify-center gap-3.5">
         <Button
           asChild
-          className="h-[50px] rounded-full px-9 text-[15px] font-semibold"
+          className="text-p h-[50px] rounded-full px-9 font-semibold"
         >
           <Link href={BOARDING_ROUTES.lookup}>Track your request</Link>
         </Button>
         <Button
           asChild
           variant="outline"
-          className="border-primary-navy text-primary-navy h-[50px] rounded-full border-[1.5px] px-9 text-[15px] font-semibold"
+          className="border-primary-navy text-primary-navy text-p h-[50px] rounded-full border-[1.5px] px-9 font-semibold"
         >
           <Link href="/account">View in My Account</Link>
         </Button>
         <Button
           asChild
           variant="outline"
-          className="border-neutral-stroke h-[50px] rounded-full px-9 text-[15px] font-medium"
+          className="border-neutral-stroke text-p h-[50px] rounded-full px-9 font-medium"
         >
           <Link href="/">Back to Home</Link>
         </Button>

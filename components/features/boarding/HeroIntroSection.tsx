@@ -11,10 +11,10 @@ export function HeroIntroSection() {
     <AnimatedSection className="w-full">
       <section className="container mx-auto max-w-[1160px] px-4 pt-12 pb-4 sm:pt-16 md:pt-20 lg:pt-16">
         <div className="mx-auto max-w-4xl text-center">
-          <h1 className="text-primary-navy-light text-large sm:text-h4 leading-[38px] font-semibold tracking-[-0.21px] sm:leading-[42px]">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 tracking-[-0.21px]">
             Guinea Pig Boarding in Melbourne 🐹
           </h1>
-          <p className="text-primary-navy text-large sm:text-h4 mt-2 leading-[34px] font-semibold sm:leading-[42px]">
+          <p className="text-primary-navy text-large sm:text-h4 mt-2">
             Thoughtful guinea pig boarding in Melbourne, designed to feel like
             home.
           </p>
@@ -43,7 +43,7 @@ export function HeroIntroSection() {
               />
 
               <div className="flex max-w-[420px] flex-col items-start text-left">
-                <p className="text-primary-navy text-p-ui sm:text-p-ui lg:text-lead leading-[28px] font-normal sm:leading-[30px] lg:leading-[31px]">
+                <p className="text-primary-navy text-p-ui lg:text-lead font-normal">
                   Thoughtful boarding &amp; care for guinea pigs, designed to
                   feel like home.
                 </p>
@@ -51,7 +51,7 @@ export function HeroIntroSection() {
                 <Button
                   asChild
                   variant="secondary"
-                  className="mt-4 h-9 px-4 text-sm font-normal shadow-none"
+                  className="text-p mt-4 h-9 px-4 font-normal shadow-none"
                 >
                   <Link href={BOARDING_ROUTES.book}>Book with us</Link>
                 </Button>

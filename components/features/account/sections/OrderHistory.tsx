@@ -166,7 +166,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
         <div className="rounded-full bg-slate-50 p-4">
           <Package className="size-12 text-slate-300" />
         </div>
-        <h3 className="text-primary-navy text-[18px] font-semibold">
+        <h3 className="text-primary-navy text-p-ui font-semibold">
           No orders yet
         </h3>
         <p className="text-subtle text-slate-400">
@@ -253,7 +253,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                 <div className="flex flex-wrap items-center justify-between gap-3.5">
                   <div className="flex flex-col gap-0.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-primary-navy text-[16px] font-semibold">
+                      <span className="text-primary-navy text-p font-semibold">
                         {order.order_number}
                       </span>
                       <button
@@ -267,7 +267,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                         <Copy className="size-3" />
                       </button>
                     </div>
-                    <span className="text-[13px] text-slate-400">
+                    <span className="text-subtle text-slate-400">
                       Placed{" "}
                       {new Date(order.date_created).toLocaleDateString("en-AU")}{" "}
                       · {isPickup ? "Pickup" : "Delivery"}
@@ -275,7 +275,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                   </div>
                   <span
                     className={cn(
-                      "rounded-full px-3.5 py-[5px] text-[12px] font-semibold",
+                      "text-detail rounded-full px-3.5 py-[5px] font-semibold",
                       statusPill[order.status].className
                     )}
                   >
@@ -305,13 +305,13 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                           />
                         </div>
                         <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                          <p className="text-primary-navy truncate text-[15px] font-medium">
+                          <p className="text-primary-navy text-p truncate font-medium">
                             {item.product_title}
                           </p>
                           {item.variant_attributes &&
                             Array.isArray(item.variant_attributes) &&
                             item.variant_attributes.length > 0 && (
-                              <p className="truncate text-[13px] text-slate-400">
+                              <p className="text-subtle truncate text-slate-400">
                                 {item.variant_attributes
                                   .map(
                                     (attr) =>
@@ -321,10 +321,10 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                               </p>
                             )}
                         </div>
-                        <span className="text-[13px] text-slate-400">
+                        <span className="text-subtle text-slate-400">
                           × {item.quantity}
                         </span>
-                        <span className="text-primary-navy text-[15px] font-semibold">
+                        <span className="text-primary-navy text-p font-semibold">
                           {currencyFormatter.format(
                             item.line_total_cents / 100
                           )}
@@ -342,7 +342,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                 <div className="bg-neutral-background-light flex items-center justify-between gap-3 rounded-[14px] py-2.5 pr-3 pl-5">
                   <div className="flex items-baseline gap-2">
                     <span className="text-subtle text-slate-600">Total</span>
-                    <span className="text-primary-navy text-[18px] font-bold">
+                    <span className="text-primary-navy text-p-ui font-semibold">
                       {currencyFormatter.format(order.grand_total_amt / 100)}
                     </span>
                   </div>

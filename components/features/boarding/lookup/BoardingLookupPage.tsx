@@ -142,7 +142,7 @@ export function BoardingLookupPage() {
   return (
     <div className="container mx-auto flex flex-col items-center gap-8 px-4 pt-16 pb-24 sm:px-6 lg:px-8">
       <div className="flex flex-col items-center gap-2.5 text-center">
-        <h1 className="text-primary-navy text-[36px] leading-tight font-semibold">
+        <h1 className="text-primary-navy text-large">
           Track your request
         </h1>
         <p className="text-p max-w-md text-slate-600">
@@ -168,7 +168,7 @@ export function BoardingLookupPage() {
             onChange={(e) => setReference(e.target.value)}
             placeholder="PB-XXXXXXXX-XXXX"
             autoComplete="off"
-            className="h-12 rounded-[12px] px-4 text-[15px]"
+            className="text-p h-12 rounded-[12px] px-4"
           />
         </div>
 
@@ -186,12 +186,12 @@ export function BoardingLookupPage() {
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@example.com"
             autoComplete="email"
-            className="h-12 rounded-[12px] px-4 text-[15px]"
+            className="text-p h-12 rounded-[12px] px-4"
           />
         </div>
 
         {error && (
-          <p className="rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13px] font-medium text-rose-800">
+          <p className="text-subtle rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 font-medium text-rose-800">
             {error}
           </p>
         )}
@@ -199,7 +199,7 @@ export function BoardingLookupPage() {
         <Button
           type="submit"
           disabled={isLoading}
-          className="h-[50px] w-full rounded-full text-[15px] font-semibold"
+          className="text-p h-[50px] w-full rounded-full font-semibold"
         >
           {isLoading ? "Looking up…" : "Check status"}
         </Button>
@@ -209,14 +209,14 @@ export function BoardingLookupPage() {
         <div className="border-neutral-stroke flex w-full max-w-[480px] flex-col gap-[18px] rounded-[24px] border bg-white px-7 py-7">
           <div className="flex items-center justify-between gap-3">
             <div className="flex flex-col gap-0.5">
-              <span className="text-[12px] text-slate-400">Reference</span>
-              <span className="text-primary-navy text-[18px] font-semibold tracking-wide">
+              <span className="text-subtle text-slate-400">Reference</span>
+              <span className="text-primary-navy text-p-ui font-semibold tracking-wide">
                 {result.reference}
               </span>
             </div>
             <span
               className={cn(
-                "rounded-full px-3.5 py-1.5 text-[12px] font-semibold",
+                "text-detail rounded-full px-3.5 py-1.5 font-semibold",
                 pill.className
               )}
             >
@@ -262,7 +262,7 @@ export function BoardingLookupPage() {
           )}
 
           {cancelError && (
-            <p className="rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 text-[13px] font-medium text-rose-800">
+            <p className="text-subtle rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 font-medium text-rose-800">
               {cancelError}
             </p>
           )}
@@ -275,7 +275,7 @@ export function BoardingLookupPage() {
                 setCancelError(null);
                 setConfirmOpen(true);
               }}
-              className="h-[46px] w-full rounded-full border-[1.5px] border-rose-300 text-[14px] font-semibold text-rose-700 hover:bg-rose-50"
+              className="text-subtle h-[46px] w-full rounded-full border-[1.5px] border-rose-300 font-semibold text-rose-700 hover:bg-rose-50"
             >
               Cancel request
             </Button>
@@ -299,14 +299,14 @@ export function BoardingLookupPage() {
         <Button
           asChild
           variant="outline"
-          className="border-primary-navy text-primary-navy h-[50px] rounded-full border-[1.5px] px-9 text-[15px] font-semibold"
+          className="border-primary-navy text-primary-navy text-p h-[50px] rounded-full border-[1.5px] px-9 font-semibold"
         >
           <Link href={BOARDING_ROUTES.book}>Book a stay</Link>
         </Button>
         <Button
           asChild
           variant="outline"
-          className="border-neutral-stroke h-[50px] rounded-full px-9 text-[15px] font-medium"
+          className="border-neutral-stroke text-p h-[50px] rounded-full px-9 font-medium"
         >
           <Link href="/piggyway-boarding">Back to Boarding</Link>
         </Button>

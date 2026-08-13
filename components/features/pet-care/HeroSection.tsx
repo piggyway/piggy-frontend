@@ -17,22 +17,22 @@ export function HeroSection() {
             {HERO_CONTENT.title}
           </h1>
 
-          <div className="flex items-center justify-center gap-6 sm:gap-10">
+          <div className="flex w-full min-w-0 items-center justify-center gap-3 sm:gap-10">
             <Image
               src={PET_CARE_ASSETS.piggywayLogo}
               alt="Piggy Way Boarding"
               width={227}
               height={122}
-              className="h-auto w-[170px] shrink-0 sm:w-[227px]"
+              className="h-auto w-[110px] sm:w-[170px] lg:w-[227px]"
             />
             <Image
               src={PET_CARE_ASSETS.cross}
               alt=""
               width={35}
               height={35}
-              className="size-[28px] shrink-0 sm:size-[35px]"
+              className="size-[22px] sm:size-[28px] lg:size-[35px]"
             />
-            <div className="border-secondary-mint relative size-[150px] shrink-0 overflow-hidden rounded-full border-[6px] sm:size-[199px]">
+            <div className="border-secondary-mint relative size-[110px] overflow-hidden rounded-full border-[6px] sm:size-[150px] lg:size-[199px]">
               <Image
                 src={PET_CARE_ASSETS.doctorSupsLogo}
                 alt="Doctor Sups Veterinary"

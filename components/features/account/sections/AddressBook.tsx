@@ -69,7 +69,7 @@ export function AddressBook() {
   return (
     <div className="border-neutral-stroke flex flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-primary-navy text-[22px] font-semibold">
+        <h2 className="text-primary-navy text-lead">
           Address book
         </h2>
         <Button
@@ -86,7 +86,7 @@ export function AddressBook() {
       ) : addresses.length === 0 ? (
         <div className="border-neutral-stroke rounded-[16px] border-2 border-dashed p-12 text-center">
           <MapPin className="mx-auto mb-4 size-12 text-slate-300" />
-          <h3 className="text-primary-navy mb-2 text-[16px] font-semibold">
+          <h3 className="text-primary-navy text-p mb-2 font-semibold">
             No addresses yet
           </h3>
           <p className="text-subtle mb-4 text-slate-400">
@@ -109,7 +109,7 @@ export function AddressBook() {
             >
               <div className="flex items-center gap-2">
                 <span
-                  className={`text-primary-navy rounded-full px-3 py-1 text-[11px] font-semibold uppercase ${
+                  className={`text-primary-navy text-detail rounded-full px-3 py-1 font-semibold uppercase ${
                     address.type === "billing"
                       ? "bg-primary-purple"
                       : "bg-secondary-mint"
@@ -118,12 +118,12 @@ export function AddressBook() {
                   {address.type}
                 </span>
                 {address.isDefault && (
-                  <span className="bg-primary-gold/20 text-primary-navy rounded-full px-3 py-1 text-[11px] font-semibold uppercase">
+                  <span className="bg-primary-gold/20 text-primary-navy text-detail rounded-full px-3 py-1 font-semibold uppercase">
                     Default
                   </span>
                 )}
               </div>
-              <p className="text-primary-navy text-[15px] font-semibold">
+              <p className="text-primary-navy text-p font-semibold">
                 {address.recipientName ?? "—"}
               </p>
               <p className="text-subtle text-slate-600">
@@ -131,7 +131,7 @@ export function AddressBook() {
                 {address.countryCode}
               </p>
               {address.phoneAu && (
-                <p className="text-[13px] text-slate-400">{address.phoneAu}</p>
+                <p className="text-subtle text-slate-400">{address.phoneAu}</p>
               )}
               <div className="text-subtle-medium flex items-center gap-[18px] pt-1.5">
                 <button

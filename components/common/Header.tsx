@@ -144,7 +144,10 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="relative h-12 w-24 shrink-0 sm:h-16 sm:w-32 lg:h-[82px] lg:w-[159px]"
+            className={cn(
+              "relative h-12 w-24 shrink-0 sm:h-16 sm:w-32 lg:h-[82px] lg:w-[159px]",
+              mobileSearchOpen && "max-lg:hidden"
+            )}
           >
             <Image
               src="/header-logo.png"
@@ -224,7 +227,7 @@ export function Header() {
           </nav>
 
           {/* Mobile Right Side Actions */}
-          <div className="ml-auto flex items-center gap-2 lg:hidden">
+          <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 lg:hidden">
             <AnimatePresence mode="wait">
               {!mobileSearchOpen ? (
                 <motion.button
@@ -246,12 +249,12 @@ export function Header() {
               ) : (
                 <motion.form
                   key="search-input"
-                  initial={{ width: 40, opacity: 0 }}
-                  animate={{ width: 150, opacity: 1 }}
-                  exit={{ width: 40, opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   onSubmit={handleSearchSubmit}
-                  className="relative flex items-center overflow-hidden"
+                  className="relative flex min-w-0 flex-1 items-center"
                 >
                   <Input
                     name="mobile-search"

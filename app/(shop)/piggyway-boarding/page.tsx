@@ -90,7 +90,7 @@ export default function BoardingPage() {
   };
 
   return (
-    <div className="bg-neutral-background-light relative min-h-screen overflow-hidden">
+    <div className="bg-neutral-background-light relative min-h-screen">
       <BackgroundBlobs variant={1} />
       <script
         type="application/ld+json"

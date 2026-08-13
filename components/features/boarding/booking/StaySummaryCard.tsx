@@ -22,13 +22,11 @@ export function StaySummaryCard({
 
   return (
     <div className="border-neutral-stroke flex flex-col gap-[18px] rounded-[24px] border bg-white px-7 py-[26px]">
-      <h2 className="text-primary-navy text-[20px] font-semibold">
-        Stay summary
-      </h2>
+      <h2 className="text-primary-navy text-lead">Stay summary</h2>
       {rows.map((row) => (
         <div key={row.label} className="flex items-center justify-between">
           <span className="text-subtle text-slate-600">{row.label}</span>
-          <span className="text-subtle-medium text-primary-navy">
+          <span className="text-p font-medium text-primary-navy">
             {row.value}
           </span>
         </div>
@@ -37,7 +35,7 @@ export function StaySummaryCard({
       <div className="bg-neutral-stroke h-px w-full" />
 
       <div className="bg-secondary-mint rounded-[12px] px-3.5 py-2.5">
-        <p className="text-primary-navy text-[13px] font-medium">
+        <p className="text-primary-navy text-subtle font-medium">
           Final price confirmed after we review your request — no payment today.
         </p>
       </div>

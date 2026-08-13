@@ -128,8 +128,8 @@ export function StayCalendarCard({
           <CalendarDays className="text-primary-navy size-[17px]" />
         </div>
         <div className="flex flex-col gap-0.5">
-          <p className="text-primary-navy text-[16px] font-semibold">{title}</p>
-          <p className="text-[13px] text-slate-400">
+          <p className="text-primary-navy text-lead">{title}</p>
+          <p className="text-subtle text-slate-400">
             {selectedDate
               ? formatStayLabel(selectedDate, selectedTime)
               : "Select a date & time"}
@@ -147,7 +147,7 @@ export function StayCalendarCard({
         >
           <ChevronLeft className="size-3" />
         </button>
-        <p className="text-primary-navy text-[15px] font-semibold">
+        <p className="text-primary-navy text-p-ui font-semibold">
           {monthLabel}
         </p>
         <button
@@ -166,7 +166,7 @@ export function StayCalendarCard({
           {WEEKDAYS.map((weekday) => (
             <div
               key={weekday}
-              className="flex h-6 items-center justify-center text-[11px] font-medium text-slate-400"
+              className="text-detail flex h-6 items-center justify-center font-medium text-slate-400"
             >
               {weekday}
             </div>
@@ -191,7 +191,7 @@ export function StayCalendarCard({
                 disabled={isDisabled}
                 onClick={() => onSelectDate(cell.key)}
                 className={cn(
-                  "flex h-[38px] items-center justify-center rounded-[10px] text-[13px] transition-colors",
+                  "text-p flex h-[38px] items-center justify-center rounded-[10px] transition-colors",
                   isSelected
                     ? "bg-primary-navy font-semibold text-white"
                     : isDisabled
@@ -211,9 +211,9 @@ export function StayCalendarCard({
       <div className="bg-neutral-stroke h-px w-full" />
 
       {/* Time slots */}
-      <div className="flex items-center justify-between">
-        <p className="text-primary-navy text-[13px] font-medium">{timeLabel}</p>
-        <p className="text-[11px] text-slate-400">1-hour blocks</p>
+      <div className="flex items-baseline justify-between">
+        <p className="text-primary-navy text-p font-semibold">{timeLabel}</p>
+        <p className="text-detail text-slate-400">1-hour blocks</p>
       </div>
       <div className="grid grid-cols-4 gap-2">
         {TIME_SLOTS.map((slot) => {
@@ -224,7 +224,7 @@ export function StayCalendarCard({
               type="button"
               onClick={() => onSelectTime(slot)}
               className={cn(
-                "flex h-9 items-center justify-center rounded-full text-[13px] transition-colors",
+                "text-p flex h-9 items-center justify-center rounded-full transition-colors",
                 isSelected
                   ? "bg-primary-navy font-semibold text-white"
                   : "border-neutral-stroke border bg-white text-slate-600 hover:border-slate-300"

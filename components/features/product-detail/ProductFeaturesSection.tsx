@@ -121,12 +121,12 @@ export function ProductFeaturesSection({
                   {(featureSectionTitle || featureSectionSubtitle) && (
                     <div className="flex flex-col gap-2">
                       {featureSectionTitle && (
-                        <h3 className="text-lead leading-8 font-semibold text-white">
+                        <h3 className="text-lead text-white">
                           {featureSectionTitle}
                         </h3>
                       )}
                       {featureSectionSubtitle && (
-                        <p className="text-p-ui leading-6 font-medium text-white">
+                        <p className="text-p text-white">
                           {featureSectionSubtitle}
                         </p>
                       )}
@@ -149,7 +149,7 @@ export function ProductFeaturesSection({
                             className="text-primary-navy size-12"
                             strokeWidth={1.5}
                           />
-                          <p className="text-primary-navy text-p-ui text-center font-semibold">
+                          <p className="text-primary-navy text-p text-center font-semibold">
                             {card.label}
                           </p>
                         </div>
@@ -175,10 +175,10 @@ export function ProductFeaturesSection({
                           block.imageLeft ? "lg:order-2" : "lg:order-1"
                         )}
                       >
-                        <h3 className="text-primary-navy-light text-large leading-10 font-semibold">
+                        <h3 className="text-primary-navy-light text-lead">
                           {block.title}
                         </h3>
-                        <p className="text-primary-navy text-lead leading-8 font-normal">
+                        <p className="text-primary-navy text-p">
                           {block.description}
                         </p>
                       </div>

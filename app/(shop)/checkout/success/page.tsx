@@ -210,7 +210,7 @@ export default async function SuccessPage({
     return (
       <div className="container mx-auto px-4 pt-12 pb-24 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center gap-7 text-center">
-          <h1 className="text-primary-navy text-[36px] leading-none font-semibold">
+          <h1 className="text-primary-navy text-large">
             Payment not completed
           </h1>
           <p className="text-p max-w-[480px] text-slate-600">
@@ -219,7 +219,7 @@ export default async function SuccessPage({
           </p>
           <Button
             asChild
-            className="h-[50px] rounded-full px-9 text-[15px] font-semibold"
+            className="text-p h-[50px] rounded-full px-9 font-semibold"
           >
             <Link href="/checkout">Back to Checkout</Link>
           </Button>
@@ -245,7 +245,7 @@ export default async function SuccessPage({
         </div>
 
         <div className="flex flex-col items-center gap-2.5 text-center">
-          <h1 className="text-primary-navy text-[36px] leading-none font-semibold">
+          <h1 className="text-primary-navy text-large">
             {isProcessing ? "Payment processing..." : "Payment successful!"}
           </h1>
           <p className="text-p text-slate-600">
@@ -260,13 +260,13 @@ export default async function SuccessPage({
           <div className="border-neutral-stroke flex w-full max-w-[600px] flex-col gap-[18px] rounded-[24px] border bg-white px-8 py-7">
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-0.5">
-                <span className="text-[12px] text-slate-400">Order</span>
-                <span className="text-primary-navy text-[16px] font-semibold">
+                <span className="text-subtle text-slate-400">Order</span>
+                <span className="text-primary-navy text-p font-semibold">
                   {orderRef ? `#${orderRef}` : "Being finalised..."}
                 </span>
               </div>
               {isPaid && (
-                <span className="bg-secondary-mint rounded-full px-3.5 py-1.5 text-[12px] font-semibold text-green-600">
+                <span className="bg-secondary-mint text-detail rounded-full px-3.5 py-1.5 font-semibold text-green-600">
                   Paid
                 </span>
               )}
@@ -282,13 +282,13 @@ export default async function SuccessPage({
                       <span
                         className={`size-10 shrink-0 rounded-[10px] ${THUMB_COLORS[index % THUMB_COLORS.length]}`}
                       />
-                      <span className="text-primary-navy min-w-0 flex-1 truncate text-[14px]">
+                      <span className="text-primary-navy text-subtle min-w-0 flex-1 truncate">
                         {row.title}
                       </span>
-                      <span className="text-[13px] text-slate-400">
+                      <span className="text-subtle text-slate-400">
                         ×{row.quantity}
                       </span>
-                      <span className="text-primary-navy text-[14px] font-medium">
+                      <span className="text-primary-navy text-subtle font-medium">
                         {formatAmount(row.amountCents, currency)}
                       </span>
                     </div>
@@ -297,7 +297,7 @@ export default async function SuccessPage({
                         {row.addOns.map((addOn, addOnIndex) => (
                           <span
                             key={`${addOn.add_on_rid ?? addOn.name}-${addOnIndex}`}
-                            className="text-[12px] text-slate-400"
+                            className="text-detail text-slate-400"
                           >
                             + {addOn.name} (
                             {formatAmount(addOn.unit_price_cents, currency)})
@@ -313,14 +313,14 @@ export default async function SuccessPage({
             <div className="bg-neutral-stroke h-px w-full" />
 
             <div className="flex items-center justify-between">
-              <span className="text-primary-navy text-[15px] font-medium">
+              <span className="text-primary-navy text-p font-medium">
                 Total paid
               </span>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-[12px] text-slate-400">
+                <span className="text-detail text-slate-400">
                   {currency.toUpperCase()}
                 </span>
-                <span className="text-primary-navy text-[22px] font-bold">
+                <span className="text-primary-navy text-lead">
                   {formatAmount(totalCents, currency)}
                 </span>
               </div>
@@ -332,14 +332,14 @@ export default async function SuccessPage({
         <div className="flex flex-wrap items-center justify-center gap-3.5">
           <Button
             asChild
-            className="h-[50px] rounded-full px-9 text-[15px] font-semibold"
+            className="text-p h-[50px] rounded-full px-9 font-semibold"
           >
             <Link href="/shop-all">Continue Shopping</Link>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="border-primary-navy text-primary-navy h-[50px] rounded-full border-[1.5px] px-9 text-[15px] font-semibold"
+            className="border-primary-navy text-primary-navy text-p h-[50px] rounded-full border-[1.5px] px-9 font-semibold"
           >
             <Link href="/account">View My Orders</Link>
           </Button>

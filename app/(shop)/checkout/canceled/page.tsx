@@ -10,10 +10,10 @@ export default function CanceledPage() {
           <XCircle className="h-8 w-8 text-red-500" />
         </div>
 
-        <h1 className="text-primary-navy mb-4 text-3xl font-bold">
+        <h1 className="text-primary-navy text-large mb-4">
           Payment Canceled
         </h1>
-        <p className="mb-8 text-slate-600">
+        <p className="text-p mb-8 text-slate-600">
           It looks like you canceled the payment process. No worries, your order hasn&apos;t been processed and no charges were made.
         </p>
 

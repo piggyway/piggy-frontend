@@ -82,13 +82,13 @@ export function CheckoutSummary({
   const itemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
 
   return (
-    <div className="flex flex-1 flex-col gap-5">
+    <div className="flex flex-1 flex-col gap-8">
       {/* Head */}
       <div className="flex items-center justify-between">
-        <h2 className="text-primary-navy text-[20px] font-semibold">
+        <h2 className="text-primary-navy text-lead">
           Order summary
         </h2>
-        <span className="text-[13px] text-slate-400">
+        <span className="text-subtle text-slate-400">
           {itemCount} {itemCount === 1 ? "item" : "items"}
         </span>
       </div>
@@ -96,9 +96,9 @@ export function CheckoutSummary({
       {/* Items List */}
       {/* pt/-mt give the quantity badge (-top-1 + ring-2) headroom inside the
           scroll clip; max-h fits ~3 item rows so longer carts scroll */}
-      <div className="-mt-1.5 flex max-h-[240px] flex-col gap-4 overflow-y-auto pt-1.5 pr-1">
+      <div className="-mt-1.5 flex max-h-[240px] flex-col gap-5 overflow-y-auto pt-1.5 pr-1">
         {cart.items.map((item) => (
-          <div key={item.id} className="flex items-center gap-3.5">
+          <div key={item.id} className="flex items-center gap-4">
             <div className="relative size-[60px] shrink-0">
               <div className="border-neutral-stroke absolute top-0.5 left-0 size-14 overflow-hidden rounded-[12px] border bg-white">
                 <Image
@@ -108,25 +108,25 @@ export function CheckoutSummary({
                   className="object-cover"
                 />
               </div>
-              <span className="bg-primary-navy absolute -top-1 right-0 flex size-5 items-center justify-center rounded-full text-[11px] font-semibold text-white ring-2 ring-white">
+              <span className="bg-primary-navy text-detail absolute -top-1 right-0 flex size-5 items-center justify-center rounded-full font-semibold text-white ring-2 ring-white">
                 {item.quantity}
               </span>
             </div>
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <p className="text-subtle-medium text-primary-navy truncate">
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <p className="text-p text-primary-navy truncate">
                 {item.productTitle}
               </p>
               {item.variantOptions && item.variantOptions.length > 0 ? (
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1">
                   {item.variantOptions.map((opt, i) => (
-                    <p key={i} className="text-[12px] text-slate-400">
+                    <p key={i} className="text-subtle text-slate-400">
                       {opt.name}: {opt.value}
                     </p>
                   ))}
                 </div>
               ) : (
                 item.variantSku && (
-                  <p className="text-[12px] text-slate-400">
+                  <p className="text-subtle text-slate-400">
                     {item.variantSku}
                   </p>
                 )
@@ -134,14 +134,14 @@ export function CheckoutSummary({
               {item.addOns.length > 0 && (
                 <div className="mt-0.5 flex flex-col">
                   {item.addOns.map((addOn) => (
-                    <p key={addOn.id} className="text-[12px] text-slate-400">
+                    <p key={addOn.id} className="text-subtle text-slate-400">
                       + {addOn.name} ({addOn.formattedUnitPrice})
                     </p>
                   ))}
                 </div>
               )}
             </div>
-            <p className="text-subtle-semibold text-primary-navy">
+            <p className="text-p font-semibold text-primary-navy">
               {item.formattedLineSubtotal}
             </p>
           </div>
@@ -153,27 +153,27 @@ export function CheckoutSummary({
       {/* Cost Breakdown */}
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
-          <span className="text-subtle text-slate-600">Subtotal</span>
-          <span className="text-subtle-medium text-primary-navy">
+          <span className="text-p text-slate-600">Subtotal</span>
+          <span className="text-p font-medium text-primary-navy">
             {cart.totals.formattedSubtotal}
           </span>
         </div>
         {cart.totals.discountCents > 0 && (
           <div className="flex items-center justify-between">
-            <span className="text-subtle text-slate-600">Discount</span>
-            <span className="text-subtle-medium text-green-600">
+            <span className="text-p text-slate-600">Discount</span>
+            <span className="text-p font-medium text-green-600">
               -{cart.totals.formattedDiscount}
             </span>
           </div>
         )}
         {fulfillmentType !== "pickup" && (
           <div className="flex items-center justify-between">
-            <span className="text-subtle text-slate-600">Shipping</span>
+            <span className="text-p text-slate-600">Shipping</span>
             {confirmedAmounts ? (
               confirmedAmounts.shippingFeeCents === 0 ? (
-                <span className="text-subtle-medium text-green-600">Free</span>
+                <span className="text-p font-medium text-green-600">Free</span>
               ) : (
-                <span className="text-subtle-medium text-primary-navy">
+                <span className="text-p font-medium text-primary-navy">
                   {formatCents(
                     confirmedAmounts.shippingFeeCents,
                     confirmedAmounts.currency
@@ -181,9 +181,9 @@ export function CheckoutSummary({
                 </span>
               )
             ) : cart.totals.subtotalCents >= freeShippingThreshold * 100 ? (
-              <span className="text-subtle-medium text-green-600">Free</span>
+              <span className="text-p font-medium text-green-600">Free</span>
             ) : (
-              <span className="text-primary-navy text-[13px]">
+              <span className="text-p text-primary-navy">
                 Calculated at next step
               </span>
             )}
@@ -193,12 +193,12 @@ export function CheckoutSummary({
 
       {/* Promo Code */}
       {cart.appliedCouponCode ? (
-        <div className="flex items-center justify-between rounded-[12px] border border-green-200 bg-green-50 px-4 py-3">
+        <div className="mb-4 flex items-center justify-between rounded-[12px] border border-green-200 bg-green-50 px-4 py-3">
           <div className="flex flex-col">
             <span className="text-subtle-medium text-green-800">
               {cart.appliedCouponCode}
             </span>
-            <span className="text-[12px] text-green-600">
+            <span className="text-detail text-green-600">
               Promo code applied
             </span>
           </div>
@@ -217,7 +217,7 @@ export function CheckoutSummary({
           )}
         </div>
       ) : confirmedAmounts ? null : (
-        <div className="flex flex-col gap-2">
+        <div className="mb-4 flex flex-col gap-2">
           <div className="flex items-center gap-2.5">
             <Input
               value={promoCode}
@@ -239,13 +239,13 @@ export function CheckoutSummary({
               type="button"
               onClick={handleApplyPromo}
               disabled={isMutating || isValidatingPromo || !promoCode.trim()}
-              className="bg-primary-gold text-subtle-semibold text-primary-navy hover:bg-primary-gold/80 h-11 w-[84px] shrink-0 rounded-full"
+              className="bg-primary-gold text-p font-semibold text-primary-navy hover:bg-primary-gold/80 h-11 w-[84px] shrink-0 rounded-full"
             >
               {isValidatingPromo ? "..." : "Apply"}
             </Button>
           </div>
           {(promoError || error) && (
-            <p className="text-[12px] text-red-500">{promoError || error}</p>
+            <p className="text-subtle text-red-500">{promoError || error}</p>
           )}
         </div>
       )}
@@ -256,12 +256,12 @@ export function CheckoutSummary({
 
       {/* Total */}
       <div className="flex items-center justify-between">
-        <span className="text-primary-navy text-[16px] font-medium">Total</span>
+        <span className="text-primary-navy text-p font-medium">Total</span>
         <div className="flex items-baseline gap-1.5">
-          <span className="text-[12px] text-slate-400">
+          <span className="text-detail text-slate-400">
             {(confirmedAmounts?.currency ?? cart.currency)?.toUpperCase() ?? ""}
           </span>
-          <span className="text-primary-navy text-[24px] font-bold">
+          <span className="text-primary-navy text-lead">
             {confirmedAmounts
               ? formatCents(
                   confirmedAmounts.totalCents,
@@ -276,7 +276,7 @@ export function CheckoutSummary({
       {cart.totals.discountCents > 0 && (
         <div className="bg-secondary-mint flex items-center gap-2 rounded-[12px] px-4 py-2.5">
           <Star className="fill-primary-gold text-primary-gold size-3.5 shrink-0" />
-          <p className="text-primary-navy text-[13px] font-medium">
+          <p className="text-primary-navy text-subtle font-medium">
             You&apos;re saving {cart.totals.formattedDiscount} on this order
           </p>
         </div>

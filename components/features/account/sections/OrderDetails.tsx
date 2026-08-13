@@ -52,7 +52,7 @@ interface InfoRowProps {
 function InfoRow({ label, value }: InfoRowProps) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-[12px] text-slate-400">{label}</span>
+      <span className="text-subtle text-slate-400">{label}</span>
       <span className="text-subtle-medium text-primary-navy">{value}</span>
     </div>
   );
@@ -184,7 +184,7 @@ export function OrderDetails({
       {/* Head */}
       <div className="flex w-full flex-wrap items-center justify-between gap-3.5">
         <div className="flex flex-col gap-1">
-          <h2 className="text-primary-navy text-[24px] font-semibold">
+          <h2 className="text-primary-navy text-lead">
             Order {order.order_number}
           </h2>
           <p className="text-subtle text-slate-400">
@@ -194,7 +194,7 @@ export function OrderDetails({
         </div>
         <span
           className={cn(
-            "rounded-full px-4 py-1.5 text-[13px] font-semibold",
+            "text-subtle rounded-full px-4 py-1.5 font-semibold",
             statusPill[order.status].className
           )}
         >
@@ -206,7 +206,7 @@ export function OrderDetails({
         {/* Left: items + actions */}
         <div className="flex min-w-0 flex-1 flex-col gap-5">
           <div className="border-neutral-stroke flex flex-col gap-[18px] rounded-[20px] border bg-white px-6 py-7 sm:px-8">
-            <h3 className="text-primary-navy text-[18px] font-semibold">
+            <h3 className="text-primary-navy text-p-ui font-semibold">
               Order items
             </h3>
             {order.items.map((item, idx) => (
@@ -221,10 +221,10 @@ export function OrderDetails({
                   />
                 </div>
                 <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-                  <p className="text-primary-navy truncate text-[15px] font-medium">
+                  <p className="text-primary-navy text-p truncate font-medium">
                     {item.product_title}
                   </p>
-                  <p className="text-[13px] text-slate-400">
+                  <p className="text-subtle text-slate-400">
                     {currencyFormatter.format(item.unit_price_cents / 100)} each
                   </p>
                   {item.add_ons && item.add_ons.length > 0 && (
@@ -232,7 +232,7 @@ export function OrderDetails({
                       {item.add_ons.map((addOn, addOnIdx) => (
                         <p
                           key={`${addOn.add_on_rid ?? addOn.name}-${addOnIdx}`}
-                          className="text-[12px] text-slate-400"
+                          className="text-detail text-slate-400"
                         >
                           + {addOn.name} (
                           {currencyFormatter.format(
@@ -244,10 +244,10 @@ export function OrderDetails({
                     </div>
                   )}
                 </div>
-                <span className="text-[13px] text-slate-400">
+                <span className="text-subtle text-slate-400">
                   × {item.quantity}
                 </span>
-                <span className="text-primary-navy text-[15px] font-semibold">
+                <span className="text-primary-navy text-p font-semibold">
                   {currencyFormatter.format(item.line_total_cents / 100)}
                 </span>
               </div>
@@ -266,10 +266,10 @@ export function OrderDetails({
               <span className="text-subtle-medium text-primary-navy">Free</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-primary-navy text-[16px] font-medium">
+              <span className="text-primary-navy text-p font-medium">
                 Total
               </span>
-              <span className="text-primary-navy text-[20px] font-bold">
+              <span className="text-primary-navy text-p-ui font-semibold">
                 {currencyFormatter.format(order.grand_total_amt / 100)}
               </span>
             </div>
@@ -298,7 +298,7 @@ export function OrderDetails({
         {/* Right: info cards */}
         <div className="flex w-full flex-col gap-5 lg:w-[340px] lg:shrink-0">
           <div className="border-neutral-stroke flex flex-col gap-3.5 rounded-[20px] border bg-white px-6 py-5">
-            <h4 className="text-primary-navy text-[16px] font-semibold">
+            <h4 className="text-primary-navy text-p font-semibold">
               Order info
             </h4>
             <InfoRow
@@ -318,7 +318,7 @@ export function OrderDetails({
           </div>
 
           <div className="border-neutral-stroke flex flex-col gap-3.5 rounded-[20px] border bg-white px-6 py-5">
-            <h4 className="text-primary-navy text-[16px] font-semibold">
+            <h4 className="text-primary-navy text-p font-semibold">
               Shipping address
             </h4>
             {hasShippingAddress ? (
@@ -351,7 +351,7 @@ export function OrderDetails({
           </div>
 
           <div className="border-neutral-stroke flex flex-col gap-3.5 rounded-[20px] border bg-white px-6 py-5">
-            <h4 className="text-primary-navy text-[16px] font-semibold">
+            <h4 className="text-primary-navy text-p font-semibold">
               Payment
             </h4>
             <InfoRow label="Method" value="Paid securely via Stripe" />

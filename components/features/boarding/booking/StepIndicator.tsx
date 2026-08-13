@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -14,18 +15,18 @@ interface StepIndicatorProps {
 
 export function StepIndicator({ currentStep }: StepIndicatorProps) {
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex w-full min-w-0 max-w-full items-center gap-1 sm:w-auto sm:gap-3">
       {STEPS.map((step, idx) => {
         const isActive = step.number === currentStep;
         const isCompleted = step.number < currentStep;
         return (
-          <div key={step.number} className="flex items-center gap-3">
+          <Fragment key={step.number}>
             {idx > 0 && (
-              <div className="h-0.5 w-7 rounded-[1px] bg-slate-300" />
+              <div className="h-0.5 min-w-2 flex-1 rounded-[1px] bg-slate-300 sm:w-7 sm:flex-none" />
             )}
             <div
               className={cn(
-                "flex items-center gap-2 rounded-full px-[18px] py-2",
+                "flex shrink-0 items-center gap-2 rounded-full px-2 py-2 sm:px-[18px]",
                 isActive
                   ? "bg-primary-navy"
                   : isCompleted
@@ -35,7 +36,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
             >
               <span
                 className={cn(
-                  "flex size-5 items-center justify-center rounded-full text-[11px] font-semibold",
+                  "text-detail flex size-5 items-center justify-center rounded-full font-semibold",
                   isActive
                     ? "bg-primary-gold text-primary-navy"
                     : isCompleted
@@ -47,7 +48,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
               </span>
               <span
                 className={cn(
-                  "text-[14px]",
+                  "text-subtle hidden sm:inline",
                   isActive
                     ? "font-semibold text-white"
                     : isCompleted
@@ -58,7 +59,7 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
                 {step.label}
               </span>
             </div>
-          </div>
+          </Fragment>
         );
       })}
     </div>

@@ -58,7 +58,7 @@ export function FloatingCartButton() {
         >
           <ShoppingCart className="h-6 w-6" />
           {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+            <span className="text-detail absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 font-semibold text-white">
               {totalItems}
             </span>
           )}
@@ -116,7 +116,7 @@ export function FloatingCartButton() {
                             {item.variantOptions.map((opt, i) => (
                               <p
                                 key={i}
-                                className="text-muted-foreground text-sm capitalize"
+                                className="text-muted-foreground text-p capitalize"
                               >
                                 {opt.name}: {opt.value}
                               </p>
@@ -129,7 +129,7 @@ export function FloatingCartButton() {
                               {item.variantSku.split(",").map((v, i) => (
                                 <p
                                   key={i}
-                                  className="text-muted-foreground text-sm capitalize"
+                                  className="text-muted-foreground text-p capitalize"
                                 >
                                   {v.trim()}
                                 </p>
