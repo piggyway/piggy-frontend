@@ -67,3 +67,17 @@ output "runtime_secret_read_policy_arns" {
   description = "Least-privilege runtime secret read policy ARNs keyed by service."
   value       = module.runtime_secrets.read_policy_arns
 }
+
+output "database_bootstrap_task_definition_arns" {
+  description = "One-off task definitions used for database bootstrap in execution order."
+  value = {
+    database_users       = module.database_bootstrap.database_users_task_definition_arn
+    directus_schema      = module.database_bootstrap.directus_schema_task_definition_arn
+    database_permissions = module.database_bootstrap.database_permissions_task_definition_arn
+  }
+}
+
+output "database_bootstrap_log_group_name" {
+  description = "CloudWatch log group for one-off database bootstrap tasks."
+  value       = module.database_bootstrap.log_group_name
+}

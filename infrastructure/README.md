@@ -166,21 +166,56 @@ The Directus schema source gate was resolved on 2026-08-14. The first staging
 release pins Directus 11.14.1 and uses the deduplicated snapshot in the
 `piggy-cms` repository. A disposable PostgreSQL 16 rehearsal verified the
 health endpoint, administrator login, 31 application tables, and a read-only
-`product_info` API request. Because the legacy sync tool is not idempotent, it
-must run only once against an empty application schema and never on normal
-service startup.
+`product_info` API request. The legacy sync tool must never run during normal
+service startup. The bootstrap wrapper first checks for the application schema
+and skips the sync when it is already present.
 
 The manually created duplicate RDS instance `piggyway-staging-db` was deleted
 on 2026-08-14. Its manual snapshot `piggyway-staging-db-snapshot` remains
 available. Terraform continues to manage only `piggyway-staging-postgres`.
 
 The Directus 11.14.1 deployment candidate was published from CMS commit
-`c784a1114f441c5f5285059abddb33729281609d` as image digest
-`sha256:f4abe69f191be7648aa0e4c36430523e33d7f2355d427785d5ea978c1fb2b7ef`.
-The Dockerfile applies current Alpine security updates without changing the
-Directus application version. ECR basic scanning completed with no findings.
-An earlier pre-patch image remains in ECR for audit history and must not be
-selected by any task definition.
+`ef601c8046dd446c8ba98af42dfb50457b426f90` as image digest
+`sha256:fd26df4d6dc07c018209510a547302a8413e1791926cbece3db1a97b4b65aa14`.
+The Dockerfile applies current Alpine security updates and includes the
+checksum-verified AWS RDS Sydney CA bundle without changing the Directus
+application version. ECR basic scanning completed with no findings. Earlier
+pre-patch images remain in ECR for audit history and must not be selected by
+any task definition.
+
+### Phase 3 database bootstrap result
+
+Terraform owns three stopped-by-default, one-off Fargate task definitions and
+their 14-day CloudWatch log group. They must be run in this order and must not
+be converted into ECS services:
+
+1. `piggyway-staging-database-users` creates or rotates the separate Directus
+   and Backend database logins from Secrets Manager values.
+2. `piggyway-staging-directus-schema` initializes Directus and applies the
+   reviewed application schema.
+3. `piggyway-staging-database-permissions` grants the Backend login access to
+   application tables and sequences only.
+
+The Directus task keeps PostgreSQL certificate verification enabled. It uses
+the pinned Sydney RDS CA bundle through both `DB_SSL__CA_FILE` and
+`NODE_EXTRA_CA_CERTS`. `DB_HEALTHCHECK_THRESHOLD=2000` prevents a small staging
+RDS instance from rejecting the one-time schema apply during initial warm-up;
+it does not disable the health check.
+
+The AWS bootstrap completed on 2026-08-14. Successful task evidence is retained
+in `/aws/ecs/piggyway-staging-database-bootstrap`:
+
+- schema task `5ff3e91b829846b4a105f4dec429757e` exited `0` after Directus health,
+  administrator login, and schema apply succeeded;
+- permissions task `75897a2503584a4c8b56f06834e3f819` exited `0`;
+- Backend-role verification task `adf64358bab34fd38b5ed612223d0ae1` exited
+  `0` and returned `31|0|t`: 31 application tables, zero current
+  `product_info` rows before staging seed, and an SSL database connection.
+
+Secret values were streamed directly into Secrets Manager and were not placed
+in Terraform variables, state, plans, outputs, task logs, or Git. The Directus
+and Backend containers now have secret versions; the Frontend secret container
+remains empty until its runtime configuration is finalized.
 
 The initial create attempt on 2026-08-13 was rejected before the DB instance
 existed because AWS Free Plan does not permit the architecture's requested

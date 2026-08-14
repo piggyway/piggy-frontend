@@ -46,6 +46,29 @@ module "runtime_secrets" {
   services           = ["frontend", "backend", "directus"]
 }
 
+module "database_bootstrap" {
+  source = "../../modules/database-bootstrap"
+
+  name_prefix = "piggyway-staging"
+  aws_region  = var.aws_region
+
+  database_address            = module.database.address
+  database_port               = module.database.port
+  database_name               = module.database.database_name
+  database_master_secret_arn  = module.database.master_user_secret_arn
+  directus_runtime_secret_arn = module.runtime_secrets.secret_arns["directus"]
+  backend_runtime_secret_arn  = module.runtime_secrets.secret_arns["backend"]
+
+  directus_repository_arn = module.ecr.repository_arns["directus"]
+  directus_image = join("@", [
+    module.ecr.repository_urls["directus"],
+    "sha256:fd26df4d6dc07c018209510a547302a8413e1791926cbece3db1a97b4b65aa14",
+  ])
+  postgres_image = "public.ecr.aws/docker/library/postgres@sha256:075f7ba66bc9b3ce7d6b8b635208ff61cd7cf1a67d71ec530eec5d7ae0cbe571"
+
+  directus_public_url = "https://cms-staging.piggyway.com.au"
+}
+
 resource "aws_ecs_cluster" "this" {
   name = "piggyway-staging"
 
