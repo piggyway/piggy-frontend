@@ -73,7 +73,9 @@ output "database_bootstrap_task_definition_arns" {
   value = {
     database_users       = module.database_bootstrap.database_users_task_definition_arn
     directus_schema      = module.database_bootstrap.directus_schema_task_definition_arn
+    backend_schema       = module.database_bootstrap.backend_schema_task_definition_arn
     database_permissions = module.database_bootstrap.database_permissions_task_definition_arn
+    backend_seed         = module.database_bootstrap.backend_seed_task_definition_arn
   }
 }
 

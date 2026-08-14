@@ -183,9 +183,16 @@ application version. ECR basic scanning completed with no findings. Earlier
 pre-patch images remain in ECR for audit history and must not be selected by
 any task definition.
 
+The Backend staging bootstrap candidate was published from Backend commit
+`1f353c839f9b9235ccb99c86663cf73cfafcff2b` as image digest
+`sha256:9dd48002066dc49386c90aa1eb26773c150f4ca409171c1b357fea06ea4f33a9`.
+The first candidate exposed outdated Alpine OpenSSL packages during ECR scan
+and was not deployed. The final image applies the available Alpine security
+updates and completed ECR basic scanning with no findings.
+
 ### Phase 3 database bootstrap result
 
-Terraform owns three stopped-by-default, one-off Fargate task definitions and
+Terraform owns five stopped-by-default, one-off Fargate task definitions and
 their 14-day CloudWatch log group. They must be run in this order and must not
 be converted into ECS services:
 
@@ -193,8 +200,13 @@ be converted into ECS services:
    and Backend database logins from Secrets Manager values.
 2. `piggyway-staging-directus-schema` initializes Directus and applies the
    reviewed application schema.
-3. `piggyway-staging-database-permissions` grants the Backend login access to
+3. `piggyway-staging-backend-schema` uses the Directus database owner to add
+   only the missing product-detail fields and tables required by the current
+   Backend. It never runs the inconsistent legacy Drizzle migration journal.
+4. `piggyway-staging-database-permissions` grants the Backend login access to
    application tables and sequences only.
+5. `piggyway-staging-backend-seed` uses the Backend login to upsert three
+   synthetic staging products and variants without deleting existing rows.
 
 The Directus task keeps PostgreSQL certificate verification enabled. It uses
 the pinned Sydney RDS CA bundle through both `DB_SSL__CA_FILE` and
@@ -211,6 +223,17 @@ in `/aws/ecs/piggyway-staging-database-bootstrap`:
 - Backend-role verification task `adf64358bab34fd38b5ed612223d0ae1` exited
   `0` and returned `31|0|t`: 31 application tables, zero current
   `product_info` rows before staging seed, and an SSL database connection.
+- product compatibility task `ac2b08c0c73941dab51760b6f4c1e6f9`, refreshed
+  permissions task `38b97cb1c2994484a6a852f12df790a8`, and synthetic seed
+  task `58daf0f2f2e646929a3edeb60d401628` all exited `0`;
+- Backend code-level smoke task `3afc5ae00a2045ba8fa3d5cdb9a1714c` exited `0`
+  and returned three staging products plus a readable detail record with one
+  variant and one image.
+
+Before AWS execution, the Backend schema and seed commands were each run twice
+against a disposable PostgreSQL 16 database. The second run remained at three
+products and three variants, while a pre-existing sentinel row remained
+present. This verifies repeatability and the absence of broad cleanup logic.
 
 Secret values were streamed directly into Secrets Manager and were not placed
 in Terraform variables, state, plans, outputs, task logs, or Git. The Directus

@@ -117,6 +117,16 @@ data "aws_iam_policy_document" "execution" {
   }
 
   statement {
+    sid = "PullBackendImage"
+    actions = [
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:BatchGetImage",
+      "ecr:GetDownloadUrlForLayer",
+    ]
+    resources = [var.backend_repository_arn]
+  }
+
+  statement {
     sid = "WriteBootstrapLogs"
     actions = [
       "logs:CreateLogStream",
@@ -256,6 +266,70 @@ resource "aws_ecs_task_definition" "database_permissions" {
       environment = local.common_environment
       secrets = [
         { name = "DIRECTUS_DB_PASSWORD", valueFrom = "${var.directus_runtime_secret_arn}:DB_PASSWORD::" },
+      ]
+      logConfiguration = local.log_configuration
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "backend_schema" {
+  family                   = "${var.name_prefix}-backend-schema"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  execution_role_arn       = aws_iam_role.execution.arn
+  task_role_arn            = aws_iam_role.task.arn
+  skip_destroy             = true
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  container_definitions = jsonencode([
+    {
+      name      = "backend-schema"
+      image     = var.backend_image
+      essential = true
+      command   = ["bun", "run", "db:schema:staging"]
+      environment = [
+        { name = "STAGING_SEED_CONFIRM", value = "piggyway-staging" },
+      ]
+      secrets = [
+        { name = "DATABASE_URL", valueFrom = "${var.directus_runtime_secret_arn}:DATABASE_URL::" },
+      ]
+      logConfiguration = local.log_configuration
+    }
+  ])
+}
+
+resource "aws_ecs_task_definition" "backend_seed" {
+  family                   = "${var.name_prefix}-backend-seed"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  execution_role_arn       = aws_iam_role.execution.arn
+  task_role_arn            = aws_iam_role.task.arn
+  skip_destroy             = true
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  container_definitions = jsonencode([
+    {
+      name      = "backend-seed"
+      image     = var.backend_image
+      essential = true
+      command   = ["bun", "run", "db:seed:staging"]
+      environment = [
+        { name = "STAGING_SEED_CONFIRM", value = "piggyway-staging" },
+      ]
+      secrets = [
+        { name = "DATABASE_URL", valueFrom = "${var.backend_runtime_secret_arn}:DATABASE_URL::" },
       ]
       logConfiguration = local.log_configuration
     }

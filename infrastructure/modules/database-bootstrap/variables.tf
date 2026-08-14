@@ -43,8 +43,18 @@ variable "directus_repository_arn" {
   type        = string
 }
 
+variable "backend_repository_arn" {
+  description = "ARN of the Backend ECR repository."
+  type        = string
+}
+
 variable "directus_image" {
   description = "Directus image URI pinned by digest."
+  type        = string
+}
+
+variable "backend_image" {
+  description = "Backend image URI pinned by digest."
   type        = string
 }
 

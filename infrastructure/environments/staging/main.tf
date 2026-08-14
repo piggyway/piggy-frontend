@@ -60,9 +60,14 @@ module "database_bootstrap" {
   backend_runtime_secret_arn  = module.runtime_secrets.secret_arns["backend"]
 
   directus_repository_arn = module.ecr.repository_arns["directus"]
+  backend_repository_arn  = module.ecr.repository_arns["backend"]
   directus_image = join("@", [
     module.ecr.repository_urls["directus"],
     "sha256:fd26df4d6dc07c018209510a547302a8413e1791926cbece3db1a97b4b65aa14",
+  ])
+  backend_image = join("@", [
+    module.ecr.repository_urls["backend"],
+    "sha256:9dd48002066dc49386c90aa1eb26773c150f4ca409171c1b357fea06ea4f33a9",
   ])
   postgres_image = "public.ecr.aws/docker/library/postgres@sha256:075f7ba66bc9b3ce7d6b8b635208ff61cd7cf1a67d71ec530eec5d7ae0cbe571"
 
