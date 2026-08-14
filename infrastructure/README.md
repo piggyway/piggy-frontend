@@ -174,6 +174,14 @@ The manually created duplicate RDS instance `piggyway-staging-db` was deleted
 on 2026-08-14. Its manual snapshot `piggyway-staging-db-snapshot` remains
 available. Terraform continues to manage only `piggyway-staging-postgres`.
 
+The Directus 11.14.1 deployment candidate was published from CMS commit
+`c784a1114f441c5f5285059abddb33729281609d` as image digest
+`sha256:f4abe69f191be7648aa0e4c36430523e33d7f2355d427785d5ea978c1fb2b7ef`.
+The Dockerfile applies current Alpine security updates without changing the
+Directus application version. ECR basic scanning completed with no findings.
+An earlier pre-patch image remains in ECR for audit history and must not be
+selected by any task definition.
+
 The initial create attempt on 2026-08-13 was rejected before the DB instance
 existed because AWS Free Plan does not permit the architecture's requested
 seven-day automated backup retention. The recovery plan uses the account's
