@@ -1,0 +1,185 @@
+# Piggyway infrastructure
+
+Terraform configuration for the Piggyway AWS staging environment in
+`ap-southeast-2`.
+
+## Safety rules
+
+- This account is on the AWS Free plan. Do not create or join an AWS
+  Organization: doing so automatically upgrades the account and invalidates
+  its Free Tier credits.
+- Use an MFA-protected IAM administrator for daily console access. Authenticate
+  the local AWS CLI with `aws login` so Terraform receives temporary session
+  credentials; do not create root or IAM user access keys.
+- Never commit `backend.hcl`, state, plans, credentials, runtime secrets, or
+  production data.
+- Existing AWS resources are imported before any new infrastructure is added.
+- Review a saved plan before every apply. NAT Gateway, RDS, ALB, and Fargate
+  changes require an explicit cost review.
+- Runtime secret values are written directly to Secrets Manager with a
+  temporary `aws login` session. Terraform owns only secret containers and IAM
+  access policies.
+
+## Layout
+
+- `bootstrap/state`: one-time encrypted S3 state bucket with native lock files.
+- `environments/staging`: staging root module and import declarations.
+- `modules`: reusable infrastructure modules.
+
+## Bootstrap state
+
+Use local state only for the bootstrap configuration:
+
+```bash
+cd bootstrap/state
+terraform init
+terraform plan -out=bootstrap.tfplan \
+  -var='state_bucket_name=piggyway-terraform-state-ACCOUNT_ID-ap-southeast-2'
+terraform apply bootstrap.tfplan
+```
+
+Copy `environments/staging/backend.hcl.example` to the ignored
+`environments/staging/backend.hcl` and replace the account ID placeholder.
+
+## Import the existing staging foundation
+
+```bash
+cd environments/staging
+terraform init -backend-config=backend.hcl
+terraform fmt -check -recursive ../..
+terraform validate
+terraform plan -out=import.tfplan
+terraform show import.tfplan
+```
+
+The first import plan covers the known VPC, four subnets, five security groups,
+three ECR repositories, ECS cluster, and DB subnet group. Before applying it,
+discover and model the existing internet gateway, route tables, associations,
+routes, and individual security-group rules. Do not create new resources until
+the import plan contains no unexplained replacement or deletion.
+
+## AWS Free plan authentication
+
+IAM Identity Center organization instances are intentionally disabled for this
+account because enabling AWS Organizations would forfeit its Free Tier credits.
+Use this workflow instead:
+
+1. Sign in as the MFA-protected IAM administrator, not the root user.
+2. Attach the AWS managed `SignInLocalDevelopmentAccess` policy to that user.
+3. Run `aws login --profile piggyway-staging` locally and complete the browser
+   authentication flow.
+4. Confirm the identity with
+   `aws sts get-caller-identity --profile piggyway-staging`.
+5. Export `AWS_PROFILE=piggyway-staging` before running Terraform. The local
+   session is temporary and must be renewed after it expires.
+
+Never create a long-lived access key as a workaround. Root remains an emergency
+identity only after the IAM administrator is verified.
+
+## Required environment
+
+- Terraform 1.15.8
+- AWS CLI v2 with support for `aws login`
+- An active IAM administrator `aws login` session
+- `AWS_REGION=ap-southeast-2`
+- `CLOUDFLARE_API_TOKEN` only when the DNS phase begins
+
+## Free plan cost guardrails
+
+At initial bootstrap on 2026-08-12, the Billing console showed an estimated
+Free Tier credit balance of USD 139.38. The free account closes when its credits
+are exhausted or six months after account creation, whichever comes first.
+
+- Create an AWS Budget before NAT Gateway, RDS, ALB, or Fargate resources.
+- Review the estimated monthly burn before every cost-gated apply.
+- Destroy disposable staging resources when they are not needed.
+- Keep state, final snapshots, and recovery documentation before teardown.
+
+## Phase 2 network foundation
+
+Phase 2 was applied on 2026-08-12 from a saved plan. The apply result was
+`39 added, 3 changed, 0 destroyed`, followed by a clean `terraform plan`.
+
+- Two existing private application subnets route outbound traffic through one
+  NAT Gateway in `ap-southeast-2a`.
+- Two isolated `/24` database subnets span `ap-southeast-2a` and
+  `ap-southeast-2b`. Their route table contains only the VPC-local route.
+- The RDS subnet group contains only those isolated database subnets.
+- ALB ports 80 and 443 accept IPv4 traffic only from the Cloudflare proxy
+  ranges pinned in `environments/staging/locals.tf`.
+- Cloud Map provides the private namespace `piggyway-staging.local` and the
+  `backend` A-record service used by the future ECS service.
+
+The NAT Gateway and its public IPv4 address begin consuming credits as soon as
+they exist. At the 2026-08-12 Sydney rates reviewed before apply, the expected
+idle network baseline is approximately USD 47/month before data processing.
+Check Billing and the `piggyway-staging-monthly` budget regularly.
+
+Validate the deployed network without changing it:
+
+```bash
+cd environments/staging
+AWS_PROFILE=piggyway-staging AWS_REGION=ap-southeast-2 \
+  terraform plan -detailed-exitcode
+terraform output
+```
+
+Do not run a broad `terraform destroy`: the state also owns imported shared
+resources. To roll back Phase 2, first change the DB subnet group back to the
+two application subnets, then remove only the Phase 2 resources from the
+configuration, save and review the resulting plan, and apply it only after
+confirming that imported resources are not scheduled for deletion.
+
+## Phase 3 database and secrets foundation
+
+The recurring cost was approved and the database/secrets foundation was
+applied on 2026-08-13. It created:
+
+- one private, encrypted, Single-AZ PostgreSQL 16.14 `db.t4g.micro` instance;
+- three empty application Secrets Manager containers;
+- three exact-secret read policies and one RDS bootstrap-secret read policy.
+
+RDS generates and manages the master password; Terraform receives only its
+secret ARN. No application secret versions are managed by Terraform. The final
+post-apply plan returned `No changes`.
+
+AWS Price List API rates checked for Sydney on 2026-08-13 were:
+
+- `db.t4g.micro` Single-AZ PostgreSQL: USD 0.025/hour, approximately
+  USD 18.25/month at 730 hours;
+- Single-AZ PostgreSQL gp3 storage: USD 0.138/GiB-month, or USD 2.76/month for
+  the initial 20 GiB;
+- Secrets Manager: USD 0.40/secret-month, or approximately USD 1.60/month for
+  the three runtime containers plus the RDS-managed master secret.
+
+The Phase 3 idle increment is therefore approximately **USD 22.61/month**,
+excluding API calls, backup storage beyond any included allocation, data
+transfer, and tax. Together with the Phase 2 network baseline, the staging
+foundation would consume approximately **USD 69.61/month** before ALB and
+Fargate are added. These charges consume the account's Free plan credits.
+
+The RDS resource has deletion protection and Terraform `prevent_destroy`.
+Deletion requires an explicit two-step code review, disabling both safeguards,
+and must retain the configured final snapshot.
+
+The Directus schema source gate was resolved on 2026-08-14. The first staging
+release pins Directus 11.14.1 and uses the deduplicated snapshot in the
+`piggy-cms` repository. A disposable PostgreSQL 16 rehearsal verified the
+health endpoint, administrator login, 31 application tables, and a read-only
+`product_info` API request. Because the legacy sync tool is not idempotent, it
+must run only once against an empty application schema and never on normal
+service startup.
+
+The manually created duplicate RDS instance `piggyway-staging-db` was deleted
+on 2026-08-14. Its manual snapshot `piggyway-staging-db-snapshot` remains
+available. Terraform continues to manage only `piggyway-staging-postgres`.
+
+The initial create attempt on 2026-08-13 was rejected before the DB instance
+existed because AWS Free Plan does not permit the architecture's requested
+seven-day automated backup retention. The recovery plan uses the account's
+one-day maximum while retaining deletion protection and the mandatory final
+snapshot. Upgrading the account should be followed by restoring the planned
+seven-day retention. The three empty runtime secret containers and their
+read-only IAM policies were created successfully by that first partial apply.
+The reviewed recovery apply then completed with `2 added, 0 changed,
+0 destroyed`: the RDS instance and its bootstrap-secret read policy.
