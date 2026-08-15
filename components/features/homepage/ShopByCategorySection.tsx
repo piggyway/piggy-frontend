@@ -2,16 +2,19 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { AnimatedSection } from "./AnimatedSection";
-import { CategoryService } from "@/lib/services";
+import { getCategoriesWithProducts } from "@/lib/services/category-products";
+
+const MAX_CATEGORIES = 6;
 
 /**
  * Server component: categories are fetched during server rendering so the
- * category links are present in the initial HTML for crawlers.
+ * category links are present in the initial HTML for crawlers. Categories
+ * without products are dropped so the grid never links to an empty page.
  */
 export async function ShopByCategorySection() {
-  const categories = await CategoryService.getCategories({
+  const categories = await getCategoriesWithProducts({
     features: true,
-    limit: 6,
+    limit: MAX_CATEGORIES,
   });
 
   // handle empty data

@@ -56,6 +56,7 @@ export const footerLinks: FooterLinkGroup[] = [
     title: "About us",
     links: [
       { label: "Pet Care+", href: "/pet-care" },
+      { label: "Care guides", href: "/guides" },
       { label: "Boarding", href: "/piggyway-boarding" },
       { label: "Our story", href: "/about-us" },
       { label: "Contact us", href: "/contact" },

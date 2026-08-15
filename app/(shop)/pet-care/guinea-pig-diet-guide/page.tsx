@@ -502,9 +502,7 @@ export default function DietGuidePage() {
 
         {/* Read Next Section */}
         <div className="mt-20 border-t border-gray-100 pt-12">
-          <h3 className="mb-6 text-xl font-bold text-gray-900">
-            Shop Essentials
-          </h3>
+          <h3 className="mb-6 text-xl font-bold text-gray-900">Read Next</h3>
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="rounded-2xl bg-gray-50 p-8 transition-colors hover:bg-gray-100">
               <h4 className="mb-2 text-lg font-bold text-gray-900">
@@ -518,6 +516,22 @@ export default function DietGuidePage() {
                 className="inline-flex items-center gap-2 font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
               >
                 Shop Food <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
+
+            <div className="rounded-2xl bg-gray-50 p-8 transition-colors hover:bg-gray-100">
+              <h4 className="mb-2 text-lg font-bold text-gray-900">
+                Health & Wellness Essentials
+              </h4>
+              <p className="mb-6 text-sm text-gray-600">
+                Daily health checks, grooming routines, and the warning signs
+                that mean a vet visit.
+              </p>
+              <Link
+                href="/pet-care/health-and-wellness"
+                className="inline-flex items-center gap-2 font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
+              >
+                Read Health Guide <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
           </div>

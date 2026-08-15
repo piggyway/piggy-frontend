@@ -134,7 +134,12 @@ export default function BondingPage() {
             <Link href="/shop/hideout/piggy-wooden-house">
               Piggy Wooden House
             </Link>{" "}
-            gives them a retreat that blocks out light and noise.
+            gives them a retreat that blocks out light and noise. For cage size,
+            bedding, and where to place the hides, follow our{" "}
+            <Link href="/pet-care/habitat-setup-tips">
+              habitat setup guide for small pets
+            </Link>
+            .
           </p>
           <div className="my-8 rounded-xl border border-gray-100 bg-gray-50 p-6">
             <p className="m-0 text-gray-700 italic">

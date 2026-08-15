@@ -1,34 +1,24 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { FeaturedCard } from "@/components/ui/featured-card";
+import { getCategoriesWithProducts } from "@/lib/services/category-products";
 import { AnimatedSection } from "../homepage/AnimatedSection";
 
-export function BestSellingSection() {
-  const categories = [
-    {
-      id: 1,
-      title: "Liners",
-      slug: "liner",
-      image: "/homepage-essentials/liner-example.png",
-      bgColor: "bg-neutral-pink-background",
-    },
-    {
-      id: 2,
-      title: "Hideout",
-      slug: "hideout",
-      image: "/homepage-essentials/hut-example.png",
-      bgColor: "bg-secondary-mint",
-    },
-    {
-      id: 3,
-      title: "Combos",
-      slug: "combo",
-      image: "/homepage-essentials/combo-example.png",
-      bgColor: "bg-primary-gold",
-    },
-  ];
+const MAX_CATEGORIES = 3;
+
+/**
+ * Server component: categories come from the CMS so the grid only links to
+ * categories that actually exist and have something to sell.
+ */
+export async function BestSellingSection() {
+  const visibleCategories = await getCategoriesWithProducts({
+    features: true,
+    limit: MAX_CATEGORIES,
+  });
+
+  if (visibleCategories.length === 0) {
+    return null;
+  }
 
   return (
     <AnimatedSection className="w-full">
@@ -60,7 +50,7 @@ export function BestSellingSection() {
 
         {/* Category Grid */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {categories.map((category) => (
+          {visibleCategories.map((category) => (
             <Link
               key={category.id}
               href={`/shop-all?category=${category.slug}`}

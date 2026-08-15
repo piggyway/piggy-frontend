@@ -6,14 +6,15 @@ import {
   paymentMethods,
   FOOTER_CATEGORIES_TITLE,
 } from "@/lib/types/navigation";
-import { CategoryService } from "@/lib/services/categories";
+import { getCategoriesWithProducts } from "@/lib/services/category-products";
 
 export async function Footer() {
-  const categories = await CategoryService.getCategories();
+  const categories = await getCategoriesWithProducts();
 
   // Resolve the placeholder category group against the real backend categories
-  // so the footer can never link to a category that does not exist. Drop the
-  // group entirely when the fetch failed, rather than render a bare heading.
+  // so the footer can never link to a category that does not exist or has no
+  // products. Drop the group entirely when the fetch failed, rather than
+  // render a bare heading.
   const groups = footerLinks
     .map((group) =>
       group.title === FOOTER_CATEGORIES_TITLE
