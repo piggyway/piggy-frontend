@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { guideArticles, petCareArticles } from "@/lib/guides";
 import { ProductService } from "@/lib/services/products";
 import { getBaseUrl, getProductUrl } from "@/lib/utils/seo";
 
@@ -29,13 +30,9 @@ const STATIC_PATHS = [
   "/terms",
   "/privacy",
   "/pet-care",
-  "/pet-care/guinea-pig-diet-guide",
-  "/pet-care/habitat-setup-tips",
-  "/pet-care/bonding-with-your-pet",
-  "/pet-care/health-and-wellness",
-  "/guides/bunny-starter-kit",
-  "/guides/cage-liner-benefits",
-  "/guides/first-time-owner-essentials",
+  ...petCareArticles.map((article) => `/pet-care/${article.slug}`),
+  "/guides",
+  ...guideArticles.map((article) => `/guides/${article.slug}`),
 ];
 
 async function getProductEntries(
