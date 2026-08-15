@@ -63,6 +63,18 @@ export async function generateMetadata({
     title = `${title} - Page ${page}`;
   }
 
+  // A filter that matches nothing renders a "No products found" page under a
+  // 200, which crawlers treat as thin content. Ask for a single row purely to
+  // read the total, then keep those pages out of the index. Categories that do
+  // have products stay indexable.
+  const countResponse = await ProductService.getVariants({
+    page: 1,
+    page_size: 1,
+    category: categorySlug,
+    q: searchQuery,
+  });
+  const hasNoResults = countResponse.pagination.total === 0;
+
   const url = categorySlug
     ? `${baseUrl}/shop-all?category=${categorySlug}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}${page > 1 ? `&page=${page}` : ""}`
     : searchQuery
@@ -72,8 +84,10 @@ export async function generateMetadata({
   return {
     title,
     description,
-    // Internal search result pages should not be indexed
-    ...(searchQuery ? { robots: { index: false, follow: true } } : {}),
+    // Internal search result pages and empty result pages should not be indexed
+    ...(searchQuery || hasNoResults
+      ? { robots: { index: false, follow: true } }
+      : {}),
     alternates: {
       canonical:
         page === 1 && !searchQuery
