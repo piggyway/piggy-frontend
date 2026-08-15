@@ -73,12 +73,12 @@ export function PetCareTipsSection() {
 
             {/* Card 2 - White Text Card (Housing) */}
             <Link
-              href="/guides/bunny-starter-kit"
+              href="/guides/guinea-pig-care-basics"
               className="relative flex h-[387px] flex-1 flex-col gap-5 overflow-hidden rounded-[28px] bg-white p-6 transition-transform hover:scale-[1.02]"
             >
               <div className="relative z-10 flex flex-1 flex-col gap-[14px]">
                 <p className="text-primary-navy-light text-large leading-[40px] font-semibold">
-                  Everything You Need to Begin
+                  Guinea Pig Care Basics: Everything You Need to Begin
                 </p>
                 <p className="text-primary-navy text-p-ui leading-[24px] font-medium">
                   Setting Up the Perfect Habitat for Small Pets
@@ -189,11 +189,11 @@ export function PetCareTipsSection() {
           </Link>
 
           <Link
-            href="/guides/bunny-starter-kit"
+            href="/guides/guinea-pig-care-basics"
             className="flex min-h-[280px] flex-col gap-4 rounded-[28px] bg-white p-6 transition-transform active:scale-[0.98]"
           >
             <h3 className="text-primary-navy-light text-xl font-semibold">
-              Everything You Need to Begin
+              Guinea Pig Care Basics: Everything You Need to Begin
             </h3>
             <p className="text-primary-navy flex-1 text-base">
               Setting Up the Perfect Habitat for Small Pets

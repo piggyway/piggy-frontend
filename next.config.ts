@@ -34,6 +34,13 @@ const nextConfig: NextConfig = {
         destination: "/shop-all?category=hideout",
         permanent: true,
       },
+      // The guide at "bunny-starter-kit" is entirely guinea pig content, so the
+      // route was renamed to match its title. Keep the old URL working.
+      {
+        source: "/guides/bunny-starter-kit",
+        destination: "/guides/guinea-pig-care-basics",
+        permanent: true,
+      },
     ];
   },
 };
@@ -44,4 +51,3 @@ export default nextConfig;
 // Safe no-op if the package is not installed yet in pure Node tooling.
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 initOpenNextCloudflareForDev();
-

@@ -15,12 +15,12 @@ const PUBLISHED_ON = "2025-12-20";
 const UPDATED_ON = "2026-08-06";
 
 export const metadata: Metadata = {
-  title: "Everything You Need to Begin",
+  title: "Guinea Pig Care Basics: Everything You Need to Begin",
   description:
     "Guinea pigs have a way of stealing hearts — and they deserve thoughtful care in return. Learn about the commitment, daily care, and philosophy of keeping guinea pigs.",
-  alternates: { canonical: "/guides/bunny-starter-kit" },
+  alternates: { canonical: "/guides/guinea-pig-care-basics" },
   openGraph: {
-    title: "Everything You Need to Begin",
+    title: "Guinea Pig Care Basics: Everything You Need to Begin",
     description:
       "Guinea pigs have a way of stealing hearts — and they deserve thoughtful care in return. Learn about the commitment, daily care, and philosophy of keeping guinea pigs.",
     type: "article",
@@ -35,7 +35,7 @@ export default function BeginnerGuidePage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: "Everything You Need to Begin",
+    headline: "Guinea Pig Care Basics: Everything You Need to Begin",
     image: "https://piggyway.com.au/shop-with-us/default.png",
     author: {
       "@type": "Organization",
@@ -78,7 +78,7 @@ export default function BeginnerGuidePage() {
         {/* Header */}
         <header className="mb-12">
           <h1 className="mb-8 text-3xl leading-[1.1] font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
-            Everything You Need to Begin
+            Guinea Pig Care Basics: Everything You Need to Begin
           </h1>
           <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
             <span className="font-medium text-gray-900">
@@ -236,7 +236,18 @@ export default function BeginnerGuidePage() {
             <Link href="/shop/hideout/piggy-wooden-house">
               Piggy Wooden House
             </Link>{" "}
-            so they have somewhere to retreat.
+            so they have somewhere to retreat. Our guide to{" "}
+            <Link href="/guides/cage-liner-benefits">
+              why fleece liners beat wood shavings
+            </Link>{" "}
+            explains the difference in cost, odour, and cleaning time.
+          </p>
+          <p>
+            Still building your shopping list? Work through the{" "}
+            <Link href="/guides/first-time-owner-essentials">
+              first-time owner essentials checklist
+            </Link>{" "}
+            for everything you need on day one.
           </p>
         </article>
       </div>
