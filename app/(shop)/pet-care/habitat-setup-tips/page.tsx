@@ -155,7 +155,12 @@ export default function HabitatSetupPage() {
             <Link href="/shop-all?category=liner">fleece liner range</Link>{" "}
             starts with the{" "}
             <Link href="/shop/liner/comfy-base-liner">Comfy Base Liner</Link>{" "}
-            for everyday use.
+            for everyday use. For the full comparison against wood shavings and
+            paper bedding, read{" "}
+            <Link href="/guides/cage-liner-benefits">
+              the benefits of fleece cage liners
+            </Link>
+            .
           </p>
           <h3>Other Options</h3>
           <ul>

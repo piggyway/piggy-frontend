@@ -157,6 +157,11 @@ export default function FirstTimeOwnerPage() {
             <Link href="/shop-all?category=liner">fleece liners</Link> come in
             several sizes, starting with the{" "}
             <Link href="/shop/liner/comfy-base-liner">Comfy Base Liner</Link>.
+            For cage size, placement, and enrichment, see our{" "}
+            <Link href="/pet-care/habitat-setup-tips">
+              habitat setup guide for small pets
+            </Link>
+            .
           </p>
 
           <h2>2. Diet Basics</h2>
