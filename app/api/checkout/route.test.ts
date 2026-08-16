@@ -117,6 +117,7 @@ describe("POST /api/checkout", () => {
           pickup_slot_id: 8,
           promo_code: "SAVE",
         }),
+        signal: expect.any(AbortSignal),
       }
     );
 

@@ -32,9 +32,7 @@ export function TrustedVetSection() {
                 href={BOARDING_ROUTES.story} // Update this link if needed
                 className="flex w-fit items-center justify-center gap-2 rounded-full bg-[#dcd7ff] px-6 py-3 text-[#050451] transition-colors hover:bg-[#c8c1ff]"
               >
-                <span className="text-p">
-                  Pet care
-                </span>
+                <span className="text-p">Pet care</span>
                 <div className="flex h-5 w-5 items-center justify-center">
                   <ArrowUpRight className="h-4 w-4" />
                 </div>

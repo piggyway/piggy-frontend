@@ -3,6 +3,7 @@
 This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
 
 > **Read these `.Codex/` rules first — they apply to this repo and are not repeated here:**
+>
 > - `.Codex/rules/code-style.md` — function vs arrow declarations, component rules, file/folder naming.
 > - `.Codex/rules/lessons-learned.md` — anti-patterns (reuse components, theme tokens, own your types, verify every usage).
 >
@@ -22,13 +23,13 @@ pnpm format:check        # prettier --check .
 pnpm storybook           # storybook dev on :6006
 ```
 
-Tests are **story-based**: Vitest in browser mode via Playwright, wired through Storybook's `@storybook/addon-vitest` (`vitest.config.ts` reads `.storybook`). There is no `test` script. Run with `pnpm exec vitest` (`run <file>` for a single story/file). Components ship with `*.stories.tsx` next to them.
+Tests are **story-based**: Vitest in browser mode via Playwright, wired through Storybook's `@storybook/addon-vitest` (`vitest.config.ts` reads `.storybook`). The `test` script (`pnpm test`) runs `vitest run --project unit`, which covers the non-story unit suite only. Run the story tests with `pnpm exec vitest` (`run <file>` for a single story/file). Components ship with `*.stories.tsx` next to them.
 
 ## Architecture
 
 Next.js 16 App Router + React 19, TypeScript strict, Tailwind v4. `@/*` aliases the repo root. Guinea pig / rabbit e-commerce storefront ("Piggy Way Crossing").
 
-The layering is: **Pages/components → `lib/services/` → `lib/api/client.ts` → `app/api/**/route.ts` → external backend**. UI never calls `fetch` or the backend directly — it imports a service.
+The layering is: Pages/components → `lib/services/` → `lib/api/client.ts` → `app/api/**/route.ts` → external backend. UI never calls `fetch` or the backend directly — it imports a service.
 
 ### The API routes are a BFF proxy to an EXTERNAL backend
 
@@ -60,6 +61,7 @@ Tailwind v4 (`@tailwindcss/postcss`). Tokens are CSS custom properties in `app/g
 ## External services & env
 
 Configure in `.env.local` (template: `.env.example`):
+
 - **Backend** — `API_BASE_URL` (server) / `NEXT_PUBLIC_API_BASE_URL`, plus `NEXT_PUBLIC_APP_URL`, `NEXT_PUBLIC_SITE_URL`.
 - **Stripe** — `STRIPE_SECRET_KEY`, `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` (`lib/stripe.ts`, `app/api/checkout/`).
 - **NextAuth** — `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`.

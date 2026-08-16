@@ -75,6 +75,7 @@ describe("/api/users/me/addresses/[addressId]", () => {
           "Content-Type": "application/json",
           Authorization: "Bearer account-token",
         },
+        signal: expect.any(AbortSignal),
       }
     );
   });
@@ -109,6 +110,7 @@ describe("/api/users/me/addresses/[addressId]", () => {
           Authorization: "Bearer account-token",
         },
         body: JSON.stringify(body),
+        signal: expect.any(AbortSignal),
       }
     );
   });

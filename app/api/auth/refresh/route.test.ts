@@ -46,6 +46,7 @@ describe("POST /api/auth/refresh", () => {
       {
         method: "POST",
         headers: { Cookie: "rt=old-refresh-token" },
+        signal: expect.any(AbortSignal),
       }
     );
     expect(response.headers.get("set-cookie")).toContain(

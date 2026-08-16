@@ -155,9 +155,7 @@ export function VariantCard({
                 {variant.productTitle}
               </Link>
             </h3>
-            {optionSummary && (
-              <p className="text-subtle">{optionSummary}</p>
-            )}
+            {optionSummary && <p className="text-subtle">{optionSummary}</p>}
           </div>
           {priceSection}
         </div>

@@ -190,7 +190,7 @@ export function ProductInformationSection({
                     </AccordionTrigger>
                     <AccordionContent>
                       <div
-                        className="text-p text-white/90 [&_a]:underline [&_a]:underline-offset-4 [&_h2]:text-p [&_h2]:font-semibold [&_h2]:text-white [&_h3]:text-p [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
+                        className="text-p [&_h2]:text-p [&_h3]:text-p text-white/90 [&_a]:underline [&_a]:underline-offset-4 [&_h2]:font-semibold [&_h2]:text-white [&_h3]:font-semibold [&_h3]:text-white [&_li]:mb-2 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-4 [&_ul]:list-disc [&_ul]:pl-5"
                         dangerouslySetInnerHTML={{
                           __html: item.content,
                         }}
@@ -236,7 +236,7 @@ export function ProductInformationSection({
                           <p className="text-primary-navy text-p font-medium">
                             {card.title}
                             {card.description && (
-                              <span className="text-primary-navy/70 mt-0.5 block text-subtle font-normal">
+                              <span className="text-primary-navy/70 text-subtle mt-0.5 block font-normal">
                                 {card.description}
                               </span>
                             )}

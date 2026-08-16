@@ -28,7 +28,7 @@ describe("GET /api/variants/random", () => {
     });
     expect(fetchMock).toHaveBeenCalledWith(
       "https://backend.example/api/v1/variants/random",
-      { cache: "no-store" }
+      { cache: "no-store", signal: expect.any(AbortSignal) }
     );
   });
 

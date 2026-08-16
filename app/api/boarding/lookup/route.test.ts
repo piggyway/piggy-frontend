@@ -64,6 +64,7 @@ describe("POST /api/boarding/lookup", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(lookupBody),
+        signal: expect.any(AbortSignal),
       }
     );
   });

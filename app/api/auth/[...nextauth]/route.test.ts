@@ -224,7 +224,11 @@ describe("NextAuth authOptions", () => {
 
       expect(fetchMock).toHaveBeenCalledWith(
         "https://backend.example/api/v1/auth/refresh",
-        { method: "POST", headers: { Cookie: "rt=refresh-1" } }
+        {
+          method: "POST",
+          headers: { Cookie: "rt=refresh-1" },
+          signal: expect.any(AbortSignal),
+        }
       );
       expect(token.accessToken).toBe(rotated);
       expect(token.error).toBeUndefined();

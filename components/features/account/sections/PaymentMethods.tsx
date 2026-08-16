@@ -8,9 +8,7 @@ export function PaymentMethods() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-primary-navy text-large">
-          Payment Methods
-        </h2>
+        <h2 className="text-primary-navy text-large">Payment Methods</h2>
         <Button className="gap-2">
           <Plus className="size-4" />
           Add New Method

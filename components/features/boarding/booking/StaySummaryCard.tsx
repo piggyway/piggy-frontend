@@ -26,7 +26,7 @@ export function StaySummaryCard({
       {rows.map((row) => (
         <div key={row.label} className="flex items-center justify-between">
           <span className="text-subtle text-slate-600">{row.label}</span>
-          <span className="text-p font-medium text-primary-navy">
+          <span className="text-p text-primary-navy font-medium">
             {row.value}
           </span>
         </div>

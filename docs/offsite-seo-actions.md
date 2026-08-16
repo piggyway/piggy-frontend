@@ -24,8 +24,8 @@ The query "guinea pig boarding melbourne" already gets impressions with zero cli
 - [ ] Request Indexing again for `/piggyway-boarding` after the boarding SEO changes are deployed to production.
 - [ ] Click Validate Fix on the "Page with redirect" entry in the Page indexing report.
 - [ ] Check the Page indexing report after about one week.
-  Expected: pages move from "Discovered - currently not indexed" to indexed.
-  If most pages are still stuck at "Discovered" after 2-3 weeks, revisit content quality and internal linking.
+      Expected: pages move from "Discovered - currently not indexed" to indexed.
+      If most pages are still stuck at "Discovered" after 2-3 weeks, revisit content quality and internal linking.
 
 ## 2. Google Business Profile
 
@@ -40,7 +40,7 @@ The strongest lever for the local query "guinea pig boarding melbourne".
   - Website: `https://piggyway.com.au/piggyway-boarding`
 - [ ] Complete the profile: photos of the boarding setup, a short description, and the booking link.
 - [ ] Ask happy boarding customers for Google reviews.
-  Reviews drive local pack ranking more than any on-page change.
+      Reviews drive local pack ranking more than any on-page change.
 
 ## 3. Backlinks and discovery signals
 

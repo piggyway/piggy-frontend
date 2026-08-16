@@ -259,9 +259,7 @@ export function BookingDetailsStep({
       <div className="flex min-w-0 flex-1 flex-col gap-6">
         {/* Your details */}
         <div className={cardClassName}>
-          <h2 className="text-primary-navy text-lead">
-            Your details
-          </h2>
+          <h2 className="text-primary-navy text-lead">Your details</h2>
           <div className="flex flex-col gap-5 sm:flex-row">
             <Field label="First name" error={errors.firstName}>
               <Input
@@ -311,9 +309,7 @@ export function BookingDetailsStep({
         {/* Pet details */}
         <div className={cardClassName}>
           <div className="flex items-center gap-3">
-            <h2 className="text-primary-navy text-lead">
-              Pet details
-            </h2>
+            <h2 className="text-primary-navy text-lead">Pet details</h2>
             {pets.length === 1 && <PetChip label="Pet 1" />}
           </div>
 

@@ -87,6 +87,7 @@ describe("POST /api/checkout/payment-intent", () => {
           fulfillment_type: "delivery",
           payment_intent_id: "pi_1",
         }),
+        signal: expect.any(AbortSignal),
       }
     );
   });

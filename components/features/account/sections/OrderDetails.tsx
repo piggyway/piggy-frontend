@@ -351,9 +351,7 @@ export function OrderDetails({
           </div>
 
           <div className="border-neutral-stroke flex flex-col gap-3.5 rounded-[20px] border bg-white px-6 py-5">
-            <h4 className="text-primary-navy text-p font-semibold">
-              Payment
-            </h4>
+            <h4 className="text-primary-navy text-p font-semibold">Payment</h4>
             <InfoRow label="Method" value="Paid securely via Stripe" />
           </div>
 

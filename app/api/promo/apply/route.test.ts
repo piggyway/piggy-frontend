@@ -49,6 +49,7 @@ describe("POST /api/promo/apply", () => {
           Authorization: "Bearer account-token",
         },
         body: JSON.stringify({ code: "SAVE20" }),
+        signal: expect.any(AbortSignal),
       }
     );
   });

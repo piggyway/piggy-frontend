@@ -142,9 +142,7 @@ export function BoardingLookupPage() {
   return (
     <div className="container mx-auto flex flex-col items-center gap-8 px-4 pt-16 pb-24 sm:px-6 lg:px-8">
       <div className="flex flex-col items-center gap-2.5 text-center">
-        <h1 className="text-primary-navy text-large">
-          Track your request
-        </h1>
+        <h1 className="text-primary-navy text-large">Track your request</h1>
         <p className="text-p max-w-md text-slate-600">
           Enter the reference from your confirmation email and the email you
           used when booking.

@@ -32,9 +32,7 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
   return (
     <div className="border-neutral-stroke flex w-full flex-col gap-8 rounded-[24px] border bg-white px-6 py-10 sm:px-10 sm:py-12 lg:min-h-[640px]">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-primary-navy text-lead">
-          Contact information
-        </h2>
+        <h2 className="text-primary-navy text-lead">Contact information</h2>
         {!isAuthenticated && (
           <p className="text-subtle-medium text-primary-navy-light">
             Already have an account?{" "}
@@ -46,7 +44,7 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
       </div>
 
       <div className="flex flex-col gap-3">
-        <label htmlFor="email" className="text-p font-medium text-primary-navy">
+        <label htmlFor="email" className="text-p text-primary-navy font-medium">
           Email address
         </label>
         <Input

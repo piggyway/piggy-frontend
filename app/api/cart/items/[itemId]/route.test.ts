@@ -52,6 +52,7 @@ describe("/api/cart/items/[itemId]", () => {
           "X-Session-Id": "11111111-2222-3333-4444-555555555555",
         },
         body: JSON.stringify({ quantity: 3 }),
+        signal: expect.any(AbortSignal),
       }
     );
   });

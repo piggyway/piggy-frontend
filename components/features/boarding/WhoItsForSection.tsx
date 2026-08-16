@@ -40,9 +40,7 @@ export function WhoItsForSection() {
                     {item.title}
                   </h3>
                 </div>
-                <p className="text-p text-[#050451]">
-                  {item.description}
-                </p>
+                <p className="text-p text-[#050451]">{item.description}</p>
               </article>
             ))}
           </div>

@@ -151,9 +151,7 @@ export function ProfileInfo({
       {/* Profile information */}
       <div className="border-neutral-stroke flex flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h2 className="text-primary-navy text-lead">
-            Profile information
-          </h2>
+          <h2 className="text-primary-navy text-lead">Profile information</h2>
           {!autoEdit && (
             <Button
               variant={isEditing ? "default" : "outline"}

@@ -72,9 +72,7 @@ function FulfillmentOption({
           )}
         </span>
       </div>
-      <span className="text-primary-navy text-p font-semibold">
-        {title}
-      </span>
+      <span className="text-primary-navy text-p font-semibold">{title}</span>
       {meta && (
         <span className="text-subtle font-medium text-slate-600">{meta}</span>
       )}
@@ -143,9 +141,7 @@ export function AddressStep({
       {/* Delivery method card */}
       <div className="border-neutral-stroke flex w-full flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9 lg:min-h-[640px]">
         <div className="flex flex-col gap-1.5">
-          <h2 className="text-primary-navy text-lead">
-            Delivery method
-          </h2>
+          <h2 className="text-primary-navy text-lead">Delivery method</h2>
           <p className="text-p text-slate-600">
             Choose how you&apos;d like to receive your order.
           </p>
@@ -174,7 +170,7 @@ export function AddressStep({
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-name"
-                  className="text-p font-medium text-primary-navy"
+                  className="text-p text-primary-navy font-medium"
                 >
                   Full name
                 </label>
@@ -190,7 +186,7 @@ export function AddressStep({
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-phone"
-                  className="text-p font-medium text-primary-navy"
+                  className="text-p text-primary-navy font-medium"
                 >
                   Phone <span className="text-slate-400">(optional)</span>
                 </label>
@@ -209,7 +205,7 @@ export function AddressStep({
             <div className="flex flex-col gap-2">
               <label
                 htmlFor="shipping-line1"
-                className="text-p font-medium text-primary-navy"
+                className="text-p text-primary-navy font-medium"
               >
                 Address
               </label>
@@ -226,7 +222,7 @@ export function AddressStep({
             <div className="flex flex-col gap-2">
               <label
                 htmlFor="shipping-line2"
-                className="text-p font-medium text-primary-navy"
+                className="text-p text-primary-navy font-medium"
               >
                 Apartment, suite, etc.{" "}
                 <span className="text-slate-400">(optional)</span>
@@ -245,7 +241,7 @@ export function AddressStep({
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-city"
-                  className="text-p font-medium text-primary-navy"
+                  className="text-p text-primary-navy font-medium"
                 >
                   Suburb
                 </label>
@@ -261,7 +257,7 @@ export function AddressStep({
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-state"
-                  className="text-p font-medium text-primary-navy"
+                  className="text-p text-primary-navy font-medium"
                 >
                   State
                 </label>
@@ -287,7 +283,7 @@ export function AddressStep({
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="shipping-postcode"
-                  className="text-p font-medium text-primary-navy"
+                  className="text-p text-primary-navy font-medium"
                 >
                   Postcode
                 </label>

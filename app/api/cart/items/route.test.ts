@@ -58,6 +58,7 @@ describe("POST /api/cart/items", () => {
           "X-Session-Id": "guest-1",
         },
         body: JSON.stringify(body),
+        signal: expect.any(AbortSignal),
       }
     );
   });

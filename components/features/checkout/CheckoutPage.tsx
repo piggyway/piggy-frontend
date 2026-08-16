@@ -156,12 +156,10 @@ export function CheckoutPage() {
           ← Back to cart
         </Link>
 
-        <h1 className="text-primary-navy text-large">
-          Checkout
-        </h1>
+        <h1 className="text-primary-navy text-large">Checkout</h1>
 
         {/* Step Indicators */}
-        <div className="flex w-full min-w-0 max-w-full items-center gap-1 sm:w-auto sm:gap-3">
+        <div className="flex w-full max-w-full min-w-0 items-center gap-1 sm:w-auto sm:gap-3">
           {STEPS.map((step, index) => {
             const isCompleted = currentStep > step.id;
             const isActive = currentStep === step.id;

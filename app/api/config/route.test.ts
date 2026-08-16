@@ -30,7 +30,7 @@ describe("GET /api/config", () => {
     });
     expect(fetchMock).toHaveBeenCalledWith(
       "https://backend.example/api/v1/config",
-      { next: { revalidate: 300 } }
+      { next: { revalidate: 300 }, signal: expect.any(AbortSignal) }
     );
   });
 

@@ -87,9 +87,7 @@ export function BookingSubmittedStep({
       </div>
 
       <div className="flex flex-col items-center gap-2.5 text-center">
-        <h1 className="text-primary-navy text-large">
-          Request submitted!
-        </h1>
+        <h1 className="text-primary-navy text-large">Request submitted!</h1>
         <p className="text-p text-slate-600">
           We&apos;ve received your boarding request — we&apos;ll review and
           confirm within 24 hours.
@@ -130,7 +128,7 @@ export function BookingSubmittedStep({
         {rows.map((row) => (
           <div key={row.label} className="flex items-center justify-between">
             <span className="text-subtle text-slate-600">{row.label}</span>
-            <span className="text-p font-medium text-primary-navy">
+            <span className="text-p text-primary-navy font-medium">
               {row.value}
             </span>
           </div>

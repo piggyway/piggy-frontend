@@ -14,6 +14,7 @@ Generate a new component or template scaffold with the correct folder structure,
 ```
 
 **Arguments:**
+
 - `ComponentName` — PascalCase name (required). Supports nested paths like `Auth/LoginForm`.
 - If the user mentions "template" anywhere in the prompt (e.g., `template`, `as template`, `in templates`), place it in `src/templates/` and append `Template` to the code name. Otherwise, default to `src/components/`.
 
@@ -31,6 +32,7 @@ Before generating files, validate:
 Creates `src/components/MyCard/`:
 
 **index.tsx:**
+
 ```tsx
 import { MyCardProps } from "./types";
 
@@ -44,6 +46,7 @@ export default function MyCard({}: MyCardProps) {
 ```
 
 **types.ts:**
+
 ```tsx
 export interface MyCardProps {}
 ```
@@ -53,6 +56,7 @@ export interface MyCardProps {}
 Creates `src/templates/Event/`:
 
 **index.tsx:**
+
 ```tsx
 import { EventTemplateProps } from "./types";
 
@@ -66,6 +70,7 @@ export default function EventTemplate({}: EventTemplateProps) {
 ```
 
 **types.ts:**
+
 ```tsx
 export interface EventTemplateProps {}
 ```
@@ -75,6 +80,7 @@ export interface EventTemplateProps {}
 Creates `src/components/Auth/LoginForm/`:
 
 **index.tsx:**
+
 ```tsx
 import { LoginFormProps } from "./types";
 
@@ -88,6 +94,7 @@ export default function LoginForm({}: LoginFormProps) {
 ```
 
 **types.ts:**
+
 ```tsx
 export interface LoginFormProps {}
 ```
@@ -97,11 +104,13 @@ The code name is always derived from the **last segment** of the path.
 ## Rules
 
 ### Code Style (from `.Codex/rules/code-style.md`)
+
 - Use **function declarations** for exported functions — never arrow functions.
 - Single component file → `export default function`.
 - Follow `.prettierrc` formatting: double quotes, semicolons, trailing commas, 2-space indent, Stroustrup brace style.
 
 ### Scaffold Rules
+
 - Do NOT include `import React from 'react'` — React 19 does not require it for JSX.
 - Do NOT generate Storybook story files.
 - Use `types.ts` (not `types.d.ts`).

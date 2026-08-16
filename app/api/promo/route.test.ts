@@ -111,6 +111,7 @@ describe("POST /api/promo", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ code: "SAVE10", orderAmount: 5000 }),
+        signal: expect.any(AbortSignal),
       }
     );
   });

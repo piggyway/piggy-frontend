@@ -9,12 +9,12 @@ Comparison between the live code routes and the Figma design file to find pages 
 
 ## Summary
 
-| Group | Count | Status |
-| --- | --- | --- |
-| Full pages with no design at all | 14 | open |
-| Designed pages missing one or more states | 6 | done — see `States — Coverage (B & C)` section in Figma |
-| System-wide state types never designed | 4 | done — `System Patterns` sheet |
-| Reverse gaps (Figma designed, code not built) | 1 | for tracking |
+| Group                                         | Count | Status                                                  |
+| --------------------------------------------- | ----- | ------------------------------------------------------- |
+| Full pages with no design at all              | 14    | open                                                    |
+| Designed pages missing one or more states     | 6     | done — see `States — Coverage (B & C)` section in Figma |
+| System-wide state types never designed        | 4     | done — `System Patterns` sheet                          |
+| Reverse gaps (Figma designed, code not built) | 1     | for tracking                                            |
 
 ## A. Full pages with no Figma design
 

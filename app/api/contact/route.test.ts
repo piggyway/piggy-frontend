@@ -50,6 +50,7 @@ describe("POST /api/contact", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(enquiry),
+        signal: expect.any(AbortSignal),
       }
     );
   });

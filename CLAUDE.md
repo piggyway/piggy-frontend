@@ -23,13 +23,13 @@ pnpm format:check        # prettier --check .
 pnpm storybook           # storybook dev on :6006
 ```
 
-Tests are **story-based**: Vitest in browser mode via Playwright, wired through Storybook's `@storybook/addon-vitest` (`vitest.config.ts` reads `.storybook`). There is no `test` script. Run with `pnpm exec vitest` (`run <file>` for a single story/file). Components ship with `*.stories.tsx` next to them.
+Tests are **story-based**: Vitest in browser mode via Playwright, wired through Storybook's `@storybook/addon-vitest` (`vitest.config.ts` reads `.storybook`). The `test` script (`pnpm test`) runs `vitest run --project unit`, which covers the non-story unit suite only. Run the story tests with `pnpm exec vitest` (`run <file>` for a single story/file). Components ship with `*.stories.tsx` next to them.
 
 ## Architecture
 
 Next.js 16 App Router + React 19, TypeScript strict, Tailwind v4. `@/*` aliases the repo root. Guinea pig / rabbit e-commerce storefront ("Piggy Way Crossing").
 
-The layering is: **Pages/components → `lib/services/` → `lib/api/client.ts` → `app/api/**/route.ts`→ external backend**. UI never calls`fetch` or the backend directly — it imports a service.
+The layering is: Pages/components → `lib/services/` → `lib/api/client.ts` → `app/api/**/route.ts` → external backend. UI never calls `fetch` or the backend directly — it imports a service.
 
 ### The API routes are a BFF proxy to an EXTERNAL backend
 

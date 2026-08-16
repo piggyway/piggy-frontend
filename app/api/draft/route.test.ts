@@ -91,7 +91,10 @@ describe("GET /api/draft", () => {
     expect(enable).toHaveBeenCalledOnce();
     expect(fetchMock).toHaveBeenCalledWith(
       "https://backend.example/api/v1/products/hay?include_draft=true",
-      { headers: { "x-preview-secret": "configured-preview-secret" } }
+      {
+        headers: { "x-preview-secret": "configured-preview-secret" },
+        signal: expect.any(AbortSignal),
+      }
     );
   });
 
