@@ -44,9 +44,7 @@ export function RelatedProducts() {
 
   return (
     <div className="flex flex-col gap-6 py-8">
-      <h2 className="text-primary-navy text-large">
-        You Might Also Like
-      </h2>
+      <h2 className="text-primary-navy text-large">You Might Also Like</h2>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {variants.map((variant) => {
           const qs = buildVariantSearchParams(variant.optionValues).toString();

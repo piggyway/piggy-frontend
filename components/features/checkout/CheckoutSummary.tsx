@@ -85,9 +85,7 @@ export function CheckoutSummary({
     <div className="flex flex-1 flex-col gap-8">
       {/* Head */}
       <div className="flex items-center justify-between">
-        <h2 className="text-primary-navy text-lead">
-          Order summary
-        </h2>
+        <h2 className="text-primary-navy text-lead">Order summary</h2>
         <span className="text-subtle text-slate-400">
           {itemCount} {itemCount === 1 ? "item" : "items"}
         </span>
@@ -141,7 +139,7 @@ export function CheckoutSummary({
                 </div>
               )}
             </div>
-            <p className="text-p font-semibold text-primary-navy">
+            <p className="text-p text-primary-navy font-semibold">
               {item.formattedLineSubtotal}
             </p>
           </div>
@@ -154,7 +152,7 @@ export function CheckoutSummary({
       <div className="flex flex-col gap-2.5">
         <div className="flex items-center justify-between">
           <span className="text-p text-slate-600">Subtotal</span>
-          <span className="text-p font-medium text-primary-navy">
+          <span className="text-p text-primary-navy font-medium">
             {cart.totals.formattedSubtotal}
           </span>
         </div>
@@ -173,7 +171,7 @@ export function CheckoutSummary({
               confirmedAmounts.shippingFeeCents === 0 ? (
                 <span className="text-p font-medium text-green-600">Free</span>
               ) : (
-                <span className="text-p font-medium text-primary-navy">
+                <span className="text-p text-primary-navy font-medium">
                   {formatCents(
                     confirmedAmounts.shippingFeeCents,
                     confirmedAmounts.currency
@@ -239,7 +237,7 @@ export function CheckoutSummary({
               type="button"
               onClick={handleApplyPromo}
               disabled={isMutating || isValidatingPromo || !promoCode.trim()}
-              className="bg-primary-gold text-p font-semibold text-primary-navy hover:bg-primary-gold/80 h-11 w-[84px] shrink-0 rounded-full"
+              className="bg-primary-gold text-p text-primary-navy hover:bg-primary-gold/80 h-11 w-[84px] shrink-0 rounded-full font-semibold"
             >
               {isValidatingPromo ? "..." : "Apply"}
             </Button>

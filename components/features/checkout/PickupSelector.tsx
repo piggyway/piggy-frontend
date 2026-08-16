@@ -215,7 +215,7 @@ export function PickupSelector({
     <div className="flex w-full flex-col gap-6">
       {/* Pickup location */}
       <div className="flex flex-col gap-2">
-        <label className="text-p font-medium text-primary-navy">
+        <label className="text-p text-primary-navy font-medium">
           Pickup location
         </label>
         <Select
@@ -253,9 +253,7 @@ export function PickupSelector({
                 <CalendarIcon className="text-primary-navy size-[17px]" />
               </span>
               <div className="flex min-w-0 flex-col gap-0.5">
-                <span className="text-primary-navy text-lead">
-                  Pickup
-                </span>
+                <span className="text-primary-navy text-lead">Pickup</span>
                 <span className="text-subtle text-slate-400">
                   {headSubtitle}
                 </span>

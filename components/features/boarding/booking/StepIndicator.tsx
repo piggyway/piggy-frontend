@@ -15,7 +15,7 @@ interface StepIndicatorProps {
 
 export function StepIndicator({ currentStep }: StepIndicatorProps) {
   return (
-    <div className="flex w-full min-w-0 max-w-full items-center gap-1 sm:w-auto sm:gap-3">
+    <div className="flex w-full max-w-full min-w-0 items-center gap-1 sm:w-auto sm:gap-3">
       {STEPS.map((step, idx) => {
         const isActive = step.number === currentStep;
         const isCompleted = step.number < currentStep;

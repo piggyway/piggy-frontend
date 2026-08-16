@@ -24,19 +24,19 @@ Local Next dev continues to use `.env.local`.
 
 For Workers production, set secrets / vars in the dashboard or via wrangler:
 
-| Name | Notes |
-|------|--------|
-| `API_BASE_URL` | Server-side BFF → backend |
-| `STRIPE_SECRET_KEY` | Server only |
-| `NEXTAUTH_SECRET` | Required |
-| `NEXTAUTH_URL` | Public site URL e.g. `https://piggyway.com.au` |
-| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth |
-| `NEXT_PUBLIC_API_BASE_URL` | Build-time public API base |
-| `NEXT_PUBLIC_APP_URL` | Public site URL |
-| `NEXT_PUBLIC_APP_ENV` | `production` |
-| `NEXT_PUBLIC_SITE_URL` | SEO canonical |
-| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Stripe.js |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Turnstile |
+| Name                                        | Notes                                          |
+| ------------------------------------------- | ---------------------------------------------- |
+| `API_BASE_URL`                              | Server-side BFF → backend                      |
+| `STRIPE_SECRET_KEY`                         | Server only                                    |
+| `NEXTAUTH_SECRET`                           | Required                                       |
+| `NEXTAUTH_URL`                              | Public site URL e.g. `https://piggyway.com.au` |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | OAuth                                          |
+| `NEXT_PUBLIC_API_BASE_URL`                  | Build-time public API base                     |
+| `NEXT_PUBLIC_APP_URL`                       | Public site URL                                |
+| `NEXT_PUBLIC_APP_ENV`                       | `production`                                   |
+| `NEXT_PUBLIC_SITE_URL`                      | SEO canonical                                  |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`        | Stripe.js                                      |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY`            | Turnstile                                      |
 
 `NEXT_PUBLIC_*` must be available at **build** time for `opennextjs-cloudflare build`.
 
@@ -57,10 +57,10 @@ Or configure CI (GitHub Actions / Cloudflare Builds) with these env vars.
 Production already uses OpenNext. Preview / non-production branches must too.
 `pnpm run build` is `next build` and does not emit `.open-next/worker.js`.
 
-| Environment | Build command | Deploy command |
-|-------------|---------------|----------------|
-| Production (`production` branch) | `npx opennextjs-cloudflare build` | `npx wrangler deploy` |
-| Preview (all other branches) | `npx opennextjs-cloudflare build` | `npx wrangler versions upload` |
+| Environment                      | Build command                     | Deploy command                 |
+| -------------------------------- | --------------------------------- | ------------------------------ |
+| Production (`production` branch) | `npx opennextjs-cloudflare build` | `npx wrangler deploy`          |
+| Preview (all other branches)     | `npx opennextjs-cloudflare build` | `npx wrangler versions upload` |
 
 Set these in Workers -> piggy-frontend -> Settings -> Build.
 Workers Builds ignores `wrangler.jsonc` custom `build.command`.

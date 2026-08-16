@@ -75,9 +75,7 @@ export function CartPage() {
           <div className="bg-primary-navy/5 mb-6 flex h-24 w-24 items-center justify-center rounded-full">
             <ShoppingBag className="text-primary-navy/40 size-12" />
           </div>
-          <h1 className="text-primary-navy text-h4 mb-4">
-            Your Cart is Empty
-          </h1>
+          <h1 className="text-primary-navy text-h4 mb-4">Your Cart is Empty</h1>
           {error && <p className="text-destructive text-p mb-2">{error}</p>}
           <p className="mb-8 max-w-md text-slate-600">
             Looks like you haven&apos;t started your shopping spree yet. Explore

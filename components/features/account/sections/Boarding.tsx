@@ -57,9 +57,7 @@ export function Boarding({ onBookingClick }: BoardingProps) {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-primary-navy text-lead">
-            My boarding
-          </h2>
+          <h2 className="text-primary-navy text-lead">My boarding</h2>
           <p className="text-subtle text-slate-600">
             Your pets&apos; stays with us &mdash; past and upcoming.
           </p>

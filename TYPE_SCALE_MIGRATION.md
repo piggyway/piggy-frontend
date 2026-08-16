@@ -6,18 +6,18 @@
 
 语义尺（`lib/design-tokens/typography.ts` / `globals.css`）是唯一真相：
 
-| token | size | line-height | weight |
-| --- | --- | --- | --- |
-| `text-h1` | 64 | 64 | 600 |
-| `text-h2` | 52 | 52 | 600 |
-| `text-h3` | 48 | 48 | 600 |
-| `text-h4` | 42 | 42 | 600 |
-| `text-large` | 32 | 40 | 600 |
-| `text-lead` | 24 | 32 | 600 |
-| `text-p-ui` | 20 | 24 | 500 |
-| `text-p` | 16 | 24 | 400 |
-| `text-subtle` | 14 | 20 | 400 |
-| `text-detail` | 12 | 20 | 300 |
+| token         | size | line-height | weight |
+| ------------- | ---- | ----------- | ------ |
+| `text-h1`     | 64   | 64          | 600    |
+| `text-h2`     | 52   | 52          | 600    |
+| `text-h3`     | 48   | 48          | 600    |
+| `text-h4`     | 42   | 42          | 600    |
+| `text-large`  | 32   | 40          | 600    |
+| `text-lead`   | 24   | 32          | 600    |
+| `text-p-ui`   | 20   | 24          | 500    |
+| `text-p`      | 16   | 24          | 400    |
+| `text-subtle` | 14   | 20          | 400    |
+| `text-detail` | 12   | 20          | 300    |
 
 换算前提：`globals.css:90-109` 把 Tailwind 默认尺钉成 1.25x。
 `text-xs` 实际 15px，`text-sm` 实际 17.5px，`text-base` 实际 20px，`text-lg` 实际 22.5px，`text-xl` 实际 25px，`text-2xl` 实际 30px，`text-3xl` 实际 37.5px。
@@ -28,32 +28,32 @@
 处数按 git diff 里被替换掉的 class 出现次数计。
 同一行如果同时去掉 `leading-*` / `font-bold`，不重复计入字号处数。
 
-| 原 class | 实际渲染 | 新 token | 新 size | 处数 | 规则 |
-| --- | --- | --- | --- | --- | --- |
-| `text-[11px]` | 11 | `text-detail` | 12 | 9 | 角标 / 日历表头 / “1-hour blocks” |
-| `text-[12px]` 角标、附加项、时间戳、币种 | 12 | `text-detail` | 12 | 18 | 真正的边角标注，保留 |
-| `text-[12px]` 字段标签、错误、侧栏邮箱 | 12 | `text-subtle` | 14 | 14 | account / boarding 偏小，提到次要信息档 |
-| `text-[13px]` | 13 | `text-subtle` | 14 | 40 | 次要信息默认上提到 14 |
-| `text-[14px]` | 14 | `text-subtle` | 14 | 7 | 就近 |
-| `text-[15px]` | 15 | `text-p` | 16 | 41 | 正文 / 输入 / 按钮默认 16 |
-| `text-[16px]` | 16 | `text-p` | 16 | 26 | 就近；标题保留 `font-semibold` |
-| `text-[17px]` | 17 | `text-p` | 16 | 2 | 就近 |
-| `text-[18px]` | 18 | `text-p-ui` | 20 | 5 | 小标题，往上靠 20 而不是压成正文 16 |
-| `text-[20px]` | 20 | `text-p-ui` | 20 | 5 | 就近；原 600 保留 `font-semibold` |
-| `text-[22px]` | 22 | `text-lead` | 24 | 9 | 区块标题，往上靠 24 |
-| `text-[24px]` | 24 | `text-lead` | 24 | 4 | token 自带 600，去掉 `font-semibold` |
-| `text-[36px]` | 36 | `text-large` | 32 | 4 | 就近（会缩小 4px，见待确认） |
-| `text-[40px]` | 40 | `text-h4` | 42 | 3 | 就近；token 行高已是 1，去掉 `leading-*` |
-| `text-xs` | 15 | `text-subtle` 或 `text-detail` | 14 / 12 | 12 | 表单错误 / 说明 -> subtle；步进圆点数字 -> detail |
-| `text-sm` | 17.5 | `text-p` | 16 | 24 | 就近且正文默认 16 |
-| `text-base` | 20 | `text-p-ui` | 20 | 4 | 就近 |
-| `text-lg` | 22.5 | `text-p-ui` 或 `text-lead` | 20 / 24 | 3 | 商品标题走 p-ui（自带 500）；合计走 lead |
-| `text-xl` | 25 | `text-lead` | 24 | 3 | 就近 |
-| `text-2xl` | 30 | `text-large` | 32 | 4 | 就近 |
-| `text-3xl` | 37.5 | `text-h4` | 42 | 3 | 就近（空购物车 / 取消支付标题） |
-| `text-body-medium` | 14 | `text-subtle` | 14 | 1 | 不在本轮 10 档尺里，并入 subtle |
-| `font-bold` | 假粗 | `font-semibold` 或删除 | — | 9 | Outfit 没加载 700；token 已是 600 则直接删 |
-| `leading-*` / `leading-[NNpx]` | 各异 | 删除 | token 自带 | 34 | 无需要偏离的个案被保留 |
+| 原 class                                 | 实际渲染 | 新 token                       | 新 size    | 处数 | 规则                                              |
+| ---------------------------------------- | -------- | ------------------------------ | ---------- | ---- | ------------------------------------------------- |
+| `text-[11px]`                            | 11       | `text-detail`                  | 12         | 9    | 角标 / 日历表头 / “1-hour blocks”                 |
+| `text-[12px]` 角标、附加项、时间戳、币种 | 12       | `text-detail`                  | 12         | 18   | 真正的边角标注，保留                              |
+| `text-[12px]` 字段标签、错误、侧栏邮箱   | 12       | `text-subtle`                  | 14         | 14   | account / boarding 偏小，提到次要信息档           |
+| `text-[13px]`                            | 13       | `text-subtle`                  | 14         | 40   | 次要信息默认上提到 14                             |
+| `text-[14px]`                            | 14       | `text-subtle`                  | 14         | 7    | 就近                                              |
+| `text-[15px]`                            | 15       | `text-p`                       | 16         | 41   | 正文 / 输入 / 按钮默认 16                         |
+| `text-[16px]`                            | 16       | `text-p`                       | 16         | 26   | 就近；标题保留 `font-semibold`                    |
+| `text-[17px]`                            | 17       | `text-p`                       | 16         | 2    | 就近                                              |
+| `text-[18px]`                            | 18       | `text-p-ui`                    | 20         | 5    | 小标题，往上靠 20 而不是压成正文 16               |
+| `text-[20px]`                            | 20       | `text-p-ui`                    | 20         | 5    | 就近；原 600 保留 `font-semibold`                 |
+| `text-[22px]`                            | 22       | `text-lead`                    | 24         | 9    | 区块标题，往上靠 24                               |
+| `text-[24px]`                            | 24       | `text-lead`                    | 24         | 4    | token 自带 600，去掉 `font-semibold`              |
+| `text-[36px]`                            | 36       | `text-large`                   | 32         | 4    | 就近（会缩小 4px，见待确认）                      |
+| `text-[40px]`                            | 40       | `text-h4`                      | 42         | 3    | 就近；token 行高已是 1，去掉 `leading-*`          |
+| `text-xs`                                | 15       | `text-subtle` 或 `text-detail` | 14 / 12    | 12   | 表单错误 / 说明 -> subtle；步进圆点数字 -> detail |
+| `text-sm`                                | 17.5     | `text-p`                       | 16         | 24   | 就近且正文默认 16                                 |
+| `text-base`                              | 20       | `text-p-ui`                    | 20         | 4    | 就近                                              |
+| `text-lg`                                | 22.5     | `text-p-ui` 或 `text-lead`     | 20 / 24    | 3    | 商品标题走 p-ui（自带 500）；合计走 lead          |
+| `text-xl`                                | 25       | `text-lead`                    | 24         | 3    | 就近                                              |
+| `text-2xl`                               | 30       | `text-large`                   | 32         | 4    | 就近                                              |
+| `text-3xl`                               | 37.5     | `text-h4`                      | 42         | 3    | 就近（空购物车 / 取消支付标题）                   |
+| `text-body-medium`                       | 14       | `text-subtle`                  | 14         | 1    | 不在本轮 10 档尺里，并入 subtle                   |
+| `font-bold`                              | 假粗     | `font-semibold` 或删除         | —          | 9    | Outfit 没加载 700；token 已是 600 则直接删        |
+| `leading-*` / `leading-[NNpx]`           | 各异     | 删除                           | token 自带 | 34   | 无需要偏离的个案被保留                            |
 
 合计：约 255 处 class 替换，39 个文件，净行数持平。
 
@@ -211,25 +211,25 @@ Details 步骤三个 `h2` 第一轮已经是 `text-lead`(24)，和重排后的�
 
 ### 改前 -> 改后 -> 理由
 
-| 位置 | 改前 | 改后 | 理由 |
-| --- | --- | --- | --- |
-| `StayCalendarCard` 卡片标题「Start — Drop-off」 | `text-p`(16) + `font-semibold` | `text-lead`(24) | 先和右侧统一到 20，再为了压过月份提到 24 |
-| `StaySummaryCard` 卡片标题「Stay summary」 | `text-p-ui`(20) + `font-semibold` | `text-lead`(24) | 两个并排卡片标题必须同档 |
-| `BookingDetailsStep` 三个 h2（Your details / Pet details / Emergency contact） | 已是 `text-lead`(24) | 不动 | 同级卡片标题，重排后仍和并排卡片同档 |
-| 月份标签「August 2026」 | `text-p`(16) + `font-semibold` | `text-p-ui`(20) + `font-semibold` | 原来和卡片标题同档抢戏；提到 20 后标题再让到 24 |
-| 日期数字 | `text-subtle`(14)，容器 `h-[38px]` | `text-p`(16)，容器高度不动 | 点击目标，不能和角标同档 |
-| 时间槽按钮 | `text-subtle`(14)，容器 `h-9`(36) | `text-p`(16)，容器高度不动 | 同上；24 行高在 36 高里还能垂直居中 |
-| `StaySummaryCard` 摘要行 label | `text-subtle`(14) | 不动 | 次要标签，留给 value 做对比 |
-| `StaySummaryCard` 摘要行 value | `text-subtle-medium`(14) | `text-p font-medium`(16) | label / value 要有字号台阶；保留 medium |
-| `BookingSubmittedStep` 摘要行 value | `text-subtle-medium`(14) | `text-p font-medium`(16) | Confirm 步骤同一套摘要行，一并拉开 |
-| 时间区块标签「Drop-off time」 | `text-subtle`(14) + `font-medium` | `text-p`(16) + `font-semibold` | 标签比自己管的时间槽(16)还小，层级倒了 |
-| 「1-hour blocks」 | `text-detail`(12) | 不动 | 真角标 |
-| 时间标签行对齐 | `items-center` | `items-baseline` | 左侧 16/24、右侧 12/20，按中线对齐会偏基线 |
-| Details「+ Add another pet」 | `text-subtle`(14) + `font-semibold` | `text-p`(16) + `font-semibold` | 同类按钮不该有两套字号，跟齐到 16 |
-| Details「← Back」 | `text-subtle-medium`(14) | `text-p`(16) + `font-medium` | 和同行 Submit 必须同档；变体尺换成标准尺 + 显式字重 |
-| Details「Submit Request」 | 已是 `text-p`(16) + `font-semibold` | 不动 | 主按钮已经在 16 |
-| 日历星期表头 Mo/Tu/We | `text-detail`(12) | 不动 | 真角标 |
-| 步骤条圆点数字 | `text-detail`(12) | 不动 | 真角标 |
+| 位置                                                                           | 改前                                | 改后                              | 理由                                                |
+| ------------------------------------------------------------------------------ | ----------------------------------- | --------------------------------- | --------------------------------------------------- |
+| `StayCalendarCard` 卡片标题「Start — Drop-off」                                | `text-p`(16) + `font-semibold`      | `text-lead`(24)                   | 先和右侧统一到 20，再为了压过月份提到 24            |
+| `StaySummaryCard` 卡片标题「Stay summary」                                     | `text-p-ui`(20) + `font-semibold`   | `text-lead`(24)                   | 两个并排卡片标题必须同档                            |
+| `BookingDetailsStep` 三个 h2（Your details / Pet details / Emergency contact） | 已是 `text-lead`(24)                | 不动                              | 同级卡片标题，重排后仍和并排卡片同档                |
+| 月份标签「August 2026」                                                        | `text-p`(16) + `font-semibold`      | `text-p-ui`(20) + `font-semibold` | 原来和卡片标题同档抢戏；提到 20 后标题再让到 24     |
+| 日期数字                                                                       | `text-subtle`(14)，容器 `h-[38px]`  | `text-p`(16)，容器高度不动        | 点击目标，不能和角标同档                            |
+| 时间槽按钮                                                                     | `text-subtle`(14)，容器 `h-9`(36)   | `text-p`(16)，容器高度不动        | 同上；24 行高在 36 高里还能垂直居中                 |
+| `StaySummaryCard` 摘要行 label                                                 | `text-subtle`(14)                   | 不动                              | 次要标签，留给 value 做对比                         |
+| `StaySummaryCard` 摘要行 value                                                 | `text-subtle-medium`(14)            | `text-p font-medium`(16)          | label / value 要有字号台阶；保留 medium             |
+| `BookingSubmittedStep` 摘要行 value                                            | `text-subtle-medium`(14)            | `text-p font-medium`(16)          | Confirm 步骤同一套摘要行，一并拉开                  |
+| 时间区块标签「Drop-off time」                                                  | `text-subtle`(14) + `font-medium`   | `text-p`(16) + `font-semibold`    | 标签比自己管的时间槽(16)还小，层级倒了              |
+| 「1-hour blocks」                                                              | `text-detail`(12)                   | 不动                              | 真角标                                              |
+| 时间标签行对齐                                                                 | `items-center`                      | `items-baseline`                  | 左侧 16/24、右侧 12/20，按中线对齐会偏基线          |
+| Details「+ Add another pet」                                                   | `text-subtle`(14) + `font-semibold` | `text-p`(16) + `font-semibold`    | 同类按钮不该有两套字号，跟齐到 16                   |
+| Details「← Back」                                                              | `text-subtle-medium`(14)            | `text-p`(16) + `font-medium`      | 和同行 Submit 必须同档；变体尺换成标准尺 + 显式字重 |
+| Details「Submit Request」                                                      | 已是 `text-p`(16) + `font-semibold` | 不动                              | 主按钮已经在 16                                     |
+| 日历星期表头 Mo/Tu/We                                                          | `text-detail`(12)                   | 不动                              | 真角标                                              |
+| 步骤条圆点数字                                                                 | `text-detail`(12)                   | 不动                              | 真角标                                              |
 
 ### 本次补的两处
 

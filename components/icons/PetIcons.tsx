@@ -34,4 +34,3 @@ export const GuineaPigIcon = ({
     <path d="M21 17h1.5" />
   </svg>
 );
-
