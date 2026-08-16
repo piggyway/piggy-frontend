@@ -4,7 +4,7 @@
  */
 
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
-import { apiClient } from "@/lib/api/client";
+import { apiClient, isNotFoundError } from "@/lib/api/client";
 import { normalizeImageUrl } from "@/lib/utils/images";
 import type {
   ProductListParams,
@@ -73,17 +73,11 @@ export class ProductService {
       // Transform to frontend format
       return this.transformProductListResponse(response);
     } catch (error) {
+      // Never return an empty page here: callers cannot tell that apart from
+      // a store with no matching products, and they render (or 404) on that
+      // difference.
       console.error("[ProductService] Failed to fetch products:", error);
-      // Return empty response on error
-      return {
-        data: [],
-        pagination: {
-          page: params?.page || 1,
-          pageSize: params?.page_size || 10,
-          total: 0,
-          totalPages: 0,
-        },
-      };
+      throw error;
     }
   }
 
@@ -123,8 +117,14 @@ export class ProductService {
 
       return this.transformProductDetail(response);
     } catch (error) {
+      // `null` means the backend confirmed there is no such product, so the
+      // page may 404. Anything else is a failed request and must propagate,
+      // otherwise a backend blip is served to crawlers as a permanent 404.
+      if (isNotFoundError(error)) {
+        return null;
+      }
       console.error(`[ProductService] Failed to fetch product ${slug}:`, error);
-      return null;
+      throw error;
     }
   }
 
@@ -479,21 +479,19 @@ export class ProductService {
 
       return this.transformVariantListResponse(response);
     } catch (error) {
+      // A failed request must not report `total: 0`. Callers use that count to
+      // decide whether a category is empty and whether a page exists.
       console.error("[ProductService] Failed to fetch variants:", error);
-      return {
-        data: [],
-        pagination: {
-          page: params?.page || 1,
-          pageSize: params?.page_size || 10,
-          total: 0,
-          totalPages: 0,
-        },
-      };
+      throw error;
     }
   }
 
   /**
    * Get 3 random variants (for "You Might Also Like" sections)
+   *
+   * Degrades to an empty list on failure instead of throwing: the caller is a
+   * client-side suggestion strip whose absence changes nothing about whether
+   * the page exists. The failure is still reported.
    */
   static async getRandomVariants(): Promise<VariantListItem[]> {
     try {
@@ -599,6 +597,10 @@ export class ProductService {
 
   /**
    * Get reviews for a variant
+   *
+   * Degrades to `null` on failure instead of throwing: reviews are a section
+   * of the product page, so a review outage must not take the product page
+   * down with it. The failure is still reported.
    */
   static async getVariantReviews(
     variantId: number

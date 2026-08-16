@@ -10,6 +10,7 @@ import { TestimonialsSection } from "@/components/features/shop/TestimonialsSect
 import { RelatedProductsSection } from "@/components/features/product-detail/RelatedProductsSection";
 import { ProductService } from "@/lib/services/products";
 import { CategoryService } from "@/lib/services/categories";
+import type { Category } from "@/lib/types/models";
 import { ConfigService } from "@/lib/services/config";
 import {
   DELIVERY_ZONES,
@@ -100,18 +101,27 @@ export default async function ProductPage({ params }: ProductPageProps) {
     includeDraft: isDraftMode,
   });
 
-  // If product not found, show 404 page
+  // `null` only ever means the backend confirmed there is no such product; a
+  // failed fetch throws and is served as a 5xx instead of a 404.
   if (!product) {
     notFound();
   }
 
   // Resolve the full category (care cards, section titles) for the
-  // category-driven product information section. Falls back gracefully when
-  // the category is missing.
-  const categories = await CategoryService.getCategories();
-  const productCategory = categories.find(
-    (cat) => cat.slug === product.category?.slug
-  );
+  // category-driven product information section. This is presentation only,
+  // so a categories outage degrades the section rather than the page.
+  let productCategory: Category | undefined;
+  try {
+    const categories = await CategoryService.getCategories();
+    productCategory = categories.find(
+      (cat) => cat.slug === product.category?.slug
+    );
+  } catch (error) {
+    console.error(
+      "[ProductPage] Failed to fetch categories for product information:",
+      error
+    );
+  }
 
   const shippingConfig = await ConfigService.getShippingConfig();
 

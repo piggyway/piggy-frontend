@@ -1,6 +1,7 @@
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import { ProductService } from "@/lib/services/products";
 import { ProductCardClient } from "../shop/ProductCardClient";
+import type { ProductListItem } from "@/lib/types/product";
 
 interface RelatedProductsSectionProps {
   categorySlug?: string | null;
@@ -16,15 +17,27 @@ export async function RelatedProductsSection({
     return null;
   }
 
-  // Fetch products from the same category, sorted by price ascending
-  const response = await ProductService.getProducts({
-    category: categorySlug,
-    sort: "base_price",
-    page_size: 4, // Get 4 to account for excluding current product
-  });
+  // Fetch products from the same category, sorted by price ascending.
+  // This section is supplementary, so a failed fetch hides it instead of
+  // taking the product page down.
+  let products: ProductListItem[] = [];
+  try {
+    const response = await ProductService.getProducts({
+      category: categorySlug,
+      sort: "base_price",
+      page_size: 4, // Get 4 to account for excluding current product
+    });
+    products = response.data;
+  } catch (error) {
+    console.error(
+      "[RelatedProductsSection] Failed to fetch related products:",
+      error
+    );
+    return null;
+  }
 
   // Filter out current product and take first 3
-  const relatedProducts = response.data
+  const relatedProducts = products
     .filter((product) => product.id !== excludeProductId)
     .slice(0, 3);
 

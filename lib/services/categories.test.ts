@@ -68,7 +68,7 @@ describe("CategoryService", () => {
     });
   });
 
-  it("does not limit for zero and returns an empty list for invalid or rejected responses", async () => {
+  it("does not limit for zero and rejects invalid or failed responses", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     getMock
       .mockResolvedValueOnce({
@@ -108,10 +108,14 @@ describe("CategoryService", () => {
         careCards: [],
       },
     ]);
-    // A malformed response and a network failure must both surface as "no
-    // categories". Inventing a fallback list here is what previously produced
-    // navigation links to categories the backend does not have.
-    await expect(CategoryService.getCategories()).resolves.toEqual([]);
-    await expect(CategoryService.getCategories()).resolves.toEqual([]);
+    // A malformed response and a network failure must both reject. An empty
+    // list is reserved for "the backend says there are no categories", because
+    // callers 404 unknown category slugs on it.
+    await expect(CategoryService.getCategories()).rejects.toThrowError(
+      "Invalid API response format"
+    );
+    await expect(CategoryService.getCategories()).rejects.toThrowError(
+      "offline"
+    );
   });
 });
