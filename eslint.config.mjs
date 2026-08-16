@@ -13,6 +13,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // OpenNext build output, produced by pnpm deploy/preview.
+    ".open-next/**",
   ]),
 ]);
 
