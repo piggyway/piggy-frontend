@@ -11,6 +11,49 @@ interface RequestOptions extends RequestInit {
   redirectOnAuthError?: boolean;
 }
 
+/**
+ * Error thrown by `apiFetch` for any non-2xx response, carrying the HTTP
+ * status so callers can tell "the backend says this does not exist" (404)
+ * apart from "the request failed" (5xx, timeout, network). Without the status
+ * a transient failure is indistinguishable from a missing resource, and pages
+ * turn an outage into a hard 404.
+ */
+export class ApiError extends Error {
+  readonly status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+/**
+ * True only when the backend confirmed the resource does not exist.
+ * Network errors, timeouts and 5xx responses are failures, not absences.
+ */
+export function isNotFoundError(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 404;
+}
+
+/**
+ * Best-effort message for a failed response. A non-JSON error body (an HTML
+ * error page, an empty 502) still has to produce an ApiError with the right
+ * status, so parsing failures fall back to a generic message rather than
+ * replacing the status-bearing error.
+ */
+async function readErrorMessage(response: Response): Promise<string> {
+  try {
+    const data = await response.json();
+    if (data && typeof data.error === "string") {
+      return data.error;
+    }
+  } catch {
+    // Body was not JSON; the status is what matters.
+  }
+  return `API error: ${response.status}`;
+}
+
 const PROTECTED_AUTH_PATHS = ["/account", "/checkout", "/cart"];
 
 function shouldRedirectToLogin(redirectOnAuthError?: boolean): boolean {
@@ -78,13 +121,11 @@ async function apiFetch<T>(
       },
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-      throw new Error(data.error || `API error: ${response.status}`);
+      throw new ApiError(response.status, await readErrorMessage(response));
     }
 
-    return data as T;
+    return (await response.json()) as T;
   } catch (error) {
     console.error("[Frontend API Error]", error);
     throw error;

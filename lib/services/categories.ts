@@ -101,13 +101,11 @@ export class CategoryService {
 
       return categories;
     } catch (error) {
-      // Deliberately NOT falling back to a hardcoded list. The previous
-      // fallback invented categories that do not exist in the backend, so a
-      // failed fetch silently produced a category filter bar and footer full
-      // of links to empty result pages. Every caller already handles an empty
-      // list, so surface the failure instead of masking it.
+      // Neither a hardcoded fallback list nor an empty list: both invent an
+      // answer the backend never gave. An empty list must mean "the shop has
+      // no categories", because callers 404 unknown category slugs on it.
       console.error("[CategoryService] Failed to fetch categories:", error);
-      return [];
+      throw error;
     }
   }
 
