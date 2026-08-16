@@ -36,7 +36,7 @@ describe("GET /api/categories", () => {
     expect(options).toMatchObject({ next: { revalidate: 300 } });
   });
 
-  it("reports the upstream status in the error message on a failure", async () => {
+  it("relays a failed upstream response under its own status", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ error: "boom" }), {
@@ -48,12 +48,24 @@ describe("GET /api/categories", () => {
 
     const response = await GET();
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(503);
     await expect(response.json()).resolves.toEqual({
-      success: false,
       error: "Failed to fetch categories",
-      message: "Backend API error: 503",
+      message: "boom",
     });
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ error: "slow down" }), {
+        status: 429,
+        statusText: "Too Many Requests",
+        headers: { "Content-Type": "application/json", "Retry-After": "30" },
+      })
+    );
+
+    const throttled = await GET();
+
+    expect(throttled.status).toBe(429);
+    expect(throttled.headers.get("Retry-After")).toBe("30");
   });
 
   it("surfaces a network failure instead of returning an empty list", async () => {

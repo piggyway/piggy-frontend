@@ -59,7 +59,7 @@ describe("GET /api/variants/[id]/reviews", () => {
     });
   });
 
-  it("returns a 500 envelope for any other upstream failure", async () => {
+  it("relays any other upstream failure under its own status", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ error: "boom" }), {
@@ -73,9 +73,25 @@ describe("GET /api/variants/[id]/reviews", () => {
       params("42")
     );
 
-    expect(response.status).toBe(500);
+    expect(response.status).toBe(503);
     await expect(response.json()).resolves.toEqual({
       error: "Failed to fetch reviews",
+      message: "boom",
     });
+
+    vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(JSON.stringify({ error: "slow down" }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", "Retry-After": "30" },
+      })
+    );
+
+    const throttled = await GET(
+      new NextRequest("http://localhost/api/variants/42/reviews"),
+      params("42")
+    );
+
+    expect(throttled.status).toBe(429);
+    expect(throttled.headers.get("Retry-After")).toBe("30");
   });
 });
