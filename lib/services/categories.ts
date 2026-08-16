@@ -3,6 +3,8 @@
  * Business logic layer for categories
  */
 
+import { cache } from "react";
+
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import { apiClient } from "@/lib/api/client";
 import type { Category, CategoryFromAPI } from "@/lib/types/models";
@@ -63,6 +65,28 @@ const DEFAULT_CATEGORY_STYLE = {
   image: "/default-category-image.png",
 };
 
+/**
+ * The raw category list, fetched at most once per server render.
+ *
+ * Every page carries several independent callers of this data (the layout
+ * `Footer`, the homepage and shop category grids, `generateMetadata` and the
+ * page body), and each one used to issue its own `/api/categories` round trip,
+ * multiplying upstream traffic by the number of callers on the page. `features`
+ * and `limit` are frontend-side filters that the BFF route ignores, so the
+ * request takes no parameters and all callers share this single result.
+ */
+const fetchCategoryList = cache(async (): Promise<CategoryFromAPI[]> => {
+  const response = await apiClient.get<CategoriesAPIResponse>(
+    API_ENDPOINTS.CATEGORIES
+  );
+
+  if (!response.success || !response.data) {
+    throw new Error("Invalid API response format");
+  }
+
+  return response.data;
+});
+
 export class CategoryService {
   /**
    * Get all categories
@@ -73,21 +97,11 @@ export class CategoryService {
     limit?: number;
   }): Promise<Category[]> {
     try {
-      // Call Next.js API Route
-      const response = await apiClient.get<CategoriesAPIResponse>(
-        API_ENDPOINTS.CATEGORIES,
-        { params }
-      );
-
-      // Business logic: Check response format
-      if (!response.success || !response.data) {
-        throw new Error("Invalid API response format");
-      }
+      // Shared per-render fetch; see fetchCategoryList above
+      const data = await fetchCategoryList();
 
       // Business logic: Transform and enhance data
-      let categories = response.data.map((category) =>
-        this.transformCategory(category)
-      );
+      let categories = data.map((category) => this.transformCategory(category));
 
       // Business logic: Apply frontend filtering (if backend doesn't support)
       if (params?.features) {
