@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { apiClient } from "@/lib/api/client";
+import { ApiError, apiClient } from "@/lib/api/client";
 import { ProductService } from "@/lib/services/products";
 import type {
   ProductDetailFromAPI,
@@ -8,7 +8,8 @@ import type {
   VariantListItemFromAPI,
 } from "@/lib/types/product";
 
-vi.mock("@/lib/api/client", () => ({
+vi.mock("@/lib/api/client", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/lib/api/client")>()),
   apiClient: { get: vi.fn() },
 }));
 
@@ -120,7 +121,7 @@ describe("ProductService", () => {
     });
   });
 
-  it("uses product defaults for null fields and malformed list responses", async () => {
+  it("uses product defaults for null fields and rejects malformed list responses", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     getMock
       .mockResolvedValueOnce({
@@ -155,10 +156,7 @@ describe("ProductService", () => {
     });
     await expect(
       ProductService.getProducts({ page: 0, page_size: 0 })
-    ).resolves.toEqual({
-      data: [],
-      pagination: { page: 1, pageSize: 10, total: 0, totalPages: 0 },
-    });
+    ).rejects.toThrowError("Invalid API response format");
   });
 
   it("transforms detail collections, derives options, and excludes invalid content", async () => {
@@ -368,18 +366,20 @@ describe("ProductService", () => {
     );
   });
 
-  it("returns null for missing detail IDs and request failures", async () => {
+  it("returns null for missing detail IDs and upstream 404s but rethrows request failures", async () => {
     vi.spyOn(console, "error").mockImplementation(() => undefined);
     getMock
       .mockResolvedValueOnce(createDetail({ id: 0 }))
+      .mockRejectedValueOnce(new ApiError(404, "Product not found"))
       .mockRejectedValueOnce(new TypeError("offline"));
 
     await expect(
       ProductService.getProductBySlug("missing")
     ).resolves.toBeNull();
+    await expect(ProductService.getProductBySlug("gone")).resolves.toBeNull();
     await expect(
       ProductService.getProductBySlug("offline")
-    ).resolves.toBeNull();
+    ).rejects.toThrowError("offline");
   });
 
   it("calculates discounts below the original price and keeps no-price fields null", async () => {
