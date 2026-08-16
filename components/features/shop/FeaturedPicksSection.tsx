@@ -1,6 +1,7 @@
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import { ProductCardClient } from "./ProductCardClient";
 import { ProductService } from "@/lib/services/products";
+import type { ProductListItem } from "@/lib/types/product";
 
 /**
  * Server component: featured products are fetched during server rendering so
@@ -8,11 +9,22 @@ import { ProductService } from "@/lib/services/products";
  * hardcoded placeholder cards).
  */
 export async function FeaturedPicksSection() {
-  const response = await ProductService.getProducts({
-    featured: "true",
-    page_size: 3,
-  });
-  const products = response.data;
+  // Supplementary section: a failed fetch hides it rather than failing the
+  // whole page, but is still reported.
+  let products: ProductListItem[] = [];
+  try {
+    const response = await ProductService.getProducts({
+      featured: "true",
+      page_size: 3,
+    });
+    products = response.data;
+  } catch (error) {
+    console.error(
+      "[FeaturedPicksSection] Failed to fetch featured products:",
+      error
+    );
+    return null;
+  }
 
   if (products.length === 0) {
     return null;

@@ -48,16 +48,9 @@ async function getProductEntries(
       page_size: PRODUCTS_PAGE_SIZE,
     });
 
-    // ProductService swallows fetch errors into an empty response, which is
-    // indistinguishable from an empty store. An empty first page almost
-    // certainly means the backend call failed - report it loudly.
-    if (page === 1 && response.data.length === 0) {
-      console.error(
-        "[Sitemap] Products fetch returned 0 items - treating as backend failure, product URLs omitted from sitemap"
-      );
-      return [];
-    }
-
+    // getProducts now throws on a failed request, so an empty first page is a
+    // genuinely empty store and the guessing heuristic is gone. Failures are
+    // caught by the caller below.
     for (const product of response.data) {
       const lastModified = product.dateUpdated
         ? new Date(product.dateUpdated)

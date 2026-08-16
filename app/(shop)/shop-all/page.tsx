@@ -67,13 +67,21 @@ export async function generateMetadata({
   // 200, which crawlers treat as thin content. Ask for a single row purely to
   // read the total, then keep those pages out of the index. Categories that do
   // have products stay indexable.
-  const countResponse = await ProductService.getVariants({
-    page: 1,
-    page_size: 1,
-    category: categorySlug,
-    q: searchQuery,
-  });
-  const hasNoResults = countResponse.pagination.total === 0;
+  //
+  // A failed count must not add noindex: dropping a valid page out of the
+  // index over a transient error is worse than briefly indexing an empty one.
+  let hasNoResults = false;
+  try {
+    const countResponse = await ProductService.getVariants({
+      page: 1,
+      page_size: 1,
+      category: categorySlug,
+      q: searchQuery,
+    });
+    hasNoResults = countResponse.pagination.total === 0;
+  } catch (error) {
+    console.error("[Metadata] Failed to count shop-all results:", error);
+  }
 
   const url = categorySlug
     ? `${baseUrl}/shop-all?category=${categorySlug}${searchQuery ? `&q=${encodeURIComponent(searchQuery)}` : ""}${page > 1 ? `&page=${page}` : ""}`
@@ -135,13 +143,9 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
   // under a 200, which crawlers treat as a soft 404 and keep re-crawling.
   // A search with no hits is a real empty state, so it stays a 200.
   //
-  // An empty `categories` means the fetch failed, not that the slug is bogus -
-  // 404ing there would turn a backend outage into 404s on valid category pages.
-  if (
-    category &&
-    categories.length > 0 &&
-    !categories.some((item) => item.slug === category)
-  ) {
+  // Both fetches above throw when the backend fails, so reaching here means
+  // `categories` is the real list and an unmatched slug really is unknown.
+  if (category && !categories.some((item) => item.slug === category)) {
     notFound();
   }
   if (page > 1 && page > response.pagination.totalPages) {
