@@ -66,6 +66,7 @@ describe("/api/users/me", () => {
           Authorization: "Bearer account-token",
         },
         body: JSON.stringify(body),
+        signal: expect.any(AbortSignal),
       }
     );
   });

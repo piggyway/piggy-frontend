@@ -66,6 +66,7 @@ describe("POST /api/boarding/cancel", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(cancelBody),
+        signal: expect.any(AbortSignal),
       }
     );
   });

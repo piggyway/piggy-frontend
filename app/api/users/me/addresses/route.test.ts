@@ -70,6 +70,7 @@ describe("/api/users/me/addresses", () => {
           Authorization: "Bearer account-token",
         },
         body: JSON.stringify(body),
+        signal: expect.any(AbortSignal),
       }
     );
   });

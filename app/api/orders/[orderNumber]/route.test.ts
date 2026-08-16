@@ -39,6 +39,7 @@ describe("GET /api/orders/[orderNumber]", () => {
           "Content-Type": "application/json",
           Authorization: "Bearer account-token",
         },
+        signal: expect.any(AbortSignal),
       }
     );
   });

@@ -42,6 +42,7 @@ describe("DELETE /api/promo/remove", () => {
           "Content-Type": "application/json",
           Authorization: "Bearer account-token",
         },
+        signal: expect.any(AbortSignal),
       }
     );
   });
