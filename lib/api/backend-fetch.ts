@@ -23,6 +23,70 @@ function gatewayTimeoutResponse(): Response {
   );
 }
 
+/**
+ * Upstream response headers that must survive the proxy hop. `Retry-After` is
+ * the only actionable instruction a 429 or 503 carries; dropping it leaves the
+ * browser, crawlers and monitoring with no idea when to come back.
+ */
+const FORWARDED_ERROR_HEADERS = ["retry-after"];
+
+/** Cap on the echoed upstream body so an HTML error page cannot be relayed whole. */
+const UPSTREAM_MESSAGE_MAX_LENGTH = 200;
+
+/**
+ * Best-effort detail from a failed upstream response. The backend rate limiter
+ * answers with plain text, not JSON, so a parse failure must still yield a
+ * usable message instead of masking the status.
+ */
+async function readUpstreamMessage(res: Response): Promise<string> {
+  const text = await res.text().catch(() => "");
+  if (!text) {
+    return res.statusText || `Backend returned ${res.status}`;
+  }
+
+  try {
+    const parsed: unknown = JSON.parse(text);
+    if (parsed && typeof parsed === "object") {
+      const body = parsed as Record<string, unknown>;
+      const detail = body.message ?? body.error;
+      if (typeof detail === "string" && detail) {
+        return detail;
+      }
+    }
+  } catch {
+    // Not JSON; the raw text is the best detail available.
+  }
+
+  return text.slice(0, UPSTREAM_MESSAGE_MAX_LENGTH);
+}
+
+/**
+ * Relay a failed upstream response without changing its status.
+ *
+ * A BFF that answers 500 for an upstream 429 lies to every consumer: the
+ * browser cannot back off, caches and crawlers treat a throttle as an outage,
+ * and alerting counts backend 4xx as frontend 5xx. Routes call this instead of
+ * throwing, so the status the backend chose is the status the client sees.
+ */
+export async function upstreamErrorResponse(
+  res: Response,
+  error: string
+): Promise<Response> {
+  const message = await readUpstreamMessage(res);
+  const headers = new Headers({ "content-type": "application/json" });
+  for (const name of FORWARDED_ERROR_HEADERS) {
+    const value = res.headers.get(name);
+    if (value) {
+      headers.set(name, value);
+    }
+  }
+
+  return new Response(JSON.stringify({ error, message }), {
+    status: res.status,
+    headers,
+  });
+}
+
 /** Next.js extends fetch init with cache controls used by some BFF routes. */
 type BackendFetchInit = RequestInit & {
   next?: {

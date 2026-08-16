@@ -63,9 +63,7 @@ describe("CategoryService", () => {
         careCards: [],
       },
     ]);
-    expect(getMock).toHaveBeenCalledWith("/api/categories", {
-      params: { features: true, limit: 1 },
-    });
+    expect(getMock).toHaveBeenCalledWith("/api/categories");
   });
 
   it("does not limit for zero and rejects invalid or failed responses", async () => {

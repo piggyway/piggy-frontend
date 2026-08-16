@@ -5,7 +5,7 @@
 
 import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
-import { backendFetch } from "@/lib/api/backend-fetch";
+import { backendFetch, upstreamErrorResponse } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -64,7 +64,9 @@ export async function GET(
           { status: 404 }
         );
       }
-      throw new Error(`Backend returned ${res.status}`);
+      // Any other upstream status is relayed as itself. A throttle (429) must
+      // not reach the page as a 500, and must never look like a 404.
+      return upstreamErrorResponse(res, "Failed to fetch product");
     }
 
     const data = await res.json();

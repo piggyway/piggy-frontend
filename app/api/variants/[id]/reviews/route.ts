@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { backendFetch } from "@/lib/api/backend-fetch";
+import { backendFetch, upstreamErrorResponse } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -33,7 +33,7 @@ export async function GET(
           { status: 404 }
         );
       }
-      throw new Error(`Backend returned ${res.status}`);
+      return upstreamErrorResponse(res, "Failed to fetch reviews");
     }
 
     const data = await res.json();
