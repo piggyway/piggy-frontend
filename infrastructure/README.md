@@ -82,7 +82,7 @@ identity only after the IAM administrator is verified.
 - AWS CLI v2 with support for `aws login`
 - An active IAM administrator `aws login` session
 - `AWS_REGION=ap-southeast-2`
-- `CLOUDFLARE_API_TOKEN` only when the DNS phase begins
+- Cloudflare zone access with permission to edit `piggyway.com.au` DNS records
 
 ## Free plan cost guardrails
 
@@ -249,3 +249,57 @@ seven-day retention. The three empty runtime secret containers and their
 read-only IAM policies were created successfully by that first partial apply.
 The reviewed recovery apply then completed with `2 added, 0 changed,
 0 destroyed`: the RDS instance and its bootstrap-secret read policy.
+
+## Directus service, ALB, DNS, and HTTPS
+
+The first long-running application service was deployed on 2026-08-14 and its
+public HTTPS route was completed on 2026-08-18.
+
+- ECS maintains one private Fargate task for Directus with 0.25 vCPU and 1 GiB
+  memory. The task has no public IP and pulls the immutable Directus image by
+  digest.
+- The execution role can pull only the Directus ECR repository, write only its
+  CloudWatch log group, and read only the Directus runtime secret. The task
+  role has no application permissions.
+- `/aws/ecs/piggyway-staging-directus` retains application logs for 14 days.
+- The internet-facing ALB accepts traffic only from the pinned Cloudflare IPv4
+  ranges. Its IP target group checks `/server/health` on port 8055.
+- Port 80 redirects to HTTPS. Port 443 uses the DNS-validated ACM certificate
+  and forwards to the Directus target group.
+- ECS deployment circuit breaking and rollback are enabled. The initial
+  deployment reached a steady state with one running task and one healthy ALB
+  target.
+
+Cloudflare DNS is intentionally a documented manual step because Terraform
+does not receive or store a Cloudflare API token. Create the ACM validation
+CNAME records printed by `terraform output
+staging_certificate_validation_options` as **DNS only** records. Keep them in
+place for certificate renewal. Create this proxied application record:
+
+```text
+Type:   CNAME
+Name:   cms-staging
+Target: <terraform output -raw staging_alb_dns_name>
+Proxy:  Proxied
+TTL:    Auto
+```
+
+The first ACM request timed out before DNS ownership was available. Terraform
+created a replacement after the validation records were added; it reached
+`ISSUED` before the HTTPS listener was created. Do not hard-code the obsolete
+certificate ARN in deployment commands.
+
+Validate the public route without exposing credentials:
+
+```bash
+curl --fail --show-error --silent \
+  https://cms-staging.piggyway.com.au/server/health
+# Expected: {"status":"ok"}
+```
+
+The Directus login UI is available at
+`https://cms-staging.piggyway.com.au/admin/login`. Retrieve the administrator
+email and password from the `piggyway/staging/directus` secret through an
+MFA-protected AWS session; never copy them into this repository or deployment
+logs. Cloudflare Access and persistent Cloudinary storage remain follow-up
+security and operations work.

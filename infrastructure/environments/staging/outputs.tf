@@ -83,3 +83,28 @@ output "database_bootstrap_log_group_name" {
   description = "CloudWatch log group for one-off database bootstrap tasks."
   value       = module.database_bootstrap.log_group_name
 }
+
+output "staging_alb_dns_name" {
+  description = "AWS hostname that Cloudflare staging records should proxy to."
+  value       = module.load_balancer.alb_dns_name
+}
+
+output "staging_certificate_arn" {
+  description = "ACM certificate ARN for the staging hostnames."
+  value       = module.load_balancer.certificate_arn
+}
+
+output "staging_certificate_validation_options" {
+  description = "Cloudflare DNS records required to validate the staging ACM certificate."
+  value       = module.load_balancer.certificate_validation_options
+}
+
+output "directus_service_name" {
+  description = "ECS service running the Directus staging application."
+  value       = module.directus_service.service_name
+}
+
+output "directus_log_group_name" {
+  description = "CloudWatch log group receiving Directus application logs."
+  value       = module.directus_service.log_group_name
+}

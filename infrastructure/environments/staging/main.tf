@@ -82,3 +82,66 @@ resource "aws_ecs_cluster" "this" {
     ignore_changes  = [configuration, setting]
   }
 }
+
+module "load_balancer" {
+  source = "../../modules/load-balancer"
+
+  name_prefix       = "piggyway-staging"
+  vpc_id            = module.network.vpc_id
+  public_subnet_ids = values(module.network.public_subnet_ids)
+  security_group_id = module.network.security_group_ids["alb"]
+  certificate_domains = [
+    "staging.piggyway.com.au",
+    "api-staging.piggyway.com.au",
+    "cms-staging.piggyway.com.au",
+  ]
+}
+
+module "directus_service" {
+  source = "../../modules/ecs-service"
+
+  name_prefix  = "piggyway-staging"
+  service_name = "directus"
+  aws_region   = var.aws_region
+  cluster_arn  = aws_ecs_cluster.this.arn
+
+  image = join("@", [
+    module.ecr.repository_urls["directus"],
+    "sha256:fd26df4d6dc07c018209510a547302a8413e1791926cbece3db1a97b4b65aa14",
+  ])
+  repository_arn = module.ecr.repository_arns["directus"]
+  container_port = 8055
+  cpu            = 256
+  memory         = 1024
+
+  subnet_ids         = values(module.network.app_subnet_ids)
+  security_group_ids = [module.network.security_group_ids["directus"]]
+  target_group_arn   = module.load_balancer.directus_target_group_arn
+
+  runtime_secret_arn = module.runtime_secrets.secret_arns["directus"]
+  secret_keys = {
+    SECRET      = "SECRET"
+    DB_PASSWORD = "DB_PASSWORD"
+  }
+  environment = {
+    DB_CLIENT                   = "pg"
+    DB_HOST                     = module.database.address
+    DB_PORT                     = tostring(module.database.port)
+    DB_DATABASE                 = module.database.database_name
+    DB_USER                     = "piggyway_directus"
+    DB_HEALTHCHECK_THRESHOLD    = "2000"
+    DB_SSL                      = "true"
+    DB_SSL__CA_FILE             = "/directus/certs/ap-southeast-2-bundle.pem"
+    DB_SSL__REJECT_UNAUTHORIZED = "true"
+    NODE_EXTRA_CA_CERTS         = "/directus/certs/ap-southeast-2-bundle.pem"
+    PUBLIC_URL                  = "https://cms-staging.piggyway.com.au"
+    EXTENSIONS_AUTO_RELOAD      = "false"
+    WEBSOCKETS_ENABLED          = "true"
+    MAX_PAYLOAD_SIZE            = "10000000"
+    TELEMETRY                   = "false"
+  }
+  health_check_command = [
+    "CMD-SHELL",
+    "node -e \"fetch('http://127.0.0.1:8055/server/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\"",
+  ]
+}
