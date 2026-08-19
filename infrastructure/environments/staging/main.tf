@@ -92,6 +92,7 @@ module "load_balancer" {
   security_group_id = module.network.security_group_ids["alb"]
   directus_hostname = "cms-staging.piggyway.com.au"
   backend_hostname  = "api-staging.piggyway.com.au"
+  frontend_hostname = "staging.piggyway.com.au"
   certificate_domains = [
     "staging.piggyway.com.au",
     "api-staging.piggyway.com.au",
@@ -189,6 +190,45 @@ module "backend_service" {
     "CMD-SHELL",
     "bun --eval \"fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\"",
   ]
+}
 
-  depends_on = [module.load_balancer]
+module "frontend_service" {
+  source = "../../modules/ecs-service"
+
+  name_prefix  = "piggyway-staging"
+  service_name = "frontend"
+  aws_region   = var.aws_region
+  cluster_arn  = aws_ecs_cluster.this.arn
+
+  image = join("@", [
+    module.ecr.repository_urls["frontend"],
+    "sha256:0825ae3a138171ece85991a77b594a522e927d831909f8b63e9d96cc2544e29d",
+  ])
+  repository_arn = module.ecr.repository_arns["frontend"]
+  container_port = 3000
+  cpu            = 512
+  memory         = 1024
+
+  subnet_ids         = values(module.network.app_subnet_ids)
+  security_group_ids = [module.network.security_group_ids["frontend"]]
+  target_group_arn   = module.load_balancer.frontend_target_group_arn
+
+  runtime_secret_arn = module.runtime_secrets.secret_arns["frontend"]
+  secret_keys = {
+    NEXTAUTH_SECRET   = "NEXTAUTH_SECRET"
+    PREVIEW_SECRET    = "PREVIEW_SECRET"
+    STRIPE_SECRET_KEY = "STRIPE_SECRET_KEY"
+  }
+  environment = {
+    API_BASE_URL            = "http://backend.piggyway-staging.local:3000"
+    NEXTAUTH_URL            = "https://staging.piggyway.com.au"
+    NEXT_PUBLIC_APP_ENV     = "staging"
+    NEXT_PUBLIC_APP_URL     = "https://staging.piggyway.com.au"
+    NEXT_PUBLIC_SITE_URL    = "https://staging.piggyway.com.au"
+    NEXT_TELEMETRY_DISABLED = "1"
+  }
+  health_check_command = [
+    "CMD-SHELL",
+    "wget -q -O /dev/null \"http://$HOSTNAME:3000/api/health\"",
+  ]
 }

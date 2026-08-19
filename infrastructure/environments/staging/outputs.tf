@@ -118,3 +118,13 @@ output "backend_log_group_name" {
   description = "CloudWatch log group receiving Backend application logs."
   value       = module.backend_service.log_group_name
 }
+
+output "frontend_service_name" {
+  description = "ECS service running the Frontend staging application."
+  value       = module.frontend_service.service_name
+}
+
+output "frontend_log_group_name" {
+  description = "CloudWatch log group receiving Frontend application logs."
+  value       = module.frontend_service.log_group_name
+}

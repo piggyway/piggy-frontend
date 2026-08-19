@@ -30,6 +30,12 @@ variable "backend_port" {
   default     = 3000
 }
 
+variable "frontend_port" {
+  description = "Port exposed by the Frontend task."
+  type        = number
+  default     = 3000
+}
+
 variable "directus_hostname" {
   description = "Public hostname routed to the Directus target group."
   type        = string
@@ -37,6 +43,11 @@ variable "directus_hostname" {
 
 variable "backend_hostname" {
   description = "Public hostname routed to the Backend target group."
+  type        = string
+}
+
+variable "frontend_hostname" {
+  description = "Public hostname routed to the Frontend target group."
   type        = string
 }
 

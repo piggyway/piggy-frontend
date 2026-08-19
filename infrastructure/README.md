@@ -236,9 +236,11 @@ products and three variants, while a pre-existing sentinel row remained
 present. This verifies repeatability and the absence of broad cleanup logic.
 
 Secret values were streamed directly into Secrets Manager and were not placed
-in Terraform variables, state, plans, outputs, task logs, or Git. The Directus
-and Backend containers now have secret versions; the Frontend secret container
-remains empty until its runtime configuration is finalized.
+in Terraform variables, state, plans, outputs, task logs, or Git. The Directus,
+Backend, and Frontend containers now have secret versions. The Frontend secret
+contains its generated NextAuth and preview secrets plus the approved staging
+Stripe secret; public Google, Stripe publishable, and Turnstile configuration
+remains follow-up work.
 
 The initial create attempt on 2026-08-13 was rejected before the DB instance
 existed because AWS Free Plan does not permit the architecture's requested
@@ -363,3 +365,61 @@ The Backend task adds continuous Fargate usage to the staging credit burn.
 Stop or scale down disposable services when staging is not needed, but do not
 run a broad `terraform destroy` because the state also owns imported shared
 resources.
+
+## Frontend service and storefront
+
+The Frontend staging service and its public HTTPS route were deployed on
+2026-08-19.
+
+- ECS maintains one private Fargate task with 0.5 vCPU and 1 GiB memory. The
+  task has no public IP and uses Frontend image digest
+  `sha256:0825ae3a138171ece85991a77b594a522e927d831909f8b63e9d96cc2544e29d`
+  built from Frontend commit
+  `00ea3e0a14268531e40d9a81117aab9555a6db3a`.
+- The immutable ECR tag is the full Git commit SHA. ECR basic scanning
+  completed with no findings.
+- The execution role can pull only the Frontend ECR repository, write only
+  `/aws/ecs/piggyway-staging-frontend`, and read only the Frontend runtime
+  secret. The task role has no application permissions.
+- The ALB Frontend target group checks `/api/health` on port 3000. The HTTPS
+  listener routes only `staging.piggyway.com.au` to Frontend.
+- Frontend calls Backend privately at
+  `http://backend.piggyway-staging.local:3000`. Browser traffic does not need
+  the private Cloud Map name and sees only the public Frontend BFF routes.
+- ECS deployment circuit breaking and automatic rollback are enabled. The
+  final deployment runs task definition revision 4 with one healthy ALB
+  target. Its container health check uses the Fargate-provided task hostname
+  because ECS overrides the image's `HOSTNAME` and Next.js binds to that
+  private address rather than `127.0.0.1`.
+
+The only manual Cloudflare change was this new application record; existing
+DNS records were left unchanged:
+
+```text
+Type:   CNAME
+Name:   staging
+Target: <terraform output -raw staging_alb_dns_name>
+Proxy:  Proxied
+TTL:    Auto
+```
+
+Public validation completed successfully:
+
+```bash
+curl --fail --show-error --silent \
+  https://staging.piggyway.com.au/api/health
+# Expected: {"status":"ok"}
+
+curl --fail --show-error --silent \
+  https://staging.piggyway.com.au/api/products
+# Expected: a data array containing the three synthetic staging products
+```
+
+The `/shop` HTML also contained all three synthetic product titles after the
+final image deployment. Together these checks verify the complete core path:
+Cloudflare -> ALB -> Frontend Fargate -> Cloud Map -> Backend Fargate -> RDS.
+
+Google sign-in, checkout, and Turnstile are not release blockers for this core
+staging milestone because their public staging/test credentials have not yet
+been provided. Add them through the approved build/runtime workflow before
+manually accepting those features; never reuse production credentials.

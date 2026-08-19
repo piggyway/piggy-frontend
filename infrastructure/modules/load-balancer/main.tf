@@ -53,6 +53,28 @@ resource "aws_lb_target_group" "backend" {
   }
 }
 
+resource "aws_lb_target_group" "frontend" {
+  name                 = "${var.name_prefix}-frontend"
+  port                 = var.frontend_port
+  protocol             = "HTTP"
+  protocol_version     = "HTTP1"
+  target_type          = "ip"
+  vpc_id               = var.vpc_id
+  deregistration_delay = 30
+
+  health_check {
+    enabled             = true
+    path                = "/api/health"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    matcher             = "200-399"
+    interval            = 30
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 3
+  }
+}
+
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.this.arn
   port              = 80
@@ -134,6 +156,22 @@ resource "aws_lb_listener_rule" "backend" {
   condition {
     host_header {
       values = [var.backend_hostname]
+    }
+  }
+}
+
+resource "aws_lb_listener_rule" "frontend" {
+  listener_arn = aws_lb_listener.https.arn
+  priority     = 300
+
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.frontend.arn
+  }
+
+  condition {
+    host_header {
+      values = [var.frontend_hostname]
     }
   }
 }

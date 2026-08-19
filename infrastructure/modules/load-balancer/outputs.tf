@@ -23,6 +23,11 @@ output "backend_target_group_arn" {
   value       = aws_lb_target_group.backend.arn
 }
 
+output "frontend_target_group_arn" {
+  description = "Target group ARN used by the Frontend ECS service."
+  value       = aws_lb_target_group.frontend.arn
+}
+
 output "certificate_arn" {
   description = "ARN of the DNS-validated staging ACM certificate."
   value       = aws_acm_certificate_validation.staging.certificate_arn
