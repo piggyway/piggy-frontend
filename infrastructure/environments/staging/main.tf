@@ -90,6 +90,8 @@ module "load_balancer" {
   vpc_id            = module.network.vpc_id
   public_subnet_ids = values(module.network.public_subnet_ids)
   security_group_id = module.network.security_group_ids["alb"]
+  directus_hostname = "cms-staging.piggyway.com.au"
+  backend_hostname  = "api-staging.piggyway.com.au"
   certificate_domains = [
     "staging.piggyway.com.au",
     "api-staging.piggyway.com.au",
@@ -144,4 +146,49 @@ module "directus_service" {
     "CMD-SHELL",
     "node -e \"fetch('http://127.0.0.1:8055/server/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\"",
   ]
+}
+
+module "backend_service" {
+  source = "../../modules/ecs-service"
+
+  name_prefix  = "piggyway-staging"
+  service_name = "backend"
+  aws_region   = var.aws_region
+  cluster_arn  = aws_ecs_cluster.this.arn
+
+  image = join("@", [
+    module.ecr.repository_urls["backend"],
+    "sha256:9dd48002066dc49386c90aa1eb26773c150f4ca409171c1b357fea06ea4f33a9",
+  ])
+  repository_arn = module.ecr.repository_arns["backend"]
+  container_port = 3000
+  cpu            = 256
+  memory         = 512
+
+  subnet_ids                     = values(module.network.app_subnet_ids)
+  security_group_ids             = [module.network.security_group_ids["backend"]]
+  target_group_arn               = module.load_balancer.backend_target_group_arn
+  service_discovery_registry_arn = module.network.backend_discovery_service_arn
+
+  runtime_secret_arn = module.runtime_secrets.secret_arns["backend"]
+  secret_keys = {
+    DATABASE_URL          = "DATABASE_URL"
+    FRONTEND_URL          = "FRONTEND_URL"
+    JWT_SECRET            = "JWT_SECRET"
+    PREVIEW_SECRET        = "PREVIEW_SECRET"
+    STRIPE_SECRET_KEY     = "STRIPE_SECRET_KEY"
+    STRIPE_WEBHOOK_SECRET = "STRIPE_WEBHOOK_SECRET"
+    TOKEN_AUD             = "TOKEN_AUD"
+    TOKEN_ISS             = "TOKEN_ISS"
+  }
+  environment = {
+    NODE_ENV = "production"
+    PORT     = "3000"
+  }
+  health_check_command = [
+    "CMD-SHELL",
+    "bun --eval \"fetch('http://127.0.0.1:3000/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))\"",
+  ]
+
+  depends_on = [module.load_balancer]
 }

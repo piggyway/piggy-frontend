@@ -108,3 +108,13 @@ output "directus_log_group_name" {
   description = "CloudWatch log group receiving Directus application logs."
   value       = module.directus_service.log_group_name
 }
+
+output "backend_service_name" {
+  description = "ECS service running the Backend staging application."
+  value       = module.backend_service.service_name
+}
+
+output "backend_log_group_name" {
+  description = "CloudWatch log group receiving Backend application logs."
+  value       = module.backend_service.log_group_name
+}

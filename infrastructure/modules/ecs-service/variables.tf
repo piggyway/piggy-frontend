@@ -64,6 +64,12 @@ variable "target_group_arn" {
   type        = string
 }
 
+variable "service_discovery_registry_arn" {
+  description = "Optional Cloud Map service ARN used for private DNS registration."
+  type        = string
+  default     = null
+}
+
 variable "environment" {
   description = "Non-secret runtime environment variables."
   type        = map(string)

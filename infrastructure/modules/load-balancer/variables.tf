@@ -24,6 +24,22 @@ variable "directus_port" {
   default     = 8055
 }
 
+variable "backend_port" {
+  description = "Port exposed by the Backend task."
+  type        = number
+  default     = 3000
+}
+
+variable "directus_hostname" {
+  description = "Public hostname routed to the Directus target group."
+  type        = string
+}
+
+variable "backend_hostname" {
+  description = "Public hostname routed to the Backend target group."
+  type        = string
+}
+
 variable "certificate_domains" {
   description = "Staging hostnames included in the ACM certificate."
   type        = list(string)

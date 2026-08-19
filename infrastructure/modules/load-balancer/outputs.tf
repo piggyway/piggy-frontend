@@ -18,6 +18,11 @@ output "directus_target_group_arn" {
   value       = aws_lb_target_group.directus.arn
 }
 
+output "backend_target_group_arn" {
+  description = "Target group ARN used by the Backend ECS service."
+  value       = aws_lb_target_group.backend.arn
+}
+
 output "certificate_arn" {
   description = "ARN of the DNS-validated staging ACM certificate."
   value       = aws_acm_certificate_validation.staging.certificate_arn

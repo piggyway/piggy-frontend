@@ -162,4 +162,12 @@ resource "aws_ecs_service" "this" {
     container_name   = var.service_name
     container_port   = var.container_port
   }
+
+  dynamic "service_registries" {
+    for_each = var.service_discovery_registry_arn == null ? [] : [var.service_discovery_registry_arn]
+
+    content {
+      registry_arn = service_registries.value
+    }
+  }
 }

@@ -303,3 +303,63 @@ email and password from the `piggyway/staging/directus` secret through an
 MFA-protected AWS session; never copy them into this repository or deployment
 logs. Cloudflare Access and persistent Cloudinary storage remain follow-up
 security and operations work.
+
+## Backend service and public API
+
+The Backend staging service and its public HTTPS route were deployed on
+2026-08-19.
+
+- ECS maintains one private Fargate task with 0.25 vCPU and 0.5 GiB memory.
+  The task has no public IP and uses the immutable Backend image digest
+  `sha256:9dd48002066dc49386c90aa1eb26773c150f4ca409171c1b357fea06ea4f33a9`
+  built from Backend commit `1f353c839f9b9235ccb99c86663cf73cfafcff2b`.
+- The execution role can pull only the Backend ECR repository, write only
+  `/aws/ecs/piggyway-staging-backend`, and read only the Backend runtime
+  secret. The task role has no application permissions.
+- The ALB Backend target group checks `/health` on port 3000. Its HTTPS
+  listener routes only the `api-staging.piggyway.com.au` hostname to Backend;
+  unknown staging hostnames receive a fixed 404 response.
+- Cloud Map registers the service as
+  `backend.piggyway-staging.local`. This is the private address that the
+  Frontend Fargate task will use, so internal Frontend-to-Backend traffic does
+  not need to leave the VPC.
+- ECS deployment circuit breaking and automatic rollback are enabled. The
+  initial deployment reached a steady state with one running task and one
+  healthy ALB target.
+
+The Cloudflare record is a documented manual step:
+
+```text
+Type:   CNAME
+Name:   api-staging
+Target: <terraform output -raw staging_alb_dns_name>
+Proxy:  Proxied
+TTL:    Auto
+```
+
+Public validation completed successfully:
+
+```bash
+curl --fail --show-error --silent \
+  https://api-staging.piggyway.com.au/health
+# Expected: {"status":"ok", ...}
+
+curl --fail --show-error --silent \
+  https://api-staging.piggyway.com.au/api/v1/products
+# Expected: a data array containing the three synthetic staging products
+```
+
+The health endpoint intentionally does not depend on PostgreSQL. The product
+request is the database smoke test: on 2026-08-19 it returned the three
+synthetic products seeded during Phase 3. Together these checks verify the
+public path Cloudflare -> ALB -> Backend Fargate and the private path Backend
+Fargate -> RDS. The response also allows the planned staging Frontend origin
+`https://staging.piggyway.com.au` through CORS.
+
+The post-deployment Terraform validation succeeded and the refreshed plan
+reported `No changes`.
+
+The Backend task adds continuous Fargate usage to the staging credit burn.
+Stop or scale down disposable services when staging is not needed, but do not
+run a broad `terraform destroy` because the state also owns imported shared
+resources.
