@@ -84,6 +84,16 @@ output "database_bootstrap_log_group_name" {
   value       = module.database_bootstrap.log_group_name
 }
 
+output "database_migration" {
+  description = "One-off Neon to RDS rehearsal migration resources. The source secret value is set outside Terraform."
+  value = {
+    source_secret_name      = module.database_migration.source_secret_name
+    task_definition_arn     = module.database_migration.task_definition_arn
+    log_group_name          = module.database_migration.log_group_name
+    rehearsal_database_name = module.database_migration.rehearsal_database_name
+  }
+}
+
 output "staging_alb_dns_name" {
   description = "AWS hostname that Cloudflare staging records should proxy to."
   value       = module.load_balancer.alb_dns_name

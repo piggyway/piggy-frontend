@@ -281,6 +281,13 @@ locals {
       cidr_ipv4      = null
       source_group   = "directus"
     }
+    rds_from_migration = {
+      security_group = "rds"
+      from_port      = 5432
+      to_port        = 5432
+      cidr_ipv4      = null
+      source_group   = "migration"
+    }
   }
 
   ingress_rules = merge(local.cloudflare_ingress_rules, local.service_ingress_rules)

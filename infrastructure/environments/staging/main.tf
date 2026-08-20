@@ -74,6 +74,25 @@ module "database_bootstrap" {
   directus_public_url = "https://cms-staging.piggyway.com.au"
 }
 
+module "database_migration" {
+  source = "../../modules/database-migration"
+
+  name_prefix = "piggyway-staging"
+  aws_region  = var.aws_region
+  cluster_arn = aws_ecs_cluster.this.arn
+
+  subnet_ids         = values(module.network.app_subnet_ids)
+  security_group_ids = [module.network.security_group_ids["migration"]]
+
+  database_address            = module.database.address
+  database_port               = module.database.port
+  rehearsal_database_name     = "piggyway_migration_rehearsal_v6"
+  database_master_secret_arn  = module.database.master_user_secret_arn
+  directus_runtime_secret_arn = module.runtime_secrets.secret_arns["directus"]
+
+  postgres_image = "docker.io/library/postgres@sha256:d3e1620b530c944afa6e887d22eb899824da68e19c52024bf98f5220c88a65b2"
+}
+
 resource "aws_ecs_cluster" "this" {
   name = "piggyway-staging"
 

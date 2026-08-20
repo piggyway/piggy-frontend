@@ -80,6 +80,10 @@ locals {
       name        = "piggyway-staging-directus-sg"
       description = "Staging Directus ECS security group"
     }
+    migration = {
+      name        = "piggyway-staging-database-migration-sg"
+      description = "One-off Neon to RDS migration ECS security group"
+    }
     rds = {
       name        = "piggyway-staging-rds-sg"
       description = "Staging PostgreSQL RDS security group"
