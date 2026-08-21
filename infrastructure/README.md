@@ -252,6 +252,57 @@ read-only IAM policies were created successfully by that first partial apply.
 The reviewed recovery apply then completed with `2 added, 0 changed,
 0 destroyed`: the RDS instance and its bootstrap-secret read policy.
 
+### Neon to RDS staging cutover
+
+The read-only Neon migration rehearsal was accepted as the active staging
+database on 2026-08-21. The active logical database is
+`piggyway_migration_rehearsal_v6` on the existing private RDS instance. The
+name records its rehearsal history; it is not a second RDS instance.
+
+The migration copied all 74 public table definitions and the approved catalog,
+reference, and CMS records. Validation found four products and 33 variants.
+Customer accounts, addresses, tokens, carts, checkouts, orders, boarding
+records, Directus sessions, and Directus user activity were deliberately not
+copied. Directus file ownership references use suspended
+`example.invalid` placeholder users instead of source administrator accounts.
+Only role-level Directus policy links are restored; user-specific access rows
+remain excluded.
+
+The source Neon database was read with `pg_dump` and read-only SQL. No source
+schema or data was modified. The source connection is held temporarily in
+`piggyway/staging/neon-migration-source`; remove its secret version and the
+migration-only access after the rollback observation period.
+
+Before cutover, stopped-by-default Fargate tasks verified all of the following
+against the migrated database:
+
+- Directus 11.14.1 health returned 200, a newly created staging administrator
+  logged in successfully, and the item API returned four products;
+- Backend health returned 200 and `/api/v1/products` returned four products;
+- the filtered database contained 74 public tables, zero application users,
+  zero orders, and one suspended Directus file-owner placeholder.
+
+Terraform revision 2 of the Directus task points `DB_DATABASE` at the migrated
+logical database. Backend continues to read `DATABASE_URL` from Secrets
+Manager; its 2026-08-21 secret version changes only the database pathname. The
+previous secret version is retained as `AWSPREVIOUS`. After the rolling
+deployments, the CMS, API, and Frontend health endpoints returned 200, the API
+returned four products on five consecutive requests, and the Frontend BFF also
+returned four products.
+
+Rollback does not require an image change:
+
+1. promote the Backend secret's `AWSPREVIOUS` version back to `AWSCURRENT` and
+   force a new Backend deployment;
+2. change Directus `DB_DATABASE` in Terraform back to
+   `module.database.database_name`, review the plan, and apply it;
+3. wait for both ECS services to become stable, then re-run the three public
+   health checks and both product smoke tests.
+
+Do not delete Neon, the original `piggyway` logical RDS database, or the
+previous Backend secret version until the cutover has been observed and the
+mentor has approved cleanup.
+
 ## Directus service, ALB, DNS, and HTTPS
 
 The first long-running application service was deployed on 2026-08-14 and its

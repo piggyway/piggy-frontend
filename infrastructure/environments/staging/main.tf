@@ -149,7 +149,7 @@ module "directus_service" {
     DB_CLIENT                   = "pg"
     DB_HOST                     = module.database.address
     DB_PORT                     = tostring(module.database.port)
-    DB_DATABASE                 = module.database.database_name
+    DB_DATABASE                 = module.database_migration.rehearsal_database_name
     DB_USER                     = "piggyway_directus"
     DB_HEALTHCHECK_THRESHOLD    = "2000"
     DB_SSL                      = "true"

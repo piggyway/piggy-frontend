@@ -119,6 +119,36 @@ locals {
       --single-transaction \
       --file /tmp/neon.sql
 
+    psql "$NEON_SOURCE_DATABASE_URL" \
+      --tuples-only \
+      --no-align \
+      --field-separator '|' \
+      --command '
+        SELECT role, policy
+        FROM directus_access
+        WHERE "user" IS NULL
+          AND role IS NOT NULL
+          AND policy IS NOT NULL
+        ORDER BY role, policy
+      ' | while IFS='|' read -r directus_role_id directus_policy_id; do
+      psql \
+        --host "$DB_HOST" \
+        --port "$DB_PORT" \
+        --dbname "$REHEARSAL_DATABASE" \
+        --username "$MASTER_USERNAME" \
+        --set ON_ERROR_STOP=on \
+        --command "
+          INSERT INTO directus_access (id, role, policy)
+          SELECT gen_random_uuid(), '$directus_role_id'::uuid, '$directus_policy_id'::uuid
+          WHERE NOT EXISTS (
+            SELECT 1
+            FROM directus_access
+            WHERE role = '$directus_role_id'::uuid
+              AND policy = '$directus_policy_id'::uuid
+          );
+        "
+    done
+
     psql \
       --host "$DB_HOST" \
       --port "$DB_PORT" \
