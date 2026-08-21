@@ -221,7 +221,7 @@ module "frontend_service" {
 
   image = join("@", [
     module.ecr.repository_urls["frontend"],
-    "sha256:0825ae3a138171ece85991a77b594a522e927d831909f8b63e9d96cc2544e29d",
+    "sha256:25516cf465f6f047152c64204246f14cf22cabd2f693935a6e292a277fce95bf",
   ])
   repository_arn = module.ecr.repository_arns["frontend"]
   container_port = 3000

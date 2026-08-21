@@ -424,11 +424,14 @@ The Frontend staging service and its public HTTPS route were deployed on
 
 - ECS maintains one private Fargate task with 0.5 vCPU and 1 GiB memory. The
   task has no public IP and uses Frontend image digest
-  `sha256:0825ae3a138171ece85991a77b594a522e927d831909f8b63e9d96cc2544e29d`
+  `sha256:25516cf465f6f047152c64204246f14cf22cabd2f693935a6e292a277fce95bf`
   built from Frontend commit
-  `00ea3e0a14268531e40d9a81117aab9555a6db3a`.
-- The immutable ECR tag is the full Git commit SHA. ECR basic scanning
-  completed with no findings.
+  `6d504277f7d127f41b5ef29a9198f03d0059dc48`.
+- The immutable ECR tag is the full Git commit SHA. This release keeps
+  server-side BFF requests inside the Frontend task instead of sending them
+  through the public Cloudflare hostname. This avoids an unnecessary
+  NAT/Cloudflare round trip and prevents HTML error pages from being parsed as
+  Backend JSON responses.
 - The execution role can pull only the Frontend ECR repository, write only
   `/aws/ecs/piggyway-staging-frontend`, and read only the Frontend runtime
   secret. The task role has no application permissions.
@@ -438,7 +441,7 @@ The Frontend staging service and its public HTTPS route were deployed on
   `http://backend.piggyway-staging.local:3000`. Browser traffic does not need
   the private Cloud Map name and sees only the public Frontend BFF routes.
 - ECS deployment circuit breaking and automatic rollback are enabled. The
-  final deployment runs task definition revision 4 with one healthy ALB
+  final deployment runs task definition revision 5 with one healthy ALB
   target. Its container health check uses the Fargate-provided task hostname
   because ECS overrides the image's `HOSTNAME` and Next.js binds to that
   private address rather than `127.0.0.1`.
@@ -463,11 +466,12 @@ curl --fail --show-error --silent \
 
 curl --fail --show-error --silent \
   https://staging.piggyway.com.au/api/products
-# Expected: a data array containing the three synthetic staging products
+# Expected: a data array containing the four migrated staging products
 ```
 
-The `/shop` HTML also contained all three synthetic product titles after the
-final image deployment. Together these checks verify the complete core path:
+The `/shop-all?category=liner` page also showed 17 migrated variants, with nine
+product cards on its first page, after the final image deployment. Together
+these checks verify the complete core path:
 Cloudflare -> ALB -> Frontend Fargate -> Cloud Map -> Backend Fargate -> RDS.
 
 Google sign-in, checkout, and Turnstile are not release blockers for this core
