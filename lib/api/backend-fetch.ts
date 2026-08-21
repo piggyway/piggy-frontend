@@ -1,9 +1,98 @@
 /**
  * Shared server-side fetch to the external backend (BFF → API_BASE_URL).
  * Applies a hard 10s timeout so stalled backend/DB cannot hang Workers forever.
+ *
+ * Every call also forwards the real client IP as `x-forwarded-for`. Without it
+ * the backend sees only this Worker's egress IP and buckets the whole site into
+ * a single rate-limit key, so one busy visitor throttles everyone. The backend
+ * only trusts that header when the request also carries INTERNAL_PROXY_SECRET,
+ * which is why the secret travels with it.
  */
 
+import { headers } from "next/headers";
+
 const BACKEND_FETCH_TIMEOUT_MS = 10_000;
+
+const CLIENT_IP_HEADER = "x-forwarded-for";
+const PROXY_SECRET_HEADER = "x-internal-proxy-secret";
+
+/**
+ * Real client IP of the request currently being served, or null when there is
+ * no incoming request (build-time prerender, ISR revalidation). `headers()`
+ * throws in those contexts and the IP is simply unavailable, not an error.
+ */
+async function incomingClientIp(): Promise<string | null> {
+  try {
+    const requestHeaders = await headers();
+    const connectingIp = requestHeaders.get("cf-connecting-ip")?.trim();
+    if (connectingIp) {
+      return connectingIp;
+    }
+
+    const firstHop = requestHeaders
+      .get(CLIENT_IP_HEADER)
+      ?.split(",")[0]
+      ?.trim();
+    return firstHop || null;
+  } catch {
+    return null;
+  }
+}
+
+/** Case-insensitive presence check across all three `HeadersInit` shapes. */
+function hasHeader(source: HeadersInit | undefined, name: string): boolean {
+  if (!source) return false;
+  if (source instanceof Headers) return source.has(name);
+  if (Array.isArray(source)) {
+    return source.some(([key]) => key?.toLowerCase() === name);
+  }
+  return Object.keys(source).some((key) => key.toLowerCase() === name);
+}
+
+/**
+ * Attach the client IP and the proxy credential, leaving a caller-supplied
+ * `x-forwarded-for` untouched so routes that resolve the IP themselves win.
+ * The caller's header shape is preserved so existing route tests keep asserting
+ * against the plain object they passed in.
+ */
+async function withClientIpHeaders(
+  init: BackendFetchInit | undefined
+): Promise<HeadersInit | undefined> {
+  const existing = init?.headers;
+  const additions: Record<string, string> = {};
+
+  let hasClientIp = hasHeader(existing, CLIENT_IP_HEADER);
+  if (!hasClientIp) {
+    const clientIp = await incomingClientIp();
+    if (clientIp) {
+      additions[CLIENT_IP_HEADER] = clientIp;
+      hasClientIp = true;
+    }
+  }
+
+  const proxySecret = process.env.INTERNAL_PROXY_SECRET;
+  if (proxySecret && hasClientIp) {
+    additions[PROXY_SECRET_HEADER] = proxySecret;
+  }
+
+  if (Object.keys(additions).length === 0) {
+    return existing;
+  }
+
+  if (existing instanceof Headers) {
+    const merged = new Headers(existing);
+    for (const [key, value] of Object.entries(additions)) {
+      merged.set(key, value);
+    }
+    return merged;
+  }
+
+  if (Array.isArray(existing)) {
+    return [...existing, ...Object.entries(additions)];
+  }
+
+  return { ...existing, ...additions };
+}
 
 function isTimeoutError(error: unknown): boolean {
   if (!(error instanceof Error)) return false;
@@ -106,6 +195,7 @@ export async function backendFetch(
   try {
     return await fetch(input, {
       ...init,
+      headers: await withClientIpHeaders(init),
       signal: AbortSignal.timeout(BACKEND_FETCH_TIMEOUT_MS),
     });
   } catch (error) {
