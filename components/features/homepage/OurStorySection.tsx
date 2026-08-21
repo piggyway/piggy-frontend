@@ -73,10 +73,10 @@ export function OurStorySection() {
               {/* Mint rounded squares - top left */}
               <div className="bg-secondary-mint absolute top-0 left-0 h-[150px] w-[68px] overflow-hidden rounded-[33px]">
                 <Image
-                  src="https://cdn.piggyway.com.au/0b15806b6bd7f56d61ed8469d889f1f4.jpg"
-                  alt="Guinea pig looking through a cage grid"
+                  src="https://cdn.piggyway.com.au/f1c8a4f96879810a6b7763ae92cf6dda.jpg"
+                  alt="Two guinea pigs relaxing on a lilac cushion under a lace canopy"
                   fill
-                  className="object-cover"
+                  className="object-cover object-[27%_50%]"
                   sizes="68px"
                 />
               </div>
