@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
         hostname: "www.figma.com",
         pathname: "/api/mcp/asset/**",
       },
+      {
+        protocol: "https",
+        hostname: "cdn.piggyway.com.au",
+      },
     ],
   },
   async redirects() {
