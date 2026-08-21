@@ -2,8 +2,11 @@ import type { Metadata } from "next";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 import { HeroIntroSection } from "@/components/features/boarding/HeroIntroSection";
 import { WhoItsForSection } from "@/components/features/boarding/WhoItsForSection";
+import { RatesAndInclusionsSection } from "@/components/features/boarding/RatesAndInclusionsSection";
 import { CareLeadSection } from "@/components/features/boarding/CareLeadSection";
 import { PoopHappensSection } from "@/components/features/boarding/PoopHappensSection";
+import { PickupAndServicesSection } from "@/components/features/boarding/PickupAndServicesSection";
+import { MedicalBoardingSection } from "@/components/features/boarding/MedicalBoardingSection";
 import { TrustedVetSection } from "@/components/features/boarding/TrustedVetSection";
 import { getBaseUrl } from "@/lib/utils/seo";
 
@@ -99,8 +102,11 @@ export default function BoardingPage() {
 
       <HeroIntroSection />
       <WhoItsForSection />
+      <RatesAndInclusionsSection />
       <CareLeadSection />
       <PoopHappensSection />
+      <PickupAndServicesSection />
+      <MedicalBoardingSection />
       <TrustedVetSection />
     </div>
   );

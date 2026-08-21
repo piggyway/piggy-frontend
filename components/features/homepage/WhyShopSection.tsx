@@ -44,14 +44,14 @@ export function WhyShopSection() {
         {/* 3 Column Card Layout - Desktop */}
         <div className="relative hidden overflow-hidden lg:block">
           <div className="flex items-start gap-6 pb-4">
-            {/* Column 1 - White card on top, Pink card on bottom */}
+            {/* Column 1 - White card on top, Gold card on bottom */}
             <div className="flex flex-1 flex-col gap-0">
               <WhyShopImage
-                src="/shop-with-us/eco-friendly-liners.jpg"
-                alt="Folded fleece cage liners packed on white shelves"
+                src="https://cdn.piggyway.com.au/eac334181353a0c5738356ce47560650abe42db5.jpg"
+                alt="Three guinea pigs sitting together on a pink quilted fleece cage liner"
               />
-              <div className="bg-secondary-pink flex items-center justify-center rounded-[32px] p-8">
-                <p className="text-lead text-center leading-[32px] font-semibold text-white">
+              <div className="bg-primary-gold flex items-center justify-center rounded-[32px] p-8">
+                <p className="text-primary-navy text-lead text-center leading-[32px] font-semibold">
                   Eco-Friendly Liners
                 </p>
               </div>
@@ -70,15 +70,14 @@ export function WhyShopSection() {
               />
             </div>
 
-            {/* Column 3 - White card on top, Gold card on bottom */}
+            {/* Column 3 - White card on top, Pink card on bottom */}
             <div className="flex flex-1 flex-col gap-0">
               <WhyShopImage
-                src="/shop-with-us/loved-by-pet-parents.png"
-                alt="Customer review about Piggyway boarding and liners"
-                fit="contain"
+                src="https://cdn.piggyway.com.au/c19f90dcb75798915f5bfb0d7ebe0047.jpg"
+                alt="Three guinea pigs sharing a bowl of fresh vegetables"
               />
-              <div className="bg-primary-gold flex items-center justify-center rounded-[32px] p-8">
-                <p className="text-primary-navy text-lead text-center leading-[32px] font-semibold">
+              <div className="bg-secondary-pink flex items-center justify-center rounded-[32px] p-8">
+                <p className="text-lead text-center leading-[32px] font-semibold text-white">
                   Loved by Pet Parents
                 </p>
               </div>
@@ -90,11 +89,11 @@ export function WhyShopSection() {
         <div className="flex flex-col gap-6 lg:hidden">
           <div className="flex flex-col">
             <WhyShopImage
-              src="/shop-with-us/eco-friendly-liners.jpg"
-              alt="Folded fleece cage liners packed on white shelves"
+              src="https://cdn.piggyway.com.au/eac334181353a0c5738356ce47560650abe42db5.jpg"
+              alt="Three guinea pigs sitting together on a pink quilted fleece cage liner"
             />
-            <div className="bg-secondary-pink flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
-              <p className="text-center text-xl font-semibold text-white">
+            <div className="bg-primary-gold flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
+              <p className="text-primary-navy text-center text-xl font-semibold">
                 Eco-Friendly Liners
               </p>
             </div>
@@ -112,12 +111,11 @@ export function WhyShopSection() {
           </div>
           <div className="flex flex-col">
             <WhyShopImage
-              src="/shop-with-us/loved-by-pet-parents.png"
-              alt="Customer review about Piggyway boarding and liners"
-              fit="contain"
+              src="https://cdn.piggyway.com.au/c19f90dcb75798915f5bfb0d7ebe0047.jpg"
+              alt="Three guinea pigs sharing a bowl of fresh vegetables"
             />
-            <div className="bg-primary-gold flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
-              <p className="text-primary-navy text-center text-xl font-semibold">
+            <div className="bg-secondary-pink flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
+              <p className="text-center text-xl font-semibold text-white">
                 Loved by Pet Parents
               </p>
             </div>
