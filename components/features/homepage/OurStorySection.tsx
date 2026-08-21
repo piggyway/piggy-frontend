@@ -60,11 +60,35 @@ export function OurStorySection() {
             {/* Right Side - Decorative Cards */}
             <div className="relative h-[300px] w-[520px] shrink-0">
               {/* Purple rounded square - bottom left */}
-              <div className="bg-primary-purple absolute top-[150px] left-0 h-[150px] w-[201px] rounded-[33px]" />
+              <div className="bg-primary-purple absolute top-[150px] left-0 h-[150px] w-[201px] overflow-hidden rounded-[33px]">
+                <Image
+                  src="https://cdn.piggyway.com.au/9fe6ddfa6547724c6f3aa3bbb6dbbd29.jpg"
+                  alt="Guinea pig resting in a pink fleece bed"
+                  fill
+                  className="object-cover"
+                  sizes="201px"
+                />
+              </div>
 
               {/* Mint rounded squares - top left */}
-              <div className="bg-secondary-mint absolute top-0 left-0 h-[150px] w-[68px] rounded-[33px]" />
-              <div className="bg-secondary-mint absolute top-0 left-[68px] h-[150px] w-[133px] rounded-[33px]" />
+              <div className="bg-secondary-mint absolute top-0 left-0 h-[150px] w-[68px] overflow-hidden rounded-[33px]">
+                <Image
+                  src="https://cdn.piggyway.com.au/0b15806b6bd7f56d61ed8469d889f1f4.jpg"
+                  alt="Guinea pig looking through a cage grid"
+                  fill
+                  className="object-cover"
+                  sizes="68px"
+                />
+              </div>
+              <div className="bg-secondary-mint absolute top-0 left-[68px] h-[150px] w-[133px] overflow-hidden rounded-[33px]">
+                <Image
+                  src="https://cdn.piggyway.com.au/bf323c2d8dc473b1c03cadbb5696fabb.jpg"
+                  alt="Before and after photos of a guinea pig's skin recovery"
+                  fill
+                  className="object-cover"
+                  sizes="133px"
+                />
+              </div>
 
               {/* Navy card with button - right side */}
               <Link

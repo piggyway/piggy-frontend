@@ -3,6 +3,28 @@
 import Image from "next/image";
 import { AnimatedSection } from "./AnimatedSection";
 
+function WhyShopImage({
+  src,
+  alt,
+  fit = "cover",
+}: {
+  src: string;
+  alt: string;
+  fit?: "cover" | "contain";
+}) {
+  return (
+    <div className="relative h-[230px] overflow-hidden rounded-[32px] bg-white">
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className={fit === "contain" ? "object-contain p-4" : "object-cover"}
+        sizes="(min-width: 1024px) 360px, 100vw"
+      />
+    </div>
+  );
+}
+
 export function WhyShopSection() {
   return (
     <AnimatedSection className="w-full">
@@ -24,15 +46,10 @@ export function WhyShopSection() {
           <div className="flex items-start gap-6 pb-4">
             {/* Column 1 - White card on top, Pink card on bottom */}
             <div className="flex flex-1 flex-col gap-0">
-              <div className="flex h-[230px] items-center justify-center rounded-[32px] bg-white">
-                <Image
-                  src="/shop-with-us/default.png"
-                  alt=""
-                  width={300}
-                  height={300}
-                  className="object-contain"
-                />
-              </div>
+              <WhyShopImage
+                src="/shop-with-us/eco-friendly-liners.jpg"
+                alt="Folded fleece cage liners packed on white shelves"
+              />
               <div className="bg-secondary-pink flex items-center justify-center rounded-[32px] p-8">
                 <p className="text-lead text-center leading-[32px] font-semibold text-white">
                   Eco-Friendly Liners
@@ -47,28 +64,19 @@ export function WhyShopSection() {
                   Easy-Clean Cages
                 </p>
               </div>
-              <div className="flex h-[230px] items-center justify-center rounded-[32px] bg-white">
-                <Image
-                  src="/shop-with-us/default.png"
-                  alt=""
-                  width={300}
-                  height={300}
-                  className="object-contain"
-                />
-              </div>
+              <WhyShopImage
+                src="/shop-with-us/easy-clean-cages.jpg"
+                alt="Guinea pig cage with fleece liners, hideouts and a tunnel"
+              />
             </div>
 
             {/* Column 3 - White card on top, Gold card on bottom */}
             <div className="flex flex-1 flex-col gap-0">
-              <div className="flex h-[230px] items-center justify-center rounded-[32px] bg-white">
-                <Image
-                  src="/shop-with-us/default.png"
-                  alt=""
-                  width={300}
-                  height={300}
-                  className="object-contain"
-                />
-              </div>
+              <WhyShopImage
+                src="/shop-with-us/loved-by-pet-parents.png"
+                alt="Customer review about Piggyway boarding and liners"
+                fit="contain"
+              />
               <div className="bg-primary-gold flex items-center justify-center rounded-[32px] p-8">
                 <p className="text-primary-navy text-lead text-center leading-[32px] font-semibold">
                   Loved by Pet Parents
@@ -80,20 +88,39 @@ export function WhyShopSection() {
 
         {/* Mobile/Tablet Layout */}
         <div className="flex flex-col gap-6 lg:hidden">
-          <div className="bg-secondary-pink flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
-            <p className="text-center text-xl font-semibold text-white">
-              Eco-Friendly Liners
-            </p>
+          <div className="flex flex-col">
+            <WhyShopImage
+              src="/shop-with-us/eco-friendly-liners.jpg"
+              alt="Folded fleece cage liners packed on white shelves"
+            />
+            <div className="bg-secondary-pink flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
+              <p className="text-center text-xl font-semibold text-white">
+                Eco-Friendly Liners
+              </p>
+            </div>
           </div>
-          <div className="bg-primary-purple flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
-            <p className="text-primary-navy text-center text-xl font-semibold">
-              Easy-Clean Cages
-            </p>
+          <div className="flex flex-col">
+            <div className="bg-primary-purple flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
+              <p className="text-primary-navy text-center text-xl font-semibold">
+                Easy-Clean Cages
+              </p>
+            </div>
+            <WhyShopImage
+              src="/shop-with-us/easy-clean-cages.jpg"
+              alt="Guinea pig cage with fleece liners, hideouts and a tunnel"
+            />
           </div>
-          <div className="bg-primary-gold flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
-            <p className="text-primary-navy text-center text-xl font-semibold">
-              Loved by Pet Parents
-            </p>
+          <div className="flex flex-col">
+            <WhyShopImage
+              src="/shop-with-us/loved-by-pet-parents.png"
+              alt="Customer review about Piggyway boarding and liners"
+              fit="contain"
+            />
+            <div className="bg-primary-gold flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
+              <p className="text-primary-navy text-center text-xl font-semibold">
+                Loved by Pet Parents
+              </p>
+            </div>
           </div>
         </div>
       </div>
