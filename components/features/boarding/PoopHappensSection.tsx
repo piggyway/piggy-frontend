@@ -7,7 +7,7 @@ export function PoopHappensSection() {
   return (
     <AnimatedSection className="w-full">
       <section className="container mx-auto flex max-w-[1160px] flex-col items-center gap-6 px-4 py-8 sm:flex-row sm:items-end sm:justify-end sm:gap-10">
-        <h2 className="text-lead sm:text-large text-center text-[#405aab] sm:mb-6 sm:text-right">
+        <h2 className="text-primary-navy-light text-lead sm:text-large text-center tracking-[-0.21px] sm:mb-6 sm:text-right">
           Poop happens... We clean.
         </h2>
         <div className="relative h-[75px] w-[150px] sm:h-[107px] sm:w-[214px]">

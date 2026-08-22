@@ -89,7 +89,9 @@ function Field({ label, error, children }: FieldProps) {
     <div className="flex min-w-0 flex-1 flex-col gap-2">
       <label className="text-subtle-medium text-primary-navy">{label}</label>
       {children}
-      {error && <p className="text-subtle text-red-500">{error}</p>}
+      {error && (
+        <p className="text-subtle font-medium text-rose-800">{error}</p>
+      )}
     </div>
   );
 }

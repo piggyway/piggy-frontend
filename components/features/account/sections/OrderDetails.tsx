@@ -194,7 +194,7 @@ export function OrderDetails({
         </div>
         <span
           className={cn(
-            "text-subtle rounded-full px-4 py-1.5 font-semibold",
+            "text-subtle-semibold rounded-full px-4 py-1.5",
             statusPill[order.status].className
           )}
         >

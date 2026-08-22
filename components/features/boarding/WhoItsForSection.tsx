@@ -11,7 +11,7 @@ export function WhoItsForSection() {
         <div className="flex flex-col gap-10 rounded-[32px] bg-white p-6 sm:p-10">
           <div className="flex flex-col items-start justify-between gap-6 sm:flex-row">
             <div className="flex flex-col gap-2">
-              <h2 className="text-large sm:text-h4 tracking-[-0.21px] text-[#405aab]">
+              <h2 className="text-large sm:text-h4 text-primary-navy-light tracking-[-0.21px]">
                 Who It&apos;s For
               </h2>
               <p className="text-primary-navy text-lead sm:text-large font-normal">
@@ -36,11 +36,11 @@ export function WhoItsForSection() {
                 className={`${item.colorClass} flex h-full min-h-[190px] flex-col gap-2 rounded-[28px] p-6`}
               >
                 <div className="flex items-center">
-                  <h3 className="text-p-ui sm:text-lead font-semibold text-[#050451]">
+                  <h3 className="text-p-ui sm:text-lead text-primary-navy font-semibold">
                     {item.title}
                   </h3>
                 </div>
-                <p className="text-p text-[#050451]">{item.description}</p>
+                <p className="text-p text-primary-navy">{item.description}</p>
               </article>
             ))}
           </div>

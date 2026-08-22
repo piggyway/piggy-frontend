@@ -87,7 +87,9 @@ export function BookingSubmittedStep({
       </div>
 
       <div className="flex flex-col items-center gap-2.5 text-center">
-        <h1 className="text-primary-navy text-large">Request submitted!</h1>
+        <h1 className="text-primary-navy text-large sm:text-h4 tracking-[-0.21px]">
+          Request submitted!
+        </h1>
         <p className="text-p text-slate-600">
           We&apos;ve received your boarding request — we&apos;ll review and
           confirm within 24 hours.
@@ -164,7 +166,7 @@ export function BookingSubmittedStep({
             >
               <step.icon className="text-primary-navy size-[18px]" />
             </div>
-            <p className="text-primary-navy text-subtle font-semibold">
+            <p className="text-primary-navy text-subtle-semibold">
               {step.title}
             </p>
             <p className="text-subtle text-slate-400">{step.subtitle}</p>
