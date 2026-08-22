@@ -82,6 +82,7 @@ export const BOARDING_INCLUSIONS_CONTENT = {
         "Daily pellets (dietary adjustments where needed)",
         "Fresh vegetables & fresh grass (dietary adjustments where needed)",
         "Treats (dietary adjustments where needed)",
+        "Oxbow supplements",
       ],
     },
     {
