@@ -14,7 +14,7 @@ export function HeroIntroSection() {
           <h1 className="text-primary-navy-light text-large sm:text-h4 tracking-[-0.21px]">
             Guinea Pig Boarding in Melbourne 🐹
           </h1>
-          <p className="text-primary-navy text-large sm:text-h4 mt-2">
+          <p className="text-primary-navy text-large sm:text-h4 mt-2 tracking-[-0.21px]">
             Thoughtful guinea pig boarding in Melbourne, designed to feel like
             home.
           </p>
@@ -51,7 +51,7 @@ export function HeroIntroSection() {
                 <Button
                   asChild
                   variant="secondary"
-                  className="text-p mt-4 h-9 px-4 font-normal shadow-none"
+                  className="text-p mt-4 h-9 px-4 font-semibold shadow-none"
                 >
                   <Link href={BOARDING_ROUTES.book}>Book with us</Link>
                 </Button>

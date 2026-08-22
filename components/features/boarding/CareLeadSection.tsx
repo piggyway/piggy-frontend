@@ -12,15 +12,15 @@ export function CareLeadSection() {
           <div className="grid items-start gap-[40px] lg:grid-cols-[1fr_350px]">
             <div className="flex flex-col gap-[40px]">
               <div className="flex flex-col gap-[8px]">
-                <p className="text-lead font-normal text-[#050451]">
+                <p className="text-lead text-primary-navy font-normal">
                   {CARE_LEAD_CONTENT.eyebrow}
                 </p>
-                <h2 className="text-large sm:text-h4 tracking-[-0.21px] text-[#405aab]">
+                <h2 className="text-large sm:text-h4 text-primary-navy-light tracking-[-0.21px]">
                   {CARE_LEAD_CONTENT.title}
                 </h2>
               </div>
 
-              <div className="text-p-ui sm:text-lead space-y-[32px] font-normal text-[#050451]">
+              <div className="text-p-ui sm:text-lead text-primary-navy space-y-[32px] font-normal">
                 {CARE_LEAD_CONTENT.paragraphs.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}
@@ -41,10 +41,10 @@ export function CareLeadSection() {
                 />
               </div>
               <div className="flex flex-col gap-[8px] text-center">
-                <p className="text-lead text-[#405aab]">
+                <p className="text-lead text-primary-navy-light">
                   {CARE_LEAD_CONTENT.name}
                 </p>
-                <p className="text-p-ui text-[#050451]">
+                <p className="text-p-ui text-primary-navy">
                   {CARE_LEAD_CONTENT.role}
                 </p>
               </div>

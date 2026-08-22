@@ -75,7 +75,7 @@ export function BoardingBookingPage() {
       <div className="flex flex-col gap-8">
         {/* Title */}
         <div className="flex flex-col gap-2">
-          <h1 className="text-primary-navy text-h4">
+          <h1 className="text-primary-navy text-large sm:text-h4 tracking-[-0.21px]">
             {step === "details" ? "Boarding Details" : "Book a Boarding Stay"}
           </h1>
           <p className="text-p text-slate-600">

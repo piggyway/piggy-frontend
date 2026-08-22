@@ -128,7 +128,7 @@ export function StayCalendarCard({
           <CalendarDays className="text-primary-navy size-[17px]" />
         </div>
         <div className="flex flex-col gap-0.5">
-          <p className="text-primary-navy text-lead">{title}</p>
+          <h2 className="text-primary-navy text-lead">{title}</h2>
           <p className="text-subtle text-slate-400">
             {selectedDate
               ? formatStayLabel(selectedDate, selectedTime)
@@ -212,7 +212,7 @@ export function StayCalendarCard({
 
       {/* Time slots */}
       <div className="flex items-baseline justify-between">
-        <p className="text-primary-navy text-p font-semibold">{timeLabel}</p>
+        <p className="text-primary-navy text-p-ui font-semibold">{timeLabel}</p>
         <p className="text-detail text-slate-400">1-hour blocks</p>
       </div>
       <div className="grid grid-cols-4 gap-2">

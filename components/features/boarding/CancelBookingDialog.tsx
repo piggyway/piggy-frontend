@@ -27,7 +27,7 @@ export function CancelBookingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[420px] rounded-[20px] p-6 sm:p-7">
         <DialogHeader>
-          <DialogTitle className="text-primary-navy text-p-ui font-semibold">
+          <DialogTitle className="text-primary-navy text-lead">
             Cancel this request?
           </DialogTitle>
         </DialogHeader>

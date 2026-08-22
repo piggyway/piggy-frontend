@@ -236,7 +236,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                   {pill && (
                     <span
                       className={cn(
-                        "text-subtle rounded-full px-4 py-1.5 font-semibold",
+                        "text-subtle-semibold rounded-full px-4 py-1.5",
                         pill.className
                       )}
                     >

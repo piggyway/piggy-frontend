@@ -136,7 +136,7 @@ function AddOnCard({
       </span>
 
       {/* Price */}
-      <span className="text-primary-navy text-subtle shrink-0 font-semibold">
+      <span className="text-primary-navy text-subtle-semibold shrink-0">
         +{addOn.formattedPrice}
       </span>
     </button>

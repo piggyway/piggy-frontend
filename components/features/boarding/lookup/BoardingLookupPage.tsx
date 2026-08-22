@@ -142,7 +142,9 @@ export function BoardingLookupPage() {
   return (
     <div className="container mx-auto flex flex-col items-center gap-8 px-4 pt-16 pb-24 sm:px-6 lg:px-8">
       <div className="flex flex-col items-center gap-2.5 text-center">
-        <h1 className="text-primary-navy text-large">Track your request</h1>
+        <h1 className="text-primary-navy text-large sm:text-h4 tracking-[-0.21px]">
+          Track your request
+        </h1>
         <p className="text-p max-w-md text-slate-600">
           Enter the reference from your confirmation email and the email you
           used when booking.
@@ -226,34 +228,34 @@ export function BoardingLookupPage() {
 
           <div className="flex items-center justify-between">
             <span className="text-subtle text-slate-600">Name</span>
-            <span className="text-subtle-medium text-primary-navy">
+            <span className="text-p text-primary-navy font-medium">
               {result.firstName}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-subtle text-slate-600">Drop-off</span>
-            <span className="text-subtle-medium text-primary-navy">
+            <span className="text-p text-primary-navy font-medium">
               {formatBookingDate(result.dropOffDate)} ·{" "}
               {formatTimeOfDay(result.dropOffTime)}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-subtle text-slate-600">Pick-up</span>
-            <span className="text-subtle-medium text-primary-navy">
+            <span className="text-p text-primary-navy font-medium">
               {formatBookingDate(result.pickUpDate)} ·{" "}
               {formatTimeOfDay(result.pickUpTime)}
             </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-subtle text-slate-600">Nights</span>
-            <span className="text-subtle-medium text-primary-navy">
+            <span className="text-p text-primary-navy font-medium">
               {result.nights}
             </span>
           </div>
           {petsLabel && (
             <div className="flex items-center justify-between gap-4">
               <span className="text-subtle shrink-0 text-slate-600">Pets</span>
-              <span className="text-subtle-medium text-primary-navy text-right">
+              <span className="text-p text-primary-navy text-right font-medium">
                 {petsLabel}
               </span>
             </div>
