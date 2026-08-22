@@ -61,7 +61,7 @@ export function LoginPage({ error }: LoginPageProps) {
   const isEmailValidForUi =
     !!trimmedEmailForUi && emailRegex.test(trimmedEmailForUi);
 
-  // 确保只在客户端渲染 Turnstile，避免 hydration 不匹配
+  // Render Turnstile on the client only, to avoid a hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -92,10 +92,10 @@ export function LoginPage({ error }: LoginPageProps) {
   }, [error]);
 
   useEffect(() => {
-    // 切换回邮箱步骤时，要求重新做人机验证
+    // Going back to the email step requires passing the bot check again
     if (step === "email") {
       setTurnstileToken(null);
-      // 尽量重置 widget（如果已加载）
+      // Reset the widget if it has already loaded
       try {
         turnstileRef.current?.reset();
       } catch {
@@ -104,7 +104,7 @@ export function LoginPage({ error }: LoginPageProps) {
     }
   }, [step]);
 
-  /** 发送邮箱验证码 */
+  /** Send the email verification code. */
   const handleSendCode = async (e: FormEvent) => {
     e.preventDefault();
     setFormError(null);
@@ -117,7 +117,8 @@ export function LoginPage({ error }: LoginPageProps) {
     }
 
     if (!emailRegex.test(trimmedEmail)) {
-      // 邮箱格式不合法时，不应触发 Turnstile/后端校验（避免暴露 turnstile_action_mismatch 等错误）
+      // Stop before Turnstile and the backend on a malformed email, so errors
+      // like turnstile_action_mismatch are never surfaced to the user
       setFormError("邮箱格式不正确 / Invalid email format.");
       return;
     }
@@ -149,7 +150,8 @@ export function LoginPage({ error }: LoginPageProps) {
       await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        // Turnstile token 可能已使用/过期，失败后强制重置，避免用户重复提交同一个 token
+        // The token may already be used or expired, so force a reset and stop the
+        // user resubmitting the same one
         setTurnstileToken(null);
         try {
           turnstileRef.current?.reset();
@@ -161,7 +163,7 @@ export function LoginPage({ error }: LoginPageProps) {
         return;
       }
 
-      // 成功也重置 token（一次性使用）
+      // Tokens are single use, so reset on success too
       setTurnstileToken(null);
       try {
         turnstileRef.current?.reset();
@@ -184,7 +186,7 @@ export function LoginPage({ error }: LoginPageProps) {
     }
   };
 
-  /** 用验证码完成邮箱登录 */
+  /** Complete the email login with the verification code. */
   const handleVerifyCode = async (e: FormEvent) => {
     e.preventDefault();
     setFormError(null);
@@ -258,7 +260,7 @@ export function LoginPage({ error }: LoginPageProps) {
     }
   };
 
-  /** Google 登录，走 NextAuth */
+  /** Google login, via NextAuth. */
   const handleGoogleLogin = () => {
     signIn("google", { callbackUrl: "/" });
   };
@@ -268,7 +270,7 @@ export function LoginPage({ error }: LoginPageProps) {
 
   return (
     <div className="flex min-h-screen">
-      {/* 左侧品牌插画面板 */}
+      {/* Left brand illustration panel */}
       <div className="relative hidden w-1/2 lg:block">
         <Link href="/" className="absolute inset-0">
           <Image
@@ -282,10 +284,10 @@ export function LoginPage({ error }: LoginPageProps) {
         </Link>
       </div>
 
-      {/* 右侧表单面板 */}
+      {/* Right form panel */}
       <div className="bg-neutral-background-light flex min-h-screen w-full flex-col items-center justify-center px-4 py-12 lg:w-1/2">
         <div className="flex w-full max-w-[400px] flex-col gap-5">
-          {/* 标题 */}
+          {/* Heading */}
           <div className="flex flex-col items-center gap-2 text-center">
             <h1 className="text-primary-navy text-[30px] leading-none font-semibold">
               Welcome to Piggy Way
@@ -295,7 +297,7 @@ export function LoginPage({ error }: LoginPageProps) {
             </p>
           </div>
 
-          {/* URL 带过来的错误（比如 Google SSO 出错） */}
+          {/* Error carried in from the URL, e.g. a failed Google SSO */}
           {error && (
             <div className="bg-destructive/10 text-destructive text-subtle flex items-center gap-2 rounded-[12px] border border-red-200 p-3">
               <AlertCircle className="size-4 shrink-0" />
@@ -309,7 +311,7 @@ export function LoginPage({ error }: LoginPageProps) {
             </div>
           )}
 
-          {/* 本地表单错误 */}
+          {/* Local form error */}
           {formError && (
             <div className="bg-destructive/10 text-destructive text-subtle flex items-center gap-2 rounded-[12px] border border-red-200 p-3">
               <AlertCircle className="size-4 shrink-0" />
@@ -317,14 +319,14 @@ export function LoginPage({ error }: LoginPageProps) {
             </div>
           )}
 
-          {/* 提示信息 */}
+          {/* Info message */}
           {infoMessage && (
             <p className="text-subtle text-center text-emerald-600">
               {infoMessage}
             </p>
           )}
 
-          {/* Google 登录按钮 */}
+          {/* Google login button */}
           <button
             type="button"
             onClick={handleGoogleLogin}
@@ -334,7 +336,7 @@ export function LoginPage({ error }: LoginPageProps) {
             Continue with Google
           </button>
 
-          {/* 分隔线 */}
+          {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="bg-neutral-stroke h-px flex-1" />
             <span className="text-[12px] text-slate-400">
@@ -343,7 +345,7 @@ export function LoginPage({ error }: LoginPageProps) {
             <div className="bg-neutral-stroke h-px flex-1" />
           </div>
 
-          {/* 步骤一：输入邮箱，发送验证码 */}
+          {/* Step one: enter the email and send the code */}
           {step === "email" && (
             <form onSubmit={handleSendCode} className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
@@ -369,7 +371,7 @@ export function LoginPage({ error }: LoginPageProps) {
                 )}
               </div>
 
-              {/* 只在客户端渲染 Turnstile，避免 hydration 不匹配 */}
+              {/* Render Turnstile on the client only, to avoid a hydration mismatch */}
               {mounted &&
                 (turnstileSiteKey ? (
                   <div className="flex justify-center">
@@ -381,6 +383,9 @@ export function LoginPage({ error }: LoginPageProps) {
                       onError={() => setTurnstileToken(null)}
                       options={{
                         action: "email_code",
+                        // The widget follows the visitor's browser language by
+                        // default; the site is English-only, so pin it.
+                        language: "en",
                       }}
                     />
                   </div>
@@ -414,7 +419,7 @@ export function LoginPage({ error }: LoginPageProps) {
             </form>
           )}
 
-          {/* 步骤二：输入验证码完成登录 */}
+          {/* Step two: enter the code to finish signing in */}
           {step === "code" && (
             <form onSubmit={handleVerifyCode} className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
@@ -480,7 +485,7 @@ export function LoginPage({ error }: LoginPageProps) {
             </form>
           )}
 
-          {/* 服务协议 */}
+          {/* Terms */}
           <p className="text-center text-[12px] text-slate-400">
             By continuing, you agree to our{" "}
             <Link
