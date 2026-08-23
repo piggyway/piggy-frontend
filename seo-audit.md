@@ -242,7 +242,7 @@ Product page has neither `generateStaticParams` nor `revalidate` (unlike homepag
 Browser → Cloudflare
           ├─ Managed robots.txt preamble (AI bots / Content-Signal)
           ├─ www → apex 301 (verified)
-          └─ Origin (Railway / Next standalone)
+          └─ Origin (Cloudflare Workers + OpenNext; Railway was retired 2026-08-12)
                 ├─ app/robots.ts rules + Sitemap line
                 ├─ app/sitemap.ts (calls backend product/category APIs)
                 └─ page metadata + JSON-LD in HTML

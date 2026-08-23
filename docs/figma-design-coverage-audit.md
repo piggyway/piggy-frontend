@@ -14,7 +14,7 @@ Comparison between the live code routes and the Figma design file to find pages 
 | Full pages with no design at all              | 14    | open                                                    |
 | Designed pages missing one or more states     | 6     | done — see `States — Coverage (B & C)` section in Figma |
 | System-wide state types never designed        | 4     | done — `System Patterns` sheet                          |
-| Reverse gaps (Figma designed, code not built) | 1     | for tracking                                            |
+| Reverse gaps (Figma designed, code not built) | 0     | resolved - boarding booking flow is built               |
 
 ## A. Full pages with no Figma design
 
@@ -116,7 +116,7 @@ Zero occurrences across the whole Figma file. Consider designing these once as r
 
 Figma is ahead of code here — designed but not built. Tracked separately, not a missing mockup.
 
-- [ ] Boarding booking flow is fully designed (`Boarding - Step 1 Dates & Times`, `Step 2 Details`, `Step 3 Submitted`, plus `My Boarding`), but `/piggyway-boarding` is currently a static landing page with no booking flow.
+- [x] Boarding booking flow is fully designed (`Boarding - Step 1 Dates & Times`, `Step 2 Details`, `Step 3 Submitted`, plus `My Boarding`) **and now built** (resolved 2026-08-23). The flow lives at `app/(shop)/piggyway-boarding/book/` and `app/(shop)/piggyway-boarding/lookup/`, backed by `app/api/boarding/`. No longer a reverse gap.
 
 Unwired / dead components whose states are not reachable from any route. Confirm whether they still need mockups before designing.
 
