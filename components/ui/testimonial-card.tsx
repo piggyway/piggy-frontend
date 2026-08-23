@@ -17,7 +17,7 @@ export function TestimonialCard({
   return (
     <div
       className={cn(
-        "flex w-full flex-col items-start gap-5 rounded-[28px] bg-[#ffdfdf] p-6",
+        "bg-neutral-pink-background flex w-full flex-col items-start gap-5 rounded-[28px] p-6",
         className
       )}
     >

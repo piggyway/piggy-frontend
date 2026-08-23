@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { formatBookingDate } from "@/lib/utils/format";
 import Link from "next/link";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -18,12 +19,6 @@ import {
 } from "@/components/features/boarding/status-pill";
 import { BOARDING_ROUTES } from "@/components/features/boarding/constants";
 import { CancelBookingDialog } from "@/components/features/boarding/CancelBookingDialog";
-
-function formatBookingDate(value: string): string {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleDateString("en-AU");
-}
 
 function formatTimeOfDay(value: string): string {
   return value.slice(0, 5);
@@ -191,7 +186,7 @@ export function BoardingLookupPage() {
         </div>
 
         {error && (
-          <p className="text-subtle rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 font-medium text-rose-800">
+          <p className="text-subtle bg-destructive/10 text-destructive border-destructive/30 rounded-[12px] border px-3.5 py-2.5 font-medium">
             {error}
           </p>
         )}
@@ -209,7 +204,9 @@ export function BoardingLookupPage() {
         <div className="border-neutral-stroke flex w-full max-w-[480px] flex-col gap-[18px] rounded-[24px] border bg-white px-7 py-7">
           <div className="flex items-center justify-between gap-3">
             <div className="flex flex-col gap-0.5">
-              <span className="text-subtle text-slate-400">Reference</span>
+              <span className="text-subtle text-muted-foreground">
+                Reference
+              </span>
               <span className="text-primary-navy text-p-ui font-semibold tracking-wide">
                 {result.reference}
               </span>
@@ -262,7 +259,7 @@ export function BoardingLookupPage() {
           )}
 
           {cancelError && (
-            <p className="text-subtle rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 font-medium text-rose-800">
+            <p className="text-subtle bg-destructive/10 text-destructive border-destructive/30 rounded-[12px] border px-3.5 py-2.5 font-medium">
               {cancelError}
             </p>
           )}
@@ -275,7 +272,7 @@ export function BoardingLookupPage() {
                 setCancelError(null);
                 setConfirmOpen(true);
               }}
-              className="text-subtle h-[46px] w-full rounded-full border-[1.5px] border-rose-300 font-semibold text-rose-700 hover:bg-rose-50"
+              className="text-subtle text-destructive hover:bg-destructive/10 border-destructive/40 h-[46px] w-full rounded-full border-[1.5px] font-semibold"
             >
               Cancel request
             </Button>

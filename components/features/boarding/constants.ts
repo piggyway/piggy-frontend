@@ -19,37 +19,37 @@ export const WHO_ITS_FOR_ITEMS = [
     title: "Owners going on holidays or short trips",
     description:
       "A safe and cosy place for your guinea pigs while you're away.",
-    colorClass: "bg-[#dcd7ff]/40",
+    colorClass: "bg-primary-purple/40",
   },
   {
     title: "Care for owners who worry a little extra",
     description:
       "Thoughtful, attentive care for piggies that mean the world to you.",
-    colorClass: "bg-[#fffcef]",
+    colorClass: "bg-primary-light-gold",
   },
   {
     title: "Piggies with their own routines",
     description:
       "We follow their usual feeding habits and daily rhythm whenever possible.",
-    colorClass: "bg-[#ffdfdf]",
+    colorClass: "bg-neutral-pink-background",
   },
   {
     title: "Boarding with veterinary support",
     description:
       "Our partnership with an experienced pocket-pet vet provides extra peace of mind.",
-    colorClass: "bg-[#fffbf5]",
+    colorClass: "bg-neutral-background-light",
   },
   {
     title: "Calm spaces for tiny feet",
     description:
       "A quiet, home-style environment designed to keep piggies relaxed.",
-    colorClass: "bg-[#e1f2ef]",
+    colorClass: "bg-secondary-mint",
   },
   {
     title: "First stay? No worries.",
     description:
       "A gentle introduction for guinea pigs boarding away from home.",
-    colorClass: "bg-[#ececec]",
+    colorClass: "bg-neutral-grey-background",
   },
 ] as const;
 

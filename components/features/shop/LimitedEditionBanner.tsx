@@ -22,11 +22,11 @@ export function LimitedEditionBanner() {
           {/* Left Decorative Elements */}
           <div className="hidden w-32 shrink-0 flex-col gap-4 md:flex">
             {/* Light blue rectangle */}
-            <div className="flex flex-1 items-center justify-center rounded-[28px] bg-[#e8eef7]">
+            <div className="bg-neutral-blue-background flex flex-1 items-center justify-center rounded-[28px]">
               <div className="h-16 w-16 rounded-lg bg-white/50" />
             </div>
             {/* Pink rounded shape */}
-            <div className="flex h-32 items-center justify-center rounded-[28px] bg-[#ffc0cb]">
+            <div className="bg-neutral-pink-background flex h-32 items-center justify-center rounded-[28px]">
               <div className="h-16 w-16 rounded-lg bg-white/50" />
             </div>
           </div>

@@ -48,7 +48,7 @@ export function PaymentMethods() {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 text-red-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+                className="text-destructive hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive gap-2"
               >
                 <Trash2 className="size-3" />
                 Remove

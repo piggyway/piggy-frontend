@@ -196,6 +196,35 @@ describe("POST /api/checkout/payment-intent", () => {
     });
   });
 
+  it("forwards marketing_opt_in only when the customer opted in", async () => {
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+      new Response(
+        JSON.stringify({
+          data: { client_secret: "secret", payment_intent_id: "pi_optin" },
+        }),
+        { status: 200, headers: { "Content-Type": "application/json" } }
+      )
+    );
+
+    await POST(
+      createRequest({ email: "buyer@example.com", marketingOptIn: true })
+    );
+
+    const [, options] = fetchMock.mock.calls[0];
+    const forwardedBody = JSON.parse(String(options?.body)) as Record<
+      string,
+      unknown
+    >;
+    expect(forwardedBody.marketing_opt_in).toBe(true);
+
+    await POST(createRequest({ email: "buyer@example.com" }));
+
+    const uncheckedBody = JSON.parse(
+      String(fetchMock.mock.calls[1][1]?.body)
+    ) as Record<string, unknown>;
+    expect(uncheckedBody).not.toHaveProperty("marketing_opt_in");
+  });
+
   it("returns 502 when the backend omits the client secret", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(JSON.stringify({ data: { payment_intent_id: "pi_1" } }), {

@@ -153,7 +153,7 @@ function Pagination({
               className="flex size-8 items-center justify-center sm:size-10"
               aria-hidden="true"
             >
-              <MoreHorizontal className="size-4 text-slate-400" />
+              <MoreHorizontal className="text-muted-foreground size-4" />
             </span>
           ) : (
             <React.Fragment key={page}>

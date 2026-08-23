@@ -54,11 +54,11 @@ export function FloatingCartButton() {
       <SheetTrigger asChild>
         <Button
           size="icon"
-          className="fixed right-8 bottom-8 z-50 h-14 w-14 rounded-full shadow-xl transition-transform hover:scale-105"
+          className="fixed right-8 bottom-8 z-40 h-14 w-14 rounded-full shadow-xl transition-transform hover:scale-105"
         >
           <ShoppingCart className="h-6 w-6" />
           {totalItems > 0 && (
-            <span className="text-detail absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 font-semibold text-white">
+            <span className="text-detail bg-destructive absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full font-semibold text-white">
               {totalItems}
             </span>
           )}
@@ -196,7 +196,7 @@ export function FloatingCartButton() {
               <Button
                 variant="default"
                 asChild
-                className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
+                className="w-full"
                 onClick={() => setIsOpen(false)}
               >
                 <Link href="/cart">View Cart</Link>

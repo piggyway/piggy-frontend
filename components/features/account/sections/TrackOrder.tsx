@@ -65,7 +65,7 @@ const statusPill: Partial<
   },
   cancelled: {
     label: "Cancelled",
-    className: "bg-neutral-pink-background text-rose-600",
+    className: "bg-neutral-pink-background text-destructive",
   },
   refunded: {
     label: "Refunded",
@@ -201,7 +201,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-subtle rounded-[14px] border border-red-200 bg-red-50 px-5 py-3.5 text-red-600"
+          className="text-subtle border-destructive/30 bg-destructive/10 text-destructive rounded-[14px] border px-5 py-3.5"
         >
           {error}
         </motion.div>
@@ -226,7 +226,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                     <h3 className="text-primary-navy text-p-ui font-semibold">
                       Order {trackingData.order_number}
                     </h3>
-                    <p className="text-subtle text-slate-400">
+                    <p className="text-subtle text-muted-foreground">
                       Placed on{" "}
                       {new Date(trackingData.date_created).toLocaleDateString(
                         "en-AU"
@@ -285,7 +285,9 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                             <p
                               className={cn(
                                 "text-p font-semibold",
-                                reached ? "text-primary-navy" : "text-slate-400"
+                                reached
+                                  ? "text-primary-navy"
+                                  : "text-muted-foreground"
                               )}
                             >
                               {step.label}
@@ -293,7 +295,9 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                             <p
                               className={cn(
                                 "text-subtle",
-                                reached ? "text-slate-600" : "text-slate-400"
+                                reached
+                                  ? "text-slate-600"
+                                  : "text-muted-foreground"
                               )}
                             >
                               {step.description}
@@ -301,7 +305,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                             {step.key === "shipped" &&
                               reached &&
                               trackingData.shipped_at && (
-                                <p className="text-detail text-slate-400">
+                                <p className="text-detail text-muted-foreground">
                                   {new Date(
                                     trackingData.shipped_at
                                   ).toLocaleDateString("en-AU")}{" "}
@@ -323,7 +327,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
 
                 <div className="bg-neutral-stroke h-px w-full" />
 
-                <p className="text-detail text-slate-400">
+                <p className="text-detail text-muted-foreground">
                   Last updated{" "}
                   {new Date(trackingData.date_updated).toLocaleDateString(
                     "en-AU"
@@ -354,7 +358,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                   </h4>
                   {address.name && (
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-subtle text-slate-400">
+                      <span className="text-subtle text-muted-foreground">
                         Recipient
                       </span>
                       <span className="text-subtle-medium text-primary-navy">
@@ -364,7 +368,7 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                   )}
                   {addr && (
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-subtle text-slate-400">
+                      <span className="text-subtle text-muted-foreground">
                         Address
                       </span>
                       <span className="text-subtle-medium text-primary-navy">
@@ -383,7 +387,9 @@ export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
                   )}
                   {address.phone && (
                     <div className="flex flex-col gap-0.5">
-                      <span className="text-subtle text-slate-400">Phone</span>
+                      <span className="text-subtle text-muted-foreground">
+                        Phone
+                      </span>
                       <span className="text-subtle-medium text-primary-navy">
                         {address.phone}
                       </span>

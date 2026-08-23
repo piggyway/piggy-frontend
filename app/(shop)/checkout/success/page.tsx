@@ -2,6 +2,8 @@ import Link from "next/link";
 import Stripe from "stripe";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ClearCartOnSuccess } from "@/components/features/cart/ClearCartOnSuccess";
+import { formatCents } from "@/lib/utils/format";
 
 const THUMB_COLORS = [
   "bg-primary-purple-light",
@@ -131,16 +133,6 @@ async function getReceipt(
   return null;
 }
 
-function formatAmount(
-  amountCents: number | null | undefined,
-  currency: string
-) {
-  return new Intl.NumberFormat("en-AU", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format((amountCents ?? 0) / 100);
-}
-
 export default async function SuccessPage({
   searchParams,
 }: {
@@ -230,6 +222,7 @@ export default async function SuccessPage({
 
   return (
     <div className="container mx-auto px-4 pt-12 pb-24 sm:px-6 lg:px-8">
+      {isPaid && <ClearCartOnSuccess />}
       <div className="flex flex-col items-center gap-7">
         {/* Celebration */}
         <div className="relative flex h-[120px] w-[220px] items-center justify-center">
@@ -260,13 +253,13 @@ export default async function SuccessPage({
           <div className="border-neutral-stroke flex w-full max-w-[600px] flex-col gap-[18px] rounded-[24px] border bg-white px-8 py-7">
             <div className="flex items-center justify-between">
               <div className="flex flex-col gap-0.5">
-                <span className="text-subtle text-slate-400">Order</span>
+                <span className="text-subtle text-muted-foreground">Order</span>
                 <span className="text-primary-navy text-p font-semibold">
                   {orderRef ? `#${orderRef}` : "Being finalised..."}
                 </span>
               </div>
               {isPaid && (
-                <span className="bg-secondary-mint text-detail rounded-full px-3.5 py-1.5 font-semibold text-green-600">
+                <span className="bg-secondary-mint text-detail text-primary-navy rounded-full px-3.5 py-1.5 font-semibold">
                   Paid
                 </span>
               )}
@@ -285,11 +278,11 @@ export default async function SuccessPage({
                       <span className="text-primary-navy text-subtle min-w-0 flex-1 truncate">
                         {row.title}
                       </span>
-                      <span className="text-subtle text-slate-400">
+                      <span className="text-subtle text-muted-foreground">
                         ×{row.quantity}
                       </span>
                       <span className="text-primary-navy text-subtle font-medium">
-                        {formatAmount(row.amountCents, currency)}
+                        {formatCents(row.amountCents, currency)}
                       </span>
                     </div>
                     {row.addOns.length > 0 && (
@@ -297,10 +290,10 @@ export default async function SuccessPage({
                         {row.addOns.map((addOn, addOnIndex) => (
                           <span
                             key={`${addOn.add_on_rid ?? addOn.name}-${addOnIndex}`}
-                            className="text-detail text-slate-400"
+                            className="text-detail text-muted-foreground"
                           >
                             + {addOn.name} (
-                            {formatAmount(addOn.unit_price_cents, currency)})
+                            {formatCents(addOn.unit_price_cents, currency)})
                           </span>
                         ))}
                       </div>
@@ -317,11 +310,11 @@ export default async function SuccessPage({
                 Total paid
               </span>
               <div className="flex items-baseline gap-1.5">
-                <span className="text-detail text-slate-400">
+                <span className="text-detail text-muted-foreground">
                   {currency.toUpperCase()}
                 </span>
                 <span className="text-primary-navy text-lead">
-                  {formatAmount(totalCents, currency)}
+                  {formatCents(totalCents, currency)}
                 </span>
               </div>
             </div>

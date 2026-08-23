@@ -611,7 +611,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                 </p>
               )}
               {currentPrice.discountPercentage && (
-                <span className="rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 text-sm font-medium text-[#FF4D4F]">
+                <span className="bg-destructive/10 text-destructive rounded-full px-2 py-0.5 text-sm font-medium">
                   {currentPrice.discountPercentage}
                 </span>
               )}
@@ -735,7 +735,7 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                   {isMutating
                     ? "Adding..."
                     : isInStock
-                      ? "Add to cart"
+                      ? "Add to Cart"
                       : "Out of Stock"}
                 </Button>
               </div>

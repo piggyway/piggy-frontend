@@ -18,13 +18,6 @@ export async function GET(request: NextRequest) {
     const token = request.headers.get("authorization");
     const sessionId = request.headers.get("x-session-id");
 
-    console.log("📦 [Cart API Route] Request headers:", {
-      hasAuthorization: !!token,
-      hasSessionId: !!sessionId,
-      authorizationHeader: token ? `${token.substring(0, 20)}...` : "none",
-      sessionId: sessionId || "none",
-    });
-
     const headers: HeadersInit = {
       "Content-Type": "application/json",
     };

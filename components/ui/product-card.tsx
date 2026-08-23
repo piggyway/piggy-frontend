@@ -71,7 +71,7 @@ export function ProductCard({
           )}
         </div>
         {discountPercentage && (
-          <span className="text-detail w-fit rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 font-medium text-[#FF4D4F]">
+          <span className="text-detail bg-destructive/10 text-destructive w-fit rounded-full px-2 py-0.5 font-medium">
             {discountPercentage}
           </span>
         )}
@@ -86,7 +86,7 @@ export function ProductCard({
             onAddToCart?.();
           }}
           disabled={disabled}
-          className="bg-primary-navy hover:bg-primary-navy-light text-p flex w-full items-center justify-center gap-2 rounded-[16px] px-4 py-2.5 text-white sm:rounded-[20px]"
+          className="text-p h-11 w-full gap-2 rounded-full px-4"
         >
           <ShoppingCart className="size-4" />
           Add to Cart

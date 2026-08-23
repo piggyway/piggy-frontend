@@ -48,9 +48,10 @@ export function CancelBookingDialog({
           </Button>
           <Button
             type="button"
+            variant="destructive"
             disabled={isSubmitting}
             onClick={onConfirm}
-            className="rounded-full bg-rose-600 px-6 text-white hover:bg-rose-700"
+            className="px-6"
           >
             {isSubmitting ? "Cancelling…" : "Yes, cancel"}
           </Button>

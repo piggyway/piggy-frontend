@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Pagination, PaginationInfo } from "@/components/ui/pagination";
@@ -10,6 +10,7 @@ import { Copy, Package } from "lucide-react";
 import { OrderService } from "@/lib/services/order";
 import type { OrderWithItems, OrderStatus } from "@/lib/types/order";
 import { normalizeImageUrl } from "@/lib/utils/images";
+import { formatCents } from "@/lib/utils/format";
 import { motion, AnimatePresence } from "framer-motion";
 
 const statusPill: Record<OrderStatus, { label: string; className: string }> = {
@@ -32,7 +33,7 @@ const statusPill: Record<OrderStatus, { label: string; className: string }> = {
   },
   cancelled: {
     label: "Cancelled",
-    className: "bg-neutral-pink-background text-rose-600",
+    className: "bg-neutral-pink-background text-destructive",
   },
   refunded: {
     label: "Refunded",
@@ -66,13 +67,6 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
   const [totalPages, setTotalPages] = useState(1);
   const [activeFilter, setActiveFilter] = useState("all");
   const listContainerRef = useRef<HTMLDivElement>(null);
-
-  const currencyFormatter = useMemo(() => {
-    return new Intl.NumberFormat("en-AU", {
-      style: "currency",
-      currency: "AUD",
-    });
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -145,10 +139,10 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
   if (error) {
     return (
       <div className="border-neutral-stroke flex min-h-[400px] flex-col items-center justify-center gap-4 rounded-[24px] border bg-white p-12 text-center">
-        <div className="rounded-full bg-red-50 p-3">
-          <Package className="size-8 text-red-500" />
+        <div className="bg-destructive/10 rounded-full p-3">
+          <Package className="text-destructive size-8" />
         </div>
-        <p className="text-subtle text-red-500">{error}</p>
+        <p className="text-subtle text-destructive">{error}</p>
         <Button
           onClick={() => window.location.reload()}
           variant="outline"
@@ -169,7 +163,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
         <h3 className="text-primary-navy text-p-ui font-semibold">
           No orders yet
         </h3>
-        <p className="text-subtle text-slate-400">
+        <p className="text-subtle text-muted-foreground">
           Looks like you haven&apos;t placed any orders yet.
         </p>
         <Button
@@ -228,7 +222,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
           </AnimatePresence>
 
           {visibleOrders.length === 0 && (
-            <div className="border-neutral-stroke text-subtle rounded-[20px] border bg-white px-8 py-10 text-center text-slate-400">
+            <div className="border-neutral-stroke text-subtle text-muted-foreground rounded-[20px] border bg-white px-8 py-10 text-center">
               No orders with this status on the current page.
             </div>
           )}
@@ -261,13 +255,13 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                           navigator.clipboard.writeText(order.order_number);
                           toast.success("Order number copied to clipboard");
                         }}
-                        className="hover:text-primary-navy text-slate-400 transition-colors"
+                        className="hover:text-primary-navy text-muted-foreground transition-colors"
                         title="Copy order number"
                       >
                         <Copy className="size-3" />
                       </button>
                     </div>
-                    <span className="text-subtle text-slate-400">
+                    <span className="text-subtle text-muted-foreground">
                       Placed{" "}
                       {new Date(order.date_created).toLocaleDateString("en-AU")}{" "}
                       · {isPickup ? "Pickup" : "Delivery"}
@@ -311,7 +305,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                           {item.variant_attributes &&
                             Array.isArray(item.variant_attributes) &&
                             item.variant_attributes.length > 0 && (
-                              <p className="text-subtle truncate text-slate-400">
+                              <p className="text-subtle text-muted-foreground truncate">
                                 {item.variant_attributes
                                   .map(
                                     (attr) =>
@@ -321,19 +315,17 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                               </p>
                             )}
                         </div>
-                        <span className="text-subtle text-slate-400">
+                        <span className="text-subtle text-muted-foreground">
                           × {item.quantity}
                         </span>
                         <span className="text-primary-navy text-p font-semibold">
-                          {currencyFormatter.format(
-                            item.line_total_cents / 100
-                          )}
+                          {formatCents(item.line_total_cents)}
                         </span>
                       </div>
                     );
                   })
                 ) : (
-                  <p className="text-subtle py-4 text-center text-slate-400">
+                  <p className="text-subtle text-muted-foreground py-4 text-center">
                     No items found for this order.
                   </p>
                 )}
@@ -343,7 +335,7 @@ export function OrderHistory({ onOrderClick }: OrderHistoryProps) {
                   <div className="flex items-baseline gap-2">
                     <span className="text-subtle text-slate-600">Total</span>
                     <span className="text-primary-navy text-p-ui font-semibold">
-                      {currencyFormatter.format(order.grand_total_amt / 100)}
+                      {formatCents(order.grand_total_amt)}
                     </span>
                   </div>
                   <Button

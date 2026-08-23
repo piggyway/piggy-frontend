@@ -65,19 +65,38 @@ describe("NextAuth authOptions", () => {
   });
 
   describe("email credentials provider", () => {
-    it("builds a user with the backend session from the submitted credentials", async () => {
+    it("builds the session user from the backend-verified profile, not the client payload", async () => {
+      const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "user-1",
+            email: "jane@example.com",
+            displayName: "Jane D",
+            firstName: "Jane",
+            lastName: null,
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        )
+      );
+
       const user = await credentialsAuthorize({
         accessToken: "access-1",
         refreshToken: "refresh-1",
         user: JSON.stringify({
-          id: "user-1",
-          email: "jane@example.com",
-          firstName: "Jane",
-          displayName: "Jane D",
+          id: "forged-id",
+          email: "forged@example.com",
+          firstName: "Forged",
+          displayName: "Forged D",
           avatarUrl: "https://cdn.example/a.png",
         }),
       });
 
+      expect(fetchMock).toHaveBeenCalledWith(
+        "https://backend.example/api/v1/auth/me",
+        expect.objectContaining({
+          headers: { Authorization: "Bearer access-1" },
+        })
+      );
       expect(user).toMatchObject({
         id: "user-1",
         email: "jane@example.com",
@@ -88,15 +107,26 @@ describe("NextAuth authOptions", () => {
         backendSession: {
           accessToken: "access-1",
           refreshToken: "refresh-1",
+          user: { id: "user-1", email: "jane@example.com" },
         },
       });
     });
 
     it("falls back to the email when the account has no display name", async () => {
-      const user = await credentialsAuthorize({
-        accessToken: "access-1",
-        user: JSON.stringify({ id: "user-1", email: "jane@example.com" }),
-      });
+      vi.spyOn(globalThis, "fetch").mockResolvedValue(
+        new Response(
+          JSON.stringify({
+            id: "user-1",
+            email: "jane@example.com",
+            displayName: null,
+            firstName: null,
+            lastName: null,
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } }
+        )
+      );
+
+      const user = await credentialsAuthorize({ accessToken: "access-1" });
 
       expect(user).toMatchObject({ name: "jane@example.com" });
     });
@@ -104,18 +134,34 @@ describe("NextAuth authOptions", () => {
     it.each([
       ["no credentials at all", undefined],
       ["a missing access token", { user: '{"id":"user-1"}' }],
-      ["a missing user payload", { accessToken: "access-1" }],
     ])("refuses to sign in with %s", async (_label, credentials) => {
       await expect(
         credentialsAuthorize(credentials as Record<string, string> | undefined)
       ).resolves.toBeNull();
     });
 
-    it("refuses to sign in when the user payload is not valid json", async () => {
+    it("refuses to sign in when the backend rejects the access token", async () => {
       vi.spyOn(console, "error").mockImplementation(() => {});
+      vi.spyOn(globalThis, "fetch").mockResolvedValue(
+        new Response(JSON.stringify({ error: "invalid_token" }), {
+          status: 401,
+          headers: { "Content-Type": "application/json" },
+        })
+      );
 
       await expect(
-        credentialsAuthorize({ accessToken: "access-1", user: "{not-json" })
+        credentialsAuthorize({ accessToken: "bad-token" })
+      ).resolves.toBeNull();
+    });
+
+    it("refuses to sign in when the backend is unreachable", async () => {
+      vi.spyOn(console, "error").mockImplementation(() => {});
+      vi.spyOn(globalThis, "fetch").mockRejectedValue(
+        new Error("network down")
+      );
+
+      await expect(
+        credentialsAuthorize({ accessToken: "access-1" })
       ).resolves.toBeNull();
     });
   });
@@ -267,7 +313,7 @@ describe("NextAuth authOptions", () => {
   });
 
   describe("session callback", () => {
-    it("exposes the backend tokens and user to the client session", async () => {
+    it("exposes the access token and user to the client session without the refresh token", async () => {
       const session = (await callSession({
         session: { user: {}, expires: "2026-12-31T00:00:00.000Z" },
         token: {
@@ -279,7 +325,7 @@ describe("NextAuth authOptions", () => {
 
       expect(session.user).toEqual({ id: "user-1", email: "jane@example.com" });
       expect(session.accessToken).toBe("access-1");
-      expect(session.refreshToken).toBe("refresh-1");
+      expect(session.refreshToken).toBeUndefined();
       expect(session.error).toBeUndefined();
     });
 

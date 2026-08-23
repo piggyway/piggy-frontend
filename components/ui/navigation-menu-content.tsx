@@ -51,15 +51,15 @@ function NavigationMenuContentItem({
     <div className="flex flex-col gap-1 text-sm">
       {description ? (
         <>
-          <p className="leading-[14px] font-light whitespace-nowrap text-[#405aab]">
+          <p className="text-primary-navy-light leading-[14px] font-light whitespace-nowrap">
             {title}
           </p>
-          <p className="w-[227px] leading-5 font-normal text-[#050451]">
+          <p className="text-primary-navy w-[227px] leading-5 font-normal">
             {description}
           </p>
         </>
       ) : (
-        <p className="w-[227px] leading-5 font-normal text-[#050451]">
+        <p className="text-primary-navy w-[227px] leading-5 font-normal">
           {title}
         </p>
       )}

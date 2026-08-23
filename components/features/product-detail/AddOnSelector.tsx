@@ -129,7 +129,7 @@ function AddOnCard({
           </span>
         )}
         {capHint && (
-          <span className="text-[12px] font-medium text-[#FF4D4F]">
+          <span className="text-destructive text-[12px] font-medium">
             {capHint}
           </span>
         )}
@@ -210,7 +210,7 @@ export function AddOnSelector({
         <p
           className={cn(
             "text-[13px] font-medium",
-            capReached ? "text-[#FF4D4F]" : "text-slate-500"
+            capReached ? "text-destructive" : "text-slate-500"
           )}
         >
           {capHelperText}
@@ -224,7 +224,9 @@ export function AddOnSelector({
             <div className="flex items-center justify-between">
               <p className="text-primary-navy text-p-ui font-medium">
                 {group.name}
-                {group.isRequired && <span className="text-[#FF4D4F]"> *</span>}
+                {group.isRequired && (
+                  <span className="text-destructive"> *</span>
+                )}
               </p>
               {group.selectionMode === "single" && !group.isRequired && (
                 <button

@@ -89,7 +89,7 @@ export default function HealthWellnessPage() {
             </span>
             <span className="hidden sm:inline">•</span>
             <span>
-              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-AU", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
@@ -172,11 +172,11 @@ export default function HealthWellnessPage() {
             for their comfort.
           </p>
 
-          <div className="my-8 rounded-r-lg border-l-4 border-red-500 bg-red-50 p-6">
-            <h4 className="mt-0 mb-2 font-bold text-red-900">
+          <div className="border-destructive bg-destructive/10 my-8 rounded-r-lg border-l-4 p-6">
+            <h4 className="text-destructive mt-0 mb-2 font-bold">
               Emergency Signs - Go to Vet Immediately
             </h4>
-            <ul className="mb-0 text-sm text-red-800">
+            <ul className="text-destructive mb-0 text-sm">
               <li>Not eating or pooping for 12 hours (Gut Stasis risk)</li>
               <li>Labored breathing or gasping</li>
               <li>Lethargy or inability to move</li>

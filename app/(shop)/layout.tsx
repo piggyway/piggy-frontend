@@ -10,7 +10,7 @@ export default function ShopLayout({
   return (
     <CartProvider>
       <Header />
-      <main className="bg-[#FFFBF5]">{children}</main>
+      <main className="bg-neutral-background-light">{children}</main>
       <Footer />
     </CartProvider>
   );

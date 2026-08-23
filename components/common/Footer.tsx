@@ -128,7 +128,7 @@ export async function Footer() {
       </div>
 
       {/* Payment Section */}
-      <div className="bg-secondary-purple-light px-4 py-4 sm:px-8 sm:py-5 lg:px-[140px]">
+      <div className="bg-primary-purple px-4 py-4 sm:px-8 sm:py-5 lg:px-[140px]">
         <div className="flex flex-col items-center gap-2 sm:gap-3">
           <p className="text-primary-navy text-p text-center font-normal">
             Payments

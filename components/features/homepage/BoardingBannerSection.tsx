@@ -64,7 +64,7 @@ export function BoardingBannerSection() {
               className="mb-6 h-auto w-[160px] sm:w-[200px] lg:w-[227px]"
             />
 
-            <h2 className="text-large sm:text-large lg:text-h4 mb-4 leading-[36px] font-semibold tracking-tight text-[#405aab] sm:leading-[44px] lg:leading-[50px]">
+            <h2 className="text-large sm:text-large lg:text-h4 text-primary-navy-light mb-4 leading-[36px] font-semibold tracking-tight sm:leading-[44px] lg:leading-[50px]">
               Guinea Pig Boarding in Melbourne 🐹
             </h2>
 
@@ -76,7 +76,7 @@ export function BoardingBannerSection() {
             <Button
               asChild
               variant="secondary"
-              className="text-subtle h-[40px] rounded-full bg-[#dcd7ff] px-6 leading-6 font-medium text-[#1a327e] shadow-none transition-colors hover:bg-[#c8c1ff]"
+              className="text-subtle bg-primary-purple text-primary-navy hover:bg-primary-purple/80 h-[40px] rounded-full px-6 leading-6 font-medium shadow-none transition-colors"
             >
               <Link href={BOARDING_PAGE_HREF}>Book with us</Link>
             </Button>

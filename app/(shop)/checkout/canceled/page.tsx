@@ -6,8 +6,8 @@ export default function CanceledPage() {
   return (
     <div className="container mx-auto px-4 py-20 text-center">
       <div className="mx-auto max-w-md rounded-lg border bg-white p-8 shadow-sm">
-        <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
-          <XCircle className="h-8 w-8 text-red-500" />
+        <div className="bg-destructive/10 mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full">
+          <XCircle className="text-destructive h-8 w-8" />
         </div>
 
         <h1 className="text-primary-navy text-large mb-4">Payment Canceled</h1>
@@ -18,7 +18,7 @@ export default function CanceledPage() {
 
         <div className="space-y-3">
           <Link href="/cart" className="block">
-            <Button className="bg-primary-navy hover:bg-primary-navy/90 w-full gap-2 text-white">
+            <Button className="w-full gap-2">
               <ShoppingCart className="h-4 w-4" />
               Return to Cart
             </Button>

@@ -89,7 +89,7 @@ export default function HabitatSetupPage() {
             </span>
             <span className="hidden sm:inline">•</span>
             <span>
-              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-AU", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",

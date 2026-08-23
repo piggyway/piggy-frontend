@@ -9,6 +9,7 @@ import { useState } from "react";
 import { PromoService } from "@/lib/services/promo";
 import { useShippingConfig } from "@/hooks/useShippingConfig";
 import type { PaymentIntentAmounts } from "@/lib/types/checkout";
+import { formatCents } from "@/lib/utils/format";
 
 const FALLBACK_IMAGE = "/default-product-image.png";
 
@@ -20,13 +21,6 @@ interface CheckoutSummaryProps {
    * promo editing is locked so the display cannot drift from the charge.
    */
   confirmedAmounts?: PaymentIntentAmounts | null;
-}
-
-function formatCents(cents: number, currency: string): string {
-  return new Intl.NumberFormat("en-AU", {
-    style: "currency",
-    currency: currency.toUpperCase(),
-  }).format(cents / 100);
 }
 
 export function CheckoutSummary({
@@ -86,7 +80,7 @@ export function CheckoutSummary({
       {/* Head */}
       <div className="flex items-center justify-between">
         <h2 className="text-primary-navy text-lead">Order summary</h2>
-        <span className="text-subtle text-slate-400">
+        <span className="text-subtle text-muted-foreground">
           {itemCount} {itemCount === 1 ? "item" : "items"}
         </span>
       </div>
@@ -117,14 +111,14 @@ export function CheckoutSummary({
               {item.variantOptions && item.variantOptions.length > 0 ? (
                 <div className="flex flex-col gap-1">
                   {item.variantOptions.map((opt, i) => (
-                    <p key={i} className="text-subtle text-slate-400">
+                    <p key={i} className="text-subtle text-muted-foreground">
                       {opt.name}: {opt.value}
                     </p>
                   ))}
                 </div>
               ) : (
                 item.variantSku && (
-                  <p className="text-subtle text-slate-400">
+                  <p className="text-subtle text-muted-foreground">
                     {item.variantSku}
                   </p>
                 )
@@ -132,7 +126,10 @@ export function CheckoutSummary({
               {item.addOns.length > 0 && (
                 <div className="mt-0.5 flex flex-col">
                   {item.addOns.map((addOn) => (
-                    <p key={addOn.id} className="text-subtle text-slate-400">
+                    <p
+                      key={addOn.id}
+                      className="text-subtle text-muted-foreground"
+                    >
                       + {addOn.name} ({addOn.formattedUnitPrice})
                     </p>
                   ))}
@@ -243,7 +240,9 @@ export function CheckoutSummary({
             </Button>
           </div>
           {(promoError || error) && (
-            <p className="text-subtle text-red-500">{promoError || error}</p>
+            <p className="text-subtle text-destructive">
+              {promoError || error}
+            </p>
           )}
         </div>
       )}
@@ -256,7 +255,7 @@ export function CheckoutSummary({
       <div className="flex items-center justify-between">
         <span className="text-primary-navy text-p font-medium">Total</span>
         <div className="flex items-baseline gap-1.5">
-          <span className="text-detail text-slate-400">
+          <span className="text-detail text-muted-foreground">
             {(confirmedAmounts?.currency ?? cart.currency)?.toUpperCase() ?? ""}
           </span>
           <span className="text-primary-navy text-lead">

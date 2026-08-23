@@ -128,7 +128,7 @@ export function AddressFormDialog({
           {/* Address Type */}
           <div className="space-y-2">
             <label className="text-p font-medium text-gray-700">
-              Address Type <span className="text-red-500">*</span>
+              Address Type <span className="text-destructive">*</span>
             </label>
             <select
               value={formData.type}
@@ -160,16 +160,18 @@ export function AddressFormDialog({
           {/* Address */}
           <div className="space-y-2">
             <label className="text-p font-medium text-gray-700">
-              Address <span className="text-red-500">*</span>
+              Address <span className="text-destructive">*</span>
             </label>
             <Input
               value={formData.addressText}
               onChange={(e) => handleChange("addressText", e.target.value)}
               placeholder="Street, suburb, state"
-              className={errors.addressText ? "border-red-500" : ""}
+              className={errors.addressText ? "border-destructive" : ""}
             />
             {errors.addressText && (
-              <p className="text-subtle text-red-500">{errors.addressText}</p>
+              <p className="text-subtle text-destructive">
+                {errors.addressText}
+              </p>
             )}
           </div>
 
@@ -177,21 +179,23 @@ export function AddressFormDialog({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-p font-medium text-gray-700">
-                Postal Code <span className="text-red-500">*</span>
+                Postal Code <span className="text-destructive">*</span>
               </label>
               <Input
                 value={formData.postalCode}
                 onChange={(e) => handleChange("postalCode", e.target.value)}
-                className={errors.postalCode ? "border-red-500" : ""}
+                className={errors.postalCode ? "border-destructive" : ""}
               />
               {errors.postalCode && (
-                <p className="text-subtle text-red-500">{errors.postalCode}</p>
+                <p className="text-subtle text-destructive">
+                  {errors.postalCode}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
               <label className="text-p font-medium text-gray-700">
-                Country Code <span className="text-red-500">*</span>
+                Country Code <span className="text-destructive">*</span>
               </label>
               <Input
                 value={formData.countryCode}
@@ -199,10 +203,12 @@ export function AddressFormDialog({
                   handleChange("countryCode", e.target.value.toUpperCase())
                 }
                 placeholder="AU"
-                className={errors.countryCode ? "border-red-500" : ""}
+                className={errors.countryCode ? "border-destructive" : ""}
               />
               {errors.countryCode && (
-                <p className="text-subtle text-red-500">{errors.countryCode}</p>
+                <p className="text-subtle text-destructive">
+                  {errors.countryCode}
+                </p>
               )}
             </div>
           </div>

@@ -12,8 +12,10 @@ function request(body: unknown, headers: HeadersInit = {}) {
 }
 
 const enquiry = {
-  name: "Jane Doe",
+  firstName: "Jane",
+  lastName: "Doe",
   email: "jane@example.com",
+  subject: "Order Inquiry",
   message: "Do you ship to Tasmania?",
   turnstileToken: "token-abc",
 };

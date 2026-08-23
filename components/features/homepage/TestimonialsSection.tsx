@@ -17,7 +17,7 @@ export function TestimonialsSection() {
       quote:
         "Finally a liner that doesn't hold onto fur. Looks neat, feels comfy, and saves me heaps of cleaning time.",
       author: "Daniel W., Sydney",
-      bgColor: "bg-[#FDF3D8]",
+      bgColor: "bg-primary-light-gold",
     },
     {
       id: 3,

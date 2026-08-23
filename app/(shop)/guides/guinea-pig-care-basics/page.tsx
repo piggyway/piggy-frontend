@@ -57,7 +57,7 @@ export default function BeginnerGuidePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-[#1C1C1E]">
+    <div className="min-h-screen bg-white font-sans text-slate-900">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -86,7 +86,7 @@ export default function BeginnerGuidePage() {
             </span>
             <span className="text-gray-300">•</span>
             <span>
-              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-AU", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",

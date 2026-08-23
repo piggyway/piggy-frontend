@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { toast } from "sonner";
 import { OrderService } from "@/lib/services/order";
 import type { OrderStatus, OrderWithItems } from "@/lib/types/order";
+import { formatCents } from "@/lib/utils/format";
 import { motion } from "framer-motion";
 
 interface OrderDetailsProps {
@@ -35,7 +36,7 @@ const statusPill: Record<OrderStatus, { label: string; className: string }> = {
   },
   cancelled: {
     label: "Cancelled",
-    className: "bg-neutral-pink-background text-rose-600",
+    className: "bg-neutral-pink-background text-destructive",
   },
   refunded: {
     label: "Refunded",
@@ -52,7 +53,7 @@ interface InfoRowProps {
 function InfoRow({ label, value }: InfoRowProps) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-subtle text-slate-400">{label}</span>
+      <span className="text-subtle text-muted-foreground">{label}</span>
       <span className="text-subtle-medium text-primary-navy">{value}</span>
     </div>
   );
@@ -66,13 +67,6 @@ export function OrderDetails({
   const [order, setOrder] = useState<OrderWithItems | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const currencyFormatter = useMemo(() => {
-    return new Intl.NumberFormat("en-AU", {
-      style: "currency",
-      currency: "AUD",
-    });
-  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -133,7 +127,7 @@ export function OrderDetails({
       <div className="flex min-h-[400px] flex-col items-start gap-6">
         {backLink}
         <div className="border-neutral-stroke flex w-full flex-col items-center gap-4 rounded-[20px] border bg-white p-12 text-center">
-          <p className="text-subtle text-red-500">
+          <p className="text-subtle text-destructive">
             {error || "Order not found"}
           </p>
           <Button onClick={onBack} variant="outline" className="rounded-full">
@@ -187,7 +181,7 @@ export function OrderDetails({
           <h2 className="text-primary-navy text-lead">
             Order {order.order_number}
           </h2>
-          <p className="text-subtle text-slate-400">
+          <p className="text-subtle text-muted-foreground">
             Placed {new Date(order.date_created).toLocaleDateString("en-AU")} ·{" "}
             {deliveryMethodLabel}
           </p>
@@ -224,31 +218,27 @@ export function OrderDetails({
                   <p className="text-primary-navy text-p truncate font-medium">
                     {item.product_title}
                   </p>
-                  <p className="text-subtle text-slate-400">
-                    {currencyFormatter.format(item.unit_price_cents / 100)} each
+                  <p className="text-subtle text-muted-foreground">
+                    {formatCents(item.unit_price_cents)} each
                   </p>
                   {item.add_ons && item.add_ons.length > 0 && (
                     <div className="mt-0.5 flex flex-col gap-0.5">
                       {item.add_ons.map((addOn, addOnIdx) => (
                         <p
                           key={`${addOn.add_on_rid ?? addOn.name}-${addOnIdx}`}
-                          className="text-detail text-slate-400"
+                          className="text-detail text-muted-foreground"
                         >
-                          + {addOn.name} (
-                          {currencyFormatter.format(
-                            addOn.unit_price_cents / 100
-                          )}
-                          )
+                          + {addOn.name} ({formatCents(addOn.unit_price_cents)})
                         </p>
                       ))}
                     </div>
                   )}
                 </div>
-                <span className="text-subtle text-slate-400">
+                <span className="text-subtle text-muted-foreground">
                   × {item.quantity}
                 </span>
                 <span className="text-primary-navy text-p font-semibold">
-                  {currencyFormatter.format(item.line_total_cents / 100)}
+                  {formatCents(item.line_total_cents)}
                 </span>
               </div>
             ))}
@@ -258,7 +248,7 @@ export function OrderDetails({
             <div className="flex items-center justify-between">
               <span className="text-subtle text-slate-600">Subtotal</span>
               <span className="text-subtle-medium text-primary-navy">
-                {currencyFormatter.format(order.subtotal_amt / 100)}
+                {formatCents(order.subtotal_amt)}
               </span>
             </div>
             <div className="flex items-center justify-between">
@@ -270,7 +260,7 @@ export function OrderDetails({
                 Total
               </span>
               <span className="text-primary-navy text-p-ui font-semibold">
-                {currencyFormatter.format(order.grand_total_amt / 100)}
+                {formatCents(order.grand_total_amt)}
               </span>
             </div>
           </div>
@@ -288,7 +278,7 @@ export function OrderDetails({
             <Button
               variant="outline"
               onClick={handleRefund}
-              className="text-subtle-semibold h-[46px] rounded-full border-[1.5px] border-rose-600 px-7 text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+              className="text-subtle-semibold text-destructive hover:bg-destructive/10 hover:text-destructive border-destructive/30 h-[46px] rounded-full border-[1.5px] px-7"
             >
               Request refund
             </Button>

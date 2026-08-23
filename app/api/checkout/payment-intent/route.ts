@@ -28,6 +28,7 @@ type PaymentIntentRequestBody = {
   pickupLocationId?: number;
   pickupSlotId?: number;
   promoCode?: string;
+  marketingOptIn?: boolean;
   shippingAddress?: ShippingAddressPayload;
   paymentIntentId?: string;
 };
@@ -65,6 +66,7 @@ export async function POST(request: NextRequest) {
       pickup_location_id: body.pickupLocationId,
       pickup_slot_id: body.pickupSlotId,
       promo_code: body.promoCode,
+      ...(body.marketingOptIn === true ? { marketing_opt_in: true } : {}),
       shipping_address: body.shippingAddress
         ? {
             name: body.shippingAddress.name,

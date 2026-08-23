@@ -76,7 +76,9 @@ function FulfillmentOption({
       {meta && (
         <span className="text-subtle font-medium text-slate-600">{meta}</span>
       )}
-      {note && <span className="text-subtle text-slate-400">{note}</span>}
+      {note && (
+        <span className="text-subtle text-muted-foreground">{note}</span>
+      )}
     </button>
   );
 }
@@ -124,7 +126,7 @@ export function AddressStep({
           <Check className="size-3.5 text-white" />
         </span>
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-subtle text-slate-400">Contact</span>
+          <span className="text-subtle text-muted-foreground">Contact</span>
           <span className="text-primary-navy text-p truncate font-medium">
             {email}
           </span>
@@ -188,7 +190,8 @@ export function AddressStep({
                   htmlFor="shipping-phone"
                   className="text-p text-primary-navy font-medium"
                 >
-                  Phone <span className="text-slate-400">(optional)</span>
+                  Phone{" "}
+                  <span className="text-muted-foreground">(optional)</span>
                 </label>
                 <Input
                   id="shipping-phone"
@@ -225,7 +228,7 @@ export function AddressStep({
                 className="text-p text-primary-navy font-medium"
               >
                 Apartment, suite, etc.{" "}
-                <span className="text-slate-400">(optional)</span>
+                <span className="text-muted-foreground">(optional)</span>
               </label>
               <Input
                 id="shipping-line2"

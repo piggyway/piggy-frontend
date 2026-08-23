@@ -219,11 +219,11 @@ export function ProductInformationSection({
                           {card.forbidden ? (
                             <div className="relative flex size-12 items-center justify-center">
                               <Icon
-                                className="size-6 text-slate-400"
+                                className="text-muted-foreground size-6"
                                 strokeWidth={1.5}
                               />
                               <Ban
-                                className="absolute inset-0 size-12 text-slate-400"
+                                className="text-muted-foreground absolute inset-0 size-12"
                                 strokeWidth={1.25}
                               />
                             </div>

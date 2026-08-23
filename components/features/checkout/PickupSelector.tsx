@@ -240,7 +240,9 @@ export function PickupSelector({
           </SelectContent>
         </Select>
         {hasPickupInstructions(pickupInstructions) && (
-          <p className="text-subtle text-slate-400">{pickupInstructions}</p>
+          <p className="text-subtle text-muted-foreground">
+            {pickupInstructions}
+          </p>
         )}
       </div>
 
@@ -254,7 +256,7 @@ export function PickupSelector({
               </span>
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="text-primary-navy text-lead">Pickup</span>
-                <span className="text-subtle text-slate-400">
+                <span className="text-subtle text-muted-foreground">
                   {headSubtitle}
                 </span>
               </div>
@@ -285,7 +287,7 @@ export function PickupSelector({
 
             {/* Day grid */}
             {loadingDates ? (
-              <p className="text-subtle text-slate-400">
+              <p className="text-subtle text-muted-foreground">
                 Loading available dates...
               </p>
             ) : (
@@ -294,7 +296,7 @@ export function PickupSelector({
                   {WEEKDAYS.map((wd) => (
                     <span
                       key={wd}
-                      className="text-detail flex h-6 flex-1 items-center justify-center font-medium text-slate-400"
+                      className="text-detail text-muted-foreground flex h-6 flex-1 items-center justify-center font-medium"
                     >
                       {wd}
                     </span>
@@ -337,15 +339,19 @@ export function PickupSelector({
               <span className="text-primary-navy text-p font-semibold">
                 Pickup time slot
               </span>
-              <span className="text-detail text-slate-400">1-hour blocks</span>
+              <span className="text-detail text-muted-foreground">
+                1-hour blocks
+              </span>
             </div>
 
             {!selectedDate ? (
-              <p className="text-subtle text-slate-400">
+              <p className="text-subtle text-muted-foreground">
                 Select a date to see available time slots.
               </p>
             ) : loadingSlots ? (
-              <p className="text-subtle text-slate-400">Loading slots...</p>
+              <p className="text-subtle text-muted-foreground">
+                Loading slots...
+              </p>
             ) : slots.length > 0 ? (
               <div className="grid grid-cols-4 gap-2">
                 {slots.map((slot) => {
@@ -368,7 +374,7 @@ export function PickupSelector({
                 })}
               </div>
             ) : (
-              <p className="text-subtle text-slate-400">
+              <p className="text-subtle text-muted-foreground">
                 No available slots for this date.
               </p>
             )}
