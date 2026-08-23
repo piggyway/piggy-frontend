@@ -129,7 +129,7 @@ function PromoCodeInput({
         </Button>
       </div>
       {validationError && (
-        <p className="text-subtle text-red-500">{validationError}</p>
+        <p className="text-subtle text-destructive">{validationError}</p>
       )}
       {previewDiscount !== null && (
         <p className="text-subtle text-green-600">
@@ -164,7 +164,7 @@ function CheckoutButtonSection() {
     <Button
       onClick={handleCheckout}
       disabled={isLoading || !cart || cart.items.length === 0}
-      className="bg-primary-navy hover:bg-primary-navy/90 w-full text-white"
+      className="w-full"
       size="lg"
     >
       {isLoading ? "Processing..." : "Checkout"}
@@ -221,7 +221,7 @@ export function CartSummary({
               more for Free Shipping
             </span>
           )}
-          <span className="text-subtle text-slate-400">
+          <span className="text-subtle text-muted-foreground">
             {Math.round(progress)}%
           </span>
         </div>

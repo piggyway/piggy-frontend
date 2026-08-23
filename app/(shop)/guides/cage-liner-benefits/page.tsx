@@ -89,7 +89,7 @@ export default function CageLinerBenefitsPage() {
             </span>
             <span className="hidden sm:inline">•</span>
             <span>
-              {new Date(PUBLISHED_ON).toLocaleDateString("en-US", {
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-AU", {
                 month: "long",
                 day: "numeric",
                 year: "numeric",
@@ -121,11 +121,11 @@ export default function CageLinerBenefitsPage() {
           </p>
 
           <div className="not-prose my-10 grid gap-6 md:grid-cols-2">
-            <div className="rounded-xl border border-red-100 bg-red-50 p-6">
-              <h4 className="mb-4 flex items-center gap-2 font-bold text-red-800">
+            <div className="border-destructive/20 bg-destructive/10 rounded-xl border p-6">
+              <h4 className="text-destructive mb-4 flex items-center gap-2 font-bold">
                 <X className="h-5 w-5" /> Traditional Bedding
               </h4>
-              <ul className="space-y-2 text-sm text-red-700">
+              <ul className="text-destructive space-y-2 text-sm">
                 <li>• Dusty (bad for lungs)</li>
                 <li>• Messy, gets everywhere</li>
                 <li>• Recurring monthly cost</li>

@@ -11,9 +11,15 @@ interface EmailStepProps {
   onNext: () => void;
   email: string;
   setEmail: (email: string) => void;
+  onOptInChange?: (optIn: boolean) => void;
 }
 
-export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
+export function EmailStep({
+  onNext,
+  email,
+  setEmail,
+  onOptInChange,
+}: EmailStepProps) {
   const { user, isAuthenticated } = useUser();
   const [optIn, setOptIn] = useState(false);
 
@@ -59,7 +65,7 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
           }`}
         />
         {isAuthenticated && user ? (
-          <p className="text-subtle text-slate-400">
+          <p className="text-subtle text-muted-foreground">
             You are logged in as{" "}
             {user.firstName
               ? `${user.firstName} ${user.lastName || ""}`.trim()
@@ -67,7 +73,7 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
             .
           </p>
         ) : (
-          <p className="text-subtle text-slate-400">
+          <p className="text-subtle text-muted-foreground">
             We&apos;ll send your receipt and order updates here.
           </p>
         )}
@@ -77,7 +83,10 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
         <input
           type="checkbox"
           checked={optIn}
-          onChange={(e) => setOptIn(e.target.checked)}
+          onChange={(e) => {
+            setOptIn(e.target.checked);
+            onOptInChange?.(e.target.checked);
+          }}
           className="peer sr-only"
         />
         <span className="peer-checked:border-primary-navy peer-checked:bg-primary-navy flex size-[18px] shrink-0 items-center justify-center rounded-[5px] border-[1.5px] border-slate-400 bg-white">
@@ -93,7 +102,8 @@ export function EmailStep({ onNext, email, setEmail }: EmailStepProps) {
         <Button
           onClick={onNext}
           disabled={!isValidEmail}
-          className="text-p h-[52px] w-full rounded-full font-semibold"
+          size="xl"
+          className="w-full"
         >
           Continue to Shipping →
         </Button>

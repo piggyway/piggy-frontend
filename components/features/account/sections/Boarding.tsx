@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatBookingDate } from "@/lib/utils/format";
 import Link from "next/link";
 import { ChevronRight, Home, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,12 +12,6 @@ import {
   BOARDING_STATUS_PILL,
   UNKNOWN_BOARDING_STATUS_PILL,
 } from "@/components/features/boarding/status-pill";
-
-function formatBookingDate(value: string): string {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleDateString("en-AU");
-}
 
 interface BoardingProps {
   onBookingClick?: (reference: string) => void;
@@ -83,13 +78,13 @@ export function Boarding({ onBookingClick }: BoardingProps) {
 
       {!isLoading && error && (
         <div className="border-neutral-stroke flex flex-col items-center gap-3 rounded-[20px] border bg-white px-8 py-12 text-center">
-          <div className="rounded-full bg-red-50 p-3">
-            <Home className="size-5 text-red-500" />
+          <div className="bg-destructive/10 rounded-full p-3">
+            <Home className="text-destructive size-5" />
           </div>
           <h3 className="text-primary-navy text-p font-semibold">
             Couldn&apos;t load your bookings
           </h3>
-          <p className="text-subtle text-red-500">{error}</p>
+          <p className="text-subtle text-destructive">{error}</p>
           <Button
             onClick={() => window.location.reload()}
             variant="outline"
@@ -108,7 +103,7 @@ export function Boarding({ onBookingClick }: BoardingProps) {
           <h3 className="text-primary-navy text-p font-semibold">
             No boarding bookings yet
           </h3>
-          <p className="text-subtle text-slate-400">
+          <p className="text-subtle text-muted-foreground">
             Book your pet&apos;s first stay with us and it will show up here.
           </p>
         </div>
@@ -164,7 +159,7 @@ export function Boarding({ onBookingClick }: BoardingProps) {
                     </span>
                     {interactive && (
                       <ChevronRight
-                        className="size-4 text-slate-400"
+                        className="text-muted-foreground size-4"
                         aria-hidden
                       />
                     )}
@@ -179,7 +174,7 @@ export function Boarding({ onBookingClick }: BoardingProps) {
                       {formatBookingDate(booking.dropOffDate)} &rarr;{" "}
                       {formatBookingDate(booking.pickUpDate)}
                     </span>
-                    <span className="text-subtle text-slate-400">
+                    <span className="text-subtle text-muted-foreground">
                       {booking.nights}{" "}
                       {booking.nights === 1 ? "night" : "nights"}
                     </span>

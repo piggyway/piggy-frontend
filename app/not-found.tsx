@@ -9,7 +9,7 @@ export default function NotFound() {
   return (
     <>
       <Header />
-      <main className="bg-[#FFFBF5]">
+      <main className="bg-neutral-background-light">
         <div className="container mx-auto max-w-[1160px] px-4 py-16 sm:py-20">
           <div className="flex flex-col items-start gap-10">
             <h1 className="text-primary-navy-light text-h4 sm:text-h1 leading-none font-semibold tracking-[-0.768px] sm:leading-[64px]">

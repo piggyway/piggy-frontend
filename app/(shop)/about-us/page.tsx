@@ -125,7 +125,7 @@ export default function AboutPage() {
                 </div>
               </div>
               <div className="flex flex-col justify-center p-8 sm:p-12 md:p-16">
-                <span className="text-primary-pink mb-2 font-semibold tracking-wide uppercase">
+                <span className="text-secondary-pink mb-2 font-semibold tracking-wide uppercase">
                   Our Story
                 </span>
                 <h2 className="text-primary-navy mb-6 text-3xl font-bold sm:text-4xl">
@@ -208,8 +208,8 @@ export default function AboutPage() {
       {/* CTA Section */}
       <section className="container mx-auto px-4 pt-12 pb-24">
         <AnimatedSection className="mx-auto max-w-4xl rounded-[3rem] bg-gradient-to-br from-[#E6F4F1] to-[#F0F7FF] px-6 py-16 text-center sm:px-12 sm:py-20">
-          <div className="mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
-            <CheckCircle2 className="text-primary-mint h-8 w-8" />
+          <div className="bg-secondary-mint mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full shadow-sm">
+            <CheckCircle2 className="text-primary-navy h-8 w-8" />
           </div>
           <h2 className="text-primary-navy mb-6 text-3xl font-bold sm:text-4xl">
             A Kinder Future for Guinea Pigs

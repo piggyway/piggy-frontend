@@ -37,15 +37,15 @@ interface ProductsSectionProps {
 }
 
 const productBackgrounds = [
-  "bg-[#e8e8f7]", // light purple
-  "bg-[#ececec]", // light gray
+  "bg-primary-purple", // light purple
+  "bg-neutral-grey-background",
   "bg-secondary-mint", // mint green
   "bg-neutral-pink-background", // pink
-  "bg-[#e8e8f7]", // light purple
+  "bg-primary-purple", // light purple
   "bg-neutral-pink-background", // pink
-  "bg-[#e8e8f7]", // light purple
+  "bg-primary-purple", // light purple
   "bg-secondary-mint", // mint green
-  "bg-[#e8eef7]", // light blue-gray
+  "bg-neutral-blue-background", // light blue-gray
 ];
 
 // Image container backgrounds for list view (rotating pastel tones from the design)

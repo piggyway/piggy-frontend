@@ -135,7 +135,7 @@ function PaymentFormInner({
       {errorMessage && (
         <p
           role="alert"
-          className="text-subtle rounded-[12px] bg-red-50 px-4 py-3 text-red-600"
+          className="text-subtle bg-destructive/10 text-destructive rounded-[12px] px-4 py-3"
         >
           {errorMessage}
         </p>

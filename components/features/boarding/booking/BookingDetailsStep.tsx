@@ -90,7 +90,7 @@ function Field({ label, error, children }: FieldProps) {
       <label className="text-subtle-medium text-primary-navy">{label}</label>
       {children}
       {error && (
-        <p className="text-subtle font-medium text-rose-800">{error}</p>
+        <p className="text-subtle text-destructive font-medium">{error}</p>
       )}
     </div>
   );
@@ -270,7 +270,7 @@ export function BookingDetailsStep({
                 placeholder="Jane"
                 className={cn(
                   inputClassName,
-                  errors.firstName && "border-red-500"
+                  errors.firstName && "border-destructive"
                 )}
               />
             </Field>
@@ -281,7 +281,7 @@ export function BookingDetailsStep({
                 placeholder="Doe"
                 className={cn(
                   inputClassName,
-                  errors.lastName && "border-red-500"
+                  errors.lastName && "border-destructive"
                 )}
               />
             </Field>
@@ -293,7 +293,10 @@ export function BookingDetailsStep({
                 value={contact.email}
                 onChange={(e) => setContactField("email", e.target.value)}
                 placeholder="jane@example.com"
-                className={cn(inputClassName, errors.email && "border-red-500")}
+                className={cn(
+                  inputClassName,
+                  errors.email && "border-destructive"
+                )}
               />
             </Field>
             <Field label="Phone" error={errors.phone}>
@@ -302,7 +305,10 @@ export function BookingDetailsStep({
                 value={contact.phone}
                 onChange={(e) => setContactField("phone", e.target.value)}
                 placeholder="+61 400 000 000"
-                className={cn(inputClassName, errors.phone && "border-red-500")}
+                className={cn(
+                  inputClassName,
+                  errors.phone && "border-destructive"
+                )}
               />
             </Field>
           </div>
@@ -324,7 +330,7 @@ export function BookingDetailsStep({
                     <button
                       type="button"
                       onClick={() => removePet(i)}
-                      className="text-subtle-medium text-rose-600 underline"
+                      className="text-subtle-medium text-destructive underline"
                     >
                       Remove
                     </button>
@@ -339,7 +345,7 @@ export function BookingDetailsStep({
                     placeholder="e.g. Mochi"
                     className={cn(
                       inputClassName,
-                      errors[`pet-${i}-name`] && "border-red-500"
+                      errors[`pet-${i}-name`] && "border-destructive"
                     )}
                   />
                 </Field>

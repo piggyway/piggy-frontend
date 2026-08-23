@@ -21,7 +21,7 @@ export function HeroSection() {
           {/* Right Side - Decorative Shapes */}
           <div className="flex w-full min-w-0 flex-1 items-center justify-center gap-2 sm:gap-4">
             {/* Left decorative rectangle - light blue/gray */}
-            <div className="flex h-16 w-16 items-center justify-center rounded-[20px] bg-[#e8eef7] sm:h-24 sm:w-24 sm:rounded-[28px] md:h-32 md:w-32">
+            <div className="bg-neutral-blue-background flex h-16 w-16 items-center justify-center rounded-[20px] sm:h-24 sm:w-24 sm:rounded-[28px] md:h-32 md:w-32">
               <div className="h-8 w-8 rounded-lg bg-white/50 sm:h-12 sm:w-12" />
             </div>
 
@@ -36,7 +36,7 @@ export function HeroSection() {
             </div>
 
             {/* Right pink rectangle */}
-            <div className="flex h-24 w-24 items-center justify-center rounded-[20px] bg-[#ffc0cb] sm:h-40 sm:w-40 sm:rounded-[28px] md:h-48 md:w-48">
+            <div className="bg-neutral-pink-background flex h-24 w-24 items-center justify-center rounded-[20px] sm:h-40 sm:w-40 sm:rounded-[28px] md:h-48 md:w-48">
               <div className="h-12 w-12 rounded-lg bg-white/50 sm:h-20 sm:w-20" />
             </div>
           </div>

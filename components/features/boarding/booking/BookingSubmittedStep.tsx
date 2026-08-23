@@ -100,7 +100,7 @@ export function BookingSubmittedStep({
       <div className="border-neutral-stroke flex w-full max-w-[600px] flex-col gap-[18px] rounded-[24px] border bg-white px-8 py-7">
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-col gap-0.5">
-            <span className="text-subtle text-slate-400">Reference</span>
+            <span className="text-subtle text-muted-foreground">Reference</span>
             <div className="flex items-center gap-2">
               <span className="text-primary-navy text-p-ui font-semibold tracking-wide">
                 {submission.reference}
@@ -108,7 +108,7 @@ export function BookingSubmittedStep({
               <button
                 type="button"
                 onClick={handleCopyReference}
-                className="hover:text-primary-navy text-slate-400 transition-colors"
+                className="hover:text-primary-navy text-muted-foreground transition-colors"
                 title="Copy reference"
                 aria-label="Copy reference"
               >
@@ -169,7 +169,7 @@ export function BookingSubmittedStep({
             <p className="text-primary-navy text-subtle-semibold">
               {step.title}
             </p>
-            <p className="text-subtle text-slate-400">{step.subtitle}</p>
+            <p className="text-subtle text-muted-foreground">{step.subtitle}</p>
           </div>
         ))}
       </div>

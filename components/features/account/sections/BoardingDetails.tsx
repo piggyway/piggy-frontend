@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { formatBookingDate } from "@/lib/utils/format";
 import { Check, Copy, Home } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -22,12 +23,6 @@ interface BoardingDetailsProps {
   onBack: () => void;
 }
 
-function formatBookingDate(value: string): string {
-  const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return value;
-  return parsed.toLocaleDateString("en-AU");
-}
-
 function formatTime(value: string): string {
   return value.length >= 5 ? value.slice(0, 5) : value;
 }
@@ -36,7 +31,7 @@ function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
   if (value === null || value === undefined || value === "") return null;
   return (
     <div className="flex flex-col gap-0.5 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-      <span className="text-subtle text-slate-400 sm:min-w-[140px]">
+      <span className="text-subtle text-muted-foreground sm:min-w-[140px]">
         {label}
       </span>
       <span className="text-subtle-medium text-primary-navy sm:text-right">
@@ -182,7 +177,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
       <div className="flex min-h-[400px] flex-col items-start gap-6">
         {backLink}
         <div className="border-neutral-stroke flex w-full flex-col items-center gap-4 rounded-[20px] border bg-white p-12 text-center">
-          <p className="text-subtle text-red-500">
+          <p className="text-subtle text-destructive">
             {error || "Failed to load booking"}
           </p>
           <Button onClick={onBack} variant="outline" className="rounded-full">
@@ -210,7 +205,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
             <button
               type="button"
               onClick={handleCopyReference}
-              className="hover:text-primary-navy text-slate-400 transition-colors"
+              className="hover:text-primary-navy text-muted-foreground transition-colors"
               title="Copy reference"
               aria-label="Copy reference"
             >
@@ -240,7 +235,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
                 setCancelError(null);
                 setConfirmOpen(true);
               }}
-              className="text-subtle h-9 rounded-full border-[1.5px] border-rose-300 px-4 font-semibold text-rose-700 hover:bg-rose-50"
+              className="text-subtle text-destructive hover:bg-destructive/10 border-destructive/40 h-9 rounded-full border-[1.5px] px-4 font-semibold"
             >
               Cancel request
             </Button>
@@ -249,7 +244,7 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
       </div>
 
       {cancelError && (
-        <p className="text-subtle w-full rounded-[12px] border border-rose-200 bg-rose-50 px-3.5 py-2.5 font-medium text-rose-800">
+        <p className="text-subtle bg-destructive/10 text-destructive border-destructive/30 w-full rounded-[12px] border px-3.5 py-2.5 font-medium">
           {cancelError}
         </p>
       )}

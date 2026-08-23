@@ -108,7 +108,7 @@ export function VariantCard({
         )}
       </div>
       {variant.discountPercentage && (
-        <span className="text-detail w-fit rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 font-medium text-[#FF4D4F]">
+        <span className="text-detail bg-destructive/10 text-destructive w-fit rounded-full px-2 py-0.5 font-medium">
           {variant.discountPercentage}
         </span>
       )}
@@ -165,7 +165,7 @@ export function VariantCard({
           onClick={handleAddToCart}
           disabled={isAdding || isMutating || !isPurchasable}
           className={cn(
-            "bg-primary-navy hover:bg-primary-navy-light text-p relative flex shrink-0 items-center justify-center gap-2 rounded-[20px] px-3 py-2 text-white sm:w-[180px] sm:px-4",
+            "text-p relative flex h-11 shrink-0 items-center justify-center gap-2 rounded-full px-3 sm:w-[180px] sm:px-4",
             isPurchasable && "z-20"
           )}
         >
@@ -232,7 +232,7 @@ export function VariantCard({
         <Button
           onClick={handleAddToCart}
           disabled={isAdding || isMutating || !isPurchasable}
-          className="bg-primary-navy hover:bg-primary-navy-light text-p flex w-full items-center justify-center gap-2 rounded-[16px] px-4 py-2.5 text-white sm:rounded-[20px]"
+          className="text-p flex h-11 w-full items-center justify-center gap-2 rounded-full px-4"
         >
           <ShoppingCart className="size-4" />
           {buttonLabel}

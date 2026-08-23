@@ -17,6 +17,7 @@ import type {
   CheckoutShippingAddress,
   PaymentIntentAmounts,
 } from "@/lib/types/checkout";
+import { formatCents } from "@/lib/utils/format";
 
 const EMPTY_ADDRESS: CheckoutShippingAddress = {
   name: "",
@@ -61,6 +62,7 @@ export function CheckoutPage() {
   const [amounts, setAmounts] = React.useState<PaymentIntentAmounts | null>(
     null
   );
+  const [marketingOptIn, setMarketingOptIn] = React.useState(false);
 
   // Ensure cart is loaded
   React.useEffect(() => {
@@ -83,6 +85,7 @@ export function CheckoutPage() {
         pickupLocationId: selectedLocationId,
         pickupSlotId: selectedSlotId,
         promoCode: cart.appliedCouponCode || undefined,
+        marketingOptIn,
         shippingAddress:
           fulfillmentType === "delivery" ? shippingAddress : undefined,
         // Re-use the existing intent (updates the amount) when the user
@@ -140,10 +143,7 @@ export function CheckoutPage() {
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   const totalLabel = amounts
-    ? new Intl.NumberFormat("en-AU", {
-        style: "currency",
-        currency: amounts.currency.toUpperCase(),
-      }).format(amounts.totalCents / 100)
+    ? formatCents(amounts.totalCents, amounts.currency)
     : "";
 
   return (
@@ -212,7 +212,12 @@ export function CheckoutPage() {
           {/* Left Column: Steps */}
           <div className="flex min-w-0 flex-1 flex-col gap-5">
             {currentStep === 1 && (
-              <EmailStep onNext={nextStep} email={email} setEmail={setEmail} />
+              <EmailStep
+                onNext={nextStep}
+                email={email}
+                setEmail={setEmail}
+                onOptInChange={setMarketingOptIn}
+              />
             )}
             {currentStep === 2 && (
               <AddressStep

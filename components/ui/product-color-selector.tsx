@@ -62,7 +62,7 @@ export function ProductColorSelector({
               <span
                 className={cn(
                   "text-subtle leading-6 font-normal",
-                  isSelected ? "text-primary-navy" : "text-slate-400"
+                  isSelected ? "text-primary-navy" : "text-muted-foreground"
                 )}
               >
                 {colorOption.label}

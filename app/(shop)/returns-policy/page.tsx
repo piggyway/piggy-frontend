@@ -60,7 +60,7 @@ export default function ReturnsPage() {
 
             <section>
               <h2 className="text-primary-navy mb-6 flex items-center gap-2 text-2xl font-bold">
-                <AlertCircle className="h-6 w-6 text-red-400" />
+                <AlertCircle className="text-destructive h-6 w-6" />
                 Non-returnable items
               </h2>
               <p className="mb-4">

@@ -21,7 +21,7 @@ const speciesMap: Record<
   },
   cat: {
     icon: Cat,
-    bgColor: "bg-[#e8e8f7]",
+    bgColor: "bg-primary-purple",
     emoji: "🐱",
   },
   rabbit: {
@@ -41,12 +41,12 @@ const speciesMap: Record<
   },
   bird: {
     icon: Bird,
-    bgColor: "bg-[#e8eef7]",
+    bgColor: "bg-neutral-blue-background",
     emoji: "🐦",
   },
   mouse: {
     icon: Mouse,
-    bgColor: "bg-[#e8eef7]",
+    bgColor: "bg-neutral-blue-background",
     emoji: "🐭",
   },
 };

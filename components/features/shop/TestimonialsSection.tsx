@@ -19,7 +19,7 @@ export function TestimonialsSection({
     quote: review.content || "",
     author: review.customer_name || "Piggy Way Customer",
     // Alternating backgrounds based on index
-    bgColor: index === 0 ? "bg-secondary-mint" : "bg-[#fffcef]",
+    bgColor: index === 0 ? "bg-secondary-mint" : "bg-primary-light-gold",
     // Use review image if available, otherwise fallback
     imageUrl: review.image_url || "/product_details_default_pic.png",
     imageAlt: "Customer review image",

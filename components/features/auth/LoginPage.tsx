@@ -9,9 +9,12 @@ import { Loader2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Turnstile } from "@marsidev/react-turnstile";
 import type { TurnstileInstance } from "@marsidev/react-turnstile";
+import { Button } from "@/components/ui/button";
 
 interface LoginPageProps {
   error?: string;
+  /** Same-site path to return the user to after a successful login. */
+  callbackUrl?: string;
 }
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -39,7 +42,7 @@ function GoogleIcon() {
   );
 }
 
-export function LoginPage({ error }: LoginPageProps) {
+export function LoginPage({ error, callbackUrl = "/" }: LoginPageProps) {
   const router = useRouter();
   const hasShownUrlErrorToast = useRef(false);
 
@@ -112,14 +115,14 @@ export function LoginPage({ error }: LoginPageProps) {
 
     const trimmedEmail = email.trim();
     if (!trimmedEmail) {
-      setFormError("请输入邮箱 / Please enter your email.");
+      setFormError("Please enter your email.");
       return;
     }
 
     if (!emailRegex.test(trimmedEmail)) {
       // Stop before Turnstile and the backend on a malformed email, so errors
       // like turnstile_action_mismatch are never surfaced to the user
-      setFormError("邮箱格式不正确 / Invalid email format.");
+      setFormError("Invalid email format.");
       return;
     }
 
@@ -201,7 +204,7 @@ export function LoginPage({ error }: LoginPageProps) {
     }
 
     if (!emailRegex.test(trimmedEmail)) {
-      setFormError("邮箱格式不正确 / Invalid email format.");
+      setFormError("Invalid email format.");
       return;
     }
 
@@ -250,7 +253,7 @@ export function LoginPage({ error }: LoginPageProps) {
         localStorage.setItem("access_token", token);
       }
 
-      router.push("/");
+      router.push(callbackUrl);
       router.refresh();
     } catch (err) {
       console.error("Failed to complete email login", err);
@@ -262,7 +265,7 @@ export function LoginPage({ error }: LoginPageProps) {
 
   /** Google login, via NextAuth. */
   const handleGoogleLogin = () => {
-    signIn("google", { callbackUrl: "/" });
+    signIn("google", { callbackUrl });
   };
 
   const inputClassName =
@@ -299,7 +302,7 @@ export function LoginPage({ error }: LoginPageProps) {
 
           {/* Error carried in from the URL, e.g. a failed Google SSO */}
           {error && (
-            <div className="bg-destructive/10 text-destructive text-subtle flex items-center gap-2 rounded-[12px] border border-red-200 p-3">
+            <div className="bg-destructive/10 text-destructive text-subtle border-destructive/30 flex items-center gap-2 rounded-[12px] border p-3">
               <AlertCircle className="size-4 shrink-0" />
               <span>
                 {error === "email_only_account"
@@ -313,7 +316,7 @@ export function LoginPage({ error }: LoginPageProps) {
 
           {/* Local form error */}
           {formError && (
-            <div className="bg-destructive/10 text-destructive text-subtle flex items-center gap-2 rounded-[12px] border border-red-200 p-3">
+            <div className="bg-destructive/10 text-destructive text-subtle border-destructive/30 flex items-center gap-2 rounded-[12px] border p-3">
               <AlertCircle className="size-4 shrink-0" />
               <span>{formError}</span>
             </div>
@@ -327,19 +330,21 @@ export function LoginPage({ error }: LoginPageProps) {
           )}
 
           {/* Google login button */}
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="xl"
             onClick={handleGoogleLogin}
-            className="border-neutral-stroke text-primary-navy flex h-[52px] w-full items-center justify-center gap-2.5 rounded-full border bg-white text-[15px] font-semibold transition-colors hover:bg-slate-50"
+            className="border-neutral-stroke w-full bg-white text-[15px] font-semibold hover:bg-slate-50"
           >
             <GoogleIcon />
             Continue with Google
-          </button>
+          </Button>
 
           {/* Divider */}
           <div className="flex items-center gap-3">
             <div className="bg-neutral-stroke h-px flex-1" />
-            <span className="text-[12px] text-slate-400">
+            <span className="text-muted-foreground text-[12px]">
               or continue with email
             </span>
             <div className="bg-neutral-stroke h-px flex-1" />
@@ -365,8 +370,8 @@ export function LoginPage({ error }: LoginPageProps) {
                   className={inputClassName}
                 />
                 {!!trimmedEmailForUi && !isEmailValidForUi && (
-                  <p className="text-[12px] text-red-600">
-                    邮箱格式不正确 / Invalid email format.
+                  <p className="text-destructive text-[12px]">
+                    Invalid email format.
                   </p>
                 )}
               </div>
@@ -396,8 +401,9 @@ export function LoginPage({ error }: LoginPageProps) {
                   </div>
                 ))}
 
-              <button
+              <Button
                 type="submit"
+                size="xl"
                 disabled={
                   loading ||
                   !mounted ||
@@ -405,7 +411,7 @@ export function LoginPage({ error }: LoginPageProps) {
                   !turnstileToken ||
                   !isEmailValidForUi
                 }
-                className="bg-primary-navy hover:bg-primary-navy-light flex h-[52px] w-full items-center justify-center rounded-full text-[15px] font-semibold text-white transition-colors disabled:opacity-60"
+                className="w-full text-[15px] font-semibold disabled:opacity-60"
               >
                 {loading ? (
                   <>
@@ -415,7 +421,7 @@ export function LoginPage({ error }: LoginPageProps) {
                 ) : (
                   "Continue with Email"
                 )}
-              </button>
+              </Button>
             </form>
           )}
 
@@ -455,10 +461,11 @@ export function LoginPage({ error }: LoginPageProps) {
                 />
               </div>
 
-              <button
+              <Button
                 type="submit"
+                size="xl"
                 disabled={loading}
-                className="bg-primary-navy hover:bg-primary-navy-light flex h-[52px] w-full items-center justify-center rounded-full text-[15px] font-semibold text-white transition-colors disabled:opacity-60"
+                className="w-full text-[15px] font-semibold disabled:opacity-60"
               >
                 {loading ? (
                   <>
@@ -468,7 +475,7 @@ export function LoginPage({ error }: LoginPageProps) {
                 ) : (
                   "Confirm & Sign In"
                 )}
-              </button>
+              </Button>
 
               <button
                 type="button"
@@ -486,7 +493,7 @@ export function LoginPage({ error }: LoginPageProps) {
           )}
 
           {/* Terms */}
-          <p className="text-center text-[12px] text-slate-400">
+          <p className="text-muted-foreground text-center text-[12px]">
             By continuing, you agree to our{" "}
             <Link
               href="#"

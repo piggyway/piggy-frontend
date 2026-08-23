@@ -102,33 +102,73 @@ export const authOptions: NextAuthOptions = {
         user: { label: "User", type: "text" },
       },
       async authorize(credentials) {
-        if (!credentials?.accessToken || !credentials?.user) {
+        if (!credentials?.accessToken) {
           return null;
         }
 
         try {
-          // Parse user data
-          const user =
-            typeof credentials.user === "string"
-              ? JSON.parse(credentials.user)
-              : credentials.user;
+          // Verify the access token with the backend and take the profile
+          // from its response - the client-provided user payload is not
+          // trusted beyond the avatar URL.
+          const res = await backendFetch(`${API_BASE_URL}/api/v1/auth/me`, {
+            headers: { Authorization: `Bearer ${credentials.accessToken}` },
+          });
 
-          // Return user object with backend session data
+          if (!res.ok) {
+            console.error(
+              "Email login rejected: backend refused access token",
+              res.status
+            );
+            return null;
+          }
+
+          const profile = parseJsonBody<{
+            id: string;
+            email: string | null;
+            displayName: string | null;
+            firstName: string | null;
+            lastName: string | null;
+          }>(await res.text());
+
+          if (!profile?.id) {
+            return null;
+          }
+
+          let avatarUrl: string | undefined;
+          try {
+            const presented =
+              typeof credentials.user === "string" && credentials.user
+                ? JSON.parse(credentials.user)
+                : undefined;
+            avatarUrl = presented?.avatarUrl ?? undefined;
+          } catch {
+            avatarUrl = undefined;
+          }
+
+          const verifiedUser = {
+            id: profile.id,
+            email: profile.email ?? "",
+            firstName: profile.firstName || "",
+            lastName: profile.lastName || "",
+            displayName: profile.displayName,
+            avatarUrl,
+          };
+
           return {
-            id: user.id,
-            email: user.email,
-            firstName: user.firstName || "",
-            lastName: user.lastName || "",
-            name: user.displayName || user.email,
-            image: user.avatarUrl,
+            id: verifiedUser.id,
+            email: verifiedUser.email,
+            firstName: verifiedUser.firstName,
+            lastName: verifiedUser.lastName,
+            name: verifiedUser.displayName || verifiedUser.email || null,
+            image: verifiedUser.avatarUrl,
             backendSession: {
               accessToken: credentials.accessToken,
               refreshToken: credentials.refreshToken,
-              user: user,
+              user: verifiedUser,
             },
           };
         } catch (error) {
-          console.error("Error parsing credentials:", error);
+          console.error("Error verifying email login credentials:", error);
           return null;
         }
       },
@@ -159,7 +199,12 @@ export const authOptions: NextAuthOptions = {
         const accountWithUserId = account as Account & { userId?: string };
         const res = await backendFetch(`${API_BASE_URL}/api/v1/auth/sso`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            ...(process.env.INTERNAL_PROXY_SECRET
+              ? { "x-internal-proxy-secret": process.env.INTERNAL_PROXY_SECRET }
+              : {}),
+          },
           body: JSON.stringify({
             provider: "google",
             providerAccountId:
@@ -249,7 +294,6 @@ export const authOptions: NextAuthOptions = {
       }
 
       session.accessToken = token.accessToken;
-      session.refreshToken = token.refreshToken;
       session.error = token.error;
 
       return session;

@@ -68,7 +68,7 @@ export function AccountSidebar({
             {displayName}
           </span>
           {user?.email && (
-            <span className="text-subtle truncate text-slate-400">
+            <span className="text-subtle text-muted-foreground truncate">
               {user.email}
             </span>
           )}
@@ -108,7 +108,7 @@ export function AccountSidebar({
         type="button"
         onClick={onLogout}
         disabled={isLoggingOut}
-        className="text-subtle-medium flex h-[46px] w-full items-center gap-3 rounded-full px-4 text-rose-600 transition-colors hover:bg-rose-50 disabled:opacity-60"
+        className="text-subtle-medium text-destructive hover:bg-destructive/10 flex h-[46px] w-full items-center gap-3 rounded-full px-4 transition-colors disabled:opacity-60"
       >
         <LogOut className="size-[18px]" />
         {isLoggingOut ? "Logging out..." : "Log out"}

@@ -80,14 +80,16 @@ export function AddressBook() {
       </div>
 
       {isLoading ? (
-        <p className="text-subtle text-slate-400">Loading addresses...</p>
+        <p className="text-subtle text-muted-foreground">
+          Loading addresses...
+        </p>
       ) : addresses.length === 0 ? (
         <div className="border-neutral-stroke rounded-[16px] border-2 border-dashed p-12 text-center">
           <MapPin className="mx-auto mb-4 size-12 text-slate-300" />
           <h3 className="text-primary-navy text-p mb-2 font-semibold">
             No addresses yet
           </h3>
-          <p className="text-subtle mb-4 text-slate-400">
+          <p className="text-subtle text-muted-foreground mb-4">
             Add your first address to get started
           </p>
           <Button
@@ -129,7 +131,9 @@ export function AddressBook() {
                 {address.countryCode}
               </p>
               {address.phoneAu && (
-                <p className="text-subtle text-slate-400">{address.phoneAu}</p>
+                <p className="text-subtle text-muted-foreground">
+                  {address.phoneAu}
+                </p>
               )}
               <div className="text-subtle-medium flex items-center gap-[18px] pt-1.5">
                 <button
@@ -142,7 +146,7 @@ export function AddressBook() {
                 <button
                   type="button"
                   onClick={() => void handleDelete(address.id)}
-                  className="text-rose-600 underline [text-underline-position:from-font]"
+                  className="text-destructive underline [text-underline-position:from-font]"
                 >
                   {deleteConfirm === address.id ? "Confirm?" : "Delete"}
                 </button>

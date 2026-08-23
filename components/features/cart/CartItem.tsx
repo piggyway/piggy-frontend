@@ -76,7 +76,7 @@ export function CartItem({
             <div className="flex flex-wrap gap-x-3 gap-y-1">
               {variantOptions.map((opt, i) => (
                 <p key={i} className="text-p text-slate-500">
-                  <span className="text-slate-400">{opt.name}:</span>{" "}
+                  <span className="text-muted-foreground">{opt.name}:</span>{" "}
                   {opt.value}
                 </p>
               ))}
@@ -101,7 +101,7 @@ export function CartItem({
                   className="text-p flex items-center justify-between gap-3 text-slate-500"
                 >
                   <span className="truncate">+ {addOn.name}</span>
-                  <span className="shrink-0 text-slate-400">
+                  <span className="text-muted-foreground shrink-0">
                     {addOn.formattedUnitPrice}
                   </span>
                 </li>
@@ -135,7 +135,7 @@ export function CartItem({
             variant="ghost"
             size="icon-sm"
             onClick={onRemove}
-            className="hover:text-destructive text-slate-400"
+            className="hover:text-destructive text-muted-foreground"
             disabled={disabled}
             aria-label="Remove item"
           >
