@@ -31,14 +31,14 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Cloudflare Workers (OpenNext)
 
-Production target is Cloudflare Workers via `@opennextjs/cloudflare`.
+Production target is Cloudflare Workers via `@opennextjs/cloudflare`. There is no
+CI for this Worker - every release is a manual deploy from a developer machine.
 
-```bash
-pnpm install
-pnpm deploy
-```
-
-See [docs/cloudflare-deploy.md](docs/cloudflare-deploy.md) for env vars, domains, and R2 cache.
+Do **not** run a bare `pnpm deploy` for production. `next build` loads
+`.env.local`, so a bare run ships your local test Stripe and Turnstile keys in
+the client bundle. Use the full command with production env overrides from
+[docs/cloudflare-deploy.md](docs/cloudflare-deploy.md) section 2.1, which also
+covers env vars, domains, and the R2 cache.
 
 Local development is unchanged:
 

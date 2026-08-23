@@ -52,7 +52,7 @@ Storefront pages live in the `app/(shop)/` route group; `app/login/` and `app/ap
 
 ### Draft / live preview
 
-`app/api/draft/route.ts` enables Next `draftMode()` when `?secret=` matches `PREVIEW_SECRET`, looks up the product on the backend with `include_draft=true` + `x-preview-secret`, then redirects to its real URL using `NEXT_PUBLIC_SITE_URL` (not `request.url`, to avoid leaking the Railway internal host). Product routes pass `include_draft=true` through to the backend only when draft mode is on. `DELETE /api/draft` disables it.
+`app/api/draft/route.ts` enables Next `draftMode()` when `?secret=` matches `PREVIEW_SECRET`, looks up the product on the backend with `include_draft=true` + `x-preview-secret`, then redirects to its real URL using `NEXT_PUBLIC_SITE_URL` (not `request.url`, to avoid leaking the internal origin host). Product routes pass `include_draft=true` through to the backend only when draft mode is on. `DELETE /api/draft` disables it.
 
 ### Styling
 
