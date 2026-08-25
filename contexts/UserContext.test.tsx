@@ -60,14 +60,14 @@ describe("UserProvider", () => {
 
     await waitFor(() => {
       expect(screen.getByText(/jane@example.com/)).toBeTruthy();
+      expect(fetchWithAuth).toHaveBeenCalledWith("/api/cart", {
+        method: "GET",
+        redirectOnAuthError: false,
+      });
     });
 
     expect(localStorage.getItem("access_token")).toBe("Bearer account-token");
     expect(screen.getByText(/"isFirstLogin":false/)).toBeTruthy();
-    expect(fetchWithAuth).toHaveBeenCalledWith("/api/cart", {
-      method: "GET",
-      redirectOnAuthError: false,
-    });
   });
 
   it.each([
