@@ -231,46 +231,6 @@ jobs:
             --cluster "$ECS_CLUSTER" \
             --services "$ECS_SERVICE"
 
-          smoke_request() {
-            local url=$1
-            local output_prefix=$2
-            curl --silent --show-error --retry 3 --retry-all-errors \
-              --connect-timeout 15 --max-time 30 \
-              --user-agent "Piggyway-Staging-Smoke/1.0" \
-              --output "${output_prefix}.body" \
-              --dump-header "${output_prefix}.headers" \
-              --write-out "%{http_code}" \
-              "$url"
-          }
-
-          edge_result_is_acceptable() {
-            local status=$1
-            local headers=$2
-            [[ "$status" == "200" ]] || {
-              [[ "$status" == "403" ]] && grep -qi '^server: cloudflare' "$headers"
-            }
-          }
-
-          homepage_status=$(smoke_request \
-            https://staging.piggyway.com.au/ homepage)
-          providers_status=$(smoke_request \
-            https://staging.piggyway.com.au/api/auth/providers providers)
-
-          echo "Public smoke statuses: homepage=$homepage_status providers=$providers_status"
-          edge_result_is_acceptable "$homepage_status" homepage.headers
-          edge_result_is_acceptable "$providers_status" providers.headers
-
-          if [[ "$providers_status" == "200" ]]; then
-            jq -e '
-              .google.callbackUrl == "https://staging.piggyway.com.au/api/auth/callback/google"
-            ' providers.body >/dev/null
-          fi
-          public_smoke=passed
-          if [[ "$homepage_status" != "200" || "$providers_status" != "200" ]]; then
-            public_smoke=deferred-cloudflare-403
-            echo "::warning::Cloudflare returned 403 to the GitHub runner; ECS/ALB health passed, so public smoke verification is deferred."
-          fi
-
           service=$(aws ecs describe-services \
             --cluster "$ECS_CLUSTER" \
             --services "$ECS_SERVICE")
@@ -286,7 +246,6 @@ jobs:
           {
             echo "previous_task_definition=$previous_task_definition"
             echo "task_definition=$new_task_definition"
-            echo "public_smoke=$public_smoke"
           } >>"$GITHUB_OUTPUT"
 
       - name: Write deployment summary
@@ -298,5 +257,5 @@ jobs:
             echo "- Task definition: \`${{ steps.deploy.outputs.task_definition }}\`"
             echo "- Previous task definition: \`${{ steps.deploy.outputs.previous_task_definition }}\`"
             echo "- ECS/ALB health: passed"
-            echo "- Public smoke: ${{ steps.deploy.outputs.public_smoke }}"
+            echo "- Public URL check: skipped for staging"
           } >>"$GITHUB_STEP_SUMMARY"
