@@ -138,3 +138,8 @@ output "frontend_log_group_name" {
   description = "CloudWatch log group receiving Frontend application logs."
   value       = module.frontend_service.log_group_name
 }
+
+output "github_deploy_role_arn" {
+  description = "Shared least-privilege role assumed by staging GitHub Actions workflows."
+  value       = module.github_deploy.role_arn
+}

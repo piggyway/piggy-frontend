@@ -18,6 +18,8 @@ module "ecr" {
     backend  = "piggyway-staging-backend"
     directus = "piggyway-staging-directus"
   }
+
+  lifecycle_keep_count = 10
 }
 
 module "database" {
@@ -221,7 +223,7 @@ module "frontend_service" {
 
   image = join("@", [
     module.ecr.repository_urls["frontend"],
-    "sha256:25516cf465f6f047152c64204246f14cf22cabd2f693935a6e292a277fce95bf",
+    "sha256:ab3e93565bea7bfba3c9556a1b275b0e9dc57d6c1e6c9492291888a61e887c88",
   ])
   repository_arn = module.ecr.repository_arns["frontend"]
   container_port = 3000
@@ -234,20 +236,52 @@ module "frontend_service" {
 
   runtime_secret_arn = module.runtime_secrets.secret_arns["frontend"]
   secret_keys = {
-    NEXTAUTH_SECRET   = "NEXTAUTH_SECRET"
-    PREVIEW_SECRET    = "PREVIEW_SECRET"
-    STRIPE_SECRET_KEY = "STRIPE_SECRET_KEY"
+    GOOGLE_CLIENT_SECRET = "GOOGLE_CLIENT_SECRET"
+    NEXTAUTH_SECRET      = "NEXTAUTH_SECRET"
+    PREVIEW_SECRET       = "PREVIEW_SECRET"
+    STRIPE_SECRET_KEY    = "STRIPE_SECRET_KEY"
   }
   environment = {
-    API_BASE_URL            = "http://backend.piggyway-staging.local:3000"
-    NEXTAUTH_URL            = "https://staging.piggyway.com.au"
-    NEXT_PUBLIC_APP_ENV     = "staging"
-    NEXT_PUBLIC_APP_URL     = "https://staging.piggyway.com.au"
-    NEXT_PUBLIC_SITE_URL    = "https://staging.piggyway.com.au"
-    NEXT_TELEMETRY_DISABLED = "1"
+    API_BASE_URL                       = "http://backend.piggyway-staging.local:3000"
+    GOOGLE_CLIENT_ID                   = "824335691426-8qc8qf33r97j12p0oa3hlatcr1psucju.apps.googleusercontent.com"
+    NEXTAUTH_URL                       = "https://staging.piggyway.com.au"
+    NEXT_PUBLIC_API_BASE_URL           = "https://api-staging.piggyway.com.au"
+    NEXT_PUBLIC_APP_ENV                = "staging"
+    NEXT_PUBLIC_APP_URL                = "https://staging.piggyway.com.au"
+    NEXT_PUBLIC_SITE_URL               = "https://staging.piggyway.com.au"
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY = "pk_test_51RztDm2MVUQW2ivytetjd1dakTP35LChNqpC3i3I0UdkOsapa7UJGlVgsOCj94opHFMA0nXQEpiBuJmOsry775tt00DvCZqQ6A"
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY     = "1x00000000000000000000AA"
+    NEXT_TELEMETRY_DISABLED            = "1"
   }
   health_check_command = [
     "CMD-SHELL",
     "wget -q -O /dev/null \"http://$HOSTNAME:3000/api/health\"",
+  ]
+}
+
+module "github_deploy" {
+  source = "../../modules/github-oidc"
+
+  role_name = "piggyway-staging-github-deploy"
+  github_repositories = [
+    "piggyway/piggy-backend",
+    "piggyway/piggy-cms",
+    "piggyway/piggy-frontend",
+  ]
+  github_environment = "staging"
+
+  ecr_repository_arns = values(module.ecr.repository_arns)
+  ecs_service_arns = [
+    module.backend_service.service_arn,
+    module.directus_service.service_arn,
+    module.frontend_service.service_arn,
+  ]
+  ecs_pass_role_arns = [
+    module.backend_service.execution_role_arn,
+    module.backend_service.task_role_arn,
+    module.directus_service.execution_role_arn,
+    module.directus_service.task_role_arn,
+    module.frontend_service.execution_role_arn,
+    module.frontend_service.task_role_arn,
   ]
 }

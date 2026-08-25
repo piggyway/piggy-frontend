@@ -170,4 +170,10 @@ resource "aws_ecs_service" "this" {
       registry_arn = service_registries.value
     }
   }
+
+  lifecycle {
+    # Application delivery registers immutable task-definition revisions
+    # outside Terraform. Terraform continues to own the service itself.
+    ignore_changes = [task_definition]
+  }
 }

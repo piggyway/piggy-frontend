@@ -13,6 +13,16 @@ output "task_definition_arn" {
   value       = aws_ecs_task_definition.this.arn
 }
 
+output "execution_role_arn" {
+  description = "IAM role passed to ECS when starting this service's tasks."
+  value       = aws_iam_role.execution.arn
+}
+
+output "task_role_arn" {
+  description = "IAM role exposed to this service's application container."
+  value       = aws_iam_role.task.arn
+}
+
 output "log_group_name" {
   description = "CloudWatch log group receiving application logs."
   value       = aws_cloudwatch_log_group.this.name
