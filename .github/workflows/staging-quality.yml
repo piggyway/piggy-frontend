@@ -167,17 +167,28 @@ jobs:
             --query 'services[0].taskDefinition' \
             --output text)
 
+          rollback_started=false
           rollback() {
-            exit_code=$?
+            local exit_code=$?
+            if [[ "$rollback_started" == "true" ]]; then
+              exit "$exit_code"
+            fi
+            rollback_started=true
             trap - ERR
+            set +e
             echo "Deployment failed; rolling back to $previous_task_definition" >&2
-            aws ecs update-service \
+            if aws ecs update-service \
               --cluster "$ECS_CLUSTER" \
               --service "$ECS_SERVICE" \
-              --task-definition "$previous_task_definition" >/dev/null
-            timeout 10m aws ecs wait services-stable \
-              --cluster "$ECS_CLUSTER" \
-              --services "$ECS_SERVICE"
+              --task-definition "$previous_task_definition" >/dev/null; then
+              if ! timeout 10m aws ecs wait services-stable \
+                --cluster "$ECS_CLUSTER" \
+                --services "$ECS_SERVICE"; then
+                echo "Rollback was requested but ECS did not stabilize within ten minutes." >&2
+              fi
+            else
+              echo "Rollback update-service call failed." >&2
+            fi
             exit "$exit_code"
           }
           trap rollback ERR
