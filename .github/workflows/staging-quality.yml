@@ -1,77 +1,54 @@
-name: Staging quality gate
+name: Frontend staging CI/CD
 
 on:
   pull_request:
     branches: [staging]
   push:
     branches: [staging]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: Existing full commit SHA to redeploy; leave blank to build the selected ref
+        required: false
+        type: string
 
 permissions:
   contents: read
 
+concurrency:
+  group: frontend-staging-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  AWS_ACCOUNT_ID: "668310558003"
+  AWS_REGION: ap-southeast-2
+  AWS_ROLE_ARN: arn:aws:iam::668310558003:role/piggyway-staging-github-deploy
+  ECR_REPOSITORY: piggyway-staging-frontend
+  ECS_CLUSTER: piggyway-staging
+  ECS_SERVICE: piggyway-staging-frontend
+  ECS_CONTAINER: frontend
+
 jobs:
-  lint:
-    name: Lint
+  quality:
+    name: Quality gate
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out repository
+      - name: Check out repository history
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Scan for credentials
+        run: >-
+          docker run --rm
+          -v "$GITHUB_WORKSPACE:/repo:ro"
+          ghcr.io/gitleaks/gitleaks:v8.30.1
+          detect --source=/repo --gitleaks-ignore-path=/repo/.gitleaksignore
+          --no-banner --redact --verbose
 
       - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.16.0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Lint
-        run: pnpm lint
-
-  typecheck:
-    name: Typecheck
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 11.16.0
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Typecheck
-        run: pnpm typecheck
-
-  format:
-    name: Format
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v6
         with:
           version: 11.16.0
 
@@ -88,28 +65,190 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
-  test:
-    name: Test
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+  deploy-staging:
+    name: Deploy staging
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: quality
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment:
+      name: staging
+      url: https://staging.piggyway.com.au
+    permissions:
+      contents: read
+      id-token: write
+    concurrency:
+      group: frontend-staging-deploy
+      cancel-in-progress: false
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
         with:
-          version: 11.16.0
+          role-to-assume: ${{ env.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: pnpm
-          cache-dependency-path: pnpm-lock.yaml
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Resolve immutable image
+        id: image
+        env:
+          REQUESTED_IMAGE_TAG: ${{ github.event.inputs.image_tag }}
+        run: |
+          set -euo pipefail
 
-      - name: Test
-        run: pnpm test
+          image_tag="${REQUESTED_IMAGE_TAG:-$GITHUB_SHA}"
+          if [[ ! "$image_tag" =~ ^[0-9a-f]{40}$ ]]; then
+            echo "image_tag must be a full 40-character Git commit SHA" >&2
+            exit 1
+          fi
+
+          image_uri="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${ECR_REPOSITORY}"
+
+          if aws ecr describe-images \
+            --repository-name "$ECR_REPOSITORY" \
+            --image-ids "imageTag=$image_tag" >/dev/null 2>&1; then
+            echo "Reusing existing immutable image $image_tag"
+          else
+            if [[ -n "${REQUESTED_IMAGE_TAG:-}" ]]; then
+              echo "Requested rollback image does not exist in ECR: $image_tag" >&2
+              exit 1
+            fi
+
+            set -a
+            source .github/deploy/staging.env
+            set +a
+
+            docker build \
+              --build-arg "NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL" \
+              --build-arg "NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV" \
+              --build-arg "NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL" \
+              --build-arg "NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL" \
+              --build-arg "NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY" \
+              --build-arg "NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY" \
+              --tag "$image_uri:$image_tag" \
+              .
+            docker push "$image_uri:$image_tag"
+          fi
+
+          image_digest=$(aws ecr describe-images \
+            --repository-name "$ECR_REPOSITORY" \
+            --image-ids "imageTag=$image_tag" \
+            --query 'imageDetails[0].imageDigest' \
+            --output text)
+
+          echo "tag=$image_tag" >>"$GITHUB_OUTPUT"
+          echo "reference=$image_uri@$image_digest" >>"$GITHUB_OUTPUT"
+
+      - name: Register task revision and deploy
+        id: deploy
+        env:
+          IMAGE_REFERENCE: ${{ steps.image.outputs.reference }}
+        run: |
+          set -Eeuo pipefail
+
+          previous_task_definition=$(aws ecs describe-services \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE" \
+            --query 'services[0].taskDefinition' \
+            --output text)
+
+          rollback() {
+            exit_code=$?
+            trap - ERR
+            echo "Deployment failed; rolling back to $previous_task_definition" >&2
+            aws ecs update-service \
+              --cluster "$ECS_CLUSTER" \
+              --service "$ECS_SERVICE" \
+              --task-definition "$previous_task_definition" >/dev/null
+            timeout 10m aws ecs wait services-stable \
+              --cluster "$ECS_CLUSTER" \
+              --services "$ECS_SERVICE"
+            exit "$exit_code"
+          }
+          trap rollback ERR
+
+          aws ecs describe-task-definition \
+            --task-definition "$previous_task_definition" \
+            --query taskDefinition >task-definition.json
+
+          jq --arg container "$ECS_CONTAINER" --arg image "$IMAGE_REFERENCE" '
+            del(
+              .taskDefinitionArn,
+              .revision,
+              .status,
+              .requiresAttributes,
+              .compatibilities,
+              .registeredAt,
+              .registeredBy,
+              .deregisteredAt
+            )
+            | .containerDefinitions |= map(
+                if .name == $container then .image = $image else . end
+              )
+          ' task-definition.json >rendered-task-definition.json
+
+          jq -e --arg container "$ECS_CONTAINER" '
+            [.containerDefinitions[] | select(.name == $container)] | length == 1
+          ' rendered-task-definition.json >/dev/null
+
+          new_task_definition=$(aws ecs register-task-definition \
+            --cli-input-json file://rendered-task-definition.json \
+            --query 'taskDefinition.taskDefinitionArn' \
+            --output text)
+
+          aws ecs update-service \
+            --cluster "$ECS_CLUSTER" \
+            --service "$ECS_SERVICE" \
+            --task-definition "$new_task_definition" >/dev/null
+
+          timeout 10m aws ecs wait services-stable \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE"
+
+          curl --fail --silent --show-error --retry 5 --retry-all-errors \
+            https://staging.piggyway.com.au/ >/dev/null
+          providers=$(curl --fail --silent --show-error --retry 5 --retry-all-errors \
+            https://staging.piggyway.com.au/api/auth/providers)
+          jq -e '
+            .google.callbackUrl == "https://staging.piggyway.com.au/api/auth/callback/google"
+          ' <<<"$providers" >/dev/null
+
+          service=$(aws ecs describe-services \
+            --cluster "$ECS_CLUSTER" \
+            --services "$ECS_SERVICE")
+          jq -e '
+            .services[0]
+            | .desiredCount == 1
+              and .runningCount == 1
+              and .pendingCount == 0
+              and .deployments[0].rolloutState == "COMPLETED"
+          ' <<<"$service" >/dev/null
+
+          trap - ERR
+          echo "previous_task_definition=$previous_task_definition" >>"$GITHUB_OUTPUT"
+          echo "task_definition=$new_task_definition" >>"$GITHUB_OUTPUT"
+
+      - name: Write deployment summary
+        run: |
+          {
+            echo "## Frontend staging deployment"
+            echo "- Commit/image tag: \`${{ steps.image.outputs.tag }}\`"
+            echo "- Image: \`${{ steps.image.outputs.reference }}\`"
+            echo "- Task definition: \`${{ steps.deploy.outputs.task_definition }}\`"
+            echo "- Previous task definition: \`${{ steps.deploy.outputs.previous_task_definition }}\`"
+            echo "- Smoke tests: homepage and Google auth provider passed"
+          } >>"$GITHUB_STEP_SUMMARY"

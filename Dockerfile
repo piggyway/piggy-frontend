@@ -4,8 +4,8 @@
 FROM node:22-alpine AS deps
 RUN apk add --no-cache libc6-compat
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install the same pnpm version used to validate this release.
+RUN corepack enable && corepack prepare pnpm@11.16.0 --activate
 
 WORKDIR /app
 
@@ -18,8 +18,8 @@ RUN pnpm install --frozen-lockfile
 # Stage 2: Build
 FROM node:22-alpine AS builder
 
-# Install pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Install the same pnpm version used to validate this release.
+RUN corepack enable && corepack prepare pnpm@11.16.0 --activate
 
 WORKDIR /app
 
@@ -34,6 +34,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ARG NEXT_PUBLIC_API_BASE_URL
 ARG NEXT_PUBLIC_APP_ENV
 ARG NEXT_PUBLIC_APP_URL
+ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
@@ -41,6 +42,7 @@ ARG NEXT_PUBLIC_TURNSTILE_SITE_KEY
 ENV NEXT_PUBLIC_API_BASE_URL=$NEXT_PUBLIC_API_BASE_URL
 ENV NEXT_PUBLIC_APP_ENV=$NEXT_PUBLIC_APP_ENV
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_TURNSTILE_SITE_KEY=$NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
@@ -51,6 +53,9 @@ RUN pnpm build
 FROM node:22-alpine AS runner
 
 WORKDIR /app
+
+# Apply the current Alpine security updates to the production-only image.
+RUN apk upgrade --no-cache
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
