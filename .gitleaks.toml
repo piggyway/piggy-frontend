@@ -1,0 +1,9 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Reviewed Stripe test publishable key (browser-visible public identifier)"
+regexTarget = "secret"
+regexes = [
+  '''pk_test_51RztDm2MVUQW2ivytetjd1dakTP35LChNqpC3i3I0UdkOsapa7UJGlVgsOCj94opHFMA0nXQEpiBuJmOsry775tt00DvCZqQ6A''',
+]

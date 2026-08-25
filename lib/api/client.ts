@@ -34,20 +34,28 @@ function handleAuthSignOut(redirectOnAuthError?: boolean) {
 }
 
 /**
- * Get base URL for API requests
- * In server-side context, we need absolute URL
+ * Get the base URL used to call this Next.js application's API routes.
+ *
+ * Server-side requests stay inside the running container. Using the public
+ * site URL here would send Fargate traffic through NAT and Cloudflare before
+ * returning to the same task, where a proxy response can be mistaken for API
+ * JSON. Browser requests continue to use relative URLs.
  */
-function getBaseUrl(): string {
-  // Server-side: use localhost or configured URL
-  if (typeof window === "undefined") {
-    // Use environment variable or default to localhost
-    return (
-      process.env.NEXT_PUBLIC_APP_URL ||
-      `http://localhost:${process.env.PORT || 3000}`
-    );
+export function getApiBaseUrl(): string {
+  if (typeof window !== "undefined") return "";
+
+  if (process.env.INTERNAL_APP_URL) {
+    return process.env.INTERNAL_APP_URL;
   }
-  // Client-side: use relative URL
-  return "";
+
+  const hostname = process.env.HOSTNAME || "localhost";
+  const port = process.env.PORT || "3000";
+  const urlHostname =
+    hostname.includes(":") && !hostname.startsWith("[")
+      ? `[${hostname}]`
+      : hostname;
+
+  return `http://${urlHostname}:${port}`;
 }
 
 /**
@@ -60,7 +68,7 @@ async function apiFetch<T>(
   const { params, headers, ...fetchOptions } = options;
 
   // Build URL with query parameters
-  const baseUrl = getBaseUrl();
+  const baseUrl = getApiBaseUrl();
   let url = `${baseUrl}${endpoint}`;
   if (params) {
     const searchParams = new URLSearchParams(
@@ -143,7 +151,7 @@ export async function fetchWithAuth(
     }
   }
 
-  const baseUrl = getBaseUrl();
+  const baseUrl = getApiBaseUrl();
   let url = `${baseUrl}${endpoint}`;
   if (params) {
     const searchParams = new URLSearchParams(
