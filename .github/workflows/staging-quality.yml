@@ -220,9 +220,12 @@ jobs:
             --cluster "$ECS_CLUSTER" \
             --services "$ECS_SERVICE"
 
-          curl --fail --silent --show-error --retry 5 --retry-all-errors \
-            https://staging.piggyway.com.au/ >/dev/null
-          providers=$(curl --fail --silent --show-error --retry 5 --retry-all-errors \
+          smoke_curl=(
+            --fail --silent --show-error --retry 5 --retry-all-errors
+            --user-agent "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/140.0 Safari/537.36 Piggyway-Staging-Smoke"
+          )
+          curl "${smoke_curl[@]}" https://staging.piggyway.com.au/ >/dev/null
+          providers=$(curl "${smoke_curl[@]}" \
             https://staging.piggyway.com.au/api/auth/providers)
           jq -e '
             .google.callbackUrl == "https://staging.piggyway.com.au/api/auth/callback/google"
