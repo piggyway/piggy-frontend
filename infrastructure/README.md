@@ -192,9 +192,10 @@ updates and completed ECR basic scanning with no findings.
 
 ### Phase 3 database bootstrap result
 
-Terraform owns five stopped-by-default, one-off Fargate task definitions and
-their 14-day CloudWatch log group. They must be run in this order and must not
-be converted into ECS services:
+Terraform owns five stopped-by-default bootstrap task definitions, one ongoing
+Backend migration task definition, and their 14-day CloudWatch log group. The
+five bootstrap tasks must be run in this order and must not be converted into
+ECS services:
 
 1. `piggyway-staging-database-users` creates or rotates the separate Directus
    and Backend database logins from Secrets Manager values.
@@ -234,6 +235,23 @@ Before AWS execution, the Backend schema and seed commands were each run twice
 against a disposable PostgreSQL 16 database. The second run remained at three
 products and three variants, while a pre-existing sentinel row remained
 present. This verifies repeatability and the absence of broad cleanup logic.
+
+### Ongoing Backend staging migrations
+
+The current migrated AWS staging database is the baseline. Backend staging CD
+runs `piggyway-staging-backend-migration` with the release image before updating
+the Backend service. The task uses the existing private subnets and Backend
+security group, exits after migration, and has no idle compute cost.
+
+Only new, immutable SQL files under `src/db/migrations` are eligible. The
+inconsistent legacy Drizzle journal under `drizzle/` is never replayed. The
+runner verifies the exact staging RDS host and database, serializes concurrent
+runs, checks applied-file hashes, and records each successful migration. A
+failure stops the Backend deployment. Manual image rollback skips migrations.
+Destructive SQL and Directus-owned catalogue changes remain separate manual
+releases. The task gets the active database address from the Backend secret and
+temporarily substitutes the existing Directus database-owner credential; GitHub
+cannot read either secret.
 
 Secret values were streamed directly into Secrets Manager and were not placed
 in Terraform variables, state, plans, outputs, task logs, or Git. The Directus,

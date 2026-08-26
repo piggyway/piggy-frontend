@@ -23,6 +23,11 @@ variable "database_name" {
   type        = string
 }
 
+variable "migration_database_name" {
+  description = "Active staging database that receives ongoing Backend migrations."
+  type        = string
+}
+
 variable "database_master_secret_arn" {
   description = "RDS-managed master credential secret ARN."
   type        = string

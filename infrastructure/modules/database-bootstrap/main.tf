@@ -304,6 +304,40 @@ resource "aws_ecs_task_definition" "backend_schema" {
   ])
 }
 
+resource "aws_ecs_task_definition" "backend_migration" {
+  family                   = "${var.name_prefix}-backend-migration"
+  requires_compatibilities = ["FARGATE"]
+  network_mode             = "awsvpc"
+  cpu                      = 256
+  memory                   = 512
+  execution_role_arn       = aws_iam_role.execution.arn
+  task_role_arn            = aws_iam_role.task.arn
+  skip_destroy             = true
+
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "X86_64"
+  }
+
+  container_definitions = jsonencode([
+    {
+      name      = "backend-migration"
+      image     = var.backend_image
+      essential = true
+      command   = ["bun", "run", "db:migrate"]
+      environment = [
+        { name = "STAGING_MIGRATION_CONFIRM", value = "piggyway-staging" },
+        { name = "STAGING_DATABASE_NAME", value = var.migration_database_name },
+      ]
+      secrets = [
+        { name = "DATABASE_URL", valueFrom = "${var.backend_runtime_secret_arn}:DATABASE_URL::" },
+        { name = "MIGRATION_DB_PASSWORD", valueFrom = "${var.directus_runtime_secret_arn}:DB_PASSWORD::" },
+      ]
+      logConfiguration = local.log_configuration
+    }
+  ])
+}
+
 resource "aws_ecs_task_definition" "backend_seed" {
   family                   = "${var.name_prefix}-backend-seed"
   requires_compatibilities = ["FARGATE"]

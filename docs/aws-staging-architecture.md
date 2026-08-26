@@ -542,8 +542,9 @@ auditable process before the first backend release:
 Schema changes are reviewed with the backend code that depends on them. Prefer
 backward-compatible additions, take a manual snapshot before destructive
 changes, apply schema changes before code that requires them, and validate the
-restore procedure periodically. Frontend and backend release workflows never
-run an implicit schema push.
+restore procedure periodically. The Backend staging release runs only new,
+versioned Backend migrations from the current AWS database baseline; it never
+replays the legacy Drizzle journal or runs an implicit schema push.
 
 ### Trigger and review
 
@@ -564,17 +565,18 @@ run an implicit schema push.
 4. Authenticate to AWS using GitHub OIDC.
 5. Push only to the repository's ECR repository, which uses immutable tags and
    lifecycle rules retaining the most recent 10 release images.
-6. Register a new task-definition revision referencing the immutable image
+6. For a Backend push, run the release image as the approved one-off staging
+   migration task. Stop before application deployment if it fails.
+7. Register a new task-definition revision referencing the immutable image
    digest.
-7. Update only the matching ECS service and wait up to 10 minutes for stable
+8. Update only the matching ECS service and wait up to 10 minutes for stable
    state.
-8. Run the smoke tests from section 8.
-9. Record commit SHA, image digest, task-definition revision, initiator, and
-   result in the GitHub deployment summary.
+9. Record commit SHA, image digest, migration result, task-definition revision,
+   initiator, and result in the GitHub deployment summary.
 
-Frontend and backend releases do not run `db:push`, create schemas, or redeploy
-Directus. Database schema and Directus releases use their own reviewed workflow
-and complete before dependent backend code is released.
+Frontend releases never change the database. Backend releases never run
+`db:push` or replay the legacy migration journal. Directus-owned catalogue
+schema changes remain a separate reviewed CMS release.
 
 ## 13. Rollback policy
 
