@@ -57,6 +57,7 @@ module "database_bootstrap" {
   database_address            = module.database.address
   database_port               = module.database.port
   database_name               = module.database.database_name
+  migration_database_name     = module.database_migration.rehearsal_database_name
   database_master_secret_arn  = module.database.master_user_secret_arn
   directus_runtime_secret_arn = module.runtime_secrets.secret_arns["directus"]
   backend_runtime_secret_arn  = module.runtime_secrets.secret_arns["backend"]
@@ -276,9 +277,19 @@ module "github_deploy" {
     module.directus_service.service_arn,
     module.frontend_service.service_arn,
   ]
+  ecs_run_task_definition_arns = [
+    replace(
+      module.database_bootstrap.backend_migration_task_definition_arn,
+      "/:[0-9]+$/",
+      ":*",
+    ),
+  ]
+  ecs_run_task_cluster_arns = [aws_ecs_cluster.this.arn]
   ecs_pass_role_arns = [
     module.backend_service.execution_role_arn,
     module.backend_service.task_role_arn,
+    module.database_bootstrap.execution_role_arn,
+    module.database_bootstrap.task_role_arn,
     module.directus_service.execution_role_arn,
     module.directus_service.task_role_arn,
     module.frontend_service.execution_role_arn,

@@ -23,6 +23,16 @@ variable "ecs_service_arns" {
   type        = list(string)
 }
 
+variable "ecs_run_task_definition_arns" {
+  description = "One-off ECS task-definition families that GitHub Actions may run."
+  type        = list(string)
+}
+
+variable "ecs_run_task_cluster_arns" {
+  description = "ECS clusters where GitHub Actions may run approved one-off tasks."
+  type        = list(string)
+}
+
 variable "ecs_pass_role_arns" {
   description = "ECS execution and task roles that GitHub Actions may pass."
   type        = list(string)

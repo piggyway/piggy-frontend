@@ -78,6 +78,18 @@ data "aws_iam_policy_document" "github_deploy" {
   }
 
   statement {
+    sid       = "RunApprovedStagingTasks"
+    actions   = ["ecs:RunTask"]
+    resources = var.ecs_run_task_definition_arns
+
+    condition {
+      test     = "ArnEquals"
+      variable = "ecs:cluster"
+      values   = var.ecs_run_task_cluster_arns
+    }
+  }
+
+  statement {
     sid = "InspectStagingDeployments"
     actions = [
       "ecs:DescribeServices",
