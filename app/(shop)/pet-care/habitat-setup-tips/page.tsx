@@ -146,6 +146,15 @@ export default function HabitatSetupPage() {
             Your choice of bedding impacts odor control, cleaning ease, and your
             pet&apos;s respiratory health.
           </p>
+          <h3>Our Liners</h3>
+          <p>
+            Our liners are made to replace fleece, not sit on top of it. The
+            absorbent layers are built in, so you do not wick or layer anything
+            underneath. The Cool Breeze surface does not hold hay or fur, so one
+            shake cleans it, and the non-slip base keeps the liner flat. See the{" "}
+            <Link href="/shop-all?category=liner">liner range</Link>.
+          </p>
+          <h3>Other Options</h3>
           <ul>
             <li>
               <strong>Aspen Shavings:</strong> Safe wood option, but can be

@@ -19,6 +19,10 @@ const FAQS = [
     category: "Products & Care",
     questions: [
       {
+        q: "Do I still need fleece?",
+        a: "No. Our liners have the absorbent layers built in, so there is nothing to wick or layer underneath. The Cool Breeze surface does not hold hay or fur, so one shake cleans it. The non-slip base keeps the liner flat.",
+      },
+      {
         q: "Are your treats suitable for rabbits too?",
         a: "Yes! Most of our treats are suitable for both guinea pigs and rabbits. However, always check the product description for specific dietary information.",
       },

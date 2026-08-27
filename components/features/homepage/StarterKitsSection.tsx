@@ -62,7 +62,36 @@ export function StarterKitsSection() {
               </div>
             </Link>
 
-            {/* Card 2 - Mint Text Card (Bunny) */}
+            {/* Card 2 - Navy Blue Text Card (Liners) */}
+            <Link
+              href="/shop-all?category=liner"
+              className="bg-primary-navy-light flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
+            >
+              <div className="flex flex-1 flex-col gap-[14px] text-white">
+                <p className="text-large leading-[40px] font-semibold">
+                  Built-in absorbency. No wicking, no layering.
+                </p>
+                <p className="text-p-ui leading-[24px] font-medium">
+                  Liners made to replace fleece, not sit on top of it.
+                </p>
+              </div>
+              <div className="flex items-center justify-between gap-4">
+                <p className="text-lead flex-1 leading-[32px] font-semibold text-white">
+                  Shop liners
+                </p>
+                <div
+                  className="border-neutral-stroke flex shrink-0 items-center justify-center rounded-full border bg-white p-3"
+                  aria-label="Shop liners"
+                >
+                  <Plus
+                    className="text-primary-navy h-[11px] w-[11px]"
+                    strokeWidth={2}
+                  />
+                </div>
+              </div>
+            </Link>
+
+            {/* Card 3 - Mint Text Card (Bunny) */}
             <Link
               href="#"
               className="bg-secondary-mint flex h-[387px] flex-1 flex-col gap-5 rounded-[28px] p-6 transition-transform hover:scale-[1.02]"
@@ -104,6 +133,20 @@ export function StarterKitsSection() {
             </h3>
             <p className="text-primary-navy flex-1 text-base">
               First-Time Guinea Pig Owner: Complete Essentials Checklist
+            </p>
+            <div className="border-neutral-stroke self-end rounded-full border bg-white p-3">
+              <Plus className="text-primary-navy h-4 w-4" />
+            </div>
+          </Link>
+          <Link
+            href="/shop-all?category=liner"
+            className="bg-primary-navy-light flex min-h-[280px] flex-col gap-4 rounded-[28px] p-6 transition-transform active:scale-[0.98]"
+          >
+            <h3 className="text-xl font-semibold text-white">
+              Built-in absorbency. No wicking, no layering.
+            </h3>
+            <p className="flex-1 text-base text-white">
+              Liners made to replace fleece, not sit on top of it.
             </p>
             <div className="border-neutral-stroke self-end rounded-full border bg-white p-3">
               <Plus className="text-primary-navy h-4 w-4" />
