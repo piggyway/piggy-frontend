@@ -75,11 +75,10 @@ export default function GuidesPage() {
           <p className="text-primary-navy mt-4 text-base leading-7">
             Small pets are easy to love and easy to get wrong. These guides
             cover the questions we are asked most in store: what a first cage
-            actually needs, how fleece liners compare with loose bedding, and
-            what daily care looks like once the excitement settles. Every guide
-            is written by the Piggy Way Crossing team and updated as our advice
-            changes. For diet, bonding and health articles, plus our vet
-            partner, visit{" "}
+            actually needs and what daily care looks like once the excitement
+            settles. Every guide is written by the Piggy Way Crossing team and
+            updated as our advice changes. For diet, bonding and health
+            articles, plus our vet partner, visit{" "}
             <Link
               href="/pet-care"
               className="hover:text-primary-navy-light underline underline-offset-4"

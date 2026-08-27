@@ -20,11 +20,11 @@ export const metadata: Metadata = {
     template: "%s | Piggy Way Crossing",
   },
   description:
-    "Australian online store for guinea pig and rabbit essentials - fleece cage liners, huts, C&C cages and combos, plus small-pet boarding in Melbourne.",
+    "Australian online store for guinea pig and rabbit essentials - cage liners, huts, C&C cages and combos, plus small-pet boarding in Melbourne.",
   openGraph: {
     title: "Piggy Way Crossing",
     description:
-      "Australian online store for guinea pig and rabbit essentials - fleece cage liners, huts, C&C cages and combos.",
+      "Australian online store for guinea pig and rabbit essentials - cage liners, huts, C&C cages and combos.",
     images: [
       {
         url: "https://res.cloudinary.com/davy7cgyi/image/upload/v1767875655/og_image_yjdd1w.png",

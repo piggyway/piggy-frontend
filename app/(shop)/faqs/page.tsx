@@ -19,10 +19,6 @@ const FAQS = [
     category: "Products & Care",
     questions: [
       {
-        q: "What bedding is best for guinea pigs?",
-        a: "We highly recommend fleece liners! They are reusable, eco-friendly, and super soft on sensitive guinea pig feet. Unlike wood shavings, they are dust-free which helps prevent respiratory issues.",
-      },
-      {
         q: "Are your treats suitable for rabbits too?",
         a: "Yes! Most of our treats are suitable for both guinea pigs and rabbits. However, always check the product description for specific dietary information.",
       },

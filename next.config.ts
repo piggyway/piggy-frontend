@@ -45,6 +45,13 @@ const nextConfig: NextConfig = {
         destination: "/guides/guinea-pig-care-basics",
         permanent: true,
       },
+      // The "cage-liner-benefits" guide was removed. Send the old URL to the
+      // guides index.
+      {
+        source: "/guides/cage-liner-benefits",
+        destination: "/guides",
+        permanent: true,
+      },
     ];
   },
 };
