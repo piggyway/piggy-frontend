@@ -146,21 +146,13 @@ export default function HabitatSetupPage() {
             Your choice of bedding impacts odor control, cleaning ease, and your
             pet&apos;s respiratory health.
           </p>
-          <h3>Fleece Liners (Our Favorite!)</h3>
+          <h3>Our Liners</h3>
           <p>
-            Reusable fleece liners are eco-friendly, soft on sensitive paws, and
-            dust-free (great for respiratory health). They wick moisture away to
-            an absorbent layer underneath, keeping the surface dry. Plus, they
-            look adorable! Our{" "}
-            <Link href="/shop-all?category=liner">fleece liner range</Link>{" "}
-            starts with the{" "}
-            <Link href="/shop/liner/comfy-base-liner">Comfy Base Liner</Link>{" "}
-            for everyday use. For the full comparison against wood shavings and
-            paper bedding, read{" "}
-            <Link href="/guides/cage-liner-benefits">
-              the benefits of fleece cage liners
-            </Link>
-            .
+            Our liners are made to replace fleece, not sit on top of it. The
+            absorbent layers are built in, so you do not wick or layer anything
+            underneath. The Cool Breeze surface does not hold hay or fur, so one
+            shake cleans it, and the non-slip base keeps the liner flat. See the{" "}
+            <Link href="/shop-all?category=liner">liner range</Link>.
           </p>
           <h3>Other Options</h3>
           <ul>
@@ -189,7 +181,7 @@ export default function HabitatSetupPage() {
               Provide at least one hideout per animal to prevent squabbles.
             </li>
             <li>
-              Mix it up with wooden huts, fleece tunnels, and cuddle sacks. The{" "}
+              Mix it up with wooden huts, tunnels, and cuddle sacks. The{" "}
               <Link href="/shop/hideout/piggy-wooden-house">
                 Piggy Wooden House
               </Link>{" "}
@@ -245,7 +237,7 @@ export default function HabitatSetupPage() {
               className="group hover:border-primary-purple block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
               <h4 className="text-primary-navy group-hover:text-primary-purple mb-2 text-lg font-bold transition-colors">
-                Shop Fleece Liners
+                Shop Liners
               </h4>
               <p className="mb-4 text-sm text-gray-600">
                 The foundation of a clean and cozy habitat.

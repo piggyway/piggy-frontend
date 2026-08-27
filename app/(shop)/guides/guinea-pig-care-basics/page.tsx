@@ -231,16 +231,12 @@ export default function BeginnerGuidePage() {
 
           <p>
             Setting up their home? Start with a{" "}
-            <Link href="/shop-all?category=liner">fleece cage liner</Link> for a
+            <Link href="/shop-all?category=liner">cage liner</Link> for a
             dust-free floor, and add the{" "}
             <Link href="/shop/hideout/piggy-wooden-house">
               Piggy Wooden House
             </Link>{" "}
-            so they have somewhere to retreat. Our guide to{" "}
-            <Link href="/guides/cage-liner-benefits">
-              why fleece liners beat wood shavings
-            </Link>{" "}
-            explains the difference in cost, odour, and cleaning time.
+            so they have somewhere to retreat.
           </p>
           <p>
             Still building your shopping list? Work through the{" "}

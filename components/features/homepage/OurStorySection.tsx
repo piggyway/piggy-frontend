@@ -63,7 +63,7 @@ export function OurStorySection() {
               <div className="bg-primary-purple absolute top-[150px] left-0 h-[150px] w-[201px] overflow-hidden rounded-[33px]">
                 <Image
                   src="https://cdn.piggyway.com.au/9fe6ddfa6547724c6f3aa3bbb6dbbd29.jpg"
-                  alt="Guinea pig resting in a pink fleece bed"
+                  alt="Guinea pig resting in a pink bed"
                   fill
                   className="object-cover"
                   sizes="201px"

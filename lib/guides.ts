@@ -27,12 +27,6 @@ export const guideArticles: GuideArticle[] = [
     description:
       "The real commitment, the daily routine and the thinking behind keeping small pets, written for anyone still deciding.",
   },
-  {
-    slug: "cage-liner-benefits",
-    title: "Why Fleece Cage Liners Are a Game-Changer",
-    description:
-      "Still using wood shavings? See why fleece liners are the cleaner, healthier and more sustainable bedding choice.",
-  },
 ];
 
 export const petCareArticles: GuideArticle[] = [

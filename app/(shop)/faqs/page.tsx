@@ -19,8 +19,8 @@ const FAQS = [
     category: "Products & Care",
     questions: [
       {
-        q: "What bedding is best for guinea pigs?",
-        a: "We highly recommend fleece liners! They are reusable, eco-friendly, and super soft on sensitive guinea pig feet. Unlike wood shavings, they are dust-free which helps prevent respiratory issues.",
+        q: "Do I still need fleece?",
+        a: "No. Our liners have the absorbent layers built in, so there is nothing to wick or layer underneath. The Cool Breeze surface does not hold hay or fur, so one shake cleans it. The non-slip base keeps the liner flat.",
       },
       {
         q: "Are your treats suitable for rabbits too?",

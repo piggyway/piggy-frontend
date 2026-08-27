@@ -48,7 +48,7 @@ export function WhyShopSection() {
             <div className="flex flex-1 flex-col gap-0">
               <WhyShopImage
                 src="https://cdn.piggyway.com.au/eac334181353a0c5738356ce47560650abe42db5.jpg"
-                alt="Three guinea pigs sitting together on a pink quilted fleece cage liner"
+                alt="Three guinea pigs sitting together on a pink quilted cage liner"
               />
               <div className="bg-primary-gold flex items-center justify-center rounded-[32px] p-8">
                 <p className="text-primary-navy text-lead text-center leading-[32px] font-semibold">
@@ -66,7 +66,7 @@ export function WhyShopSection() {
               </div>
               <WhyShopImage
                 src="/shop-with-us/easy-clean-cages.jpg"
-                alt="Guinea pig cage with fleece liners, hideouts and a tunnel"
+                alt="Guinea pig cage with liners, hideouts and a tunnel"
               />
             </div>
 
@@ -90,7 +90,7 @@ export function WhyShopSection() {
           <div className="flex flex-col">
             <WhyShopImage
               src="https://cdn.piggyway.com.au/eac334181353a0c5738356ce47560650abe42db5.jpg"
-              alt="Three guinea pigs sitting together on a pink quilted fleece cage liner"
+              alt="Three guinea pigs sitting together on a pink quilted cage liner"
             />
             <div className="bg-primary-gold flex min-h-[120px] items-center justify-center rounded-[28px] p-6">
               <p className="text-primary-navy text-center text-xl font-semibold">
@@ -106,7 +106,7 @@ export function WhyShopSection() {
             </div>
             <WhyShopImage
               src="/shop-with-us/easy-clean-cages.jpg"
-              alt="Guinea pig cage with fleece liners, hideouts and a tunnel"
+              alt="Guinea pig cage with liners, hideouts and a tunnel"
             />
           </div>
           <div className="flex flex-col">
