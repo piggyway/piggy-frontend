@@ -18,9 +18,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const token = request.headers.get("authorization");
-    const forwardedFor = request.headers.get("x-forwarded-for");
-    const realIp = request.headers.get("x-real-ip");
-    const ip = forwardedFor ? forwardedFor.split(",")[0].trim() : realIp;
 
     const headers: HeadersInit = {
       "Content-Type": "application/json",
@@ -30,11 +27,9 @@ export async function POST(request: NextRequest) {
       headers.Authorization = token;
     }
 
-    // The backend rate limits per IP; without this every request looks identical
-    if (ip) {
-      headers["x-forwarded-for"] = ip;
-    }
-
+    // The backend rate limits per IP. backendFetch adds the client IP the
+    // platform resolved; x-forwarded-for and x-real-ip off the incoming
+    // request are spoofable and must not become that key.
     const res = await backendFetch(`${API_BASE_URL}/api/v1/boarding`, {
       method: "POST",
       headers,

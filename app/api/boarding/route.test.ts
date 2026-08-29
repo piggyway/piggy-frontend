@@ -9,6 +9,7 @@ import {
 } from "vitest";
 import { NextRequest } from "next/server";
 
+let GET: typeof import("./route").GET;
 let POST: typeof import("./route").POST;
 
 /** Headers the platform hands to `headers()` inside `backendFetch`. */
@@ -23,34 +24,44 @@ function setIncoming(init: HeadersInit = {}) {
 }
 
 function request(body: unknown, headers: HeadersInit = {}) {
-  return new NextRequest("http://localhost/api/contact", {
+  return new NextRequest("http://localhost/api/boarding", {
     method: "POST",
     headers: { "Content-Type": "application/json", ...headers },
     body: JSON.stringify(body),
   });
 }
 
-const enquiry = {
-  firstName: "Jane",
-  lastName: "Doe",
-  email: "jane@example.com",
-  subject: "Order Inquiry",
-  message: "Do you ship to Tasmania?",
-  turnstileToken: "token-abc",
-};
-
-function okResponse() {
-  return new Response(JSON.stringify({ success: true }), {
-    status: 200,
+function listRequest(query = "") {
+  return new NextRequest(`http://localhost/api/boarding${query}`, {
+    method: "GET",
     headers: { "Content-Type": "application/json" },
   });
 }
 
-describe("POST /api/contact", () => {
+const bookingBody = {
+  first_name: "Ada",
+  last_name: "Lovelace",
+  email: "ada@example.com",
+  phone: "0400 000 000",
+  drop_off_date: "2026-08-30",
+  pick_up_date: "2026-09-02",
+};
+
+function okResponse() {
+  return new Response(
+    JSON.stringify({
+      success: true,
+      data: { reference: "PB-TEST-0001", status: "pending" },
+    }),
+    { status: 200, headers: { "Content-Type": "application/json" } }
+  );
+}
+
+describe("/api/boarding", () => {
   beforeAll(async () => {
     process.env.API_BASE_URL = "https://backend.example";
     delete process.env.INTERNAL_PROXY_SECRET;
-    ({ POST } = await import("./route"));
+    ({ GET, POST } = await import("./route"));
   });
 
   beforeEach(() => {
@@ -61,24 +72,41 @@ describe("POST /api/contact", () => {
     vi.restoreAllMocks();
   });
 
-  it("forwards the enquiry payload to the backend", async () => {
+  it("posts the booking payload to the backend", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(okResponse());
 
-    const response = await POST(request(enquiry));
+    const response = await POST(request(bookingBody));
 
     expect(response.status).toBe(200);
-    await expect(response.json()).resolves.toEqual({ success: true });
+    await expect(response.json()).resolves.toMatchObject({
+      success: true,
+      data: { reference: "PB-TEST-0001" },
+    });
     expect(fetchMock).toHaveBeenCalledWith(
-      "https://backend.example/api/v1/contact",
+      "https://backend.example/api/v1/boarding",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(enquiry),
+        body: JSON.stringify(bookingBody),
         signal: expect.any(AbortSignal),
       }
     );
+  });
+
+  it("forwards the caller's authorization header", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(okResponse());
+
+    await POST(request(bookingBody, { authorization: "Bearer tok-1" }));
+
+    const [, options] = fetchMock.mock.calls[0];
+    expect(options?.headers).toEqual({
+      "Content-Type": "application/json",
+      Authorization: "Bearer tok-1",
+    });
   });
 
   it("forwards the cloudflare client ip and ignores a spoofed forwarded chain", async () => {
@@ -92,7 +120,7 @@ describe("POST /api/contact", () => {
     });
 
     await POST(
-      request(enquiry, {
+      request(bookingBody, {
         "x-forwarded-for": "6.6.6.6",
         "x-real-ip": "6.6.6.6",
       })
@@ -113,7 +141,7 @@ describe("POST /api/contact", () => {
     setIncoming({ "x-forwarded-for": "6.6.6.6, 7.7.7.7" });
 
     await POST(
-      request(enquiry, {
+      request(bookingBody, {
         "x-forwarded-for": "6.6.6.6, 7.7.7.7",
         "x-real-ip": "198.51.100.7",
       })
@@ -123,40 +151,46 @@ describe("POST /api/contact", () => {
     expect(options?.headers).toEqual({ "Content-Type": "application/json" });
   });
 
-  it("preserves an upstream bot-check rejection", async () => {
+  it("preserves an upstream 422 on create", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValue(
       new Response(
-        JSON.stringify({
-          error: "turnstile_failed",
-          message: "Verification failed",
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        JSON.stringify({ success: false, error: "validation_failed" }),
+        { status: 422, headers: { "Content-Type": "application/json" } }
       )
     );
 
-    const response = await POST(request(enquiry));
+    const response = await POST(request(bookingBody));
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(422);
     await expect(response.json()).resolves.toEqual({
-      error: "turnstile_failed",
-      message: "Verification failed",
+      success: false,
+      error: "validation_failed",
     });
   });
 
-  it("returns a 500 envelope when the backend response is unreadable", async () => {
+  it("returns a 500 envelope when the create request fails", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
-    vi.spyOn(globalThis, "fetch").mockResolvedValue(
-      new Response("<html>gateway</html>", {
-        status: 502,
-        headers: { "Content-Type": "text/html" },
-      })
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(
+      new Error("network unreachable")
     );
 
-    const response = await POST(request(enquiry));
+    const response = await POST(request(bookingBody));
 
     expect(response.status).toBe(500);
     await expect(response.json()).resolves.toEqual({
-      error: "Failed to submit contact form",
+      error: "Failed to create boarding booking",
     });
+  });
+
+  it("passes the list paging params through to the backend", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(okResponse());
+
+    await GET(listRequest("?limit=5&offset=10"));
+
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      "https://backend.example/api/v1/boarding?limit=5&offset=10"
+    );
   });
 });

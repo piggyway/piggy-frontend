@@ -1,7 +1,26 @@
-import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+} from "vitest";
 import { NextRequest } from "next/server";
 
 let POST: typeof import("./route").POST;
+
+/** Headers the platform hands to `headers()` inside `backendFetch`. */
+const platform = vi.hoisted(() => ({ incoming: new Headers() }));
+
+vi.mock("next/headers", () => ({
+  headers: async () => platform.incoming,
+}));
+
+function setIncoming(init: HeadersInit = {}) {
+  platform.incoming = new Headers(init);
+}
 
 function request(body: unknown, headers: HeadersInit = {}) {
   return new NextRequest("http://localhost/api/boarding/cancel", {
@@ -44,7 +63,12 @@ function okResponse() {
 describe("POST /api/boarding/cancel", () => {
   beforeAll(async () => {
     process.env.API_BASE_URL = "https://backend.example";
+    delete process.env.INTERNAL_PROXY_SECRET;
     ({ POST } = await import("./route"));
+  });
+
+  beforeEach(() => {
+    setIncoming();
   });
 
   afterEach(() => {
@@ -71,14 +95,17 @@ describe("POST /api/boarding/cancel", () => {
     );
   });
 
-  it("passes only the originating client ip from a proxy chain", async () => {
+  it("forwards the cloudflare client ip and ignores a spoofed forwarded chain", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(okResponse());
 
-    await POST(
-      request(cancelBody, { "x-forwarded-for": "203.0.113.9, 70.41.3.18" })
-    );
+    setIncoming({
+      "cf-connecting-ip": "203.0.113.9",
+      "x-forwarded-for": "6.6.6.6",
+    });
+
+    await POST(request(cancelBody, { "x-forwarded-for": "6.6.6.6" }));
 
     const [, options] = fetchMock.mock.calls[0];
     expect(options?.headers).toEqual({
@@ -87,24 +114,23 @@ describe("POST /api/boarding/cancel", () => {
     });
   });
 
-  it("falls back to the real-ip header when no forwarded chain is present", async () => {
+  it("sends no client ip when the platform resolved none", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(okResponse());
 
-    await POST(request(cancelBody, { "x-real-ip": "198.51.100.7" }));
+    await POST(request(cancelBody, { "x-forwarded-for": "6.6.6.6" }));
 
     const [, options] = fetchMock.mock.calls[0];
-    expect(options?.headers).toEqual({
-      "Content-Type": "application/json",
-      "x-forwarded-for": "198.51.100.7",
-    });
+    expect(options?.headers).toEqual({ "Content-Type": "application/json" });
   });
 
-  it("omits the ip header entirely when the caller ip is unknown", async () => {
+  it("sends no client ip when only a forwarded chain reaches the platform", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValue(okResponse());
+
+    setIncoming({ "x-forwarded-for": "6.6.6.6, 7.7.7.7" });
 
     await POST(request(cancelBody));
 
