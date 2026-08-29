@@ -8,6 +8,27 @@ export const BOARDING_ASSETS = {
   trustedVetImage: "/boarding/Group 466.png",
 } as const;
 
+export const BOARDING_CONTACT = {
+  phone: "0414 766 727",
+  whatsappUrl: "https://wa.me/61414766727",
+  email: "support@piggyway.com.au",
+} as const;
+
+/**
+ * wa.me needs the number in international form with no punctuation. Numbers
+ * come from the CMS in local ("0414 766 727"), international ("+61 414 766
+ * 727") and bare ("61414766727") shapes, so only a local number gets the
+ * country code added.
+ */
+export function boardingWhatsappUrl(phone: string): string {
+  const digits = phone.replace(/\D/g, "");
+  if (!digits) return BOARDING_CONTACT.whatsappUrl;
+  if (phone.trim().startsWith("+") || digits.startsWith("61")) {
+    return `https://wa.me/${digits}`;
+  }
+  return `https://wa.me/61${digits.replace(/^0/, "")}`;
+}
+
 export const BOARDING_ROUTES = {
   book: "/piggyway-boarding/book",
   lookup: "/piggyway-boarding/lookup",

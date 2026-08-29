@@ -39,6 +39,12 @@ export const API_ENDPOINTS = {
   BOARDING_BY_REFERENCE: (reference: string) => `/api/boarding/${reference}`,
   BOARDING_LOOKUP: "/api/boarding/lookup",
   BOARDING_CANCEL: "/api/boarding/cancel",
+  BOARDING_AGREEMENT: (token: string) =>
+    `/api/boarding/agreement/${encodeURIComponent(token)}`,
+  BOARDING_AGREEMENT_SIGN: (token: string) =>
+    `/api/boarding/agreement/${encodeURIComponent(token)}/sign`,
+  BOARDING_AGREEMENT_PDF: (token: string) =>
+    `/api/boarding/agreement/${encodeURIComponent(token)}/pdf`,
 
   // Add more endpoints as needed
   // Users

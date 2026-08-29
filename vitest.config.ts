@@ -49,6 +49,7 @@ export default defineConfig({
             "hooks/**/*.test.{ts,tsx}",
             "contexts/**/*.test.tsx",
             "app/api/**/*.test.ts",
+            "components/**/*.test.tsx",
           ],
         },
       },

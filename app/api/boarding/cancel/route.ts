@@ -17,18 +17,11 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    const forwardedFor = request.headers.get("x-forwarded-for");
-    const realIp = request.headers.get("x-real-ip");
-    const ip = forwardedFor ? forwardedFor.split(",")[0].trim() : realIp;
-
+    // backendFetch adds the client IP the platform resolved; a caller-supplied
+    // x-forwarded-for is spoofable and must not become the rate-limit key.
     const headers: HeadersInit = {
       "Content-Type": "application/json",
     };
-
-    // The backend rate limits per IP; without this every request looks identical
-    if (ip) {
-      headers["x-forwarded-for"] = ip;
-    }
 
     const res = await backendFetch(`${API_BASE_URL}/api/v1/boarding/cancel`, {
       method: "POST",

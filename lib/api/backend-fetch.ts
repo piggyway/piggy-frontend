@@ -7,6 +7,12 @@
  * a single rate-limit key, so one busy visitor throttles everyone. The backend
  * only trusts that header when the request also carries INTERNAL_PROXY_SECRET,
  * which is why the secret travels with it.
+ *
+ * Only `cf-connecting-ip` counts as the real client IP. It is written by the
+ * edge and cannot be set by the caller, whereas an incoming `x-forwarded-for`
+ * is attacker-controlled and would let anyone pick their own rate-limit key.
+ * Off the edge (local dev, direct origin hits) there is no such header, so no
+ * client IP is forwarded and the backend falls back to its own connection info.
  */
 
 import { headers } from "next/headers";
@@ -24,16 +30,7 @@ const PROXY_SECRET_HEADER = "x-internal-proxy-secret";
 async function incomingClientIp(): Promise<string | null> {
   try {
     const requestHeaders = await headers();
-    const connectingIp = requestHeaders.get("cf-connecting-ip")?.trim();
-    if (connectingIp) {
-      return connectingIp;
-    }
-
-    const firstHop = requestHeaders
-      .get(CLIENT_IP_HEADER)
-      ?.split(",")[0]
-      ?.trim();
-    return firstHop || null;
+    return requestHeaders.get("cf-connecting-ip")?.trim() || null;
   } catch {
     return null;
   }
@@ -122,31 +119,46 @@ const FORWARDED_ERROR_HEADERS = ["retry-after"];
 /** Cap on the echoed upstream body so an HTML error page cannot be relayed whole. */
 const UPSTREAM_MESSAGE_MAX_LENGTH = 200;
 
+function parseJsonObject(text: string): Record<string, unknown> | null {
+  try {
+    const parsed: unknown = JSON.parse(text);
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
+  } catch {
+    // Not JSON; the caller falls back to the raw text.
+  }
+  return null;
+}
+
 /**
- * Best-effort detail from a failed upstream response. The backend rate limiter
+ * Best-effort detail from a failed upstream body. The backend rate limiter
  * answers with plain text, not JSON, so a parse failure must still yield a
  * usable message instead of masking the status.
  */
-async function readUpstreamMessage(res: Response): Promise<string> {
-  const text = await res.text().catch(() => "");
+function upstreamMessage(text: string, res: Response): string {
   if (!text) {
     return res.statusText || `Backend returned ${res.status}`;
   }
 
-  try {
-    const parsed: unknown = JSON.parse(text);
-    if (parsed && typeof parsed === "object") {
-      const body = parsed as Record<string, unknown>;
-      const detail = body.message ?? body.error;
-      if (typeof detail === "string" && detail) {
-        return detail;
-      }
-    }
-  } catch {
-    // Not JSON; the raw text is the best detail available.
+  const body = parseJsonObject(text);
+  const detail = body?.message ?? body?.error;
+  if (typeof detail === "string" && detail) {
+    return detail.slice(0, UPSTREAM_MESSAGE_MAX_LENGTH);
   }
 
   return text.slice(0, UPSTREAM_MESSAGE_MAX_LENGTH);
+}
+
+function errorHeaders(res: Response): Headers {
+  const headers = new Headers({ "content-type": "application/json" });
+  for (const name of FORWARDED_ERROR_HEADERS) {
+    const value = res.headers.get(name);
+    if (value) {
+      headers.set(name, value);
+    }
+  }
+  return headers;
 }
 
 /**
@@ -161,18 +173,63 @@ export async function upstreamErrorResponse(
   res: Response,
   error: string
 ): Promise<Response> {
-  const message = await readUpstreamMessage(res);
-  const headers = new Headers({ "content-type": "application/json" });
-  for (const name of FORWARDED_ERROR_HEADERS) {
-    const value = res.headers.get(name);
-    if (value) {
-      headers.set(name, value);
+  const text = await res.text().catch(() => "");
+
+  return new Response(
+    JSON.stringify({ error, message: upstreamMessage(text, res) }),
+    { status: res.status, headers: errorHeaders(res) }
+  );
+}
+
+/** Stand-in detail when the upstream body carries nothing safe to relay. */
+const RELAY_FALLBACK_MESSAGE =
+  "The service is temporarily unavailable. Please try again.";
+
+/**
+ * Relay a failed upstream response, keeping the backend's own error envelope.
+ *
+ * `upstreamErrorResponse` flattens every failure into one code, which is right
+ * for a route whose client only reads the status. The agreement signing page
+ * instead branches on the backend's `error` code and reads `data` (the missing
+ * acknowledgments, the rejected fields), so that envelope has to survive the
+ * proxy hop. Anything that is not a JSON envelope with a string `error` - a
+ * gateway HTML page, a plain-text throttle - collapses to `fallbackError` with
+ * a generic message, so an upstream error page is never relayed whole. Both
+ * branches answer with the same `{ success, error, message?, data?, timestamp? }`
+ * envelope, so a client never has to guess which shape it received.
+ */
+export async function relayUpstreamError(
+  res: Response,
+  fallbackError: string
+): Promise<Response> {
+  const text = await res.text().catch(() => "");
+  const body = parseJsonObject(text);
+  const code = body?.error;
+
+  const relayed: Record<string, unknown> = { success: false };
+
+  if (body && typeof code === "string" && code) {
+    relayed.error = code;
+    if (body.data !== undefined) {
+      relayed.data = body.data;
+    }
+    if (typeof body.message === "string") {
+      relayed.message = body.message.slice(0, UPSTREAM_MESSAGE_MAX_LENGTH);
+    }
+    if (body.timestamp !== undefined) {
+      relayed.timestamp = body.timestamp;
+    }
+  } else {
+    relayed.error = fallbackError;
+    relayed.message = RELAY_FALLBACK_MESSAGE;
+    if (body?.timestamp !== undefined) {
+      relayed.timestamp = body.timestamp;
     }
   }
 
-  return new Response(JSON.stringify({ error, message }), {
+  return new Response(JSON.stringify(relayed), {
     status: res.status,
-    headers,
+    headers: errorHeaders(res),
   });
 }
 
