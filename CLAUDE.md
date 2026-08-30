@@ -7,21 +7,24 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 > - `.claude/rules/code-style.md` — function vs arrow declarations, component rules, file/folder naming.
 > - `.claude/rules/lessons-learned.md` — anti-patterns (reuse components, theme tokens, own your types, verify every usage).
 >
-> **Ignore `.claude/rules/architecture.md`** — it was copied from a different project (Directus `server-actions`, `src/templates`, `bsx_article` collections) and does **not** describe this codebase. The accurate architecture is below.
->
-> Note: `.claude/CLAUDE.md` imports `@./AGENTS.md`, but `.claude/AGENTS.md` does not exist — that import currently resolves to nothing.
+> `AGENTS.md` at the repo root points back to this file; it holds no separate instructions.
 
 ## Commands
 
 ```bash
 pnpm dev                 # next dev (http://localhost:3000) — pnpm is the package manager
-pnpm build               # next build (output: "standalone")
-pnpm start               # serve the production build
+pnpm build               # next build (next.config.ts sets output: "standalone")
+pnpm start               # serve the production build locally
 pnpm lint                # eslint (eslint-config-next, flat config in eslint.config.mjs)
+pnpm typecheck           # tsc --noEmit
 pnpm format              # prettier --write .
 pnpm format:check        # prettier --check .
 pnpm storybook           # storybook dev on :6006
+pnpm preview             # opennextjs-cloudflare build + local Workers preview
+pnpm deploy              # opennextjs-cloudflare build + deploy (see the warning below)
 ```
+
+Production runs on **Cloudflare Workers** via `@opennextjs/cloudflare` (`open-next.config.ts`, `wrangler.jsonc`), not as a container. There is no CI for the Worker - every release is a manual deploy from a developer machine, and a bare `pnpm deploy` bakes your local `.env.local` (test Stripe and Turnstile keys) into the client bundle. Always use the full command with production overrides in [docs/cloudflare-deploy.md](docs/cloudflare-deploy.md) section 2.1. The R2 incremental cache is **optional and currently disabled** - `open-next.config.ts` calls `defineCloudflareConfig({})` with the R2 override commented out.
 
 Tests are **story-based**: Vitest in browser mode via Playwright, wired through Storybook's `@storybook/addon-vitest` (`vitest.config.ts` reads `.storybook`). The `test` script (`pnpm test`) runs `vitest run --project unit`, which covers the non-story unit suite only. Run the story tests with `pnpm exec vitest` (`run <file>` for a single story/file). Components ship with `*.stories.tsx` next to them.
 
@@ -68,4 +71,4 @@ Configure in `.env.local` (template: `.env.example`):
 - **Cloudflare Turnstile** — `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (form bot protection).
 - **Draft preview** — `PREVIEW_SECRET`.
 
-Remote image hosts are allowlisted in `next.config.ts` (`res.cloudinary.com`, `images.unsplash.com`, Figma MCP) — add new hosts there before using them. Deploy target is a standalone build (`Dockerfile`, `docker-compose.yml`).
+Remote image hosts are allowlisted in `next.config.ts` (`res.cloudinary.com`, `images.unsplash.com`, Figma MCP) — add new hosts there before using them. `Dockerfile` and `docker-compose.yml` are legacy from the container deploy and are not the production path.
