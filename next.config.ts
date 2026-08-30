@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withSentryConfig } from "@sentry/nextjs";
 
 const nextConfig: NextConfig = {
   output: "standalone",
@@ -56,7 +57,16 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Source maps are only uploaded when SENTRY_AUTH_TOKEN / SENTRY_ORG /
+// SENTRY_PROJECT are present at build time; without them the plugin is a
+// no-op and the build behaves exactly as before.
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  silent: !process.env.CI,
+});
 
 // Enables Cloudflare bindings during `next dev` when available.
 // Safe no-op if the package is not installed yet in pure Node tooling.
