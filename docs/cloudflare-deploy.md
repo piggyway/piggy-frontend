@@ -37,6 +37,7 @@ For Workers production, set secrets / vars in the dashboard or via wrangler:
 | `NEXT_PUBLIC_SITE_URL`                      | SEO canonical                                  |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`        | Stripe.js                                      |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY`            | Turnstile                                      |
+| `NEXT_PUBLIC_SENTRY_DSN`                    | Sentry browser error reporting                 |
 
 `NEXT_PUBLIC_*` must be available at **build** time for `opennextjs-cloudflare build`.
 
@@ -68,6 +69,7 @@ API_BASE_URL=https://api.piggyway.com.au \
 NEXT_PUBLIC_APP_ENV=production \
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=<live pk_live key> \
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x4AAAAAACHGAxAJo1ZMu2Ck \
+NEXT_PUBLIC_SENTRY_DSN=https://bac8941b740d8ed8c7a52f3b29c61b37@o4511997734486016.ingest.us.sentry.io/4511999009554432 \
 pnpm deploy
 ```
 
