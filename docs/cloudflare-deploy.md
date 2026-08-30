@@ -126,12 +126,18 @@ Workers → piggy-frontend → Custom Domains → `piggyway.com.au` / `www`.
 
 Update Google OAuth redirect URIs to the new domain.
 
-## 5. R2 incremental cache (required)
+## 5. R2 incremental cache and revalidation queue (required)
 
 `open-next.config.ts` wires `r2IncrementalCache` and `wrangler.jsonc` binds
 `NEXT_INC_CACHE_R2_BUCKET`, so the bucket must exist before the first deploy.
 Without it Next has nowhere to keep its fetch cache, every `next: { revalidate }`
 is ignored, and server renders hit the backend on every request.
+
+`open-next.config.ts` also wires `memoryQueue`, which is what actually refreshes
+a stale ISR page. It calls the route back through the `WORKER_SELF_REFERENCE`
+service binding in `wrangler.jsonc`, so that binding must stay in place -
+without a real queue the Worker logs `Failed to revalidate stale page` and
+pages keep serving stale HTML.
 
 ```bash
 npx wrangler r2 bucket create piggyway-frontend-inc-cache
