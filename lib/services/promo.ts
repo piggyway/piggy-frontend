@@ -10,6 +10,7 @@ import type {
   ApplyPromoResponse,
   RemovePromoResponse,
 } from "@/lib/types/promo";
+import { reportError } from "@/lib/monitoring/report";
 
 export class PromoService {
   /**
@@ -31,6 +32,7 @@ export class PromoService {
       return response;
     } catch (error) {
       console.error("[PromoService] Failed to validate promo code:", error);
+      reportError(error, { scope: "PromoService.validate" });
       return {
         valid: false,
         error: "validation_error",
@@ -56,6 +58,7 @@ export class PromoService {
       return data;
     } catch (error) {
       console.error("[PromoService] Failed to apply promo code:", error);
+      reportError(error, { scope: "PromoService.apply" });
       return {
         success: false,
         error: "application_error",
@@ -80,6 +83,7 @@ export class PromoService {
       return data;
     } catch (error) {
       console.error("[PromoService] Failed to remove promo code:", error);
+      reportError(error, { scope: "PromoService.remove" });
       return {
         success: false,
         error: "removal_error",

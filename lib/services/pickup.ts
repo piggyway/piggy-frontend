@@ -6,6 +6,7 @@ import type {
   PickupLocationsResponse,
   PickupSlotsResponse,
 } from "@/lib/types/pickup";
+import { reportError } from "@/lib/monitoring/report";
 
 export class PickupService {
   /**
@@ -30,6 +31,7 @@ export class PickupService {
       return data.data;
     } catch (error) {
       console.error("[PickupService] Failed to fetch locations:", error);
+      reportError(error, { scope: "PickupService.getLocations" });
       return [];
     }
   }
@@ -64,12 +66,14 @@ export class PickupService {
             ? JSON.stringify(data.error, null, 2)
             : data.error || data.message || "Failed to fetch pickup slots";
         console.error("[PickupService] API Error Response:", data);
+        reportError(data, { scope: "PickupService.getSlots.response" });
         throw new Error(errorMsg);
       }
 
       return data.data;
     } catch (error) {
       console.error("[PickupService] Failed to fetch slots:", error);
+      reportError(error, { scope: "PickupService.getSlots" });
       // Re-throw to let the component handle empty state if needed,
       // or just return empty array but log the error
       return [];
@@ -101,6 +105,7 @@ export class PickupService {
       return data.data;
     } catch (error) {
       console.error("[PickupService] Failed to fetch available dates:", error);
+      reportError(error, { scope: "PickupService.getAvailableDates" });
       return [];
     }
   }

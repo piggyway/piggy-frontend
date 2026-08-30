@@ -14,6 +14,7 @@ import type {
   CreateBoardingBookingResult,
   CreateBoardingPetInput,
 } from "@/lib/types/boarding";
+import { reportError } from "@/lib/monitoring/report";
 
 /**
  * Error carrying the HTTP status of a failed boarding request, so callers can
@@ -201,6 +202,7 @@ export async function createBoardingBooking(
   if (!response.ok) {
     const error = await readError(response, "Failed to create booking");
     console.error("[BoardingService] Failed to create booking:", error);
+    reportError(error, { scope: "BoardingService.createBooking" });
     throw error;
   }
 
@@ -234,6 +236,7 @@ export async function getBoardingBookings(
   if (!response.ok) {
     const error = await readError(response, "Failed to get bookings");
     console.error("[BoardingService] Failed to get bookings:", error);
+    reportError(error, { scope: "BoardingService.getBookings" });
     throw error;
   }
 
@@ -265,6 +268,7 @@ export async function getBoardingBookingByReference(
   if (!response.ok) {
     const error = await readError(response, "Failed to get booking detail");
     console.error("[BoardingService] Failed to get booking detail:", error);
+    reportError(error, { scope: "BoardingService.getBookingDetail" });
     throw error;
   }
 
@@ -302,6 +306,7 @@ export async function lookupBoardingBooking(
   if (!response.ok) {
     const error = await readError(response, "Failed to look up booking");
     console.error("[BoardingService] Failed to look up booking:", error);
+    reportError(error, { scope: "BoardingService.lookupBooking" });
     throw error;
   }
 
@@ -345,6 +350,7 @@ export async function cancelBoardingBooking(
   if (!response.ok) {
     const error = await readError(response, "Failed to cancel booking");
     console.error("[BoardingService] Failed to cancel booking:", error);
+    reportError(error, { scope: "BoardingService.cancelBooking" });
     throw error;
   }
 

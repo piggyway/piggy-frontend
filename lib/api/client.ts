@@ -4,6 +4,7 @@
  */
 
 import { getSession, signOut } from "next-auth/react";
+import { reportError } from "@/lib/monitoring/report";
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
@@ -127,6 +128,10 @@ async function apiFetch<T>(
     return (await response.json()) as T;
   } catch (error) {
     console.error("[Frontend API Error]", error);
+    reportError(error, {
+      scope: "apiClient.fetch",
+      extra: { endpoint, method: fetchOptions.method ?? "GET" },
+    });
     throw error;
   }
 }
@@ -162,6 +167,7 @@ async function renewSession(): Promise<boolean> {
     return Boolean(session) && !session?.error;
   } catch (error) {
     console.error("[Frontend API] Failed to renew session:", error);
+    reportError(error, { scope: "apiClient.renewSession" });
     return false;
   }
 }
