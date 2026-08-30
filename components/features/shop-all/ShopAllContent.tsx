@@ -1,28 +1,49 @@
 "use client";
 
+import { useCallback, useTransition } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
-import { useCallback } from "react";
 import { CategoryFilterBar } from "@/components/features/shop-all/CategoryFilterBar";
 import { ProductsSection } from "@/components/features/shop-all/ProductsSection";
-import type { SortOption } from "@/lib/types/product";
+import type { SortOption, VariantListItem } from "@/lib/types/product";
+import type { Category } from "@/lib/types/models";
 
 // choose grid or list
 type ViewMode = "grid" | "list";
 
+/**
+ * Client wrapper for the shop-all page. Receives server-fetched data as
+ * props (so the grid is present in the initial HTML) and translates filter
+ * interactions into URL updates, which re-render the server page.
+ */
+interface ShopAllContentProps {
+  categories: Category[];
+  variants: VariantListItem[];
+  totalItems: number;
+  totalPages: number;
+  category: string | null;
+  sort: SortOption;
+  page: number;
+  pageSize: number;
+  q?: string;
+  view: ViewMode;
+}
 
-export function ShopAllContent() {
+export function ShopAllContent({
+  categories,
+  variants,
+  totalItems,
+  totalPages,
+  category,
+  sort,
+  page,
+  pageSize,
+  q,
+  view,
+}: ShopAllContentProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-
-  // Read state from URL
-  const category = searchParams.get("category") || undefined;
-  const sort = (searchParams.get("sort") as SortOption) || "-date_created";
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const pageSize = parseInt(searchParams.get("page_size") || "9", 10);
-  const q = searchParams.get("q") || undefined;
-
-  const view = (searchParams.get("view") as ViewMode) || "grid";
+  const [isPending, startTransition] = useTransition();
 
   // Update URL with new params
   const updateSearchParams = useCallback(
@@ -44,9 +65,26 @@ export function ShopAllContent() {
 
       const queryString = params.toString();
       const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
-      router.push(newUrl, { scroll: false });
+      startTransition(() => {
+        router.push(newUrl, { scroll: false });
+      });
     },
     [searchParams, pathname, router]
+  );
+
+  // Crawlable pagination hrefs, preserving all other active params
+  const getPageHref = useCallback(
+    (targetPage: number) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (targetPage <= 1) {
+        params.delete("page");
+      } else {
+        params.set("page", targetPage.toString());
+      }
+      const queryString = params.toString();
+      return queryString ? `${pathname}?${queryString}` : pathname;
+    },
+    [searchParams, pathname]
   );
 
   const handleCategoryChange = (newCategory: string | null) => {
@@ -57,40 +95,39 @@ export function ShopAllContent() {
     updateSearchParams({ sort: newSort });
   };
 
-  const handlePageChange = (newPage: number) => {
-    updateSearchParams({ page: newPage.toString() });
-    // Scroll to top of products section
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
   const handleClearFilters = () => {
     updateSearchParams({ category: null, q: null, page: "1" });
   };
-  // view change 
+
   const handleViewChange = (newView: ViewMode) => {
     updateSearchParams({ view: newView });
   };
+
   return (
     <>
       {/* Category Filter */}
       <CategoryFilterBar
-        activeCategory={category || null}
+        categories={categories}
+        activeCategory={category}
         onCategoryChange={handleCategoryChange}
       />
 
       {/* Products Section */}
       <ProductsSection
-        category={category}
+        variants={variants}
+        totalItems={totalItems}
+        totalPages={totalPages}
+        isPending={isPending}
+        category={category || undefined}
         sort={sort}
         page={page}
         pageSize={pageSize}
         q={q}
         onSortChange={handleSortChange}
-        onPageChange={handlePageChange}
         onClearFilters={handleClearFilters}
-
         view={view}
         onViewChange={handleViewChange}
+        getPageHref={getPageHref}
       />
     </>
   );

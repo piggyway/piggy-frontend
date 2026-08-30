@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -31,7 +32,7 @@ export async function GET(request: NextRequest) {
     if (page) url.searchParams.set("page", page);
     if (limit) url.searchParams.set("limit", limit);
 
-    const res = await fetch(url.toString(), { headers });
+    const res = await backendFetch(url.toString(), { headers });
     const data = await res.json();
 
     return NextResponse.json(data, { status: res.status });

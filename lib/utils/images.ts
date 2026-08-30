@@ -30,7 +30,10 @@ export function normalizeImageUrl(
     let versionSegment: string | null = null;
 
     const maybeTransform = segments[cursor];
-    if (maybeTransform && !/^v\d+$/.test(maybeTransform)) {
+    const isTransform = maybeTransform
+      ?.split(",")
+      .every((transform) => /^[a-z]{1,3}_.+/i.test(transform));
+    if (maybeTransform && !/^v\d+$/.test(maybeTransform) && isTransform) {
       transformSegment = maybeTransform;
       cursor += 1;
     }

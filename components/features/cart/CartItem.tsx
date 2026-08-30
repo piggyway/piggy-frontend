@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef } from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
 import { motion } from "framer-motion";
@@ -9,11 +8,18 @@ import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { cn } from "@/lib/utils";
 import { VariantOption } from "@/lib/types/cart";
 
+export interface CartItemAddOnDisplay {
+  id: number;
+  name: string;
+  formattedUnitPrice: string;
+}
+
 export interface CartItemProps {
   id: string;
   title: string;
   variant?: string;
   variantOptions?: VariantOption[];
+  addOns?: CartItemAddOnDisplay[];
   price: number;
   image: string;
   quantity: number;
@@ -26,10 +32,10 @@ export interface CartItemProps {
 }
 
 export function CartItem({
-  id: _id,
   title,
   variant,
   variantOptions,
+  addOns,
   price,
   image,
   quantity,
@@ -65,12 +71,13 @@ export function CartItem({
       {/* Product Details */}
       <div className="flex flex-1 flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div className="flex flex-col gap-1">
-          <h3 className="text-primary-navy text-lg font-medium">{title}</h3>
+          <h3 className="text-primary-navy text-p-ui">{title}</h3>
           {variantOptions && variantOptions.length > 0 ? (
             <div className="flex flex-wrap gap-x-3 gap-y-1">
               {variantOptions.map((opt, i) => (
-                <p key={i} className="text-sm text-slate-500">
-                  <span className="text-slate-400">{opt.name}:</span> {opt.value}
+                <p key={i} className="text-p text-slate-500">
+                  <span className="text-muted-foreground">{opt.name}:</span>{" "}
+                  {opt.value}
                 </p>
               ))}
             </div>
@@ -79,12 +86,27 @@ export function CartItem({
             !variant.match(/^[\w-]+$/) && ( // Hide if it looks like a SKU code
               <div className="flex flex-col gap-1">
                 {variant.split(",").map((v, i) => (
-                  <p key={i} className="text-sm text-slate-500 capitalize">
+                  <p key={i} className="text-p text-slate-500 capitalize">
                     {v.trim()}
                   </p>
                 ))}
               </div>
             )
+          )}
+          {addOns && addOns.length > 0 && (
+            <ul className="border-neutral-stroke mt-1 flex flex-col gap-1 border-l-2 pl-3">
+              {addOns.map((addOn) => (
+                <li
+                  key={addOn.id}
+                  className="text-p flex items-center justify-between gap-3 text-slate-500"
+                >
+                  <span className="truncate">+ {addOn.name}</span>
+                  <span className="text-muted-foreground shrink-0">
+                    {addOn.formattedUnitPrice}
+                  </span>
+                </li>
+              ))}
+            </ul>
           )}
           <p className="text-primary-navy font-medium sm:hidden">
             {currencySymbol}
@@ -113,7 +135,7 @@ export function CartItem({
             variant="ghost"
             size="icon-sm"
             onClick={onRemove}
-            className="hover:text-destructive text-slate-400"
+            className="hover:text-destructive text-muted-foreground"
             disabled={disabled}
             aria-label="Remove item"
           >

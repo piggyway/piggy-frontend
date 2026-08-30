@@ -1,24 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 import {
-  Package,
+  Check,
   CheckCircle2,
-  Clock,
-  Truck,
   MapPin,
-  Search,
-  CreditCard,
-  XCircle,
-  RotateCcw,
-  AlertCircle,
-  Wallet,
+  Package,
+  Store,
+  Truck,
 } from "lucide-react";
 import { OrderService } from "@/lib/services/order";
 import type { OrderStatus } from "@/lib/types/order";
 import { motion, AnimatePresence } from "framer-motion";
+
+interface ShippingAddress {
+  name?: string;
+  phone?: string;
+  address?: {
+    line1?: string;
+    line2?: string;
+    city?: string;
+    state?: string;
+    postal_code?: string;
+    country?: string;
+  };
+}
 
 interface TrackingData {
   order_number: string;
@@ -27,17 +36,60 @@ interface TrackingData {
   date_created: string;
   shipped_at: string | null;
   delivery_method: string | null;
-  shipping_address: any;
+  shipping_address: ShippingAddress | null;
 }
 
-export function TrackOrder() {
-  const [orderNumber, setOrderNumber] = useState("");
+interface TrackOrderProps {
+  initialOrderNumber?: string | null;
+}
+
+const statusPill: Partial<
+  Record<OrderStatus, { label: string; className: string }>
+> = {
+  pending_payment: {
+    label: "Pending payment",
+    className: "bg-primary-gold/20 text-primary-navy",
+  },
+  paid: { label: "Paid", className: "bg-secondary-mint text-green-600" },
+  processing: {
+    label: "Processing",
+    className: "bg-primary-gold/20 text-primary-navy",
+  },
+  shipped: {
+    label: "Shipped",
+    className: "bg-primary-purple text-primary-navy",
+  },
+  completed: {
+    label: "Delivered",
+    className: "bg-secondary-mint text-green-600",
+  },
+  cancelled: {
+    label: "Cancelled",
+    className: "bg-neutral-pink-background text-destructive",
+  },
+  refunded: {
+    label: "Refunded",
+    className: "bg-neutral-grey-background text-slate-600",
+  },
+  disputed: { label: "Disputed", className: "bg-orange-100 text-orange-700" },
+};
+
+const STEP_ICONS: Record<string, React.ElementType> = {
+  paid: CheckCircle2,
+  processing: Package,
+  shipped: Truck,
+  completed: CheckCircle2,
+};
+
+export function TrackOrder({ initialOrderNumber }: TrackOrderProps) {
+  const [orderNumber, setOrderNumber] = useState(initialOrderNumber ?? "");
   const [trackingData, setTrackingData] = useState<TrackingData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const autoTrackedRef = useRef(false);
 
-  const handleTrack = async () => {
-    if (!orderNumber.trim()) {
+  const track = useCallback(async (value: string) => {
+    if (!value.trim()) {
       setError("Please enter an order number");
       return;
     }
@@ -47,32 +99,26 @@ export function TrackOrder() {
     setTrackingData(null);
 
     try {
-      const data = await OrderService.getOrderTracking(orderNumber.trim());
+      const data = await OrderService.getOrderTracking(value.trim());
       setTrackingData(data);
-    } catch (e: any) {
-      setError(e.message || "Order not found. Please check your order number.");
+    } catch (e) {
+      setError(
+        e instanceof Error
+          ? e.message
+          : "Order not found. Please check your order number."
+      );
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
-  const statusConfig: Record<
-    OrderStatus,
-    { label: string; color: string; icon: any }
-  > = {
-    pending_payment: {
-      label: "Pending Payment",
-      color: "yellow",
-      icon: CreditCard,
-    },
-    paid: { label: "Payment Received", color: "green", icon: Wallet },
-    processing: { label: "Processing Order", color: "blue", icon: Package },
-    shipped: { label: "Shipped", color: "purple", icon: Truck },
-    completed: { label: "Delivered", color: "green", icon: CheckCircle2 },
-    cancelled: { label: "Cancelled", color: "red", icon: XCircle },
-    refunded: { label: "Refunded", color: "gray", icon: RotateCcw },
-    disputed: { label: "Disputed", color: "orange", icon: AlertCircle },
-  };
+  // Auto-track when opened from an order's "Track this order" button
+  useEffect(() => {
+    if (!autoTrackedRef.current && initialOrderNumber) {
+      autoTrackedRef.current = true;
+      void track(initialOrderNumber);
+    }
+  }, [initialOrderNumber, track]);
 
   const getStatusTimeline = (
     status: OrderStatus,
@@ -83,24 +129,24 @@ export function TrackOrder() {
     const steps = [
       {
         key: "paid",
-        label: "Order Placed",
+        label: "Order placed",
         description: "We have received your order and payment.",
       },
       {
         key: "processing",
         label: "Processing",
-        description: "We are currently packing your items with care.",
+        description: "We are carefully packing your items.",
       },
       {
         key: "shipped",
-        label: isPickup ? "Ready for Pickup" : "Shipped",
+        label: isPickup ? "Ready for pickup" : "Shipped",
         description: isPickup
           ? "Your order is ready for collection at our store."
           : "Your order is on the way to you.",
       },
       {
         key: "completed",
-        label: isPickup ? "Picked Up" : "Delivered",
+        label: isPickup ? "Picked up" : "Delivered",
         description: isPickup
           ? "You have successfully picked up your order."
           : "Your package has been safely delivered.",
@@ -112,58 +158,41 @@ export function TrackOrder() {
 
     return steps.map((step, idx) => ({
       ...step,
-      completed: idx <= currentIndex,
+      completed: idx < currentIndex,
+      current: idx === currentIndex,
     }));
   };
 
-  const formatAddress = (address: any) => {
-    if (!address || !address.address) return null;
-    const addr = address.address;
-    return (
-      <div className="text-sm text-gray-600">
-        {address.name && (
-          <p className="font-medium text-gray-900">{address.name}</p>
-        )}
-        <p>{addr.line1}</p>
-        {addr.line2 && <p>{addr.line2}</p>}
-        <p>
-          {[addr.city, addr.state, addr.postal_code].filter(Boolean).join(" ")}
-        </p>
-        {addr.country && <p>{addr.country}</p>}
-        {address.phone && <p className="mt-1">{address.phone}</p>}
-      </div>
-    );
-  };
+  const pill = trackingData ? statusPill[trackingData.status] : undefined;
+  const isPickup = trackingData?.delivery_method === "pickup";
+  let displayStatus = pill?.label ?? "";
+  if (trackingData && isPickup) {
+    if (trackingData.status === "shipped") displayStatus = "Ready for Pickup";
+    if (trackingData.status === "completed") displayStatus = "Picked Up";
+  }
+
+  const address = trackingData?.shipping_address;
+  const addr = address?.address;
 
   return (
-    <div className="min-h-[400px] space-y-6 rounded-lg bg-white p-6 shadow-sm">
-      <div>
-        <h2 className="text-primary-navy text-2xl font-semibold">
-          Track Your Order
-        </h2>
-        <p className="mt-1 text-sm text-gray-500">
-          Enter your order number to check the delivery status
-        </p>
-      </div>
-
-      {/* Search Form */}
-      <div className="flex gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <Input
-            placeholder="Enter order number (e.g., ORD-MJ5OLFL4-37QE)"
-            value={orderNumber}
-            onChange={(e) => setOrderNumber(e.target.value)}
-            onKeyPress={(e) => e.key === "Enter" && handleTrack()}
-            className="pl-9"
-          />
-        </div>
+    <div className="flex flex-col gap-6">
+      {/* Search */}
+      <div className="flex w-full flex-col gap-3 sm:flex-row">
+        <input
+          placeholder="Enter order number (e.g. ORD-MJ5OLFL4-37QE)"
+          value={orderNumber}
+          onChange={(e) => setOrderNumber(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") void track(orderNumber);
+          }}
+          className="border-neutral-stroke text-subtle text-primary-navy focus:border-primary-navy focus:ring-primary-navy/20 h-12 min-w-0 flex-1 rounded-full border bg-white pl-5 outline-none placeholder:text-slate-400 focus:ring-2"
+        />
         <Button
-          onClick={handleTrack}
+          onClick={() => void track(orderNumber)}
           disabled={isLoading}
-          className="min-w-[120px]"
+          className="text-subtle-semibold h-12 rounded-full px-7"
         >
-          {isLoading ? "Searching..." : "Track Order"}
+          {isLoading ? "Searching..." : "Track order"}
         </Button>
       </div>
 
@@ -172,9 +201,9 @@ export function TrackOrder() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="rounded-lg border border-red-200 bg-red-50 p-4"
+          className="text-subtle border-destructive/30 bg-destructive/10 text-destructive rounded-[14px] border px-5 py-3.5"
         >
-          <p className="text-sm text-red-600">{error}</p>
+          {error}
         </motion.div>
       )}
 
@@ -187,179 +216,233 @@ export function TrackOrder() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="space-y-6"
+            className="flex w-full flex-col gap-6 lg:flex-row lg:items-start"
           >
-            {/* Order Status Card */}
-            <div className="rounded-lg border bg-white p-6 shadow-sm">
-              <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Order {trackingData.order_number}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    Placed on{" "}
-                    {new Date(trackingData.date_created).toLocaleDateString()}
-                  </p>
-                </div>
-                <span
-                  className={`rounded-full px-4 py-2 text-sm font-medium ${
-                    statusConfig[trackingData.status].color === "green"
-                      ? "bg-green-100 text-green-700"
-                      : statusConfig[trackingData.status].color === "blue"
-                        ? "bg-blue-100 text-blue-700"
-                        : statusConfig[trackingData.status].color === "purple"
-                          ? "bg-purple-100 text-purple-700"
-                          : statusConfig[trackingData.status].color === "yellow"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : statusConfig[trackingData.status].color === "red"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-gray-100 text-gray-700"
-                  }`}
-                >
-                  {(() => {
-                    const config = statusConfig[trackingData.status];
-                    const StatusIcon = config.icon;
-                    return (
-                      <div className="flex items-center gap-2">
-                        <StatusIcon className="h-4 w-4" />
-                        <span>
-                          {trackingData.delivery_method === "pickup"
-                            ? trackingData.status === "shipped"
-                              ? "Ready for Pickup"
-                              : trackingData.status === "completed"
-                                ? "Picked Up"
-                                : config.label
-                            : config.label}
-                        </span>
-                      </div>
-                    );
-                  })()}
-                </span>
-              </div>
-
-              {/* Status Timeline */}
-              {["paid", "processing", "shipped", "completed"].includes(
-                trackingData.status
-              ) && (
-                <div className="space-y-4">
-                  {getStatusTimeline(
-                    trackingData.status,
-                    trackingData.delivery_method
-                  ).map((step, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className="flex items-start gap-4"
+            {/* Left: timeline */}
+            <div className="flex min-w-0 flex-1 flex-col gap-5">
+              <div className="border-neutral-stroke flex flex-col gap-6 rounded-[20px] border bg-white px-6 py-7 sm:px-8">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex flex-col gap-[3px]">
+                    <h3 className="text-primary-navy text-p-ui font-semibold">
+                      Order {trackingData.order_number}
+                    </h3>
+                    <p className="text-subtle text-muted-foreground">
+                      Placed on{" "}
+                      {new Date(trackingData.date_created).toLocaleDateString(
+                        "en-AU"
+                      )}
+                    </p>
+                  </div>
+                  {pill && (
+                    <span
+                      className={cn(
+                        "text-subtle-semibold rounded-full px-4 py-1.5",
+                        pill.className
+                      )}
                     >
-                      <div
-                        className={`flex size-10 shrink-0 items-center justify-center rounded-full ${
-                          step.completed
-                            ? "bg-green-100 text-green-600"
-                            : "bg-gray-100 text-gray-400"
-                        }`}
-                      >
-                        {step.completed ? (
-                          <CheckCircle2 className="size-5" />
-                        ) : (
-                          <div className="size-3 rounded-full border-2 border-current" />
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1 pt-1">
-                        <p
-                          className={`font-medium ${
-                            step.completed ? "text-gray-900" : "text-gray-400"
-                          }`}
-                        >
-                          {step.label}
-                        </p>
-                        <p className="mt-0.5 text-sm text-gray-500">
-                          {step.description}
-                        </p>
-                        {step.key === "shipped" && trackingData.shipped_at && (
-                          <p className="mt-1 text-sm text-gray-500">
-                            {new Date(
-                              trackingData.shipped_at
-                            ).toLocaleDateString()}{" "}
-                            at{" "}
-                            {new Date(
-                              trackingData.shipped_at
-                            ).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </p>
-                        )}
-                      </div>
-                    </motion.div>
-                  ))}
+                      {displayStatus}
+                    </span>
+                  )}
                 </div>
-              )}
 
-              {/* Last Updated */}
-              <div className="mt-6 border-t pt-4">
-                <p className="text-sm text-gray-500">
-                  Last updated:{" "}
-                  {new Date(trackingData.date_updated).toLocaleDateString()} at{" "}
+                {/* Timeline */}
+                {["paid", "processing", "shipped", "completed"].includes(
+                  trackingData.status
+                ) && (
+                  <div className="flex flex-col">
+                    {getStatusTimeline(
+                      trackingData.status,
+                      trackingData.delivery_method
+                    ).map((step, idx, steps) => {
+                      const StepIcon = STEP_ICONS[step.key] ?? Package;
+                      const isLast = idx === steps.length - 1;
+                      const reached = step.completed || step.current;
+                      return (
+                        <div key={step.key} className="flex items-start gap-4">
+                          <div
+                            className={cn(
+                              "flex size-9 shrink-0 items-center justify-center rounded-full",
+                              step.current
+                                ? "bg-primary-navy"
+                                : step.completed
+                                  ? "bg-secondary-mint"
+                                  : "border-neutral-stroke border-2 bg-white"
+                            )}
+                          >
+                            {step.completed && (
+                              <Check className="size-4 text-green-600" />
+                            )}
+                            {step.current && (
+                              <StepIcon className="size-4 text-white" />
+                            )}
+                          </div>
+                          <div
+                            className={cn(
+                              "flex min-w-0 flex-1 flex-col gap-[3px]",
+                              !isLast && "pb-7"
+                            )}
+                          >
+                            <p
+                              className={cn(
+                                "text-p font-semibold",
+                                reached
+                                  ? "text-primary-navy"
+                                  : "text-muted-foreground"
+                              )}
+                            >
+                              {step.label}
+                            </p>
+                            <p
+                              className={cn(
+                                "text-subtle",
+                                reached
+                                  ? "text-slate-600"
+                                  : "text-muted-foreground"
+                              )}
+                            >
+                              {step.description}
+                            </p>
+                            {step.key === "shipped" &&
+                              reached &&
+                              trackingData.shipped_at && (
+                                <p className="text-detail text-muted-foreground">
+                                  {new Date(
+                                    trackingData.shipped_at
+                                  ).toLocaleDateString("en-AU")}{" "}
+                                  ·{" "}
+                                  {new Date(
+                                    trackingData.shipped_at
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })}
+                                </p>
+                              )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                <div className="bg-neutral-stroke h-px w-full" />
+
+                <p className="text-detail text-muted-foreground">
+                  Last updated{" "}
+                  {new Date(trackingData.date_updated).toLocaleDateString(
+                    "en-AU"
+                  )}{" "}
+                  at{" "}
                   {new Date(trackingData.date_updated).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
                 </p>
               </div>
+
+              {!isPickup && (
+                <div className="bg-secondary-mint rounded-[14px] px-5 py-3.5">
+                  <p className="text-subtle-medium text-primary-navy">
+                    Most orders arrive within 7–14 business days.
+                  </p>
+                </div>
+              )}
             </div>
 
-            {/* Delivery Information */}
-            {trackingData.delivery_method === "delivery" &&
-              trackingData.shipping_address && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="rounded-lg border bg-white p-6 shadow-sm"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="mt-1 rounded-full bg-purple-50 p-2 text-purple-600">
-                      <MapPin className="size-5" />
+            {/* Right: info cards */}
+            <div className="flex w-full flex-col gap-5 lg:w-[340px] lg:shrink-0">
+              {!isPickup && address && (
+                <div className="border-neutral-stroke flex flex-col gap-3.5 rounded-[20px] border bg-white px-6 py-[22px]">
+                  <h4 className="text-primary-navy text-p font-semibold">
+                    Delivery address
+                  </h4>
+                  {address.name && (
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-subtle text-muted-foreground">
+                        Recipient
+                      </span>
+                      <span className="text-subtle-medium text-primary-navy">
+                        {address.name}
+                      </span>
                     </div>
-                    <div className="flex-1">
-                      <p className="mb-2 font-medium text-gray-900">
-                        Delivery Address
-                      </p>
-                      {formatAddress(trackingData.shipping_address)}
+                  )}
+                  {addr && (
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-subtle text-muted-foreground">
+                        Address
+                      </span>
+                      <span className="text-subtle-medium text-primary-navy">
+                        {[
+                          addr.line1,
+                          addr.line2,
+                          [addr.city, addr.state, addr.postal_code]
+                            .filter(Boolean)
+                            .join(" "),
+                          addr.country,
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </span>
                     </div>
-                  </div>
-                </motion.div>
+                  )}
+                  {address.phone && (
+                    <div className="flex flex-col gap-0.5">
+                      <span className="text-subtle text-muted-foreground">
+                        Phone
+                      </span>
+                      <span className="text-subtle-medium text-primary-navy">
+                        {address.phone}
+                      </span>
+                    </div>
+                  )}
+                </div>
               )}
 
-            {/* Pickup Information */}
-            {trackingData.delivery_method === "pickup" && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="rounded-lg border bg-white p-6 shadow-sm"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="mt-1 rounded-full bg-blue-50 p-2 text-blue-600">
-                    <Package className="size-5" />
+              {isPickup && (
+                <div className="border-neutral-stroke flex flex-col gap-2.5 rounded-[20px] border bg-white px-6 py-[22px]">
+                  <div className="flex items-center gap-2.5">
+                    <Store className="text-primary-navy size-[18px]" />
+                    <h4 className="text-primary-navy text-p font-semibold">
+                      Pickup order
+                    </h4>
                   </div>
-                  <div className="flex-1">
-                    <p className="mb-2 font-medium text-gray-900">
-                      Pickup Order
-                    </p>
-                    <p className="text-sm text-gray-600">
-                      This is a pickup order. Please collect from our store when
-                      ready.
-                    </p>
-                  </div>
+                  <p className="text-subtle text-slate-600">
+                    This is a pickup order. Please collect from our store when
+                    ready.
+                  </p>
                 </div>
-              </motion.div>
-            )}
+              )}
+
+              <div className="border-neutral-stroke flex flex-col items-start gap-2.5 rounded-[20px] border bg-white px-6 py-[22px]">
+                <h4 className="text-primary-navy text-p font-semibold">
+                  Need a hand?
+                </h4>
+                <p className="text-subtle text-slate-600">
+                  Questions about your delivery — we usually reply within a day.
+                </p>
+                <Link
+                  href="/contact"
+                  className="text-subtle-semibold text-primary-navy-light hover:underline"
+                >
+                  Contact support →
+                </Link>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Idle state */}
+      {!trackingData && !error && !isLoading && (
+        <div className="border-neutral-stroke flex flex-col items-center gap-3 rounded-[20px] border bg-white px-8 py-12 text-center">
+          <div className="bg-secondary-mint flex size-12 items-center justify-center rounded-full">
+            <MapPin className="text-primary-navy size-5" />
+          </div>
+          <p className="text-subtle text-slate-600">
+            Enter your order number above to check the delivery status.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

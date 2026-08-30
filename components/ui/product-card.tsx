@@ -48,38 +48,30 @@ export function ProductCard({
             src={displayImage}
             alt={imageAlt}
             fill
-            className="object-contain"
+            className="object-cover sm:object-contain"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 312px"
           />
         </div>
 
         {/* Title and Subtitle - gap-0 */}
         <div className="text-primary-navy flex w-full flex-col items-start gap-0">
-          <h3 className="w-full text-lg leading-6 font-medium sm:text-xl">
-            {title}
-          </h3>
-          {subtitle && (
-            <p className="w-full text-sm leading-6 font-normal sm:text-base">
-              {subtitle}
-            </p>
-          )}
+          <h3 className="text-p-ui w-full">{title}</h3>
+          {subtitle && <p className="text-subtle w-full">{subtitle}</p>}
         </div>
       </div>
 
       {/* Price Section */}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-2">
-          <p className="text-primary-navy w-auto text-lg leading-6 font-medium sm:text-xl">
-            {price}
-          </p>
+          <p className="text-primary-navy text-p-ui w-auto">{price}</p>
           {originalPrice && (
-            <p className="text-sm text-neutral-400 line-through decoration-neutral-400/80">
+            <p className="text-subtle text-neutral-400 line-through decoration-neutral-400/80">
               {originalPrice}
             </p>
           )}
         </div>
         {discountPercentage && (
-          <span className="w-fit rounded-full bg-[#FF4D4F]/10 px-2 py-0.5 text-xs font-medium text-[#FF4D4F]">
+          <span className="text-detail bg-destructive/10 text-destructive w-fit rounded-full px-2 py-0.5 font-medium">
             {discountPercentage}
           </span>
         )}
@@ -94,7 +86,7 @@ export function ProductCard({
             onAddToCart?.();
           }}
           disabled={disabled}
-          className="bg-primary-navy hover:bg-primary-navy-light flex w-full items-center justify-center gap-2 rounded-[16px] px-4 py-2.5 text-sm text-white sm:rounded-[20px] sm:text-base"
+          className="text-p h-11 w-full gap-2 rounded-full px-4"
         >
           <ShoppingCart className="size-4" />
           Add to Cart

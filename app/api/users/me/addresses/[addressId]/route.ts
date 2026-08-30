@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -27,8 +28,8 @@ export async function GET(
 
     const { addressId } = await ctx.params;
 
-    const res = await fetch(
-      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`,
+    const res = await backendFetch(
+      `${API_BASE_URL}/api/v1/users/me/addresses/${encodeURIComponent(addressId)}`,
       {
         method: "GET",
         headers: {
@@ -67,8 +68,8 @@ export async function PATCH(
     const { addressId } = await ctx.params;
     const body = await request.json();
 
-    const res = await fetch(
-      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`,
+    const res = await backendFetch(
+      `${API_BASE_URL}/api/v1/users/me/addresses/${encodeURIComponent(addressId)}`,
       {
         method: "PATCH",
         headers: {
@@ -107,8 +108,8 @@ export async function DELETE(
 
     const { addressId } = await ctx.params;
 
-    const res = await fetch(
-      `${API_BASE_URL}/api/v1/users/me/addresses/${addressId}`,
+    const res = await backendFetch(
+      `${API_BASE_URL}/api/v1/users/me/addresses/${encodeURIComponent(addressId)}`,
       {
         method: "DELETE",
         headers: {

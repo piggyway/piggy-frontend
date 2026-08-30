@@ -8,9 +8,7 @@ export function PaymentMethods() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-primary-navy text-2xl font-semibold">
-          Payment Methods
-        </h2>
+        <h2 className="text-primary-navy text-large">Payment Methods</h2>
         <Button className="gap-2">
           <Plus className="size-4" />
           Add New Method
@@ -24,7 +22,7 @@ export function PaymentMethods() {
             className="relative rounded-lg border bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
           >
             {method.isDefault && (
-              <span className="bg-primary-purple/20 text-primary-navy absolute top-4 right-4 rounded-full px-2 py-1 text-xs font-medium">
+              <span className="bg-primary-purple/20 text-primary-navy text-detail absolute top-4 right-4 rounded-full px-2 py-1 font-medium">
                 Default
               </span>
             )}
@@ -35,12 +33,12 @@ export function PaymentMethods() {
               <div>
                 <h3 className="font-medium text-gray-900">{method.type}</h3>
                 {method.last4 && (
-                  <p className="text-sm text-gray-500">
+                  <p className="text-p text-gray-500">
                     •••• •••• •••• {method.last4}
                   </p>
                 )}
                 {method.expiryDate && (
-                  <p className="text-sm text-gray-400">
+                  <p className="text-p text-gray-400">
                     Expires {method.expiryDate}
                   </p>
                 )}
@@ -50,7 +48,7 @@ export function PaymentMethods() {
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 text-red-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+                className="text-destructive hover:border-destructive/30 hover:bg-destructive/10 hover:text-destructive gap-2"
               >
                 <Trash2 className="size-3" />
                 Remove

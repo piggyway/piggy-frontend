@@ -1,10 +1,16 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Package, Truck, User, LogOut } from "lucide-react";
+import { useUser } from "@/contexts/UserContext";
+import { Home, LogOut, Package, Truck, User } from "lucide-react";
 
-export type AccountSection = "profile" | "orders" | "order-details" | "track";
+export type AccountSection =
+  | "profile"
+  | "orders"
+  | "order-details"
+  | "track"
+  | "boarding"
+  | "boarding-details";
 
 interface AccountSidebarProps {
   currentSection: AccountSection;
@@ -22,6 +28,7 @@ const menuItems: {
   { id: "profile", label: "Profile", icon: User },
   { id: "orders", label: "Order History", icon: Package },
   { id: "track", label: "Track Order", icon: Truck },
+  { id: "boarding", label: "Boarding", icon: Home },
 ];
 
 export function AccountSidebar({
@@ -31,50 +38,81 @@ export function AccountSidebar({
   onLogout,
   isLoggingOut,
 }: AccountSidebarProps) {
+  const { user } = useUser();
+
+  const initials =
+    `${user?.firstName?.[0] ?? ""}${user?.lastName?.[0] ?? ""}`.toUpperCase() ||
+    user?.email?.[0]?.toUpperCase() ||
+    "?";
+  const displayName =
+    `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() ||
+    user?.email ||
+    "My Account";
+
   return (
     <div
       className={cn(
-        "flex w-full flex-col gap-2 rounded-lg bg-white p-4 shadow-sm md:w-64",
+        "border-neutral-stroke flex w-full flex-col gap-1.5 rounded-[24px] border bg-white px-5 pt-6 pb-5",
         className
       )}
     >
-      <div className="mb-4 px-4 py-2">
-        <h2 className="text-primary-navy text-lg font-semibold">My Account</h2>
+      {/* Identity */}
+      <div className="flex items-center gap-3 pb-3 pl-2">
+        <div className="bg-primary-purple flex size-[52px] shrink-0 items-center justify-center rounded-full">
+          <span className="text-primary-navy text-p font-semibold">
+            {initials}
+          </span>
+        </div>
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-primary-navy text-p truncate font-semibold">
+            {displayName}
+          </span>
+          {user?.email && (
+            <span className="text-subtle text-muted-foreground truncate">
+              {user.email}
+            </span>
+          )}
+        </div>
       </div>
-      <nav className="flex flex-col gap-1">
+
+      <div className="bg-neutral-stroke h-px w-full" />
+
+      <nav className="flex flex-col gap-1.5">
         {menuItems.map((item) => {
           const Icon = item.icon;
-          const isActive = currentSection === item.id;
+          const isActive =
+            currentSection === item.id ||
+            (item.id === "orders" && currentSection === "order-details");
           return (
-            <Button
+            <button
               key={item.id}
-              variant={isActive ? "secondary" : "ghost"}
-              className={cn(
-                "w-full justify-start gap-3 px-4 font-medium",
-                isActive
-                  ? "text-primary-navy bg-primary-purple/20"
-                  : "hover:text-primary-navy hover:bg-primary-purple/10 text-gray-600"
-              )}
+              type="button"
               onClick={() => onSectionChange(item.id)}
+              className={cn(
+                "flex h-[46px] w-full items-center gap-3 rounded-full px-4 transition-colors",
+                isActive
+                  ? "bg-primary-navy text-subtle-semibold text-white"
+                  : "text-primary-navy text-subtle-medium hover:bg-primary-purple/20"
+              )}
             >
-              <Icon className="size-4" />
+              <Icon className="size-[18px]" />
               {item.label}
-            </Button>
+            </button>
           );
         })}
-
-        <div className="my-2 border-t border-gray-100" />
-
-        <Button
-          variant="ghost"
-          className="w-full justify-start gap-3 px-4 font-medium text-red-600 hover:bg-red-50 hover:text-red-700"
-          onClick={onLogout}
-          disabled={isLoggingOut}
-        >
-          <LogOut className="size-4" />
-          {isLoggingOut ? "Logging out..." : "Logout"}
-        </Button>
       </nav>
+
+      <div className="bg-neutral-stroke h-px w-full" />
+
+      <button
+        type="button"
+        onClick={onLogout}
+        disabled={isLoggingOut}
+        className="text-subtle-medium text-destructive hover:bg-destructive/10 flex h-[46px] w-full items-center gap-3 rounded-full px-4 transition-colors disabled:opacity-60"
+      >
+        <LogOut className="size-[18px]" />
+        {isLoggingOut ? "Logging out..." : "Log out"}
+      </button>
     </div>
   );
 }

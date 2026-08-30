@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -25,7 +26,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/users/me`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/users/me`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -67,7 +68,7 @@ export async function PATCH(request: NextRequest) {
 
     const body = await request.json();
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/users/me`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/users/me`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -90,5 +91,3 @@ export async function PATCH(request: NextRequest) {
     );
   }
 }
-
-

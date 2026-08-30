@@ -4,21 +4,19 @@ import { Suspense, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ShoppingCart, ChevronDown, Search, Menu, X } from "lucide-react";
+import { ShoppingCart, Search, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { UserButton } from "@/components/common/UserButton";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { NavigationMenuContent as CustomMenuContent } from "@/components/ui/navigation-menu-content";
 import { headerNavigation } from "@/lib/types/navigation";
 import { cn } from "@/lib/utils";
+import { useShippingConfig } from "@/hooks/useShippingConfig";
 
 function SearchQueryUpdater({
   setSearchQuery,
@@ -43,6 +41,7 @@ function SearchQueryUpdater({
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
+  const { freeShippingThreshold } = useShippingConfig();
   // Removed useSearchParams from here
   const [searchQuery, setSearchQuery] = useState("");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -92,7 +91,7 @@ export function Header() {
   };
 
   return (
-    <header className="w-full bg-[#FFFBF5]">
+    <header className="bg-neutral-background-light w-full">
       {/* Suspense wrapper for the search query updater */}
       <Suspense fallback={null}>
         <SearchQueryUpdater setSearchQuery={setSearchQuery} />
@@ -102,7 +101,7 @@ export function Header() {
       <div className="bg-primary-purple w-full py-3">
         <div className="mx-auto max-w-[1160px] px-4 text-center">
           <p className="text-primary-navy text-sm font-medium">
-            Free shipping over $199
+            Free shipping over ${freeShippingThreshold}
           </p>
         </div>
       </div>
@@ -145,7 +144,10 @@ export function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="relative h-12 w-24 shrink-0 sm:h-16 sm:w-32 lg:h-[82px] lg:w-[159px]"
+            className={cn(
+              "relative h-12 w-24 shrink-0 sm:h-16 sm:w-32 lg:h-[82px] lg:w-[159px]",
+              mobileSearchOpen && "max-lg:hidden"
+            )}
           >
             <Image
               src="/header-logo.png"
@@ -169,33 +171,16 @@ export function Header() {
 
                     return (
                       <NavigationMenuItem key={item.href} value={item.href}>
-                        {item.hasDropdown && item.dropdownItems ? (
-                          <>
-                            <NavigationMenuTrigger
-                              className={cn(
-                                "hover:bg-primary-purple/20 flex items-center gap-1 rounded-full bg-transparent px-4 py-2 text-sm font-medium transition-colors",
-                                "data-[state=open]:bg-primary-purple/20 text-[#1a327e]",
-                                isActive && "bg-primary-purple/30"
-                              )}
-                            >
-                              {item.label}
-                            </NavigationMenuTrigger>
-                            <NavigationMenuContent asChild>
-                              <CustomMenuContent items={item.dropdownItems} />
-                            </NavigationMenuContent>
-                          </>
-                        ) : (
-                          <NavigationMenuLink
-                            asChild
-                            className={cn(
-                              "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
-                              "text-primary-navy hover:bg-primary-purple/20",
-                              isActive && "bg-primary-purple/30"
-                            )}
-                          >
-                            <Link href={item.href}>{item.label}</Link>
-                          </NavigationMenuLink>
-                        )}
+                        <NavigationMenuLink
+                          asChild
+                          className={cn(
+                            "flex items-center gap-1 rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                            "text-primary-navy hover:bg-primary-purple/20",
+                            isActive && "bg-primary-purple/30"
+                          )}
+                        >
+                          <Link href={item.href}>{item.label}</Link>
+                        </NavigationMenuLink>
                       </NavigationMenuItem>
                     );
                   })}
@@ -219,7 +204,7 @@ export function Header() {
                 />
                 <button
                   type="submit"
-                  className="hover:text-primary-navy absolute top-1/2 right-2 -translate-y-1/2 text-slate-400 transition-colors"
+                  className="hover:text-primary-navy text-muted-foreground absolute top-1/2 right-2 -translate-y-1/2 transition-colors"
                   aria-label="Search"
                 >
                   <Search className="h-4 w-4" />
@@ -242,7 +227,7 @@ export function Header() {
           </nav>
 
           {/* Mobile Right Side Actions */}
-          <div className="ml-auto flex items-center gap-2 lg:hidden">
+          <div className="ml-auto flex min-w-0 flex-1 items-center justify-end gap-2 lg:hidden">
             <AnimatePresence mode="wait">
               {!mobileSearchOpen ? (
                 <motion.button
@@ -264,12 +249,12 @@ export function Header() {
               ) : (
                 <motion.form
                   key="search-input"
-                  initial={{ width: 40, opacity: 0 }}
-                  animate={{ width: 150, opacity: 1 }}
-                  exit={{ width: 40, opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   onSubmit={handleSearchSubmit}
-                  className="relative flex items-center overflow-hidden"
+                  className="relative flex min-w-0 flex-1 items-center"
                 >
                   <Input
                     name="mobile-search"
@@ -283,13 +268,13 @@ export function Header() {
                         setMobileSearchOpen(false);
                       }
                     }}
-                    className="focus-visible:ring-0 focus-visible:ring-offset-0 h-9 w-full rounded-[20px] border-slate-300 bg-white py-1 pr-8 pl-3 text-sm placeholder:text-slate-400"
+                    className="h-9 w-full rounded-[20px] border-slate-300 bg-white py-1 pr-8 pl-3 text-sm placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0"
                     autoFocus
                   />
                   <button
                     type="button"
                     onClick={() => setMobileSearchOpen(false)}
-                    className="hover:text-primary-navy absolute top-1/2 right-2 -translate-y-1/2 text-slate-400 transition-colors"
+                    className="hover:text-primary-navy text-muted-foreground absolute top-1/2 right-2 -translate-y-1/2 transition-colors"
                     aria-label="Close search"
                   >
                     <X className="h-4 w-4" />

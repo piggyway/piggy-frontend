@@ -8,7 +8,7 @@ import {
   AddressFormDialog,
   type UpsertAddressInput,
 } from "../AddressFormDialog";
-import { Edit2, MapPin, Plus, Trash2 } from "lucide-react";
+import { MapPin, Plus } from "lucide-react";
 
 export function AddressBook() {
   const [addresses, setAddresses] = useState<Address[]>([]);
@@ -67,90 +67,89 @@ export function AddressBook() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h2 className="text-primary-navy text-2xl font-semibold">
-          Address Book
-        </h2>
-        <Button className="gap-2" onClick={handleAddNew}>
+    <div className="border-neutral-stroke flex flex-col gap-6 rounded-[24px] border bg-white px-6 py-8 sm:px-10 sm:py-9">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="text-primary-navy text-lead">Address book</h2>
+        <Button
+          onClick={handleAddNew}
+          className="text-subtle-semibold h-[42px] gap-1.5 rounded-full px-6"
+        >
           <Plus className="size-4" />
-          Add New Address
+          Add new address
         </Button>
       </div>
 
       {isLoading ? (
-        <div className="rounded-lg border bg-white p-6 text-sm text-gray-600">
+        <p className="text-subtle text-muted-foreground">
           Loading addresses...
-        </div>
+        </p>
       ) : addresses.length === 0 ? (
-        <div className="rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-12 text-center">
-          <MapPin className="mx-auto mb-4 h-12 w-12 text-gray-400" />
-          <h3 className="mb-2 text-lg font-medium text-gray-900">
+        <div className="border-neutral-stroke rounded-[16px] border-2 border-dashed p-12 text-center">
+          <MapPin className="mx-auto mb-4 size-12 text-slate-300" />
+          <h3 className="text-primary-navy text-p mb-2 font-semibold">
             No addresses yet
           </h3>
-          <p className="mb-4 text-sm text-gray-500">
+          <p className="text-subtle text-muted-foreground mb-4">
             Add your first address to get started
           </p>
-          <Button onClick={handleAddNew}>
-            <Plus className="mr-1 size-4" />
-            Add Address
+          <Button
+            onClick={handleAddNew}
+            className="text-subtle-semibold h-[42px] gap-1.5 rounded-full px-6"
+          >
+            <Plus className="size-4" />
+            Add address
           </Button>
         </div>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-5 md:grid-cols-2">
           {addresses.map((address) => (
             <div
               key={address.id}
-              className="relative rounded-lg border bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+              className="border-neutral-stroke relative flex flex-col items-start gap-2.5 rounded-[16px] border bg-white px-6 py-[22px]"
             >
-              {address.isDefault && (
-                <span className="bg-primary-purple/20 text-primary-navy absolute top-4 right-4 rounded-full px-2 py-1 text-xs font-medium">
-                  Default
-                </span>
-              )}
-              <div className="mb-4 flex items-start gap-3">
-                <div className="mt-1 rounded-full bg-gray-100 p-2">
-                  <MapPin className="size-5 text-gray-600" />
-                </div>
-                <div>
-                  <h3 className="font-medium text-gray-900">
-                    {address.type.toUpperCase()}
-                  </h3>
-                  <p className="text-sm text-gray-500">
-                    {address.recipientName ?? "—"}
-                  </p>
-                </div>
-              </div>
-              <div className="mb-6 space-y-1 text-sm text-gray-600">
-                <p>{address.addressText}</p>
-                <p>
-                  {address.postalCode} · {address.countryCode}
-                </p>
-                {address.phoneAu && <p>{address.phoneAu}</p>}
-              </div>
-              <div className="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1 gap-2"
-                  onClick={() => handleEdit(address)}
-                >
-                  <Edit2 className="size-3" />
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className={`flex-1 gap-2 ${
-                    deleteConfirm === address.id
-                      ? "border-red-500 bg-red-50 text-red-700"
-                      : "text-red-600 hover:border-red-200 hover:bg-red-50 hover:text-red-700"
+              <div className="flex items-center gap-2">
+                <span
+                  className={`text-primary-navy text-detail rounded-full px-3 py-1 font-semibold uppercase ${
+                    address.type === "billing"
+                      ? "bg-primary-purple"
+                      : "bg-secondary-mint"
                   }`}
-                  onClick={() => void handleDelete(address.id)}
                 >
-                  <Trash2 className="size-3" />
+                  {address.type}
+                </span>
+                {address.isDefault && (
+                  <span className="bg-primary-gold/20 text-primary-navy text-detail rounded-full px-3 py-1 font-semibold uppercase">
+                    Default
+                  </span>
+                )}
+              </div>
+              <p className="text-primary-navy text-p font-semibold">
+                {address.recipientName ?? "—"}
+              </p>
+              <p className="text-subtle text-slate-600">
+                {address.addressText} · {address.postalCode} ·{" "}
+                {address.countryCode}
+              </p>
+              {address.phoneAu && (
+                <p className="text-subtle text-muted-foreground">
+                  {address.phoneAu}
+                </p>
+              )}
+              <div className="text-subtle-medium flex items-center gap-[18px] pt-1.5">
+                <button
+                  type="button"
+                  onClick={() => handleEdit(address)}
+                  className="text-primary-navy-light underline [text-underline-position:from-font]"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleDelete(address.id)}
+                  className="text-destructive underline [text-underline-position:from-font]"
+                >
                   {deleteConfirm === address.id ? "Confirm?" : "Delete"}
-                </Button>
+                </button>
               </div>
             </div>
           ))}

@@ -3,7 +3,9 @@
  * Acts as a proxy layer between frontend and Railway backend
  */
 
+import { draftMode } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -15,6 +17,12 @@ const API_BASE_URL =
 export async function GET(request: NextRequest) {
   try {
     const token = request.headers.get("authorization");
+    const previewSecret = process.env.PREVIEW_SECRET;
+    const { isEnabled: isDraftMode } = await draftMode();
+
+    // Only allow draft products when draft mode is explicitly enabled
+    // This ensures draft products are only visible in preview mode
+    const allowDraft = isDraftMode && previewSecret;
 
     // Build URL with query params
     const searchParams = request.nextUrl.searchParams;
@@ -23,14 +31,19 @@ export async function GET(request: NextRequest) {
       url.searchParams.append(key, value);
     });
 
-    const res = await fetch(url.toString(), {
+    if (allowDraft) {
+      url.searchParams.set("include_draft", "true");
+    }
+
+    const res = await backendFetch(url.toString(), {
       headers: {
         Authorization: token || "",
+        ...(allowDraft ? { "x-preview-secret": previewSecret as string } : {}),
       },
     });
 
     const data = await res.json();
-    return NextResponse.json(data);
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
     console.error("[API Route Error]", error);
     return NextResponse.json(
@@ -49,7 +62,7 @@ export async function POST(request: NextRequest) {
     const token = request.headers.get("authorization");
     const body = await request.json();
 
-    const res = await fetch(`${API_BASE_URL}/products`, {
+    const res = await backendFetch(`${API_BASE_URL}/products`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

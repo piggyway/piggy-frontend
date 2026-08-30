@@ -1,12 +1,112 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/*
+ * Supplies the `prose*` utilities used by the pet-care and guides articles.
+ * Those classes were written long before the plugin was installed, so every
+ * one of them was silently inert - the articles rendered with none of their
+ * intended typography.
+ */
+@plugin "@tailwindcss/typography";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   /* Fonts */
   --font-sans: var(--font-outfit);
   --font-mono: var(--font-outfit);
+
+  /* Typography scale — semantic tokens mirrored from lib/design-tokens/typography.ts.
+     Each token carries font-size, line-height and font-weight, exposed as
+     text-h1 / text-lead / text-p / text-subtle … utility classes. */
+  --text-h1: 64px;
+  --text-h1--line-height: 64px;
+  --text-h1--font-weight: 600;
+  --text-h2: 52px;
+  --text-h2--line-height: 52px;
+  --text-h2--font-weight: 600;
+  --text-h3: 48px;
+  --text-h3--line-height: 48px;
+  --text-h3--font-weight: 600;
+  --text-h4: 42px;
+  --text-h4--line-height: 42px;
+  --text-h4--font-weight: 600;
+  --text-large: 32px;
+  --text-large--line-height: 40px;
+  --text-large--font-weight: 600;
+  --text-lead: 24px;
+  --text-lead--line-height: 32px;
+  --text-lead--font-weight: 600;
+  --text-lead-light: 24px;
+  --text-lead-light--line-height: 32px;
+  --text-lead-light--font-weight: 400;
+  --text-p-ui: 20px;
+  --text-p-ui--line-height: 24px;
+  --text-p-ui--font-weight: 500;
+  --text-p-ui-medium: 16px;
+  --text-p-ui-medium--line-height: 24px;
+  --text-p-ui-medium--font-weight: 400;
+  --text-p: 16px;
+  --text-p--line-height: 24px;
+  --text-p--font-weight: 400;
+  --text-list: 16px;
+  --text-list--line-height: 24px;
+  --text-list--font-weight: 400;
+  --text-body-medium: 14px;
+  --text-body-medium--line-height: 24px;
+  --text-body-medium--font-weight: 400;
+  --text-subtle: 14px;
+  --text-subtle--line-height: 20px;
+  --text-subtle--font-weight: 400;
+  --text-subtle-medium: 14px;
+  --text-subtle-medium--line-height: 20px;
+  --text-subtle-medium--font-weight: 500;
+  --text-subtle-semibold: 14px;
+  --text-subtle-semibold--line-height: 20px;
+  --text-subtle-semibold--font-weight: 600;
+  --text-small: 14px;
+  --text-small--line-height: 14px;
+  --text-small--font-weight: 300;
+  --text-detail: 12px;
+  --text-detail--line-height: 20px;
+  --text-detail--font-weight: 300;
+  --text-blockquote: 16px;
+  --text-blockquote--line-height: 24px;
+  --text-blockquote--font-weight: 300;
+  --text-inline-code: 14px;
+  --text-inline-code--line-height: 20px;
+  --text-inline-code--font-weight: 500;
+  --text-table-head: 16px;
+  --text-table-head--line-height: 24px;
+  --text-table-head--font-weight: 500;
+  --text-table-item: 16px;
+  --text-table-item--line-height: 24px;
+  --text-table-item--font-weight: 400;
+
+  /* Standard Tailwind size scale, baked to the px values it currently renders at
+     (the old html { font-size: 20px } scaled the default rem scale by 1.25x).
+     Pinning them here makes every text-xs … text-6xl an explicit theme token and
+     removes the dependency on the root-font-size hack, with no visual change. */
+  --text-xs: 15px;
+  --text-xs--line-height: 20px;
+  --text-sm: 17.5px;
+  --text-sm--line-height: 25px;
+  --text-base: 20px;
+  --text-base--line-height: 30px;
+  --text-lg: 22.5px;
+  --text-lg--line-height: 35px;
+  --text-xl: 25px;
+  --text-xl--line-height: 35px;
+  --text-2xl: 30px;
+  --text-2xl--line-height: 40px;
+  --text-3xl: 37.5px;
+  --text-3xl--line-height: 45px;
+  --text-4xl: 45px;
+  --text-4xl--line-height: 50px;
+  --text-5xl: 60px;
+  --text-5xl--line-height: 1;
+  --text-6xl: 75px;
+  --text-6xl--line-height: 1;
 
   /* Shadcn UI Colors */
   --color-background: var(--background);
@@ -60,6 +160,7 @@
   --color-neutral-white: var(--neutral-white);
   --color-neutral-grey-background: var(--neutral-grey-background);
   --color-neutral-pink-background: var(--neutral-pink-background);
+  --color-neutral-blue-background: var(--neutral-blue-background);
   --color-neutral-stroke: var(--neutral-stroke);
 
   /* Slate Colors */
@@ -97,6 +198,7 @@
   --neutral-white: #ffffff;
   --neutral-grey-background: #ececec;
   --neutral-pink-background: #ffdfdf;
+  --neutral-blue-background: #e8eef7;
   --neutral-stroke: #e2e8f0;
 
   /* Slate Colors */
@@ -115,7 +217,9 @@
   --secondary: oklch(0.92 0.03 170); /* secondary-mint */
   --secondary-foreground: oklch(0.2 0.02 250); /* slate-900 */
   --muted: oklch(0.93 0 0); /* neutral-grey-background */
-  --muted-foreground: oklch(0.65 0.02 250); /* slate-400 */
+  --muted-foreground: oklch(
+    0.554 0.046 257.417
+  ); /* slate-500, 4.6:1 on cream */
   --accent: oklch(0.88 0.05 280); /* primary-purple */
   --accent-foreground: oklch(0.2 0.02 250); /* slate-900 */
   --destructive: oklch(0.577 0.245 27.325);
@@ -172,24 +276,10 @@
 }
 
 @layer base {
-  html {
-    font-size: 20px; /* Increased from default 16px for larger overall text */
-  }
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground;
-  }
-  /* Footer text size adjustment - need to override Tailwind utilities */
-  footer,
-  footer p,
-  footer span,
-  footer a,
-  footer h3 {
-    font-size: 16px !important;
-  }
-  footer h3 {
-    font-size: 18px !important;
   }
 }

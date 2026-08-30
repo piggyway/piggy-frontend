@@ -17,7 +17,7 @@ export function TestimonialCard({
   return (
     <div
       className={cn(
-        "flex w-full flex-col items-start gap-5 rounded-[28px] bg-[#ffdfdf] p-6",
+        "bg-neutral-pink-background flex w-full flex-col items-start gap-5 rounded-[28px] p-6",
         className
       )}
     >
@@ -25,8 +25,8 @@ export function TestimonialCard({
       <div className="flex w-full flex-col items-start gap-3.5">
         <div className="text-primary-navy flex w-full items-start gap-0">
           {/* Opening Quote */}
-          <div className="text-primary-navy shrink-0 text-[42px] leading-[42px] font-semibold tracking-[-0.21px]">
-            "
+          <div className="text-primary-navy text-h4 shrink-0 leading-[42px] font-semibold tracking-[-0.21px]">
+            &quot;
           </div>
 
           {/* Quote Text */}
@@ -35,8 +35,8 @@ export function TestimonialCard({
           </p>
 
           {/* Closing Quote */}
-          <div className="text-primary-navy flex shrink-0 flex-col justify-end text-[42px] leading-0 font-semibold tracking-[-0.21px]">
-            "
+          <div className="text-primary-navy text-h4 flex shrink-0 flex-col justify-end leading-0 font-semibold tracking-[-0.21px]">
+            &quot;
           </div>
         </div>
       </div>

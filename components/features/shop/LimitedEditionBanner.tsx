@@ -12,7 +12,7 @@ export function LimitedEditionBanner() {
           <p className="text-primary-navy mb-2 text-lg leading-relaxed sm:text-xl">
             Fresh finds made for the season
           </p>
-          <h2 className="text-primary-navy-light text-[32px] leading-tight font-semibold sm:text-[42px]">
+          <h2 className="text-primary-navy-light text-large sm:text-h4 leading-tight font-semibold">
             Limited Edition
           </h2>
         </div>
@@ -22,11 +22,11 @@ export function LimitedEditionBanner() {
           {/* Left Decorative Elements */}
           <div className="hidden w-32 shrink-0 flex-col gap-4 md:flex">
             {/* Light blue rectangle */}
-            <div className="flex flex-1 items-center justify-center rounded-[28px] bg-[#e8eef7]">
+            <div className="bg-neutral-blue-background flex flex-1 items-center justify-center rounded-[28px]">
               <div className="h-16 w-16 rounded-lg bg-white/50" />
             </div>
             {/* Pink rounded shape */}
-            <div className="flex h-32 items-center justify-center rounded-[28px] bg-[#ffc0cb]">
+            <div className="bg-neutral-pink-background flex h-32 items-center justify-center rounded-[28px]">
               <div className="h-16 w-16 rounded-lg bg-white/50" />
             </div>
           </div>

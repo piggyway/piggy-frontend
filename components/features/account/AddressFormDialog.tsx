@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import type { Address, AddressType } from "@/lib/types/account";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -48,30 +48,37 @@ export function AddressFormDialog({
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  useEffect(() => {
-    if (address) {
-      setFormData({
-        type: address.type,
-        isDefault: address.isDefault,
-        recipientName: address.recipientName,
-        addressText: address.addressText,
-        postalCode: address.postalCode,
-        countryCode: address.countryCode,
-        phoneAu: address.phoneAu,
-      });
-    } else {
-      setFormData({
-        type: "shipping",
-        isDefault: false,
-        recipientName: null,
-        addressText: "",
-        postalCode: "",
-        countryCode: "AU",
-        phoneAu: null,
-      });
+  // Reset the form whenever the dialog is (re)opened for a different address.
+  // State is adjusted during render (instead of in an effect) per React guidance.
+  const [prevKey, setPrevKey] = useState<string | null>(null);
+  const currentKey = open ? `${address?.id ?? "new"}` : null;
+  if (currentKey !== prevKey) {
+    setPrevKey(currentKey);
+    if (currentKey !== null) {
+      if (address) {
+        setFormData({
+          type: address.type,
+          isDefault: address.isDefault,
+          recipientName: address.recipientName,
+          addressText: address.addressText,
+          postalCode: address.postalCode,
+          countryCode: address.countryCode,
+          phoneAu: address.phoneAu,
+        });
+      } else {
+        setFormData({
+          type: "shipping",
+          isDefault: false,
+          recipientName: null,
+          addressText: "",
+          postalCode: "",
+          countryCode: "AU",
+          phoneAu: null,
+        });
+      }
+      setErrors({});
     }
-    setErrors({});
-  }, [address, open]);
+  }
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -120,15 +127,15 @@ export function AddressFormDialog({
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Address Type */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Address Type <span className="text-red-500">*</span>
+            <label className="text-p font-medium text-gray-700">
+              Address Type <span className="text-destructive">*</span>
             </label>
             <select
               value={formData.type}
               onChange={(e) =>
                 handleChange("type", e.target.value as AddressType)
               }
-              className="w-full rounded-md border border-gray-200 bg-white px-3 py-2 text-sm"
+              className="text-p w-full rounded-md border border-gray-200 bg-white px-3 py-2"
             >
               <option value="shipping">Shipping</option>
               <option value="billing">Billing</option>
@@ -138,7 +145,7 @@ export function AddressFormDialog({
 
           {/* Recipient Name */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-p font-medium text-gray-700">
               Recipient Name
             </label>
             <Input
@@ -152,39 +159,43 @@ export function AddressFormDialog({
 
           {/* Address */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Address <span className="text-red-500">*</span>
+            <label className="text-p font-medium text-gray-700">
+              Address <span className="text-destructive">*</span>
             </label>
             <Input
               value={formData.addressText}
               onChange={(e) => handleChange("addressText", e.target.value)}
               placeholder="Street, suburb, state"
-              className={errors.addressText ? "border-red-500" : ""}
+              className={errors.addressText ? "border-destructive" : ""}
             />
             {errors.addressText && (
-              <p className="text-xs text-red-500">{errors.addressText}</p>
+              <p className="text-subtle text-destructive">
+                {errors.addressText}
+              </p>
             )}
           </div>
 
           {/* Postal / CountryCode */}
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Postal Code <span className="text-red-500">*</span>
+              <label className="text-p font-medium text-gray-700">
+                Postal Code <span className="text-destructive">*</span>
               </label>
               <Input
                 value={formData.postalCode}
                 onChange={(e) => handleChange("postalCode", e.target.value)}
-                className={errors.postalCode ? "border-red-500" : ""}
+                className={errors.postalCode ? "border-destructive" : ""}
               />
               {errors.postalCode && (
-                <p className="text-xs text-red-500">{errors.postalCode}</p>
+                <p className="text-subtle text-destructive">
+                  {errors.postalCode}
+                </p>
               )}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                Country Code <span className="text-red-500">*</span>
+              <label className="text-p font-medium text-gray-700">
+                Country Code <span className="text-destructive">*</span>
               </label>
               <Input
                 value={formData.countryCode}
@@ -192,17 +203,19 @@ export function AddressFormDialog({
                   handleChange("countryCode", e.target.value.toUpperCase())
                 }
                 placeholder="AU"
-                className={errors.countryCode ? "border-red-500" : ""}
+                className={errors.countryCode ? "border-destructive" : ""}
               />
               {errors.countryCode && (
-                <p className="text-xs text-red-500">{errors.countryCode}</p>
+                <p className="text-subtle text-destructive">
+                  {errors.countryCode}
+                </p>
               )}
             </div>
           </div>
 
           {/* Phone */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-p font-medium text-gray-700">
               Phone (AU)
             </label>
             <Input
@@ -221,7 +234,7 @@ export function AddressFormDialog({
               onChange={(e) => handleChange("isDefault", e.target.checked)}
               className="h-4 w-4 rounded border-gray-300"
             />
-            <label htmlFor="isDefault" className="text-sm text-gray-700">
+            <label htmlFor="isDefault" className="text-p text-gray-700">
               Set as default address
             </label>
           </div>

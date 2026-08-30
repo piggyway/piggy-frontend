@@ -4,12 +4,17 @@
  */
 
 export const API_ENDPOINTS = {
+  // Shop config
+  CONFIG: "/api/config",
+
   // Products
   PRODUCTS: "/api/products",
   PRODUCT_BY_ID: (id: string | number) => `/api/products/${id}`,
 
   // Variants
   VARIANTS: "/api/variants",
+  VARIANTS_RANDOM: "/api/variants/random",
+  VARIANTS_REVIEWS: (id: string | number) => `/api/variants/${id}/reviews`,
 
   // Categories
   CATEGORIES: "/api/categories",
@@ -28,6 +33,18 @@ export const API_ENDPOINTS = {
   // Orders
   ORDERS: "/api/orders",
   ORDER_BY_NUMBER: (orderNumber: string) => `/api/orders/${orderNumber}`,
+
+  // Boarding
+  BOARDING: "/api/boarding",
+  BOARDING_BY_REFERENCE: (reference: string) => `/api/boarding/${reference}`,
+  BOARDING_LOOKUP: "/api/boarding/lookup",
+  BOARDING_CANCEL: "/api/boarding/cancel",
+  BOARDING_AGREEMENT: (token: string) =>
+    `/api/boarding/agreement/${encodeURIComponent(token)}`,
+  BOARDING_AGREEMENT_SIGN: (token: string) =>
+    `/api/boarding/agreement/${encodeURIComponent(token)}/sign`,
+  BOARDING_AGREEMENT_PDF: (token: string) =>
+    `/api/boarding/agreement/${encodeURIComponent(token)}/pdf`,
 
   // Add more endpoints as needed
   // Users

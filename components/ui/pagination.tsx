@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,13 @@ import { Button } from "@/components/ui/button";
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
+  /** Callback mode - used when pagination only mutates client state. */
+  onPageChange?: (page: number) => void;
+  /**
+   * Link mode - renders crawlable <a> elements. Provide a function that
+   * builds the href for a given page. Takes precedence over onPageChange.
+   */
+  getHref?: (page: number) => string;
   className?: string;
 }
 
@@ -16,6 +23,7 @@ function Pagination({
   currentPage,
   totalPages,
   onPageChange,
+  getHref,
   className,
 }: PaginationProps) {
   // Generate page numbers to display
@@ -63,6 +71,49 @@ function Pagination({
 
   const pages = getPageNumbers();
 
+  const pageButton = (
+    page: number,
+    props: {
+      variant: "default" | "outline";
+      size: "sm" | "icon-sm";
+      ariaLabel: string;
+      ariaCurrent?: "page";
+      className: string;
+      children: React.ReactNode;
+    }
+  ) => {
+    if (getHref) {
+      return (
+        <Button
+          asChild
+          variant={props.variant}
+          size={props.size}
+          className={props.className}
+        >
+          <Link
+            href={getHref(page)}
+            aria-label={props.ariaLabel}
+            aria-current={props.ariaCurrent}
+          >
+            {props.children}
+          </Link>
+        </Button>
+      );
+    }
+    return (
+      <Button
+        variant={props.variant}
+        size={props.size}
+        onClick={() => onPageChange?.(page)}
+        aria-label={props.ariaLabel}
+        aria-current={props.ariaCurrent}
+        className={props.className}
+      >
+        {props.children}
+      </Button>
+    );
+  };
+
   return (
     <nav
       role="navigation"
@@ -73,16 +124,25 @@ function Pagination({
       )}
     >
       {/* Previous Button */}
-      <Button
-        variant="outline"
-        size="icon-sm"
-        onClick={() => onPageChange(currentPage - 1)}
-        disabled={currentPage <= 1}
-        aria-label="Go to previous page"
-        className="h-9 w-9 sm:h-10 sm:w-10"
-      >
-        <ChevronLeft className="size-4" />
-      </Button>
+      {currentPage <= 1 ? (
+        <Button
+          variant="outline"
+          size="icon-sm"
+          disabled
+          aria-label="Go to previous page"
+          className="h-9 w-9 sm:h-10 sm:w-10"
+        >
+          <ChevronLeft className="size-4" />
+        </Button>
+      ) : (
+        pageButton(currentPage - 1, {
+          variant: "outline",
+          size: "icon-sm",
+          ariaLabel: "Go to previous page",
+          className: "h-9 w-9 sm:h-10 sm:w-10",
+          children: <ChevronLeft className="size-4" />,
+        })
+      )}
 
       {/* Page Numbers - Hide on mobile if too many pages */}
       <div className="hidden items-center gap-1 sm:flex">
@@ -93,20 +153,19 @@ function Pagination({
               className="flex size-8 items-center justify-center sm:size-10"
               aria-hidden="true"
             >
-              <MoreHorizontal className="size-4 text-slate-400" />
+              <MoreHorizontal className="text-muted-foreground size-4" />
             </span>
           ) : (
-            <Button
-              key={page}
-              variant={currentPage === page ? "default" : "outline"}
-              size="sm"
-              onClick={() => onPageChange(page)}
-              aria-label={`Go to page ${page}`}
-              aria-current={currentPage === page ? "page" : undefined}
-              className="min-w-[32px] sm:min-w-[40px]"
-            >
-              {page}
-            </Button>
+            <React.Fragment key={page}>
+              {pageButton(page, {
+                variant: currentPage === page ? "default" : "outline",
+                size: "sm",
+                ariaLabel: `Go to page ${page}`,
+                ariaCurrent: currentPage === page ? "page" : undefined,
+                className: "min-w-[32px] sm:min-w-[40px]",
+                children: page,
+              })}
+            </React.Fragment>
           )
         )}
       </div>
@@ -119,16 +178,25 @@ function Pagination({
       </div>
 
       {/* Next Button */}
-      <Button
-        variant="outline"
-        size="icon-sm"
-        onClick={() => onPageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages}
-        aria-label="Go to next page"
-        className="h-9 w-9 sm:h-10 sm:w-10"
-      >
-        <ChevronRight className="size-4" />
-      </Button>
+      {currentPage >= totalPages ? (
+        <Button
+          variant="outline"
+          size="icon-sm"
+          disabled
+          aria-label="Go to next page"
+          className="h-9 w-9 sm:h-10 sm:w-10"
+        >
+          <ChevronRight className="size-4" />
+        </Button>
+      ) : (
+        pageButton(currentPage + 1, {
+          variant: "outline",
+          size: "icon-sm",
+          ariaLabel: "Go to next page",
+          className: "h-9 w-9 sm:h-10 sm:w-10",
+          children: <ChevronRight className="size-4" />,
+        })
+      )}
     </nav>
   );
 }

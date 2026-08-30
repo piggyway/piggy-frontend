@@ -1,32 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { toast } from "sonner";
+import { Turnstile } from "@marsidev/react-turnstile";
+import type { TurnstileInstance } from "@marsidev/react-turnstile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-
-const contactSchema = z.object({
-  firstName: z.string().min(1, "First name is required"),
-  lastName: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email address"),
-  subject: z
-    .string()
-    .min(1, "Subject is required")
-    .max(200, "Subject too long"),
-  message: z
-    .string()
-    .min(1, "Message is required")
-    .max(5000, "Message too long"),
-});
-
-type ContactFormData = z.infer<typeof contactSchema>;
+import { contactSchema, type ContactFormData } from "@/lib/validators/contact";
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance | null>(null);
   const {
     register,
     handleSubmit,
@@ -36,13 +25,36 @@ export function ContactForm() {
     resolver: zodResolver(contactSchema),
   });
 
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+  // Render Turnstile on the client only, to avoid a hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  /** Single-use token: drop it after any submit attempt so the next one needs a fresh check. */
+  const consumeTurnstileToken = () => {
+    setTurnstileToken(null);
+    try {
+      turnstileRef.current?.reset();
+    } catch {
+      // widget may not be mounted yet; ignore
+    }
+  };
+
   const onSubmit = async (data: ContactFormData) => {
+    if (!turnstileToken) {
+      toast.error("Please complete the human verification.");
+      return;
+    }
+
     setIsSubmitting(true);
+    consumeTurnstileToken();
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, turnstileToken }),
       });
 
       const result = await res.json();
@@ -50,6 +62,13 @@ export function ContactForm() {
       if (!res.ok) {
         if (res.status === 429) {
           throw new Error("Too many requests. Please try again later.");
+        }
+        if (
+          res.status === 400 &&
+          typeof result.error === "string" &&
+          result.error.startsWith("turnstile")
+        ) {
+          throw new Error("Human verification failed. Please try again.");
         }
         throw new Error(result.error || "Failed to send message");
       }
@@ -83,10 +102,12 @@ export function ContactForm() {
               id="firstName"
               placeholder="John"
               {...register("firstName")}
-              className={errors.firstName ? "border-red-500" : ""}
+              className={errors.firstName ? "border-destructive" : ""}
             />
             {errors.firstName && (
-              <p className="text-sm text-red-500">{errors.firstName.message}</p>
+              <p className="text-destructive text-sm">
+                {errors.firstName.message}
+              </p>
             )}
           </div>
           <div className="space-y-2">
@@ -100,10 +121,12 @@ export function ContactForm() {
               id="lastName"
               placeholder="Doe"
               {...register("lastName")}
-              className={errors.lastName ? "border-red-500" : ""}
+              className={errors.lastName ? "border-destructive" : ""}
             />
             {errors.lastName && (
-              <p className="text-sm text-red-500">{errors.lastName.message}</p>
+              <p className="text-destructive text-sm">
+                {errors.lastName.message}
+              </p>
             )}
           </div>
         </div>
@@ -117,10 +140,10 @@ export function ContactForm() {
             type="email"
             placeholder="john@example.com"
             {...register("email")}
-            className={errors.email ? "border-red-500" : ""}
+            className={errors.email ? "border-destructive" : ""}
           />
           {errors.email && (
-            <p className="text-sm text-red-500">{errors.email.message}</p>
+            <p className="text-destructive text-sm">{errors.email.message}</p>
           )}
         </div>
 
@@ -135,10 +158,10 @@ export function ContactForm() {
             id="subject"
             placeholder="Order Inquiry"
             {...register("subject")}
-            className={errors.subject ? "border-red-500" : ""}
+            className={errors.subject ? "border-destructive" : ""}
           />
           {errors.subject && (
-            <p className="text-sm text-red-500">{errors.subject.message}</p>
+            <p className="text-destructive text-sm">{errors.subject.message}</p>
           )}
         </div>
 
@@ -153,19 +176,45 @@ export function ContactForm() {
             id="message"
             placeholder="How can we help you today?"
             className={`min-h-[150px] ${
-              errors.message ? "border-red-500" : ""
+              errors.message ? "border-destructive" : ""
             }`}
             {...register("message")}
           />
           {errors.message && (
-            <p className="text-sm text-red-500">{errors.message.message}</p>
+            <p className="text-destructive text-sm">{errors.message.message}</p>
           )}
         </div>
 
+        {/* Render Turnstile on the client only, to avoid a hydration mismatch */}
+        {mounted &&
+          (turnstileSiteKey ? (
+            <div className="flex justify-center">
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={turnstileSiteKey}
+                onSuccess={(token) => setTurnstileToken(token)}
+                onExpire={() => setTurnstileToken(null)}
+                onError={() => setTurnstileToken(null)}
+                options={{
+                  action: "contact",
+                  // The widget follows the visitor's browser language by
+                  // default; the site is English-only, so pin it.
+                  language: "en",
+                }}
+              />
+            </div>
+          ) : (
+            <div className="rounded-[12px] border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
+              Turnstile is not configured. Please set
+              NEXT_PUBLIC_TURNSTILE_SITE_KEY.
+            </div>
+          ))}
+
         <Button
           type="submit"
-          disabled={isSubmitting}
-          className="bg-primary-navy hover:bg-primary-navy-light h-12 w-full rounded-[16px] text-base text-white disabled:opacity-50"
+          disabled={isSubmitting || !turnstileToken}
+          size="xl"
+          className="w-full"
         >
           {isSubmitting ? "Sending..." : "Send Message"}
         </Button>
@@ -173,5 +222,3 @@ export function ContactForm() {
     </div>
   );
 }
-
-

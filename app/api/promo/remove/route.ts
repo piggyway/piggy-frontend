@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -19,7 +20,7 @@ export async function DELETE(request: NextRequest) {
       headers.Authorization = token;
     }
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/promo/remove`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/promo/remove`, {
       method: "DELETE",
       headers,
     });
@@ -38,5 +39,3 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
-
-

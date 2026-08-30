@@ -58,7 +58,7 @@ export function CartPage() {
   if (isLoading) {
     return (
       <div className="mx-auto max-w-[1160px] px-4 py-16 text-center">
-        <p className="text-lg text-slate-600">Loading your cart...</p>
+        <p className="text-p-ui text-slate-600">Loading your cart...</p>
       </div>
     );
   }
@@ -75,13 +75,11 @@ export function CartPage() {
           <div className="bg-primary-navy/5 mb-6 flex h-24 w-24 items-center justify-center rounded-full">
             <ShoppingBag className="text-primary-navy/40 size-12" />
           </div>
-          <h1 className="text-primary-navy mb-4 text-3xl font-bold">
-            Your Cart is Empty
-          </h1>
-          {error && <p className="text-destructive mb-2 text-sm">{error}</p>}
+          <h1 className="text-primary-navy text-h4 mb-4">Your Cart is Empty</h1>
+          {error && <p className="text-destructive text-p mb-2">{error}</p>}
           <p className="mb-8 max-w-md text-slate-600">
-            Looks like you haven't started your shopping spree yet. Explore our
-            products and find something you love!
+            Looks like you haven&apos;t started your shopping spree yet. Explore
+            our products and find something you love!
           </p>
           <Button asChild size="lg" className="bg-primary-navy text-white">
             <Link href="/shop">Start Shopping</Link>
@@ -96,14 +94,14 @@ export function CartPage() {
 
   return (
     <div className="mx-auto max-w-[1160px] px-4 pt-32 pb-24">
-      <div className="mb-12 flex items-center gap-4">
-        <Button variant="ghost" size="sm" asChild className="gap-2">
+      <div className="mb-12 flex flex-col items-start gap-4">
+        <Button variant="ghost" size="sm" asChild className="-ml-3 gap-2">
           <Link href="/shop">
             <ArrowLeft className="size-4" />
             Continue Shopping
           </Link>
         </Button>
-        <h1 className="text-primary-navy text-2xl font-bold">Shopping Cart</h1>
+        <h1 className="text-primary-navy text-large">Shopping Cart</h1>
       </div>
 
       <div className="flex flex-col gap-8 lg:flex-row lg:items-start">
@@ -117,7 +115,7 @@ export function CartPage() {
             )}
           >
             {error && (
-              <div className="text-destructive py-4 text-sm">{error}</div>
+              <div className="text-destructive text-p py-4">{error}</div>
             )}
             <AnimatePresence mode="popLayout">
               {cart.items.map((item) => (
@@ -127,6 +125,11 @@ export function CartPage() {
                   title={item.productTitle}
                   variant={item.variantSku || undefined}
                   variantOptions={item.variantOptions}
+                  addOns={item.addOns.map((addOn) => ({
+                    id: addOn.id,
+                    name: addOn.name,
+                    formattedUnitPrice: addOn.formattedUnitPrice,
+                  }))}
                   price={item.unitPriceCents / 100}
                   image={item.imageUrl}
                   quantity={item.quantity}
@@ -152,11 +155,6 @@ export function CartPage() {
               </div>
             )}
           </div>
-
-          {/* Related Products Section - Shown below cart items on mobile/desktop */}
-          <div className="mt-12">
-            <RelatedProducts />
-          </div>
         </div>
 
         {/* Order Summary */}
@@ -166,9 +164,14 @@ export function CartPage() {
             discount={discount}
             grandTotal={grandTotal}
             currencySymbol={cart.currencySymbol}
-            className="sticky top-24"
+            className="sticky top-24 lg:h-[720px]"
           />
         </div>
+      </div>
+
+      {/* Related Products Section - full content width below the cart columns */}
+      <div className="mt-12">
+        <RelatedProducts />
       </div>
     </div>
   );

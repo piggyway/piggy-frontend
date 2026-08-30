@@ -4,7 +4,7 @@
  */
 
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
-import { apiClient } from "@/lib/api/client";
+import { apiClient, isNotFoundError } from "@/lib/api/client";
 import { normalizeImageUrl } from "@/lib/utils/images";
 import type {
   ProductListParams,
@@ -14,12 +14,21 @@ import type {
   ProductListItemFromAPI,
   ProductDetailFromAPI,
   ProductDetail,
+  StoryBlock,
+  FeatureCard,
+  InfoSection,
   ProductOption,
   ProductVariant,
+  AddOn,
+  AddOnFromAPI,
+  AddOnGroup,
+  AddOnGroupFromAPI,
+  AddOnSelectionMode,
   VariantListParams,
   VariantListItemFromAPI,
   VariantListItem,
   VariantListResponse,
+  VariantReviewsResponse,
 } from "@/lib/types/product";
 
 /**
@@ -64,27 +73,42 @@ export class ProductService {
       // Transform to frontend format
       return this.transformProductListResponse(response);
     } catch (error) {
+      // Never return an empty page here: callers cannot tell that apart from
+      // a store with no matching products, and they render (or 404) on that
+      // difference.
       console.error("[ProductService] Failed to fetch products:", error);
-      // Return empty response on error
-      return {
-        data: [],
-        pagination: {
-          page: params?.page || 1,
-          pageSize: params?.page_size || 10,
-          total: 0,
-          totalPages: 0,
-        },
-      };
+      throw error;
     }
   }
 
   /**
    * Get product detail by slug
+   * @param slug - Product slug
+   * @param options - Optional parameters
+   * @param options.includeDraft - Include draft products (for preview mode)
    */
-  static async getProductBySlug(slug: string): Promise<ProductDetail | null> {
+  static async getProductBySlug(
+    slug: string,
+    options?: { includeDraft?: boolean }
+  ): Promise<ProductDetail | null> {
     try {
+      const params: Record<string, string | number | boolean> = {};
+      const headers: Record<string, string> = {};
+      if (options?.includeDraft) {
+        params.include_draft = true;
+        // Draft reads only happen server-side, where the route requires the
+        // preview secret before it will return unpublished products.
+        if (typeof window === "undefined" && process.env.PREVIEW_SECRET) {
+          headers["x-preview-secret"] = process.env.PREVIEW_SECRET;
+        }
+      }
+
       const response = await apiClient.get<ProductDetailFromAPI>(
-        API_ENDPOINTS.PRODUCT_BY_ID(slug)
+        API_ENDPOINTS.PRODUCT_BY_ID(slug),
+        {
+          params: Object.keys(params).length > 0 ? params : undefined,
+          headers: Object.keys(headers).length > 0 ? headers : undefined,
+        }
       );
 
       if (!response.id) {
@@ -93,8 +117,14 @@ export class ProductService {
 
       return this.transformProductDetail(response);
     } catch (error) {
+      // `null` means the backend confirmed there is no such product, so the
+      // page may 404. Anything else is a failed request and must propagate,
+      // otherwise a backend blip is served to crawlers as a permanent 404.
+      if (isNotFoundError(error)) {
+        return null;
+      }
       console.error(`[ProductService] Failed to fetch product ${slug}:`, error);
-      return null;
+      throw error;
     }
   }
 
@@ -139,6 +169,7 @@ export class ProductService {
       imageUrl: normalizeImageUrl(product.image_url) || DEFAULT_PRODUCT_IMAGE,
       variantsCount: product.variants_count,
       isFeatured: product.is_featured,
+      dateUpdated: product.date_updated ?? null,
     };
   }
 
@@ -150,12 +181,32 @@ export class ProductService {
   ): ProductDetail {
     const price = product.base_price || 0;
     const currencySlug = product.currency?.slug || DEFAULT_CURRENCY;
+    let options: ProductOption[];
+    if (product.options.length > 0) {
+      options = product.options.map((option) => this.transformOption(option));
+    } else {
+      console.error(
+        `[ProductService] Product ${product.id} (${product.slug || product.title || "Untitled Product"}) is missing options; deriving from variants.`
+      );
+      options = this.buildOptionsFromVariants(product.variants);
+    }
 
     return {
       id: product.id,
       title: product.title || "Untitled Product",
       subtitle: product.subtitle || "",
       description: product.description || "",
+      detailInformation: product.detail_information || "",
+      productFeatures: product.product_features || "",
+      specifications: product.specifications || "",
+      careInstructions: product.care_instructions || "",
+      featureSectionTitle: product.feature_section_title || "",
+      featureSectionSubtitle: product.feature_section_subtitle || "",
+      featureSectionDescription: product.feature_section_description || "",
+      featureBannerText: product.feature_banner_text || "",
+      purchaseMode:
+        product.purchase_mode === "preorder" ? "preorder" : "standard",
+      addOnMaxSelections: product.add_on_max_selections ?? null,
       slug: product.slug || `product-${product.id}`,
       basePrice: price,
       formattedPrice: this.formatPrice(price, currencySlug),
@@ -169,10 +220,92 @@ export class ProductService {
               (image) => normalizeImageUrl(image) || DEFAULT_PRODUCT_IMAGE
             )
           : [DEFAULT_PRODUCT_IMAGE],
-      options: product.options.map((option) => this.transformOption(option)),
+      detailInformationFiles:
+        product.detail_information_files.length > 0
+          ? product.detail_information_files
+              .map((file) => normalizeImageUrl(file))
+              .filter((file): file is string => file !== null)
+          : [],
+      storyBlocks: (product.story_blocks ?? [])
+        .map((block) => ({
+          title: block.title || "",
+          description: block.description || "",
+          imageUrl: normalizeImageUrl(block.image_url),
+          imageLeft: block.image_left,
+        }))
+        .filter(
+          (block): block is StoryBlock =>
+            block.imageUrl !== null && block.title !== ""
+        ),
+      featureCards: (product.feature_cards ?? [])
+        .map((card) => ({
+          icon: card.icon || "",
+          label: card.label || "",
+          background: card.background || "",
+        }))
+        .filter(
+          (card): card is FeatureCard => card.icon !== "" && card.label !== ""
+        ),
+      infoSections: (product.info_sections ?? [])
+        .map((section) => ({
+          id: section.id,
+          title: section.title || "",
+          content: section.content || "",
+        }))
+        .filter(
+          (section): section is InfoSection =>
+            section.title !== "" && section.content !== ""
+        ),
+      options,
       variants: product.variants.map((variant) =>
         this.transformVariant(variant)
       ),
+      addOnGroups: (product.add_on_groups ?? [])
+        .map((group) => this.transformAddOnGroup(group))
+        .filter((group) => group.addOns.length > 0),
+      addOns: (product.add_ons ?? []).map((addOn) =>
+        this.transformAddOn(addOn)
+      ),
+    };
+  }
+
+  /**
+   * Transform an add-on group from API format
+   */
+  private static transformAddOnGroup(group: AddOnGroupFromAPI): AddOnGroup {
+    const selectionMode: AddOnSelectionMode =
+      group.selection_mode === "single" ? "single" : "multiple";
+    return {
+      id: group.id,
+      uuid: group.uuid,
+      name: group.name || "Add-ons",
+      selectionMode,
+      isRequired: group.is_required,
+      sort: group.sort ?? 0,
+      addOns: (group.add_ons ?? []).map((addOn) => this.transformAddOn(addOn)),
+    };
+  }
+
+  /**
+   * Transform an add-on from API format. Price stays in dollars.
+   */
+  private static transformAddOn(addOn: AddOnFromAPI): AddOn {
+    const price = addOn.price ?? 0;
+    const currencySlug = addOn.currency?.slug || DEFAULT_CURRENCY;
+    return {
+      id: addOn.id,
+      uuid: addOn.uuid,
+      name: addOn.name || "Add-on",
+      slug: addOn.slug,
+      description: addOn.description,
+      price,
+      formattedPrice: this.formatPrice(price, currencySlug),
+      currency: addOn.currency,
+      imageUrl: normalizeImageUrl(addOn.image_url),
+      stockQuantity: addOn.stock_quantity,
+      isAvailable: addOn.is_available,
+      sort: addOn.sort ?? 0,
+      groupId: addOn.group_id,
     };
   }
 
@@ -261,6 +394,45 @@ export class ProductService {
   }
 
   /**
+   * Build options from variant option values when options are missing.
+   */
+  private static buildOptionsFromVariants(
+    variants: Array<{
+      id: number;
+      option_values: Array<{
+        option_id: number;
+        option_name: string | null;
+        value_id: number;
+        value: string | null;
+      }>;
+    }>
+  ): ProductOption[] {
+    const optionsMap = new Map<number, ProductOption>();
+    for (const variant of variants) {
+      for (const ov of variant.option_values) {
+        if (!optionsMap.has(ov.option_id)) {
+          optionsMap.set(ov.option_id, {
+            id: ov.option_id,
+            name: ov.option_name,
+            slug: null,
+            values: [],
+          });
+        }
+        const option = optionsMap.get(ov.option_id)!;
+        if (!option.values.some((value) => value.id === ov.value_id)) {
+          option.values.push({
+            id: ov.value_id,
+            value: ov.value,
+            colorHex: null,
+            variantIds: [],
+          });
+        }
+      }
+    }
+    return Array.from(optionsMap.values());
+  }
+
+  /**
    * Format price with currency symbol
    */
   private static formatPrice(price: number, currencySlug: string): string {
@@ -307,16 +479,34 @@ export class ProductService {
 
       return this.transformVariantListResponse(response);
     } catch (error) {
+      // A failed request must not report `total: 0`. Callers use that count to
+      // decide whether a category is empty and whether a page exists.
       console.error("[ProductService] Failed to fetch variants:", error);
-      return {
-        data: [],
-        pagination: {
-          page: params?.page || 1,
-          pageSize: params?.page_size || 10,
-          total: 0,
-          totalPages: 0,
-        },
-      };
+      throw error;
+    }
+  }
+
+  /**
+   * Get 3 random variants (for "You Might Also Like" sections)
+   *
+   * Degrades to an empty list on failure instead of throwing: the caller is a
+   * client-side suggestion strip whose absence changes nothing about whether
+   * the page exists. The failure is still reported.
+   */
+  static async getRandomVariants(): Promise<VariantListItem[]> {
+    try {
+      const response = await apiClient.get<{
+        data: VariantListItemFromAPI[];
+      }>(API_ENDPOINTS.VARIANTS_RANDOM);
+
+      if (!response.data) {
+        throw new Error("Invalid API response format");
+      }
+
+      return response.data.map((v) => this.transformVariantListItem(v));
+    } catch (error) {
+      console.error("[ProductService] Failed to fetch random variants:", error);
+      return [];
     }
   }
 
@@ -370,6 +560,7 @@ export class ProductService {
     // Calculate discount percentage
     if (
       originalPrice !== null &&
+      originalPrice > 0 &&
       discountedPrice !== null &&
       discountedPrice < originalPrice
     ) {
@@ -394,11 +585,38 @@ export class ProductService {
       imageUrl: normalizeImageUrl(variant.image_url) || DEFAULT_PRODUCT_IMAGE,
       stockQuantity: variant.stock_quantity,
       isAvailable: variant.is_available,
+      purchaseMode:
+        variant.purchase_mode === "preorder" ? "preorder" : "standard",
       optionValues: variant.option_values.map((ov) => ({
         optionName: ov.option_name,
         optionSlug: ov.option_slug,
         value: ov.value,
       })),
     };
+  }
+
+  /**
+   * Get reviews for a variant
+   *
+   * Degrades to `null` on failure instead of throwing: reviews are a section
+   * of the product page, so a review outage must not take the product page
+   * down with it. The failure is still reported.
+   */
+  static async getVariantReviews(
+    variantId: number
+  ): Promise<VariantReviewsResponse | null> {
+    try {
+      const response = await apiClient.get<VariantReviewsResponse>(
+        API_ENDPOINTS.VARIANTS_REVIEWS(variantId)
+      );
+
+      return response;
+    } catch (error) {
+      console.error(
+        `[ProductService] Failed to fetch reviews for variant ${variantId}:`,
+        error
+      );
+      return null;
+    }
   }
 }

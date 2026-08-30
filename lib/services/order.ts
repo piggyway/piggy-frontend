@@ -1,7 +1,7 @@
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import { fetchWithAuth } from "@/lib/api/client";
 import type {
-  Order,
+  OrderAddress,
   OrderDetailResponse,
   OrderListResponse,
   OrderStatus,
@@ -71,7 +71,7 @@ export class OrderService {
     date_created: string;
     shipped_at: string | null;
     delivery_method: string | null;
-    shipping_address: any;
+    shipping_address: OrderAddress | null;
   }> {
     const order = await this.getOrderDetail(orderNumber);
     return {

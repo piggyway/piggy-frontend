@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -22,15 +23,18 @@ export async function PATCH(
     const sessionId = request.headers.get("x-session-id") || undefined;
     const body = await request.json();
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/cart/items/${itemId}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token ? { Authorization: token } : {}),
-        ...(sessionId ? { "X-Session-Id": sessionId } : {}),
-      },
-      body: JSON.stringify(body),
-    });
+    const res = await backendFetch(
+      `${API_BASE_URL}/api/v1/cart/items/${encodeURIComponent(itemId)}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: token } : {}),
+          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
+        },
+        body: JSON.stringify(body),
+      }
+    );
 
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });
@@ -56,13 +60,16 @@ export async function DELETE(
     const token = request.headers.get("authorization") || undefined;
     const sessionId = request.headers.get("x-session-id") || undefined;
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/cart/items/${itemId}`, {
-      method: "DELETE",
-      headers: {
-        ...(token ? { Authorization: token } : {}),
-        ...(sessionId ? { "X-Session-Id": sessionId } : {}),
-      },
-    });
+    const res = await backendFetch(
+      `${API_BASE_URL}/api/v1/cart/items/${encodeURIComponent(itemId)}`,
+      {
+        method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: token } : {}),
+          ...(sessionId ? { "X-Session-Id": sessionId } : {}),
+        },
+      }
+    );
 
     const data = await res.json();
     return NextResponse.json(data, { status: res.status });

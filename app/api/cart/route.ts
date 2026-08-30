@@ -4,6 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -16,13 +17,6 @@ export async function GET(request: NextRequest) {
 
     const token = request.headers.get("authorization");
     const sessionId = request.headers.get("x-session-id");
-
-    console.log("📦 [Cart API Route] Request headers:", {
-      hasAuthorization: !!token,
-      hasSessionId: !!sessionId,
-      authorizationHeader: token ? `${token.substring(0, 20)}...` : "none",
-      sessionId: sessionId || "none",
-    });
 
     const headers: HeadersInit = {
       "Content-Type": "application/json",
@@ -49,7 +43,7 @@ export async function GET(request: NextRequest) {
       ? `${API_BASE_URL}/api/v1/cart?${queryString}`
       : `${API_BASE_URL}/api/v1/cart`;
 
-    const res = await fetch(backendUrl, {
+    const res = await backendFetch(backendUrl, {
       headers,
     });
 

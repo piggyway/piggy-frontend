@@ -33,7 +33,8 @@ export function FloatingCartButton() {
     if (!isOpen) return;
     ensureLoaded().catch((err) => {
       // If auth is required, close the sheet and let CartProvider show the dialog.
-      if (String((err as any)?.message || err).includes("AUTH_REQUIRED")) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes("AUTH_REQUIRED")) {
         setIsOpen(false);
       }
     });
@@ -53,11 +54,11 @@ export function FloatingCartButton() {
       <SheetTrigger asChild>
         <Button
           size="icon"
-          className="fixed right-8 bottom-8 z-50 h-14 w-14 rounded-full shadow-xl transition-transform hover:scale-105"
+          className="fixed right-8 bottom-8 z-40 h-14 w-14 rounded-full shadow-xl transition-transform hover:scale-105"
         >
           <ShoppingCart className="h-6 w-6" />
           {totalItems > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white">
+            <span className="text-detail bg-destructive absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full font-semibold text-white">
               {totalItems}
             </span>
           )}
@@ -104,13 +105,19 @@ export function FloatingCartButton() {
                       <div>
                         <h4 className="line-clamp-1 font-medium">
                           {item.productTitle}
+                          {item.productSubtitle && (
+                            <span className="text-muted-foreground ml-1 font-normal">
+                              | {item.productSubtitle}
+                            </span>
+                          )}
                         </h4>
-                        {item.variantOptions && item.variantOptions.length > 0 ? (
+                        {item.variantOptions &&
+                        item.variantOptions.length > 0 ? (
                           <div className="flex flex-col gap-0.5">
                             {item.variantOptions.map((opt, i) => (
                               <p
                                 key={i}
-                                className="text-muted-foreground text-sm capitalize"
+                                className="text-muted-foreground text-p capitalize"
                               >
                                 {opt.name}: {opt.value}
                               </p>
@@ -123,7 +130,7 @@ export function FloatingCartButton() {
                               {item.variantSku.split(",").map((v, i) => (
                                 <p
                                   key={i}
-                                  className="text-muted-foreground text-sm capitalize"
+                                  className="text-muted-foreground text-p capitalize"
                                 >
                                   {v.trim()}
                                 </p>
@@ -189,7 +196,7 @@ export function FloatingCartButton() {
               <Button
                 variant="default"
                 asChild
-                className="bg-primary-navy w-full text-white hover:bg-primary-navy/90"
+                className="w-full"
                 onClick={() => setIsOpen(false)}
               >
                 <Link href="/cart">View Cart</Link>

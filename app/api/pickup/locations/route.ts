@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -13,14 +14,14 @@ export async function GET(request: NextRequest) {
 
     const url = new URL(`${API_BASE_URL}/api/v1/pickup/locations`);
 
-    const res = await fetch(url.toString(), {
+    const res = await backendFetch(url.toString(), {
       headers: {
         Authorization: token || "",
       },
     });
 
     const data = await res.json();
-    return NextResponse.json(data);
+    return NextResponse.json(data, { status: res.status });
   } catch (error) {
     console.error("[API Route Error]", error);
     return NextResponse.json(
@@ -29,4 +30,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

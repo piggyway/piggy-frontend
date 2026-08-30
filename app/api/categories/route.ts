@@ -4,6 +4,7 @@
  */
 
 import { NextResponse } from "next/server";
+import { backendFetch, upstreamErrorResponse } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
@@ -20,7 +21,7 @@ export async function GET() {
     // const token = request.headers.get("authorization");
 
     // 3. Call backend API
-    const res = await fetch(url.toString(), {
+    const res = await backendFetch(url.toString(), {
       method: "GET",
       // headers: {
       //   ...(token && { Authorization: token }),
@@ -31,12 +32,12 @@ export async function GET() {
       },
     });
 
-    // 4. Check response status
+    // 4. Relay a failed upstream response under its own status
     if (!res.ok) {
       console.error(
         `[Categories API] Backend returned ${res.status}: ${res.statusText}`
       );
-      throw new Error(`Backend API error: ${res.status}`);
+      return upstreamErrorResponse(res, "Failed to fetch categories");
     }
 
     // 5. Parse response data

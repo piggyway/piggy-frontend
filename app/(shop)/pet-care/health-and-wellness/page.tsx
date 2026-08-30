@@ -4,16 +4,30 @@ import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
+/**
+ * Dates taken from this file's git history: PUBLISHED_ON is the commit that
+ * created the article, UPDATED_ON the last one that changed its copy.
+ *
+ * The previous values claimed March 2024, which is before this repository
+ * existed (first commit 2025-10-27), so they were placeholders rather than
+ * real dates. The byline, the OpenGraph tags and the Article JSON-LD all read
+ * these constants so they cannot disagree.
+ */
+const PUBLISHED_ON = "2025-12-24";
+const UPDATED_ON = "2025-12-24";
+
 export const metadata: Metadata = {
-  title: "Small Pet Health & Wellness Guide | Piggy Way Crossing",
+  title: "Small Pet Health & Wellness Guide",
   description:
     "Essential health guide for guinea pigs and rabbits. Learn to recognize common ailments, grooming tips, and when to visit the vet.",
+  alternates: { canonical: "/pet-care/health-and-wellness" },
   openGraph: {
     title: "Small Pet Health & Wellness Guide",
     description:
       "Essential health guide for guinea pigs and rabbits. Learn to recognize common ailments, grooming tips, and when to visit the vet.",
     type: "article",
-    publishedTime: "2024-03-20T00:00:00.000Z",
+    images: ["/pet-care-tips/default1.png"],
+    publishedTime: `${PUBLISHED_ON}T00:00:00.000Z`,
     authors: ["Piggy Way Crossing Team"],
     tags: ["Pet Health", "Guinea Pig Care", "Rabbit Care", "Wellness"],
   },
@@ -38,8 +52,8 @@ export default function HealthWellnessPage() {
         url: "https://piggyway.com.au/header-logo.png",
       },
     },
-    datePublished: "2024-03-20",
-    dateModified: "2024-03-20",
+    datePublished: PUBLISHED_ON,
+    dateModified: UPDATED_ON,
     description:
       "Essential health guide for guinea pigs and rabbits. Learn to recognize common ailments, grooming tips, and when to visit the vet.",
   };
@@ -74,7 +88,14 @@ export default function HealthWellnessPage() {
               Piggy Way Crossing Team
             </span>
             <span className="hidden sm:inline">•</span>
-            <span>March 20, 2024</span>
+            <span>
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-AU", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "UTC",
+              })}
+            </span>
             <span className="hidden sm:inline">•</span>
             <span>6 min read</span>
           </div>
@@ -92,7 +113,7 @@ export default function HealthWellnessPage() {
         </div>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-headings:text-primary-navy prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-p:text-lg prose-p:leading-8 prose-a:text-secondary-mint prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-headings:text-primary-navy prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-p:text-lg prose-p:leading-8 prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
             Prevention is always better than cure. Because small pets like
             guinea pigs and rabbits are prey animals, they are experts at hiding
@@ -104,8 +125,8 @@ export default function HealthWellnessPage() {
 
           <h2>Daily Health Checks</h2>
           <p>
-            Make health checks part of your daily cuddle routine. It only takes a
-            minute but can save a life.
+            Make health checks part of your daily cuddle routine. It only takes
+            a minute but can save a life.
           </p>
           <ul>
             <li>
@@ -133,8 +154,8 @@ export default function HealthWellnessPage() {
           <h3>Nail Trimming</h3>
           <p>
             Overgrown nails can curl back into the footpad, causing pain and
-            infection. Trim tips every 2-4 weeks. If you're nervous, ask your
-            vet to demonstrate or use a file.
+            infection. Trim tips every 2-4 weeks. If you&apos;re nervous, ask
+            your vet to demonstrate or use a file.
           </p>
 
           <h3>Brushing</h3>
@@ -146,15 +167,16 @@ export default function HealthWellnessPage() {
 
           <h3>Boar Cleaning (Guinea Pigs)</h3>
           <p>
-            Male guinea pigs need their "sac" cleaned occasionally to prevent
-            impaction. It's not glamorous, but it's necessary for their comfort.
+            Male guinea pigs need their &quot;sac&quot; cleaned occasionally to
+            prevent impaction. It&apos;s not glamorous, but it&apos;s necessary
+            for their comfort.
           </p>
 
-          <div className="my-8 rounded-r-lg border-l-4 border-red-500 bg-red-50 p-6">
-            <h4 className="mt-0 mb-2 font-bold text-red-900">
+          <div className="border-destructive bg-destructive/10 my-8 rounded-r-lg border-l-4 p-6">
+            <h4 className="text-destructive mt-0 mb-2 font-bold">
               Emergency Signs - Go to Vet Immediately
             </h4>
-            <ul className="mb-0 text-sm text-red-800">
+            <ul className="text-destructive mb-0 text-sm">
               <li>Not eating or pooping for 12 hours (Gut Stasis risk)</li>
               <li>Labored breathing or gasping</li>
               <li>Lethargy or inability to move</li>
@@ -165,9 +187,9 @@ export default function HealthWellnessPage() {
 
           <h2>Finding a Vet</h2>
           <p>
-            Not all vets see "exotics." Ensure you find a vet experienced with
-            guinea pigs or rabbits <em>before</em> an emergency happens. Look
-            for "exotic animal" specialists.
+            Not all vets see &quot;exotics.&quot; Ensure you find a vet
+            experienced with guinea pigs or rabbits <em>before</em> an emergency
+            happens. Look for &quot;exotic animal&quot; specialists.
           </p>
 
           <h2>Weight Monitoring</h2>

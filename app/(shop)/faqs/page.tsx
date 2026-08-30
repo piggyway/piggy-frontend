@@ -8,9 +8,10 @@ import {
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 
 export const metadata: Metadata = {
-  title: "Frequently Asked Questions | Piggy Way Crossing",
+  title: "Frequently Asked Questions",
   description:
     "Find answers to common questions about our products, shipping, and guinea pig care.",
+  alternates: { canonical: "/faqs" },
 };
 
 const FAQS = [
@@ -18,8 +19,8 @@ const FAQS = [
     category: "Products & Care",
     questions: [
       {
-        q: "What bedding is best for guinea pigs?",
-        a: "We highly recommend fleece liners! They are reusable, eco-friendly, and super soft on sensitive guinea pig feet. Unlike wood shavings, they are dust-free which helps prevent respiratory issues.",
+        q: "Do I still need fleece?",
+        a: "No. Our liners have the absorbent layers built in, so there is nothing to wick or layer underneath. The Cool Breeze surface does not hold hay or fur, so one shake cleans it. The non-slip base keeps the liner flat.",
       },
       {
         q: "Are your treats suitable for rabbits too?",
@@ -55,7 +56,7 @@ export default function FAQPage() {
             Frequently Asked Questions
           </h1>
           <p className="mb-12 text-center text-lg text-gray-600">
-            Have a question? We're here to help!
+            Have a question? We&apos;re here to help!
           </p>
 
           <div className="space-y-10">
@@ -89,7 +90,7 @@ export default function FAQPage() {
 
           <div className="mt-12 text-center">
             <p className="text-gray-600">
-              Can't find what you're looking for?{" "}
+              Can&apos;t find what you&apos;re looking for?{" "}
               <a
                 href="/contact"
                 className="text-primary-navy font-semibold hover:underline"

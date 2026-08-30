@@ -4,36 +4,17 @@
  */
 
 import { NextRequest, NextResponse } from "next/server";
-
-const DEFAULT_EMAIL = "zianwang9911@gmail.com";
+import { backendFetch } from "@/lib/api/backend-fetch";
 
 const API_BASE_URL =
   process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
-
-type CartItemPayload = {
-  id: string;
-  productRid?: number | null;
-  variantRid?: number | null;
-  productTitle: string;
-  variantSku: string | null;
-  variantOptions?: { name: string; value: string }[];
-  quantity: number;
-  unitPriceCents: number;
-  lineSubtotalCents: number;
-  imageUrl: string;
-  currency: string;
-};
 
 type CheckoutRequestBody = {
   email?: string;
   fulfillmentType?: "delivery" | "pickup";
   pickupLocationId?: number;
   pickupSlotId?: number;
-  cartId?: string | number;
-  cartItems?: CartItemPayload[];
-  currency?: string;
   promoCode?: string;
-  userId?: string;
 };
 
 export async function POST(request: NextRequest) {
@@ -45,40 +26,27 @@ export async function POST(request: NextRequest) {
     const body = (await request
       .json()
       .catch(() => ({}))) as CheckoutRequestBody;
+    const email = body.email?.trim();
+
+    if (!email) {
+      return NextResponse.json(
+        { error: { message: "Email is required" } },
+        { status: 400 }
+      );
+    }
 
     // Transform camelCase to snake_case for backend
     const backendPayload = {
-      email: body.email || DEFAULT_EMAIL,
+      email,
       fulfillment_type: body.fulfillmentType || "delivery",
       pickup_location_id: body.pickupLocationId,
       pickup_slot_id: body.pickupSlotId,
-      cart_id: body.cartId != null ? String(body.cartId) : undefined,
-      cart_items: body.cartItems?.map((item) => ({
-        id: String(item.id), // Ensure id is a string
-        product_rid:
-          item.productRid == null
-            ? null
-            : Number.parseInt(String(item.productRid), 10),
-        variant_rid:
-          item.variantRid == null
-            ? null
-            : Number.parseInt(String(item.variantRid), 10),
-        product_title: item.productTitle,
-        variant_sku: item.variantSku,
-        variant_options: item.variantOptions,
-        quantity: item.quantity,
-        unit_price_cents: item.unitPriceCents,
-        line_subtotal_cents: item.lineSubtotalCents,
-        image_url: item.imageUrl,
-        currency: item.currency || body.currency || "aud", // Ensure currency is never null
-      })),
-      currency: body.currency || "aud",
       promo_code: body.promoCode,
-      user_id: body.userId,
     };
 
     const origin = request.headers.get("origin") || "http://localhost:3000";
     const token = request.headers.get("authorization");
+    const sessionId = request.headers.get("x-session-id");
 
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
@@ -88,8 +56,11 @@ export async function POST(request: NextRequest) {
     if (token) {
       headers.Authorization = token;
     }
+    if (sessionId) {
+      headers["X-Session-Id"] = sessionId;
+    }
 
-    const res = await fetch(`${API_BASE_URL}/api/v1/checkout/session`, {
+    const res = await backendFetch(`${API_BASE_URL}/api/v1/checkout/session`, {
       method: "POST",
       headers,
       body: JSON.stringify(backendPayload),
@@ -105,9 +76,16 @@ export async function POST(request: NextRequest) {
         // Handle Zod validation errors (array format)
         if (Array.isArray(data)) {
           const errors = data
-            .map((err: any) => {
-              const path = err.path?.join(".") || "unknown";
-              return `${path}: ${err.message}`;
+            .map((err: unknown) => {
+              if (!err || typeof err !== "object") {
+                return "unknown: undefined";
+              }
+
+              const error = err as Record<string, unknown>;
+              const path = Array.isArray(error.path)
+                ? error.path.join(".")
+                : "unknown";
+              return `${path}: ${error.message}`;
             })
             .join(", ");
           errorMessage = `Validation error: ${errors}`;
@@ -146,11 +124,12 @@ export async function POST(request: NextRequest) {
     // Extract URL from backend response (which wraps it in success/data)
     const url = data.data?.url || data.url;
     return NextResponse.json({ url }, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("[API Route Route] Failed to create checkout session:", err);
+    const error = err && typeof err === "object" ? err : null;
     const errorMessage =
-      err?.message && typeof err.message === "string"
-        ? err.message
+      error && "message" in error && typeof error.message === "string"
+        ? error.message
         : "Failed to create checkout session";
     return NextResponse.json(
       { error: { message: errorMessage } },

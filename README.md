@@ -29,8 +29,19 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Deploy on Cloudflare Workers (OpenNext)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Production target is Cloudflare Workers via `@opennextjs/cloudflare`. There is no
+CI for this Worker - every release is a manual deploy from a developer machine.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Do **not** run a bare `pnpm deploy` for production. `next build` loads
+`.env.local`, so a bare run ships your local test Stripe and Turnstile keys in
+the client bundle. Use the full command with production env overrides from
+[docs/cloudflare-deploy.md](docs/cloudflare-deploy.md) section 2.1, which also
+covers env vars, domains, and the R2 cache.
+
+Local development is unchanged:
+
+```bash
+pnpm dev
+```

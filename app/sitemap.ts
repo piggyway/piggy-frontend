@@ -1,69 +1,94 @@
 import type { MetadataRoute } from "next";
+import { guideArticles, petCareArticles } from "@/lib/guides";
 import { ProductService } from "@/lib/services/products";
-import { CategoryService } from "@/lib/services/categories";
-import { getBaseUrl, getProductUrl, getCategoryUrl } from "@/lib/utils/seo";
+import { getBaseUrl, getProductUrl } from "@/lib/utils/seo";
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = getBaseUrl();
-  const now = new Date();
+/**
+ * Regenerate the sitemap at runtime (hourly) instead of freezing it at build
+ * time - otherwise new products never appear until the next deploy.
+ */
+export const revalidate = 3600;
 
-  // Static pages
-  const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: baseUrl,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/shop-all`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/shop`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-  ];
+/** Backend rejects page_size above 100 (ProductListQuerySchema). */
+const PRODUCTS_PAGE_SIZE = 100;
 
-  try {
-    // Fetch all products (with pagination if needed)
-    // Note: This might need to be adjusted based on your API's pagination limits
-    const productsResponse = await ProductService.getProducts({
-      page_size: 1000, // Adjust based on your total product count
+/**
+ * Public static routes. Keep in sync with the page files under app/.
+ * Utility routes (cart, checkout, account, login, boarding/book) are
+ * intentionally absent - they are noindex.
+ */
+const STATIC_PATHS = [
+  "",
+  "/shop-all",
+  "/shop",
+  "/about-us",
+  "/contact",
+  "/faqs",
+  "/piggyway-boarding",
+  "/shipping-delivery",
+  "/returns-policy",
+  "/terms",
+  "/privacy",
+  "/pet-care",
+  ...petCareArticles.map((article) => `/pet-care/${article.slug}`),
+  "/guides",
+  ...guideArticles.map((article) => `/guides/${article.slug}`),
+];
+
+async function getProductEntries(
+  baseUrl: string
+): Promise<MetadataRoute.Sitemap> {
+  const entries: MetadataRoute.Sitemap = [];
+  let page = 1;
+  let totalPages = 1;
+
+  do {
+    const response = await ProductService.getProducts({
+      page,
+      page_size: PRODUCTS_PAGE_SIZE,
     });
 
-    const productUrls: MetadataRoute.Sitemap = productsResponse.data.map(
-      (product) => ({
-        url: getProductUrl(
-          product.category?.slug || undefined,
-          product.slug,
-          baseUrl
-        ),
-        lastModified: now, // You might want to add updated_at field to products
-        changeFrequency: "weekly" as const,
-        priority: 0.7,
-      })
-    );
+    // getProducts now throws on a failed request, so an empty first page is a
+    // genuinely empty store and the guessing heuristic is gone. Failures are
+    // caught by the caller below.
+    for (const product of response.data) {
+      const lastModified = product.dateUpdated
+        ? new Date(product.dateUpdated)
+        : null;
+      entries.push({
+        url: getProductUrl(product.category?.slug, product.slug, baseUrl),
+        ...(lastModified && !Number.isNaN(lastModified.getTime())
+          ? { lastModified }
+          : {}),
+      });
+    }
 
-    // Fetch all categories
-    const categoriesResponse = await CategoryService.getCategories();
-    const categoryUrls: MetadataRoute.Sitemap = categoriesResponse.map(
-      (category) => ({
-        url: getCategoryUrl(category.slug, baseUrl),
-        lastModified: now,
-        changeFrequency: "weekly" as const,
-        priority: 0.8,
-      })
-    );
+    totalPages = response.pagination.totalPages;
+    page += 1;
+  } while (page <= totalPages);
 
-    return [...staticPages, ...productUrls, ...categoryUrls];
-  } catch (error) {
-    console.error("[Sitemap] Error generating sitemap:", error);
-    // Return at least static pages if API fails
-    return staticPages;
-  }
+  return entries;
+}
+
+/**
+ * Category URLs (`/shop-all?category=<slug>`) are deliberately absent. They are
+ * filtered views of `/shop-all` with no content of their own, so submitting
+ * them only offers Google near-duplicates of a page already in the sitemap.
+ * They stay crawlable through the footer and the category filter bar.
+ */
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const baseUrl = getBaseUrl();
+
+  const staticEntries: MetadataRoute.Sitemap = STATIC_PATHS.map((path) => ({
+    url: `${baseUrl}${path}`,
+  }));
+
+  const productEntries = await getProductEntries(baseUrl).catch(
+    (error): MetadataRoute.Sitemap => {
+      console.error("[Sitemap] Failed to build product entries:", error);
+      return [];
+    }
+  );
+
+  return [...staticEntries, ...productEntries];
 }

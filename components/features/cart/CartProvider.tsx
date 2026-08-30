@@ -14,6 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { CartService } from "@/lib/services/cart";
 import { PromoService } from "@/lib/services/promo";
 import type { Cart } from "@/lib/types/cart";
+import { preserveCartItemOrder } from "@/lib/utils/cart";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -36,7 +37,8 @@ interface CartContextValue {
   addItem: (
     variantRid: number,
     quantity?: number,
-    notes?: string
+    notes?: string,
+    addOnIds?: number[]
   ) => Promise<void>;
   updateItem: (
     itemId: string,
@@ -145,47 +147,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     isLoadingRef.current = false;
   }, []);
 
-  /**
-   * Preserve the order of existing items when updating cart
-   * New items are appended to the end
-   */
-  const preserveItemOrder = useCallback(
-    (oldCart: Cart | null, newCart: Cart): Cart => {
-      if (!oldCart || oldCart.items.length === 0) {
-        return newCart;
-      }
-
-      // Create a map of new items by id for quick lookup
-      const newItemsMap = new Map(newCart.items.map((item) => [item.id, item]));
-
-      // Preserve order of existing items
-      const orderedItems: Cart["items"] = [];
-      const processedIds = new Set<string>();
-
-      // First, add existing items in their original order
-      for (const oldItem of oldCart.items) {
-        const updatedItem = newItemsMap.get(oldItem.id);
-        if (updatedItem) {
-          orderedItems.push(updatedItem);
-          processedIds.add(oldItem.id);
-        }
-      }
-
-      // Then, append any new items that weren't in the old cart
-      for (const newItem of newCart.items) {
-        if (!processedIds.has(newItem.id)) {
-          orderedItems.push(newItem);
-        }
-      }
-
-      return {
-        ...newCart,
-        items: orderedItems,
-      };
-    },
-    []
-  );
-
   const runMutation = useCallback(
     async (
       action: () => Promise<Cart | null>,
@@ -200,7 +161,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const updated = await action();
         if (updated) {
           // Preserve the order of existing items
-          const orderedCart = preserveItemOrder(cart, updated);
+          const orderedCart = preserveCartItemOrder(cart, updated);
           setCart(orderedCart);
           setError(null);
           if (options?.onSuccess) {
@@ -214,24 +175,35 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           toast.error(errorMsg);
         }
       } catch (err) {
-        const errorMsg = options?.errorMessage || "An error occurred";
+        // Prefer the backend's (already user-friendly) message when present,
+        // e.g. add-on stock/availability errors, over the generic fallback.
+        const errorMsg =
+          err instanceof Error && err.message
+            ? err.message
+            : options?.errorMessage || "An error occurred";
         setError(errorMsg);
         toast.error(errorMsg);
       } finally {
         setIsMutating(false);
       }
     },
-    [cart, preserveItemOrder]
+    [cart]
   );
 
   const addItem = useCallback(
-    async (variantRid: number, quantity = 1, notes?: string) => {
+    async (
+      variantRid: number,
+      quantity = 1,
+      notes?: string,
+      addOnIds?: number[]
+    ) => {
       await runMutation(
         () =>
           CartService.addItem({
             variantRid,
             quantity,
             notes,
+            addOnIds,
           }),
         {
           onSuccess: (updatedCart) => {
@@ -325,7 +297,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setError(errorMsg);
         toast.error(errorMsg);
       }
-    } catch (err) {
+    } catch {
       const errorMsg = "An error occurred while removing promo code";
       setError(errorMsg);
       toast.error(errorMsg);
@@ -383,7 +355,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
             <DialogTitle className="text-primary-navy">
               Sign in to continue?
             </DialogTitle>
-            <p className="text-primary-navy/80 mt-2 text-sm">
+            <p className="text-primary-navy/80 text-p mt-2">
               {loginPromptIntent
                 ? `To help you ${loginPromptIntent} and keep your items safe, please sign in or create an account first.`
                 : "To save your cart items and sync them across your devices, please sign in or create an account first."}

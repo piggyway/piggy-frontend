@@ -4,9 +4,31 @@ import {
   footerLinks,
   socialMediaLinks,
   paymentMethods,
+  FOOTER_CATEGORIES_TITLE,
 } from "@/lib/types/navigation";
+import { getCategoriesWithProducts } from "@/lib/services/category-products";
 
-export function Footer() {
+export async function Footer() {
+  const categories = await getCategoriesWithProducts();
+
+  // Resolve the placeholder category group against the real backend categories
+  // so the footer can never link to a category that does not exist or has no
+  // products. Drop the group entirely when the fetch failed, rather than
+  // render a bare heading.
+  const groups = footerLinks
+    .map((group) =>
+      group.title === FOOTER_CATEGORIES_TITLE
+        ? {
+            ...group,
+            links: categories.map((category) => ({
+              label: category.name,
+              href: `/shop-all?category=${category.slug}`,
+            })),
+          }
+        : group
+    )
+    .filter((group) => group.links.length > 0);
+
   return (
     <footer className="w-full">
       {/* Main Footer Section */}
@@ -23,7 +45,7 @@ export function Footer() {
               />
             </div>
             <div className="flex flex-1 flex-col items-center gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-5">
-              <p className="text-primary-gold text-center text-lg leading-7 font-semibold sm:text-right sm:text-xl lg:text-2xl lg:leading-8">
+              <p className="text-primary-gold text-p text-center font-semibold sm:text-right">
                 Tiny feet, big comfort.
               </p>
               <div className="relative h-6 w-10 shrink-0 sm:h-[26px] sm:w-[45px]">
@@ -39,20 +61,20 @@ export function Footer() {
 
           {/* Footer Links */}
           <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:flex lg:gap-10">
-            {footerLinks.map((group, index) => (
+            {groups.map((group, index) => (
               <div key={index} className="flex flex-col gap-2 sm:gap-3 lg:w-40">
                 {group.title && (
-                  <h3 className="text-lg leading-7 font-semibold text-white sm:text-xl lg:text-2xl lg:leading-8">
+                  <h3 className="text-p-ui font-semibold text-white">
                     {group.title}
                   </h3>
                 )}
                 {!group.title && <div className="h-6 sm:h-8" />}
                 <div className="flex flex-col gap-0">
-                  {group.links.map((link) => (
+                  {group.links.map((link, linkIndex) => (
                     <Link
-                      key={link.href}
+                      key={`${group.title}-${link.label}-${linkIndex}`}
                       href={link.href}
-                      className="hover:text-primary-gold text-sm leading-6 font-normal text-white transition-colors sm:text-base"
+                      className="hover:text-primary-gold text-p font-normal text-white transition-colors"
                     >
                       {link.label}
                     </Link>
@@ -63,19 +85,17 @@ export function Footer() {
 
             {/* Terms & Privacy Links */}
             <div className="flex flex-col gap-2 sm:gap-3 lg:w-40">
-              <h3 className="text-lg leading-7 font-semibold text-white sm:text-xl lg:text-2xl lg:leading-8">
-                Policies
-              </h3>
+              <h3 className="text-p-ui font-semibold text-white">Policies</h3>
               <div className="flex flex-col gap-0">
                 <Link
-                  href="#"
-                  className="hover:text-primary-gold text-sm leading-6 font-normal text-white transition-colors sm:text-base"
+                  href="/terms"
+                  className="hover:text-primary-gold text-p font-normal text-white transition-colors"
                 >
                   Terms & conditions
                 </Link>
                 <Link
-                  href="#"
-                  className="hover:text-primary-gold text-sm leading-6 font-normal text-white transition-colors sm:text-base"
+                  href="/privacy"
+                  className="hover:text-primary-gold text-p font-normal text-white transition-colors"
                 >
                   Privacy policy
                 </Link>
@@ -84,9 +104,7 @@ export function Footer() {
 
             {/* Follow Us */}
             <div className="flex flex-col gap-2 sm:gap-3 lg:w-40">
-              <h3 className="text-lg leading-7 font-semibold text-white sm:text-xl lg:text-2xl lg:leading-8">
-                Follow us
-              </h3>
+              <h3 className="text-p-ui font-semibold text-white">Follow us</h3>
               <div className="flex gap-3 sm:gap-3.5">
                 {socialMediaLinks.map((social) => (
                   <Link
@@ -110,9 +128,9 @@ export function Footer() {
       </div>
 
       {/* Payment Section */}
-      <div className="bg-secondary-purple-light px-4 py-4 sm:px-8 sm:py-5 lg:px-[140px]">
+      <div className="bg-primary-purple px-4 py-4 sm:px-8 sm:py-5 lg:px-[140px]">
         <div className="flex flex-col items-center gap-2 sm:gap-3">
-          <p className="text-primary-navy text-center text-sm leading-6 font-normal sm:text-base">
+          <p className="text-primary-navy text-p text-center font-normal">
             Payments
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-10">
@@ -136,8 +154,8 @@ export function Footer() {
 
       {/* Copyright Section */}
       <div className="bg-primary-gold px-4 py-3 sm:px-8 sm:py-3.5 lg:px-[140px]">
-        <div className="text-primary-navy flex flex-col items-center gap-2 text-xs leading-5 font-normal sm:flex-row sm:justify-between sm:gap-4 sm:text-sm lg:gap-10">
-          <p>Piggyway Crossing© 2025</p>
+        <div className="text-primary-navy text-p flex flex-col items-center justify-center gap-2 font-normal sm:flex-row sm:gap-4 lg:gap-10">
+          <p>Piggyway Crossing© 2026</p>
           {/* <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 lg:gap-10">
             <Link href="/terms" className="transition-colors hover:underline">
               Terms & conditions

@@ -4,17 +4,30 @@ import Link from "next/link";
 import { ArrowLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
+/**
+ * Dates taken from this file's git history: PUBLISHED_ON is the commit that
+ * created the article, UPDATED_ON the last one that changed its copy.
+ *
+ * The previous values claimed March 2024, which is before this repository
+ * existed (first commit 2025-10-27), so they were placeholders rather than
+ * real dates. The byline, the OpenGraph tags and the Article JSON-LD all read
+ * these constants so they cannot disagree.
+ */
+const PUBLISHED_ON = "2025-12-20";
+const UPDATED_ON = "2026-08-06";
+
 export const metadata: Metadata = {
-  title:
-    "First-Time Guinea Pig Owner: Complete Essentials Checklist | Piggy Way Crossing",
+  title: "First-Time Guinea Pig Owner: Complete Essentials Checklist",
   description:
     "Bringing home your first guinea pigs? Here's the ultimate checklist of everything you need for a happy, healthy start.",
+  alternates: { canonical: "/guides/first-time-owner-essentials" },
   openGraph: {
     title: "First-Time Guinea Pig Owner: Complete Essentials Checklist",
     description:
       "Bringing home your first guinea pigs? Here's the ultimate checklist of everything you need.",
     type: "article",
-    publishedTime: "2024-03-15T00:00:00.000Z",
+    images: ["/shop-with-us/default.png"],
+    publishedTime: `${PUBLISHED_ON}T00:00:00.000Z`,
     authors: ["Piggy Way Crossing Team"],
     tags: ["New Owner Guide", "Guinea Pig Essentials", "Checklist"],
   },
@@ -39,8 +52,8 @@ export default function FirstTimeOwnerPage() {
         url: "https://piggyway.com.au/header-logo.png",
       },
     },
-    datePublished: "2024-03-15",
-    dateModified: "2024-03-15",
+    datePublished: PUBLISHED_ON,
+    dateModified: UPDATED_ON,
     description:
       "Bringing home your first guinea pigs? Here's the ultimate checklist of everything you need for a happy, healthy start.",
   };
@@ -75,7 +88,14 @@ export default function FirstTimeOwnerPage() {
               Piggy Way Crossing Team
             </span>
             <span className="hidden sm:inline">•</span>
-            <span>March 15, 2024</span>
+            <span>
+              {new Date(PUBLISHED_ON).toLocaleDateString("en-AU", {
+                month: "long",
+                day: "numeric",
+                year: "numeric",
+                timeZone: "UTC",
+              })}
+            </span>
             <span className="hidden sm:inline">•</span>
             <span>4 min read</span>
           </div>
@@ -93,10 +113,10 @@ export default function FirstTimeOwnerPage() {
         </div>
 
         {/* Article Content */}
-        <article className="prose prose-lg prose-headings:text-primary-navy prose-a:text-primary-gold prose-a:no-underline hover:prose-a:underline prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
+        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-headings:text-primary-navy prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
           <p className="lead mb-8 text-xl text-gray-600">
             Congratulations on your new furry family members! To make your
-            shopping trip easier, we've compiled the definitive list of
+            shopping trip easier, we&apos;ve compiled the definitive list of
             must-haves for day one.
           </p>
 
@@ -108,7 +128,7 @@ export default function FirstTimeOwnerPage() {
             <ul className="m-0 grid list-none gap-3 pl-0">
               {[
                 "Large Cage (Min 7.5 sq ft, ideally 10.5+)",
-                "Appropriate Bedding (Fleece or Aspen)",
+                "Appropriate Bedding",
                 "Unlimited Timothy Hay",
                 "High-Quality Pellets (Plain, no seeds)",
                 "Two Water Bottles (Glass preferred)",
@@ -131,9 +151,17 @@ export default function FirstTimeOwnerPage() {
           <h2>1. Housing & Bedding</h2>
           <p>
             Your pigs need room to zoom! Skip the small pet store cages and opt
-            for a C&C cage or a Midwest habitat. For bedding, fleece liners are
-            the modern standard—they're reusable, save money over time, and are
-            much cleaner than wood shavings.
+            for a C&C cage or a Midwest habitat. For bedding, liners are the
+            modern standard—they&apos;re reusable, save money over time, and are
+            much cleaner than wood shavings. Our{" "}
+            <Link href="/shop-all?category=liner">liners</Link> come in several
+            sizes, starting with the{" "}
+            <Link href="/shop/liner/comfy-base-liner">Comfy Base Liner</Link>.
+            For cage size, placement, and enrichment, see our{" "}
+            <Link href="/pet-care/habitat-setup-tips">
+              habitat setup guide for small pets
+            </Link>
+            .
           </p>
 
           <h2>2. Diet Basics</h2>
@@ -144,14 +172,18 @@ export default function FirstTimeOwnerPage() {
           <p>
             For pellets, look for plain Timothy-based pellets (like Oxbow).
             Avoid the colorful mixes with seeds and dried fruit; they are
-            unhealthy "junk food."
+            unhealthy &quot;junk food.&quot;
           </p>
 
           <h2>3. Hideouts & Comfort</h2>
           <p>
             Guinea pigs are prey animals and need to feel secure. A simple
-            plastic igloo is fine, but soft fleece hideouts and tunnels provide
-            extra comfort and warmth.
+            plastic igloo is fine, but soft hideouts and tunnels provide extra
+            comfort and warmth. For something sturdier, the{" "}
+            <Link href="/shop/hideout/piggy-wooden-house">
+              Piggy Wooden House
+            </Link>{" "}
+            has solid walls that block out light and noise.
           </p>
 
           <h2>4. Health Kit</h2>
@@ -173,8 +205,8 @@ export default function FirstTimeOwnerPage() {
                 New Piggy Parent Starter Kit
               </h4>
               <p className="mb-6 text-lg text-white/80">
-                We've bundled our best-selling fleece liners, a cozy hideout,
-                and a hay bag into one convenient, discounted package.
+                We&apos;ve bundled our best-selling liners, a cozy hideout, and
+                a hay bag into one convenient, discounted package.
               </p>
               <Link
                 href="/shop-all"
