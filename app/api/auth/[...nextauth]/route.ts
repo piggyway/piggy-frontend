@@ -262,7 +262,7 @@ export const authOptions: NextAuthOptions = {
           Date.now() + 24 * 60 * 60 * 1000;
       }
 
-      // Client-triggered updates (e.g. after calling /api/auth/refresh)
+      // Client-triggered updates via useSession().update()
       if (trigger === "update" && session) {
         const s = session as SessionUpdatePayload;
         if (s.accessToken) {
@@ -293,7 +293,7 @@ export const authOptions: NextAuthOptions = {
         session.user = token.user;
       }
 
-      session.accessToken = token.accessToken;
+      session.hasBackendSession = Boolean(token.accessToken);
       session.error = token.error;
 
       return session;

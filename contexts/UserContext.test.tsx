@@ -39,9 +39,13 @@ describe("UserProvider", () => {
     vi.restoreAllMocks();
   });
 
-  it("loads the authenticated backend profile, stores its access token, and ensures a cart", async () => {
+  it("loads the authenticated backend profile and ensures a cart without persisting the token", async () => {
+    localStorage.setItem("access_token", "Bearer legacy-token");
+    localStorage.setItem("auth_token", "legacy");
+    localStorage.setItem("token", "legacy");
+
     vi.mocked(useSession).mockReturnValue({
-      data: { accessToken: "account-token" },
+      data: { hasBackendSession: true },
       status: "authenticated",
     } as never);
     vi.mocked(usePathname).mockReturnValue("/account");
@@ -66,7 +70,9 @@ describe("UserProvider", () => {
       });
     });
 
-    expect(localStorage.getItem("access_token")).toBe("Bearer account-token");
+    expect(localStorage.getItem("access_token")).toBeNull();
+    expect(localStorage.getItem("auth_token")).toBeNull();
+    expect(localStorage.getItem("token")).toBeNull();
     expect(screen.getByText(/"isFirstLogin":false/)).toBeTruthy();
   });
 

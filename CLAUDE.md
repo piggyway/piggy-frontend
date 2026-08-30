@@ -43,11 +43,15 @@ There is **no Directus SDK in the frontend** and no `lib/directus/`. Directus is
 ### Two client fetch paths (`lib/api/client.ts`)
 
 - `apiClient.{get,post,put,delete,patch}` → `apiFetch`: plain JSON wrapper, throws `Error(data.error)` on non-2xx. Used by services for public data.
-- `fetchWithAuth`: attaches `Authorization: Bearer <access_token>` (from `localStorage`) and an `X-Session-Id` (a `localStorage` UUID for **guest carts**). On 401 it calls `refreshTokens()` once and retries; if refresh fails it signs out — redirecting to `/login` only on protected paths (`/account`, `/checkout`, `/cart`).
+- `fetchWithAuth`: attaches an `X-Session-Id` (a `localStorage` UUID for **guest carts**) but **no** `Authorization` header — `proxy.ts` adds that server-side. On 401 it calls `getSession()` once, which lets NextAuth rotate the backend token server-side, then retries; if the session cannot be renewed it signs out — redirecting to `/login` only on protected paths (`/account`, `/checkout`, `/cart`).
+
+### Backend token handling (`proxy.ts`)
+
+The backend access token lives **only** in the encrypted httpOnly NextAuth JWT cookie. It is never written to `localStorage` and never exposed on `session`. `proxy.ts` (the Next 16 replacement for `middleware.ts`) matches `/api/((?!auth/).*)`, drops any inbound `Authorization` header, reads the JWT with `getToken`, and forwards `Authorization: Bearer <token>` to the route handler. Every BFF route keeps reading `request.headers.get("authorization")` unchanged.
 
 ### Auth & session
 
-NextAuth v4. `authOptions` is defined **inline in `app/api/auth/[...nextauth]/route.ts`** (not a separate `lib/auth.ts`), with two providers: Google OAuth and a `CredentialsProvider` (id `"email"`) for email login. Both exchange with the backend (`/api/v1/auth/sso`, `/api/v1/auth/refresh`) and stash the backend access/refresh tokens onto the JWT in the `jwt` callback; the `session` callback copies them back onto `session.accessToken`/`session.refreshToken` (via `as any`, no module augmentation). The JWT auto-refreshes within 5 min of expiry. Separately, `fetchWithAuth` in `lib/api/client.ts` refreshes once on a 401 and retries; if refresh fails it signs out. `app/providers.tsx` wraps the tree in `SessionProvider` → `UserProvider` (`contexts/UserContext.tsx`, client user state). Root `app/layout.tsx` mounts `Providers` + the `sonner` `<Toaster>`.
+NextAuth v4. `authOptions` is defined **inline in `app/api/auth/[...nextauth]/route.ts`** (not a separate `lib/auth.ts`), with two providers: Google OAuth and a `CredentialsProvider` (id `"email"`) for email login. Both exchange with the backend (`/api/v1/auth/sso`, `/api/v1/auth/refresh`) and stash the backend access/refresh tokens onto the JWT in the `jwt` callback; the `session` callback exposes only `session.hasBackendSession` (a boolean) and `session.error` to the client, never the tokens themselves (types in `types/next-auth.d.ts`). The JWT auto-refreshes within 5 min of expiry, including when `fetchWithAuth` calls `getSession()` after a 401. `app/providers.tsx` wraps the tree in `SessionProvider` → `UserProvider` (`contexts/UserContext.tsx`, client user state). Root `app/layout.tsx` mounts `Providers` + the `sonner` `<Toaster>`.
 
 ### Routing & layouts
 
