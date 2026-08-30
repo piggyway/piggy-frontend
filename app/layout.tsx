@@ -4,7 +4,7 @@ import { Toaster } from "sonner";
 import { getBaseUrl } from "@/lib/utils/seo";
 import "./globals.css";
 
-import { Providers } from "./providers"; // ⭐ 新增：引入 SessionProvider 包装层
+import { Providers } from "./providers";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -94,7 +94,6 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(webSiteJsonLd) }}
         />
 
-        {/* ⭐ 用 Providers 包裹 children */}
         <Providers>{children}</Providers>
 
         <Toaster position="top-center" richColors />
