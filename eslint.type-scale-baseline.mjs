@@ -34,8 +34,6 @@ export const typeScaleBaseline = [
   "components/features/contact/ContactForm.tsx",
   "components/features/homepage/OurStorySection.tsx",
   "components/features/homepage/PetCareTipsSection.tsx",
-  "components/features/homepage/StarterKitsSection.tsx",
-  "components/features/homepage/WelcomeMessage.tsx",
   "components/features/homepage/WhyShopSection.tsx",
   "components/features/pet-care/ArticlesSection.tsx",
   "components/features/pet-care/BoardingCtaSection.tsx",
