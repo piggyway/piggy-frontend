@@ -6,14 +6,14 @@
  *
  * 1. The `@sentry/nextjs` SDK, initialised in `instrumentation-client.ts`.
  *    It is browser only - the server and edge runtimes never initialise it -
- *    and it auto-captures unhandled errors, performance data and session
- *    replay. The app never calls it directly.
+ *    and it auto-captures unhandled errors, breadcrumbs and performance data.
+ *    The app never calls it directly.
  * 2. `reportError` below - the single app-facing API for caught errors and
  *    App Router error boundaries.
  *
  * `reportError` picks its transport per runtime. On the client it delegates to
  * the SDK when an SDK client is active, so the event carries breadcrumbs,
- * replay linkage and sourcemapped frames. On the server and edge, and as a
+ * trace context and sourcemapped frames. On the server and edge, and as a
  * client fallback, it posts a Sentry envelope over `fetch`. The server side
  * deliberately stays off the SDK: on OpenNext for Cloudflare Workers the SDK
  * server build has open defects (getsentry/sentry-javascript#18843 and
