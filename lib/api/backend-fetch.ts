@@ -13,6 +13,13 @@
  * is attacker-controlled and would let anyone pick their own rate-limit key.
  * Off the edge (local dev, direct origin hits) there is no such header, so no
  * client IP is forwarded and the backend falls back to its own connection info.
+ *
+ * Cacheable server-side reads opt out with `forwardClientIp: false`. Next keys
+ * its fetch cache on the request headers, so a per-visitor `x-forwarded-for`
+ * would give every visitor a private cache entry and defeat the cache the read
+ * exists to use. Such a request carries no client IP and is rate-limited
+ * against the Worker egress IP - which is correct, because at most one of them
+ * per cache window ever reaches the backend.
  */
 
 import { headers } from "next/headers";
@@ -56,6 +63,10 @@ async function withClientIpHeaders(
   init: BackendFetchInit | undefined
 ): Promise<HeadersInit | undefined> {
   const existing = init?.headers;
+  if (init?.forwardClientIp === false) {
+    return existing;
+  }
+
   const additions: Record<string, string> = {};
 
   let hasClientIp = hasHeader(existing, CLIENT_IP_HEADER);
@@ -239,6 +250,12 @@ type BackendFetchInit = RequestInit & {
     revalidate?: number | false;
     tags?: string[];
   };
+  /**
+   * Set to `false` to send no client IP and no proxy secret, so the request
+   * carries nothing per-visitor and every visitor shares one cache entry.
+   * Defaults to `true`.
+   */
+  forwardClientIp?: boolean;
 };
 
 /**
@@ -249,10 +266,14 @@ export async function backendFetch(
   input: RequestInfo | URL,
   init?: BackendFetchInit
 ): Promise<Response> {
+  const headers = await withClientIpHeaders(init);
+  const fetchInit: BackendFetchInit = { ...init };
+  delete fetchInit.forwardClientIp;
+
   try {
     return await fetch(input, {
-      ...init,
-      headers: await withClientIpHeaders(init),
+      ...fetchInit,
+      headers,
       signal: AbortSignal.timeout(BACKEND_FETCH_TIMEOUT_MS),
     });
   } catch (error) {

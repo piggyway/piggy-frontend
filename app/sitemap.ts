@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { guideArticles, petCareArticles } from "@/lib/guides";
-import { ProductService } from "@/lib/services/products";
+import { ServerProductService } from "@/lib/services/products.server";
 import { getBaseUrl, getProductUrl } from "@/lib/utils/seo";
 
 /**
@@ -43,7 +43,7 @@ async function getProductEntries(
   let totalPages = 1;
 
   do {
-    const response = await ProductService.getProducts({
+    const response = await ServerProductService.getProducts({
       page,
       page_size: PRODUCTS_PAGE_SIZE,
     });

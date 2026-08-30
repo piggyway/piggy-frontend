@@ -4,8 +4,8 @@ import { BreadcrumbsNav } from "@/components/features/shop-all/BreadcrumbsNav";
 import { ShopAllContent } from "@/components/features/shop-all/ShopAllContent";
 // import { StarterKitsSection } from "@/components/features/shop/StarterKitsSection";
 import { BackgroundBlobs } from "@/components/ui/background-blobs";
-import { CategoryService } from "@/lib/services/categories";
-import { ProductService } from "@/lib/services/products";
+import { ServerCategoryService } from "@/lib/services/categories.server";
+import { ServerProductService } from "@/lib/services/products.server";
 import { getBaseUrl } from "@/lib/utils/seo";
 import { FloatingCartButton } from "@/components/features/cart/FloatingCartButton";
 import type { SortOption } from "@/lib/types/product";
@@ -41,7 +41,7 @@ export async function generateMetadata({
   // Handle category filter
   if (categorySlug) {
     try {
-      const categories = await CategoryService.getCategories();
+      const categories = await ServerCategoryService.getCategories();
       const category = categories.find((cat) => cat.slug === categorySlug);
       if (category) {
         title = `Shop ${category.name}`;
@@ -72,7 +72,7 @@ export async function generateMetadata({
   // index over a transient error is worse than briefly indexing an empty one.
   let hasNoResults = false;
   try {
-    const countResponse = await ProductService.getVariants({
+    const countResponse = await ServerProductService.getVariants({
       page: 1,
       page_size: 1,
       category: categorySlug,
@@ -129,14 +129,14 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
   const [response, categories] = await Promise.all([
     // Out-of-stock variants are intentionally included so the grid can show a
     // "Sold Out" state; the backend still excludes is_available=false variants.
-    ProductService.getVariants({
+    ServerProductService.getVariants({
       page,
       page_size: PAGE_SIZE,
       category,
       q,
       sort,
     }),
-    CategoryService.getCategories(),
+    ServerCategoryService.getCategories(),
   ]);
 
   // Unknown categories and pages past the end used to render an empty grid

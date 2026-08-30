@@ -1,0 +1,457 @@
+/**
+ * Product response mapping.
+ *
+ * Pure transforms from the backend's snake_case payloads to the frontend
+ * shapes. Kept out of the service classes so the browser-facing service and
+ * the server-only one map identically instead of drifting apart, and so the
+ * module can be imported from either side without dragging a client in.
+ */
+
+import { normalizeImageUrl } from "@/lib/utils/images";
+import type {
+  ProductListResponseFromAPI,
+  ProductListResponse,
+  ProductListItem,
+  ProductListItemFromAPI,
+  ProductDetailFromAPI,
+  ProductDetail,
+  StoryBlock,
+  FeatureCard,
+  InfoSection,
+  ProductOption,
+  ProductVariant,
+  AddOn,
+  AddOnFromAPI,
+  AddOnGroup,
+  AddOnGroupFromAPI,
+  AddOnSelectionMode,
+  VariantListItemFromAPI,
+  VariantListItem,
+  VariantListResponse,
+} from "@/lib/types/product";
+
+/**
+ * Default image for products without images
+ */
+const DEFAULT_PRODUCT_IMAGE = "/default-product-image.png";
+
+/**
+ * Default currency
+ */
+const DEFAULT_CURRENCY = "AUD";
+
+/**
+ * Format price with currency symbol
+ */
+export function formatPrice(price: number, currencySlug: string): string {
+  const currencySymbols: Record<string, string> = {
+    AUD: "$",
+    USD: "$",
+    EUR: "€",
+    GBP: "£",
+  };
+
+  const symbol = currencySymbols[currencySlug.toUpperCase()] || "$";
+  return `${symbol}${price.toFixed(2)}`;
+}
+
+/**
+ * Transform product list item from API format
+ */
+export function transformProductListItem(
+  product: ProductListItemFromAPI
+): ProductListItem {
+  const price = product.base_price || 0;
+  const currencySlug = product.currency?.slug || DEFAULT_CURRENCY;
+
+  return {
+    id: product.id,
+    title: product.title || "Untitled Product",
+    subtitle: product.subtitle || "",
+    slug: product.slug || `product-${product.id}`,
+    basePrice: price,
+    formattedPrice: formatPrice(price, currencySlug),
+    currency: product.currency,
+    brand: product.brand,
+    category: product.category || null,
+    imageUrl: normalizeImageUrl(product.image_url) || DEFAULT_PRODUCT_IMAGE,
+    variantsCount: product.variants_count,
+    isFeatured: product.is_featured,
+    dateUpdated: product.date_updated ?? null,
+  };
+}
+
+/**
+ * Transform API response to frontend format
+ */
+export function transformProductListResponse(
+  response: ProductListResponseFromAPI
+): ProductListResponse {
+  return {
+    data: response.data.map((product) => transformProductListItem(product)),
+    pagination: {
+      page: response.pagination.page,
+      pageSize: response.pagination.page_size,
+      total: response.pagination.total,
+      totalPages: response.pagination.total_pages,
+    },
+  };
+}
+
+/**
+ * Transform product option
+ */
+function transformOption(option: {
+  id: number;
+  name: string | null;
+  slug: string | null;
+  values: Array<{
+    id: number;
+    value: string | null;
+    color_hex: string | null;
+    variant_ids: number[];
+  }>;
+}): ProductOption {
+  return {
+    id: option.id,
+    name: option.name,
+    slug: option.slug,
+    values: option.values.map((value) => ({
+      id: value.id,
+      value: value.value,
+      colorHex: value.color_hex,
+      variantIds: value.variant_ids,
+    })),
+  };
+}
+
+/**
+ * Transform product variant
+ */
+function transformVariant(variant: {
+  id: number;
+  sku: string | null;
+  uuid: string | null;
+  original_price: number | null;
+  discounted_price: number | null;
+  currency: { name: string | null; slug: string | null } | null;
+  stock_quantity: number;
+  is_available: boolean;
+  weight: number | null;
+  weight_unit: string | null;
+  length: number | null;
+  width: number | null;
+  height: number | null;
+  length_unit: string | null;
+  width_unit: string | null;
+  height_unit: string | null;
+  option_values: Array<{
+    option_id: number;
+    option_name: string | null;
+    value_id: number;
+    value: string | null;
+  }>;
+  image_urls: string[];
+}): ProductVariant {
+  return {
+    id: variant.id,
+    sku: variant.sku,
+    uuid: variant.uuid,
+    originalPrice: variant.original_price,
+    discountedPrice: variant.discounted_price,
+    currency: variant.currency,
+    stockQuantity: variant.stock_quantity,
+    isAvailable: variant.is_available,
+    weight: variant.weight,
+    weightUnit: variant.weight_unit,
+    length: variant.length,
+    width: variant.width,
+    height: variant.height,
+    lengthUnit: variant.length_unit,
+    widthUnit: variant.width_unit,
+    heightUnit: variant.height_unit,
+    optionValues: variant.option_values.map((ov) => ({
+      optionId: ov.option_id,
+      optionName: ov.option_name,
+      valueId: ov.value_id,
+      value: ov.value,
+    })),
+    imageUrls: variant.image_urls
+      .map((url) => normalizeImageUrl(url))
+      .filter((url): url is string => url !== null),
+  };
+}
+
+/**
+ * Build options from variant option values when options are missing.
+ */
+function buildOptionsFromVariants(
+  variants: Array<{
+    id: number;
+    option_values: Array<{
+      option_id: number;
+      option_name: string | null;
+      value_id: number;
+      value: string | null;
+    }>;
+  }>
+): ProductOption[] {
+  const optionsMap = new Map<number, ProductOption>();
+  for (const variant of variants) {
+    for (const ov of variant.option_values) {
+      if (!optionsMap.has(ov.option_id)) {
+        optionsMap.set(ov.option_id, {
+          id: ov.option_id,
+          name: ov.option_name,
+          slug: null,
+          values: [],
+        });
+      }
+      const option = optionsMap.get(ov.option_id)!;
+      if (!option.values.some((value) => value.id === ov.value_id)) {
+        option.values.push({
+          id: ov.value_id,
+          value: ov.value,
+          colorHex: null,
+          variantIds: [],
+        });
+      }
+    }
+  }
+  return Array.from(optionsMap.values());
+}
+
+/**
+ * Transform an add-on from API format. Price stays in dollars.
+ */
+function transformAddOn(addOn: AddOnFromAPI): AddOn {
+  const price = addOn.price ?? 0;
+  const currencySlug = addOn.currency?.slug || DEFAULT_CURRENCY;
+  return {
+    id: addOn.id,
+    uuid: addOn.uuid,
+    name: addOn.name || "Add-on",
+    slug: addOn.slug,
+    description: addOn.description,
+    price,
+    formattedPrice: formatPrice(price, currencySlug),
+    currency: addOn.currency,
+    imageUrl: normalizeImageUrl(addOn.image_url),
+    stockQuantity: addOn.stock_quantity,
+    isAvailable: addOn.is_available,
+    sort: addOn.sort ?? 0,
+    groupId: addOn.group_id,
+  };
+}
+
+/**
+ * Transform an add-on group from API format
+ */
+function transformAddOnGroup(group: AddOnGroupFromAPI): AddOnGroup {
+  const selectionMode: AddOnSelectionMode =
+    group.selection_mode === "single" ? "single" : "multiple";
+  return {
+    id: group.id,
+    uuid: group.uuid,
+    name: group.name || "Add-ons",
+    selectionMode,
+    isRequired: group.is_required,
+    sort: group.sort ?? 0,
+    addOns: (group.add_ons ?? []).map((addOn) => transformAddOn(addOn)),
+  };
+}
+
+/**
+ * Transform product detail from API format
+ */
+export function transformProductDetail(
+  product: ProductDetailFromAPI
+): ProductDetail {
+  const price = product.base_price || 0;
+  const currencySlug = product.currency?.slug || DEFAULT_CURRENCY;
+  let options: ProductOption[];
+  if (product.options.length > 0) {
+    options = product.options.map((option) => transformOption(option));
+  } else {
+    console.error(
+      `[ProductService] Product ${product.id} (${product.slug || product.title || "Untitled Product"}) is missing options; deriving from variants.`
+    );
+    options = buildOptionsFromVariants(product.variants);
+  }
+
+  return {
+    id: product.id,
+    title: product.title || "Untitled Product",
+    subtitle: product.subtitle || "",
+    description: product.description || "",
+    detailInformation: product.detail_information || "",
+    productFeatures: product.product_features || "",
+    specifications: product.specifications || "",
+    careInstructions: product.care_instructions || "",
+    featureSectionTitle: product.feature_section_title || "",
+    featureSectionSubtitle: product.feature_section_subtitle || "",
+    featureSectionDescription: product.feature_section_description || "",
+    featureBannerText: product.feature_banner_text || "",
+    purchaseMode:
+      product.purchase_mode === "preorder" ? "preorder" : "standard",
+    addOnMaxSelections: product.add_on_max_selections ?? null,
+    slug: product.slug || `product-${product.id}`,
+    basePrice: price,
+    formattedPrice: formatPrice(price, currencySlug),
+    currency: product.currency,
+    brand: product.brand,
+    category: product.category,
+    species: product.species || [],
+    images:
+      product.images.length > 0
+        ? product.images.map(
+            (image) => normalizeImageUrl(image) || DEFAULT_PRODUCT_IMAGE
+          )
+        : [DEFAULT_PRODUCT_IMAGE],
+    detailInformationFiles:
+      product.detail_information_files.length > 0
+        ? product.detail_information_files
+            .map((file) => normalizeImageUrl(file))
+            .filter((file): file is string => file !== null)
+        : [],
+    storyBlocks: (product.story_blocks ?? [])
+      .map((block) => ({
+        title: block.title || "",
+        description: block.description || "",
+        imageUrl: normalizeImageUrl(block.image_url),
+        imageLeft: block.image_left,
+      }))
+      .filter(
+        (block): block is StoryBlock =>
+          block.imageUrl !== null && block.title !== ""
+      ),
+    featureCards: (product.feature_cards ?? [])
+      .map((card) => ({
+        icon: card.icon || "",
+        label: card.label || "",
+        background: card.background || "",
+      }))
+      .filter(
+        (card): card is FeatureCard => card.icon !== "" && card.label !== ""
+      ),
+    infoSections: (product.info_sections ?? [])
+      .map((section) => ({
+        id: section.id,
+        title: section.title || "",
+        content: section.content || "",
+      }))
+      .filter(
+        (section): section is InfoSection =>
+          section.title !== "" && section.content !== ""
+      ),
+    options,
+    variants: product.variants.map((variant) => transformVariant(variant)),
+    addOnGroups: (product.add_on_groups ?? [])
+      .map((group) => transformAddOnGroup(group))
+      .filter((group) => group.addOns.length > 0),
+    addOns: (product.add_ons ?? []).map((addOn) => transformAddOn(addOn)),
+  };
+}
+
+/**
+ * Transform variant list item
+ */
+export function transformVariantListItem(
+  variant: VariantListItemFromAPI
+): VariantListItem {
+  const currencySlug = variant.currency?.slug || "AUD";
+  const originalPrice = variant.original_price;
+  const discountedPrice = variant.discounted_price;
+
+  let formattedOriginalPrice: string | null = null;
+  let formattedDiscountedPrice: string | null = null;
+  let discountPercentage: string | null = null;
+
+  if (originalPrice !== null) {
+    formattedOriginalPrice = formatPrice(originalPrice, currencySlug);
+  }
+  if (discountedPrice !== null) {
+    formattedDiscountedPrice = formatPrice(discountedPrice, currencySlug);
+  }
+
+  // Calculate discount percentage
+  if (
+    originalPrice !== null &&
+    originalPrice > 0 &&
+    discountedPrice !== null &&
+    discountedPrice < originalPrice
+  ) {
+    const percent = Math.round(
+      ((originalPrice - discountedPrice) / originalPrice) * 100
+    );
+    discountPercentage = `${percent}% OFF`;
+  }
+
+  return {
+    variantId: variant.variant_id,
+    productId: variant.product_id,
+    productTitle: variant.product_title || "Untitled Product",
+    productSlug: variant.product_slug || `product-${variant.product_id}`,
+    category: variant.category,
+    originalPrice,
+    discountedPrice,
+    formattedOriginalPrice,
+    formattedDiscountedPrice,
+    discountPercentage,
+    currency: variant.currency,
+    imageUrl: normalizeImageUrl(variant.image_url) || DEFAULT_PRODUCT_IMAGE,
+    stockQuantity: variant.stock_quantity,
+    isAvailable: variant.is_available,
+    purchaseMode:
+      variant.purchase_mode === "preorder" ? "preorder" : "standard",
+    optionValues: variant.option_values.map((ov) => ({
+      optionName: ov.option_name,
+      optionSlug: ov.option_slug,
+      value: ov.value,
+    })),
+  };
+}
+
+/** Backend shape of a paginated variant list. */
+export interface VariantListResponseFromAPI {
+  data: VariantListItemFromAPI[];
+  pagination: {
+    page: number;
+    page_size: number;
+    total: number;
+    total_pages: number;
+  };
+}
+
+/**
+ * Transform variant list response
+ */
+export function transformVariantListResponse(
+  response: VariantListResponseFromAPI
+): VariantListResponse {
+  return {
+    data: response.data.map((v) => transformVariantListItem(v)),
+    pagination: {
+      page: response.pagination.page,
+      pageSize: response.pagination.page_size,
+      total: response.pagination.total,
+      totalPages: response.pagination.total_pages,
+    },
+  };
+}
+
+/**
+ * Drop empty values so an unset filter never reaches the API as `?brand=`.
+ */
+export function cleanParams(
+  params?: object
+): Record<string, string | number | boolean> {
+  const clean: Record<string, string | number | boolean> = {};
+  if (!params) return clean;
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== "") {
+      clean[key] = value as string | number | boolean;
+    }
+  }
+  return clean;
+}

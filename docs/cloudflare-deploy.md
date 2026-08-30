@@ -126,11 +126,16 @@ Workers → piggy-frontend → Custom Domains → `piggyway.com.au` / `www`.
 
 Update Google OAuth redirect URIs to the new domain.
 
-## 5. Optional R2 incremental cache
+## 5. R2 incremental cache (required)
 
-1. Create R2 bucket `piggy-frontend-next-cache`
-2. Uncomment `r2_buckets` in `wrangler.jsonc`
-3. Wire `r2IncrementalCache` in `open-next.config.ts`
+`open-next.config.ts` wires `r2IncrementalCache` and `wrangler.jsonc` binds
+`NEXT_INC_CACHE_R2_BUCKET`, so the bucket must exist before the first deploy.
+Without it Next has nowhere to keep its fetch cache, every `next: { revalidate }`
+is ignored, and server renders hit the backend on every request.
+
+```bash
+npx wrangler r2 bucket create piggyway-frontend-inc-cache
+```
 
 ## Docker note
 

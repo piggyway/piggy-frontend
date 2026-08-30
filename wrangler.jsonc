@@ -35,11 +35,12 @@
     { "pattern": "piggyway.com.au/*", "zone_name": "piggyway.com.au" },
     { "pattern": "www.piggyway.com.au/*", "zone_name": "piggyway.com.au" },
   ],
-  // Optional: Next.js incremental cache on R2
-  // "r2_buckets": [
-  //   {
-  //     "binding": "NEXT_INC_CACHE_R2_BUCKET",
-  //     "bucket_name": "piggy-frontend-next-cache"
-  //   }
-  // ]
+  // Next.js incremental cache (fetch cache + ISR). Required by
+  // open-next.config.ts; without it every `next: { revalidate }` is a no-op.
+  "r2_buckets": [
+    {
+      "binding": "NEXT_INC_CACHE_R2_BUCKET",
+      "bucket_name": "piggyway-frontend-inc-cache",
+    },
+  ],
 }

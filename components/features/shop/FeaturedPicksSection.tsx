@@ -1,6 +1,6 @@
 import { AnimatedSection } from "../homepage/AnimatedSection";
 import { ProductCardClient } from "./ProductCardClient";
-import { ProductService } from "@/lib/services/products";
+import { ServerProductService } from "@/lib/services/products.server";
 import type { ProductListItem } from "@/lib/types/product";
 
 /**
@@ -13,7 +13,7 @@ export async function FeaturedPicksSection() {
   // whole page, but is still reported.
   let products: ProductListItem[] = [];
   try {
-    const response = await ProductService.getProducts({
+    const response = await ServerProductService.getProducts({
       featured: "true",
       page_size: 3,
     });

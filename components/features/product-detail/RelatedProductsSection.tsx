@@ -1,5 +1,5 @@
 import { AnimatedSection } from "../homepage/AnimatedSection";
-import { ProductService } from "@/lib/services/products";
+import { ServerProductService } from "@/lib/services/products.server";
 import { ProductCardClient } from "../shop/ProductCardClient";
 import type { ProductListItem } from "@/lib/types/product";
 
@@ -22,7 +22,7 @@ export async function RelatedProductsSection({
   // taking the product page down.
   let products: ProductListItem[] = [];
   try {
-    const response = await ProductService.getProducts({
+    const response = await ServerProductService.getProducts({
       category: categorySlug,
       sort: "base_price",
       page_size: 4, // Get 4 to account for excluding current product

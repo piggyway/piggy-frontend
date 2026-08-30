@@ -102,6 +102,42 @@ describe("backendFetch client ip", () => {
     expect(fetchMock.mock.calls[0][1]?.headers).toBeUndefined();
   });
 
+  it("sends neither client ip nor proxy secret when forwardClientIp is false", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(okResponse());
+
+    process.env.INTERNAL_PROXY_SECRET = "s3cret";
+    setIncoming({ "cf-connecting-ip": "203.0.113.9" });
+
+    // A cacheable read must carry nothing per-visitor: Next keys its fetch
+    // cache on the request headers, so a client ip would give every visitor a
+    // private entry.
+    await backendFetch("https://backend.example/api/v1/ping", {
+      forwardClientIp: false,
+      headers: { "Content-Type": "application/json" },
+    });
+
+    expect(fetchMock.mock.calls[0][1]?.headers).toEqual({
+      "Content-Type": "application/json",
+    });
+  });
+
+  it("does not pass forwardClientIp on to fetch", async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(okResponse());
+
+    await backendFetch("https://backend.example/api/v1/ping", {
+      forwardClientIp: false,
+      cache: "no-store",
+    });
+
+    const init = fetchMock.mock.calls[0][1] as Record<string, unknown>;
+    expect(init).not.toHaveProperty("forwardClientIp");
+    expect(init.cache).toBe("no-store");
+  });
+
   it("sends the proxy secret alongside a resolved client ip", async () => {
     const fetchMock = vi
       .spyOn(globalThis, "fetch")

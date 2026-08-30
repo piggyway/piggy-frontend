@@ -1,5 +1,5 @@
 import { AnimatedSection } from "../homepage/AnimatedSection";
-import { ProductService } from "@/lib/services/products";
+import { ServerProductService } from "@/lib/services/products.server";
 import { VariantCard } from "@/components/features/shop-all/VariantCard";
 import type { VariantListItem } from "@/lib/types/product";
 
@@ -8,7 +8,7 @@ export async function StarterKitsSection() {
   // fetch hides it rather than failing the whole page.
   let variants: VariantListItem[] = [];
   try {
-    const response = await ProductService.getVariants({
+    const response = await ServerProductService.getVariants({
       sort: "-date_created", // Sort by creation date descending (newest first)
       page_size: 3,
       in_stock: "true",
