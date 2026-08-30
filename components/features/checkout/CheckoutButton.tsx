@@ -55,25 +55,9 @@ export default function CheckoutButton({
     onError?.(null);
 
     try {
-      // Get auth token from localStorage
-      const token =
-        localStorage.getItem("access_token") ||
-        localStorage.getItem("auth_token") ||
-        localStorage.getItem("token");
-
-      const headers: Record<string, string> = {
-        "Content-Type": "application/json",
-      };
-
-      if (token) {
-        headers.Authorization = token.startsWith("Bearer")
-          ? token
-          : `Bearer ${token}`;
-      }
-
       const response = await fetch("/api/checkout", {
         method: "POST",
-        headers,
+        headers: { "Content-Type": "application/json" },
         body: payload ? JSON.stringify(payload) : undefined,
       });
 

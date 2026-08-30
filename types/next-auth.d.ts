@@ -3,7 +3,12 @@ import { UserProfile } from "@/lib/types/account";
 declare module "next-auth" {
   interface Session {
     user: UserProfile;
-    accessToken?: string;
+    /**
+     * Whether the JWT carries a backend access token. The token itself stays
+     * server-side; browser code only needs to know that authenticated calls
+     * through the BFF will carry credentials.
+     */
+    hasBackendSession?: boolean;
     error?: "RefreshAccessTokenError";
   }
 

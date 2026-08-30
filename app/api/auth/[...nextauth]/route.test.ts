@@ -313,7 +313,7 @@ describe("NextAuth authOptions", () => {
   });
 
   describe("session callback", () => {
-    it("exposes the access token and user to the client session without the refresh token", async () => {
+    it("exposes the user and a boolean session flag, never the backend tokens", async () => {
       const session = (await callSession({
         session: { user: {}, expires: "2026-12-31T00:00:00.000Z" },
         token: {
@@ -324,9 +324,19 @@ describe("NextAuth authOptions", () => {
       })) as unknown as Record<string, unknown>;
 
       expect(session.user).toEqual({ id: "user-1", email: "jane@example.com" });
-      expect(session.accessToken).toBe("access-1");
+      expect(session.hasBackendSession).toBe(true);
+      expect(session.accessToken).toBeUndefined();
       expect(session.refreshToken).toBeUndefined();
       expect(session.error).toBeUndefined();
+    });
+
+    it("reports no backend session when the token carries no access token", async () => {
+      const session = (await callSession({
+        session: { user: {}, expires: "2026-12-31T00:00:00.000Z" },
+        token: { user: { id: "user-1" } } as JWT,
+      })) as unknown as Record<string, unknown>;
+
+      expect(session.hasBackendSession).toBe(false);
     });
 
     it("propagates a refresh failure so the client can sign the user out", async () => {

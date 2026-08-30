@@ -83,15 +83,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Wait a bit to ensure token is stored in localStorage after login
-    if (status === "authenticated" && typeof window !== "undefined") {
-      const token = localStorage.getItem("access_token");
-      if (!token) {
-        // Wait for token to be stored (UserContext might still be syncing)
-        await new Promise((resolve) => setTimeout(resolve, 100));
-      }
-    }
-
     isLoadingRef.current = true;
     setIsLoading(true);
     const nextCart = await CartService.getCart();
@@ -103,7 +94,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
     setIsLoading(false);
     isLoadingRef.current = false;
-  }, [status]);
+  }, []);
 
   const ensureLoaded = useCallback(async () => {
     // We don't force auth just to load the cart anymore, to support guest carts or better UX

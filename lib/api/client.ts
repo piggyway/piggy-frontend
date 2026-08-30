@@ -3,8 +3,7 @@
  * Used by React components to call Next.js API Routes
  */
 
-import { refreshTokens } from "@/lib/services/auth";
-import { signOut } from "next-auth/react";
+import { getSession, signOut } from "next-auth/react";
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
@@ -152,8 +151,30 @@ function getOrCreateSessionId(): string {
 }
 
 /**
+ * Ask NextAuth for the current session, which runs the `jwt` callback on the
+ * server and rotates the backend access token when it has expired. The browser
+ * never sees the token; it only learns whether a usable session still exists.
+ * Returns false when the session is gone or its refresh failed.
+ */
+async function renewSession(): Promise<boolean> {
+  try {
+    const session = await getSession();
+    return Boolean(session) && !session?.error;
+  } catch (error) {
+    console.error("[Frontend API] Failed to renew session:", error);
+    return false;
+  }
+}
+
+/**
  * Fetch wrapper for client-side calls that require Authorization.
- * If the request returns 401, it will attempt a refresh and retry once.
+ *
+ * The Authorization header is not set here. `proxy.ts` reads the backend
+ * access token from the NextAuth cookie and attaches it server-side, so no
+ * token is ever exposed to browser code.
+ *
+ * If the request returns 401, the session is renewed once (which refreshes the
+ * backend token server-side) and the request is retried.
  * For unauthenticated users, includes X-Session-Id header for guest cart support.
  */
 export async function fetchWithAuth(
@@ -169,14 +190,6 @@ export async function fetchWithAuth(
   const headers = new Headers(initialHeaders);
 
   if (typeof window !== "undefined") {
-    const token = localStorage.getItem("access_token");
-    if (token && !headers.has("Authorization")) {
-      headers.set(
-        "Authorization",
-        token.startsWith("Bearer") ? token : `Bearer ${token}`
-      );
-    }
-
     // Always include session ID for guest cart support
     const sessionId = getOrCreateSessionId();
     if (sessionId && !headers.has("X-Session-Id")) {
@@ -202,24 +215,19 @@ export async function fetchWithAuth(
   let res = await doFetch();
   if (res.status !== 401) return res;
 
-  // Attempt refresh once
-  const refreshed = await refreshTokens();
-  if (!refreshed?.accessToken || typeof window === "undefined") {
-    // Refresh failed or we are on server -> if client, force logout
+  if (typeof window === "undefined") return res;
+
+  // Attempt refresh once, server-side, via the NextAuth session
+  const renewed = await renewSession();
+  if (!renewed) {
     handleAuthSignOut(redirectOnAuthError);
     return res;
   }
 
-  const bearer = refreshed.accessToken.startsWith("Bearer")
-    ? refreshed.accessToken
-    : `Bearer ${refreshed.accessToken}`;
-  localStorage.setItem("access_token", bearer);
-  headers.set("Authorization", bearer);
-
   res = await doFetch();
 
   // If still 401 after refresh, token is invalid -> force logout
-  if (res.status === 401 && typeof window !== "undefined") {
+  if (res.status === 401) {
     handleAuthSignOut(redirectOnAuthError);
   }
 

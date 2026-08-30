@@ -245,14 +245,6 @@ export function LoginPage({ error, callbackUrl = "/" }: LoginPageProps) {
 
       setInfoMessage("Login successful. Redirecting...");
 
-      // Store token in localStorage for API calls
-      if (typeof window !== "undefined" && data.accessToken) {
-        const token = data.accessToken.startsWith("Bearer")
-          ? data.accessToken
-          : `Bearer ${data.accessToken}`;
-        localStorage.setItem("access_token", token);
-      }
-
       router.push(callbackUrl);
       router.refresh();
     } catch (err) {
