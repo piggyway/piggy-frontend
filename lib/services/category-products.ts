@@ -1,11 +1,17 @@
+import "server-only";
+
 /**
  * Category + product composition
- * Sits above CategoryService and ProductService because neither one alone can
+ * Sits above the category and product services because neither one alone can
  * answer "which categories currently have something to sell".
+ *
+ * Every caller (the footer, the homepage grid, the shop grid) is a server
+ * component, so this reads the backend directly through the server services
+ * rather than looping back through this site's own API routes.
  */
 
-import { CategoryService } from "@/lib/services/categories";
-import { ProductService } from "@/lib/services/products";
+import { ServerCategoryService } from "@/lib/services/categories.server";
+import { ServerProductService } from "@/lib/services/products.server";
 import type { Category } from "@/lib/types/models";
 
 /**
@@ -14,7 +20,7 @@ import type { Category } from "@/lib/types/models";
  */
 async function countCategoryVariants(slug: string): Promise<number | null> {
   try {
-    const response = await ProductService.getVariants({
+    const response = await ServerProductService.getVariants({
       page: 1,
       page_size: 1,
       category: slug,
@@ -41,7 +47,7 @@ async function countCategoryVariants(slug: string): Promise<number | null> {
  * shop grid and the footer. Those are navigation chrome on pages that must
  * keep rendering, so a categories outage degrades to an empty list here and is
  * reported. Callers that need categories as truth (the `/shop-all` category
- * filter, which 404s unknown slugs) must call CategoryService directly and let
+ * filter, which 404s unknown slugs) must call ServerCategoryService directly and let
  * the failure propagate.
  */
 export async function getCategoriesWithProducts(params?: {
@@ -50,7 +56,7 @@ export async function getCategoriesWithProducts(params?: {
 }): Promise<Category[]> {
   let categories: Category[];
   try {
-    categories = await CategoryService.getCategories(
+    categories = await ServerCategoryService.getCategories(
       params?.features ? { features: true } : undefined
     );
   } catch (error) {

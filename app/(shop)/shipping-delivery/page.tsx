@@ -1,11 +1,12 @@
 import { Metadata } from "next";
 import { Truck, Clock, Globe } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
-import { ConfigService } from "@/lib/services/config";
+import { ServerConfigService } from "@/lib/services/config.server";
 import { DELIVERY_ZONES } from "@/lib/constants";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { freeShippingThreshold } = await ConfigService.getShippingConfig();
+  const { freeShippingThreshold } =
+    await ServerConfigService.getShippingConfig();
   return {
     title: "Shipping & Delivery",
     description: `Learn about our shipping rates, delivery times, and policies. Free shipping on orders over $${freeShippingThreshold}.`,
@@ -15,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function ShippingPage() {
   const { freeShippingThreshold, standardShippingFee } =
-    await ConfigService.getShippingConfig();
+    await ServerConfigService.getShippingConfig();
 
   return (
     <div className="bg-neutral-background-light min-h-screen py-16 sm:py-24">

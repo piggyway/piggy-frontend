@@ -61,3 +61,23 @@ export const API_ENDPOINTS = {
   PICKUP_SLOTS_BY_DATE: "/api/pickup/slots",
   PICKUP_AVAILABLE_DATES: "/api/pickup/available-dates",
 } as const;
+
+/**
+ * Backend API paths, relative to `${API_BASE_URL}/api/v1`.
+ *
+ * Server components read the backend directly instead of looping back through
+ * the routes above, so these mirror what each BFF route proxies to. Keep the
+ * two lists in step: a route and its server-side twin must hit the same
+ * upstream path.
+ */
+export const BACKEND_ENDPOINTS = {
+  CONFIG: "/config",
+
+  PRODUCTS: "/products",
+  PRODUCT_BY_SLUG: (slug: string) => `/products/${encodeURIComponent(slug)}`,
+
+  VARIANTS: "/variants",
+  VARIANTS_REVIEWS: (id: string | number) => `/variants/${id}/reviews`,
+
+  CATEGORIES: "/product-categories",
+} as const;

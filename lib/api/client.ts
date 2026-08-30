@@ -5,35 +5,14 @@
 
 import { getSession, signOut } from "next-auth/react";
 import { reportError } from "@/lib/monitoring/report";
+import { ApiError, isReportableError } from "@/lib/api/errors";
+
+// Re-exported so the many existing `@/lib/api/client` importers keep working.
+export { ApiError, isNotFoundError } from "@/lib/api/errors";
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string | number | boolean>;
   redirectOnAuthError?: boolean;
-}
-
-/**
- * Error thrown by `apiFetch` for any non-2xx response, carrying the HTTP
- * status so callers can tell "the backend says this does not exist" (404)
- * apart from "the request failed" (5xx, timeout, network). Without the status
- * a transient failure is indistinguishable from a missing resource, and pages
- * turn an outage into a hard 404.
- */
-export class ApiError extends Error {
-  readonly status: number;
-
-  constructor(status: number, message: string) {
-    super(message);
-    this.name = "ApiError";
-    this.status = status;
-  }
-}
-
-/**
- * True only when the backend confirmed the resource does not exist.
- * Network errors, timeouts and 5xx responses are failures, not absences.
- */
-export function isNotFoundError(error: unknown): boolean {
-  return error instanceof ApiError && error.status === 404;
 }
 
 /**
@@ -128,10 +107,15 @@ async function apiFetch<T>(
     return (await response.json()) as T;
   } catch (error) {
     console.error("[Frontend API Error]", error);
-    reportError(error, {
-      scope: "apiClient.fetch",
-      extra: { endpoint, method: fetchOptions.method ?? "GET" },
-    });
+    // 4xx is the backend answering, not the app breaking: a 404 on a removed
+    // product or a 429 from the rate limiter is expected traffic, and paging
+    // on it buries the failures that do need a human.
+    if (isReportableError(error)) {
+      reportError(error, {
+        scope: "apiClient.fetch",
+        extra: { endpoint, method: fetchOptions.method ?? "GET" },
+      });
+    }
     throw error;
   }
 }

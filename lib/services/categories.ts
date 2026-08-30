@@ -1,69 +1,22 @@
 /**
  * Category Service
  * Business logic layer for categories
+ *
+ * Reads go through the browser-facing `apiClient` and the Next.js API routes.
+ * Server components must use `categories.server.ts` instead, which talks to
+ * the backend directly.
  */
 
 import { cache } from "react";
 
 import { API_ENDPOINTS } from "@/lib/api/endpoints";
 import { apiClient } from "@/lib/api/client";
+import {
+  selectCategories,
+  type CategoriesAPIResponse,
+  type CategoryQuery,
+} from "@/lib/services/category-mappers";
 import type { Category, CategoryFromAPI } from "@/lib/types/models";
-
-/**
- * Backend API Response format
- */
-interface CategoriesAPIResponse {
-  success: boolean;
-  data: CategoryFromAPI[];
-  meta: {
-    total: number;
-  };
-}
-
-/**
- * Fallback UI styling per category slug, used only when the backend does not
- * provide presentation data (theme_color / imageUrl). Keeps visual parity for
- * existing categories. Data from the CMS always takes precedence.
- */
-const CATEGORY_STYLE_FALLBACKS: Record<
-  string,
-  { bgColor: string; textColor: string; image: string }
-> = {
-  liner: {
-    bgColor: "bg-neutral-pink-background",
-    textColor: "text-primary-navy",
-    image: "/homepage-essentials/liner-example.png",
-  },
-  hideout: {
-    bgColor: "bg-secondary-mint",
-    textColor: "text-primary-navy",
-    image: "/homepage-essentials/hut-example.png",
-  },
-  treat: {
-    bgColor: "bg-neutral-grey-background",
-    textColor: "text-primary-navy",
-    image: "/homepage-essentials/snack-example.png",
-  },
-  "c-c-cage": {
-    bgColor: "bg-primary-navy-light",
-    textColor: "text-white",
-    image: "/homepage-essentials/cage-example.png",
-  },
-  combo: {
-    bgColor: "bg-primary-gold",
-    textColor: "text-primary-navy",
-    image: "/homepage-essentials/combo-example.png",
-  },
-};
-
-/**
- * Default styling for any category without a slug-specific fallback.
- */
-const DEFAULT_CATEGORY_STYLE = {
-  bgColor: "bg-neutral-grey-background",
-  textColor: "text-primary-navy",
-  image: "/default-category-image.png",
-};
 
 /**
  * The raw category list, fetched at most once per server render.
@@ -90,30 +43,15 @@ const fetchCategoryList = cache(async (): Promise<CategoryFromAPI[]> => {
 export class CategoryService {
   /**
    * Get all categories
-   * @param params - 查询参数（目前后端不支持过滤，但保留接口以便将来扩展）
+   * @param params - Frontend-side filters; the backend supports none of them
+   *   yet, but the signature is kept for future use.
    */
-  static async getCategories(params?: {
-    features?: boolean;
-    limit?: number;
-  }): Promise<Category[]> {
+  static async getCategories(params?: CategoryQuery): Promise<Category[]> {
     try {
       // Shared per-render fetch; see fetchCategoryList above
       const data = await fetchCategoryList();
 
-      // Business logic: Transform and enhance data
-      let categories = data.map((category) => this.transformCategory(category));
-
-      // Business logic: Apply frontend filtering (if backend doesn't support)
-      if (params?.features) {
-        categories = categories.filter((cat) => this.isFeatured(cat));
-      }
-
-      // Business logic: Limit number of categories
-      if (params?.limit) {
-        categories = categories.slice(0, params.limit);
-      }
-
-      return categories;
+      return selectCategories(data, params);
     } catch (error) {
       // Neither a hardcoded fallback list nor an empty list: both invent an
       // answer the backend never gave. An empty list must mean "the shop has
@@ -121,48 +59,5 @@ export class CategoryService {
       console.error("[CategoryService] Failed to fetch categories:", error);
       throw error;
     }
-  }
-
-  /**
-   * Business logic: Transform backend data to frontend format.
-   * Presentation fields (theme_color, nav_icon_url, care_cards, section
-   * titles) come straight from the CMS; bgColor/textColor/image fall back to
-   * the slug style map when the CMS does not provide them.
-   */
-  private static transformCategory(apiCategory: CategoryFromAPI): Category {
-    const slug = this.normalizeSlug(apiCategory.slug);
-    const styles = CATEGORY_STYLE_FALLBACKS[slug] || DEFAULT_CATEGORY_STYLE;
-
-    return {
-      id: apiCategory.uuid,
-      slug: apiCategory.slug,
-      name: apiCategory.name,
-      title: apiCategory.name,
-      image: apiCategory.imageUrl || styles.image,
-      bgColor: styles.bgColor,
-      textColor: styles.textColor,
-      themeColor: apiCategory.theme_color,
-      navIconUrl: apiCategory.nav_icon_url,
-      specSectionTitle: apiCategory.spec_section_title,
-      careSectionTitle: apiCategory.care_section_title,
-      careCards: Array.isArray(apiCategory.care_cards)
-        ? apiCategory.care_cards
-        : [],
-    };
-  }
-
-  /**
-   * Business logic: Check if the category is featured
-   * Currently only show categories in the fallback style map
-   */
-  private static isFeatured(category: Category): boolean {
-    return this.normalizeSlug(category.slug) in CATEGORY_STYLE_FALLBACKS;
-  }
-
-  /**
-   * Business logic: Normalize slug (handle possible naming differences)
-   */
-  private static normalizeSlug(slug: string): string {
-    return slug.toLowerCase().replace(/\s+/g, "-").replace(/_/g, "-");
   }
 }

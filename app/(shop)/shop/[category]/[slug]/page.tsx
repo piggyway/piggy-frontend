@@ -8,10 +8,10 @@ import { PetIconsSection } from "@/components/features/product-detail/PetIconsSe
 import { ProductFeaturesSection } from "@/components/features/product-detail/ProductFeaturesSection";
 import { TestimonialsSection } from "@/components/features/shop/TestimonialsSection";
 import { RelatedProductsSection } from "@/components/features/product-detail/RelatedProductsSection";
-import { ProductService } from "@/lib/services/products";
-import { CategoryService } from "@/lib/services/categories";
+import { ServerProductService } from "@/lib/services/products.server";
+import { ServerCategoryService } from "@/lib/services/categories.server";
 import type { Category } from "@/lib/types/models";
-import { ConfigService } from "@/lib/services/config";
+import { ServerConfigService } from "@/lib/services/config.server";
 import {
   DELIVERY_ZONES,
   DISPATCH_MAX_BUSINESS_DAYS,
@@ -39,7 +39,7 @@ export async function generateMetadata({
   const draftModeResult = await draftMode();
   const isDraftMode = draftModeResult.isEnabled;
 
-  const product = await ProductService.getProductBySlug(slug, {
+  const product = await ServerProductService.getProductBySlug(slug, {
     includeDraft: isDraftMode,
   });
   if (!product) {
@@ -97,7 +97,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   const isDraftMode = draftModeResult.isEnabled;
 
   // Fetch product data from API with draft mode support
-  const product = await ProductService.getProductBySlug(slug, {
+  const product = await ServerProductService.getProductBySlug(slug, {
     includeDraft: isDraftMode,
   });
 
@@ -112,7 +112,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // so a categories outage degrades the section rather than the page.
   let productCategory: Category | undefined;
   try {
-    const categories = await CategoryService.getCategories();
+    const categories = await ServerCategoryService.getCategories();
     productCategory = categories.find(
       (cat) => cat.slug === product.category?.slug
     );
@@ -123,7 +123,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
     );
   }
 
-  const shippingConfig = await ConfigService.getShippingConfig();
+  const shippingConfig = await ServerConfigService.getShippingConfig();
 
   const baseUrl = getBaseUrl();
   const productUrl = getProductUrl(
@@ -280,7 +280,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // This is server-side fetching directly from backend service
   const firstVariantId = product.variants?.[0]?.id;
   const reviewsResponse = firstVariantId
-    ? await ProductService.getVariantReviews(firstVariantId)
+    ? await ServerProductService.getVariantReviews(firstVariantId)
     : null;
   const reviews = reviewsResponse?.reviews || [];
 

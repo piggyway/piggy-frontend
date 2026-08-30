@@ -17,6 +17,10 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": dirname,
+      // `import "server-only"` throws outside the react-server condition, which
+      // Vitest does not set. Resolve it to the package's own no-op entry so
+      // server modules stay testable without weakening the guard in the app.
+      "server-only": path.join(dirname, "node_modules/server-only/empty.js"),
     },
   },
   test: {
