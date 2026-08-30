@@ -2,6 +2,23 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 const DSN = "https://publickey123@o1.ingest.sentry.io/42";
 
+const sdk = vi.hoisted(() => ({
+  client: undefined as object | undefined,
+  captureException: vi.fn(),
+}));
+
+vi.mock("@sentry/nextjs", () => ({
+  getClient: () => sdk.client,
+  captureException: sdk.captureException,
+}));
+
+/** Lets the dynamic `import("@sentry/nextjs")` inside the reporter settle. */
+async function flushAsync() {
+  for (let i = 0; i < 5; i += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 0));
+  }
+}
+
 async function loadReporter() {
   vi.resetModules();
   return import("./report");
@@ -119,5 +136,56 @@ describe("monitoring reporter", () => {
     expect(body).not.toContain("owner@example.com");
     expect(body).not.toContain("AbCdEfGhIjKlMnOpQrStUvWxYz01");
     expect(body).toContain('"bookingId":9');
+  });
+
+  describe("client delegation to the SDK", () => {
+    beforeEach(() => {
+      process.env.NEXT_PUBLIC_SENTRY_DSN = DSN;
+      vi.stubGlobal("window", {});
+      sdk.client = undefined;
+      sdk.captureException.mockClear();
+    });
+
+    afterEach(() => {
+      sdk.client = undefined;
+    });
+
+    it("captures through the SDK and skips the envelope when a client is active", async () => {
+      sdk.client = { name: "browser-client" };
+      const { reportError } = await loadReporter();
+      const error = new Error("checkout failed");
+
+      reportError(error, {
+        scope: "CartService.getCart",
+        extra: { token: "AbCdEfGhIjKlMnOpQrStUvWxYz01", bookingId: 9 },
+      });
+      await flushAsync();
+
+      expect(sdk.captureException).toHaveBeenCalledTimes(1);
+      const [captured, options] = sdk.captureException.mock.calls[0];
+      expect(captured).toBe(error);
+      expect(options.level).toBe("error");
+      expect(options.tags).toEqual({ scope: "CartService.getCart" });
+      expect(options.extra).toEqual({
+        token: "[redacted]",
+        bookingId: 9,
+      });
+      expect(fetchMock).not.toHaveBeenCalled();
+    });
+
+    it("falls back to the envelope when no SDK client is initialised", async () => {
+      const { reportError } = await loadReporter();
+
+      reportError(new Error("checkout failed"), {
+        scope: "CartService.getCart",
+      });
+      await flushAsync();
+
+      expect(sdk.captureException).not.toHaveBeenCalled();
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+      expect(fetchMock.mock.calls[0][0]).toBe(
+        "https://o1.ingest.sentry.io/api/42/envelope/"
+      );
+    });
   });
 });
