@@ -5,6 +5,7 @@
 
 import { fetchWithAuth } from "@/lib/api/client";
 import type { Address, AddressType } from "@/lib/types/account";
+import { reportError } from "@/lib/monitoring/report";
 
 export interface UserProfile {
   id: string;
@@ -66,6 +67,7 @@ export class UserService {
       return data;
     } catch (error) {
       console.error("[UserService] Failed to get user profile:", error);
+      reportError(error, { scope: "UserService.getProfile" });
       return null;
     }
   }
@@ -89,6 +91,7 @@ export class UserService {
       return data;
     } catch (error) {
       console.error("[UserService] Failed to update user profile:", error);
+      reportError(error, { scope: "UserService.updateProfile" });
       return {
         success: false,
         error: "update_profile_failed",
@@ -114,6 +117,7 @@ export class UserService {
       return (data?.data as Address[]) ?? [];
     } catch (error) {
       console.error("[UserService] Failed to list addresses:", error);
+      reportError(error, { scope: "UserService.listAddresses" });
       return null;
     }
   }
@@ -139,6 +143,7 @@ export class UserService {
       return (data?.data as Address) ?? null;
     } catch (error) {
       console.error("[UserService] Failed to create address:", error);
+      reportError(error, { scope: "UserService.createAddress" });
       return null;
     }
   }
@@ -173,6 +178,7 @@ export class UserService {
       return (data?.data as Address) ?? null;
     } catch (error) {
       console.error("[UserService] Failed to update address:", error);
+      reportError(error, { scope: "UserService.updateAddress" });
       return null;
     }
   }
@@ -197,6 +203,7 @@ export class UserService {
       return true;
     } catch (error) {
       console.error("[UserService] Failed to delete address:", error);
+      reportError(error, { scope: "UserService.deleteAddress" });
       return false;
     }
   }
@@ -219,6 +226,7 @@ export class UserService {
       return (data?.data as Address) ?? null;
     } catch (error) {
       console.error("[UserService] Failed to set default address:", error);
+      reportError(error, { scope: "UserService.setDefaultAddress" });
       return null;
     }
   }

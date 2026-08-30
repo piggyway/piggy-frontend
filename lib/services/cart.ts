@@ -19,6 +19,7 @@ import type {
   CartTotalsFromAPI,
   UpdateCartItemPayload,
 } from "@/lib/types/cart";
+import { reportError } from "@/lib/monitoring/report";
 
 const FALLBACK_IMAGE = "/default-product-image.png";
 
@@ -110,6 +111,7 @@ export class CartService {
       return transformedCart;
     } catch (error) {
       console.error("[CartService] Failed to fetch cart:", error);
+      reportError(error, { scope: "CartService.getCart" });
       return null;
     }
   }
@@ -153,6 +155,7 @@ export class CartService {
       return this.transformCart(data.data);
     } catch (error) {
       console.error("[CartService] Failed to add cart item:", error);
+      reportError(error, { scope: "CartService.addItem" });
       // Re-throw so the caller can surface the (friendly) message instead of a
       // generic fallback. Add-on stock/availability errors matter to the user.
       throw error instanceof Error
@@ -192,6 +195,7 @@ export class CartService {
       return this.transformCart(data.data);
     } catch (error) {
       console.error("[CartService] Failed to update cart item:", error);
+      reportError(error, { scope: "CartService.updateItem" });
       return null;
     }
   }
@@ -217,6 +221,7 @@ export class CartService {
       return this.transformCart(data.data);
     } catch (error) {
       console.error("[CartService] Failed to remove cart item:", error);
+      reportError(error, { scope: "CartService.removeItem" });
       return null;
     }
   }
