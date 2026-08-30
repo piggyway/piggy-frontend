@@ -50,7 +50,7 @@ export default defineConfig({
             "contexts/**/*.test.tsx",
             "app/api/**/*.test.ts",
             "components/**/*.test.tsx",
-            "proxy.test.ts",
+            "middleware.test.ts",
           ],
         },
       },

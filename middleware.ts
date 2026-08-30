@@ -1,6 +1,10 @@
 /**
  * Attaches the backend access token to BFF requests, server-side.
  *
+ * This file must stay `middleware.ts`: @opennextjs/cloudflare rejects the Next 16
+ * `proxy.ts` flavour because it compiles to the Node.js runtime (opennextjs-cloudflare
+ * issue #962), while `middleware.ts` still compiles to the supported edge flavour.
+ *
  * The browser never holds the backend token: it lives only in the encrypted,
  * httpOnly NextAuth JWT cookie. Every request to an `/api/*` route handler
  * passes through here, where the token is read from that cookie and written
@@ -21,7 +25,7 @@ import { getToken } from "next-auth/jwt";
 
 const AUTH_HEADER = "authorization";
 
-export default async function proxy(request: NextRequest) {
+export default async function middleware(request: NextRequest) {
   const headers = new Headers(request.headers);
   headers.delete(AUTH_HEADER);
 

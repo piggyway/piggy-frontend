@@ -43,11 +43,11 @@ There is **no Directus SDK in the frontend** and no `lib/directus/`. Directus is
 ### Two client fetch paths (`lib/api/client.ts`)
 
 - `apiClient.{get,post,put,delete,patch}` → `apiFetch`: plain JSON wrapper, throws `Error(data.error)` on non-2xx. Used by services for public data.
-- `fetchWithAuth`: attaches an `X-Session-Id` (a `localStorage` UUID for **guest carts**) but **no** `Authorization` header — `proxy.ts` adds that server-side. On 401 it calls `getSession()` once, which lets NextAuth rotate the backend token server-side, then retries; if the session cannot be renewed it signs out — redirecting to `/login` only on protected paths (`/account`, `/checkout`, `/cart`).
+- `fetchWithAuth`: attaches an `X-Session-Id` (a `localStorage` UUID for **guest carts**) but **no** `Authorization` header — `middleware.ts` adds that server-side. On 401 it calls `getSession()` once, which lets NextAuth rotate the backend token server-side, then retries; if the session cannot be renewed it signs out — redirecting to `/login` only on protected paths (`/account`, `/checkout`, `/cart`).
 
-### Backend token handling (`proxy.ts`)
+### Backend token handling (`middleware.ts`)
 
-The backend access token lives **only** in the encrypted httpOnly NextAuth JWT cookie. It is never written to `localStorage` and never exposed on `session`. `proxy.ts` (the Next 16 replacement for `middleware.ts`) matches `/api/((?!auth/).*)`, drops any inbound `Authorization` header, reads the JWT with `getToken`, and forwards `Authorization: Bearer <token>` to the route handler. Every BFF route keeps reading `request.headers.get("authorization")` unchanged.
+The backend access token lives **only** in the encrypted httpOnly NextAuth JWT cookie. It is never written to `localStorage` and never exposed on `session`. `middleware.ts` matches `/api/((?!auth/).*)`, drops any inbound `Authorization` header, reads the JWT with `getToken`, and forwards `Authorization: Bearer <token>` to the route handler. Every BFF route keeps reading `request.headers.get("authorization")` unchanged.
 
 ### Auth & session
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getToken } from "next-auth/jwt";
 
-import proxy, { config } from "./proxy";
+import middleware, { config } from "./middleware";
 
 vi.mock("next-auth/jwt", () => ({ getToken: vi.fn() }));
 
@@ -10,12 +10,12 @@ function forwardedHeaders(): Headers {
   const call = vi.mocked(NextResponse.next).mock.calls.at(-1);
   const headers = call?.[0]?.request?.headers;
   if (!headers) {
-    throw new Error("proxy did not forward request headers");
+    throw new Error("middleware did not forward request headers");
   }
   return headers instanceof Headers ? headers : new Headers(headers);
 }
 
-describe("proxy", () => {
+describe("middleware", () => {
   beforeEach(() => {
     vi.spyOn(NextResponse, "next");
   });
@@ -30,7 +30,7 @@ describe("proxy", () => {
       accessToken: "session-token",
     } as never);
 
-    await proxy(new NextRequest("http://localhost/api/cart"));
+    await middleware(new NextRequest("http://localhost/api/cart"));
 
     expect(forwardedHeaders().get("authorization")).toBe(
       "Bearer session-token"
@@ -42,7 +42,7 @@ describe("proxy", () => {
       accessToken: "Bearer session-token",
     } as never);
 
-    await proxy(new NextRequest("http://localhost/api/cart"));
+    await middleware(new NextRequest("http://localhost/api/cart"));
 
     expect(forwardedHeaders().get("authorization")).toBe(
       "Bearer session-token"
@@ -54,7 +54,7 @@ describe("proxy", () => {
       accessToken: "session-token",
     } as never);
 
-    await proxy(
+    await middleware(
       new NextRequest("http://localhost/api/cart", {
         headers: { authorization: "Bearer forged-token" },
       })
@@ -68,7 +68,7 @@ describe("proxy", () => {
   it("strips a client-supplied Authorization header when there is no session", async () => {
     vi.mocked(getToken).mockResolvedValue(null);
 
-    await proxy(
+    await middleware(
       new NextRequest("http://localhost/api/cart", {
         headers: {
           authorization: "Bearer forged-token",
