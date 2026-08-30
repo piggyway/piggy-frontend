@@ -44,6 +44,14 @@ pnpm start          # serve the production build locally
 pnpm preview        # OpenNext build plus a local Workers preview
 ```
 
+## Error reporting
+
+`lib/monitoring/report.ts` posts errors to Sentry's HTTP envelope endpoint with plain `fetch`, so it works unchanged in the browser and on the Cloudflare Workers runtime.
+It is off by default: with no `SENTRY_DSN` (server) or `NEXT_PUBLIC_SENTRY_DSN` (browser) every `reportError` call is a silent no-op, and the app builds, tests and runs exactly as before.
+To turn it on, create a Sentry project and set those two variables - `NEXT_PUBLIC_SENTRY_DSN` also has to be a build variable in Workers Builds so `next build` can inline it.
+Email, token, signature and address fields are stripped before anything is sent; reporting is wired into the error boundaries, `lib/api/client.ts`, and the payment, boarding and auth services only.
+The official `@sentry/nextjs` SDK also supports OpenNext on Workers, but it still has an open module-resolution bug and no working server source maps there ([sentry-javascript#18843](https://github.com/getsentry/sentry-javascript/issues/18843), [#19213](https://github.com/getsentry/sentry-javascript/issues/19213)) - switch to it once those land and a Sentry account exists.
+
 ## Deploy
 
 Production runs on Cloudflare Workers via OpenNext. There is no CI for this Worker - every release is a manual deploy from a developer machine, and merging a branch ships nothing on its own.

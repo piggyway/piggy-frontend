@@ -13,6 +13,7 @@ import type {
   SignAgreementPayload,
   SignAgreementResult,
 } from "@/lib/types/agreement";
+import { reportError } from "@/lib/monitoring/report";
 
 export class AgreementApiError extends Error {
   readonly status: number;
@@ -74,6 +75,7 @@ export async function getBoardingAgreement(
   if (!response.ok) {
     const error = await readError(response);
     console.error("[AgreementService] Failed to load agreement:", error);
+    reportError(error, { scope: "AgreementService.getAgreement" });
     throw error;
   }
 
@@ -98,6 +100,7 @@ export async function signBoardingAgreement(
   if (!response.ok) {
     const error = await readError(response);
     console.error("[AgreementService] Failed to sign agreement:", error);
+    reportError(error, { scope: "AgreementService.signAgreement" });
     throw error;
   }
 

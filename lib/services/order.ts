@@ -7,6 +7,7 @@ import type {
   OrderStatus,
   OrderWithItems,
 } from "@/lib/types/order";
+import { reportError } from "@/lib/monitoring/report";
 
 export class OrderService {
   static async getOrders(
@@ -35,6 +36,7 @@ export class OrderService {
       };
     } catch (error) {
       console.error("[OrderService] Failed to get orders:", error);
+      reportError(error, { scope: "OrderService.getOrders" });
       throw error;
     }
   }
@@ -57,6 +59,7 @@ export class OrderService {
       return data.data;
     } catch (error) {
       console.error("[OrderService] Failed to get order detail:", error);
+      reportError(error, { scope: "OrderService.getOrderDetail" });
       throw error;
     }
   }
