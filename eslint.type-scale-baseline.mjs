@@ -1,0 +1,75 @@
+/**
+ * Grandfathered files for the legacy type-scale lint guard.
+ *
+ * These files still use the legacy Tailwind type scale (text-xs ... text-9xl,
+ * font-bold / font-extrabold, arbitrary text-[NNpx]). They are exempt from the
+ * guard so it can be enabled without touching a single rendered pixel.
+ *
+ * This list may only shrink. When a file is migrated to the semantic type-scale
+ * tokens, delete its entry here. Never add a new entry.
+ *
+ * Regenerate the candidate list with:
+ *   node scripts/list-type-scale-offenders.mjs
+ */
+export const typeScaleBaseline = [
+  "app/(shop)/about-us/page.tsx",
+  "app/(shop)/contact/page.tsx",
+  "app/(shop)/faqs/page.tsx",
+  "app/(shop)/guides/first-time-owner-essentials/page.tsx",
+  "app/(shop)/guides/guinea-pig-care-basics/page.tsx",
+  "app/(shop)/guides/page.tsx",
+  "app/(shop)/pet-care/bonding-with-your-pet/page.tsx",
+  "app/(shop)/pet-care/guinea-pig-diet-guide/page.tsx",
+  "app/(shop)/pet-care/habitat-setup-tips/page.tsx",
+  "app/(shop)/pet-care/health-and-wellness/page.tsx",
+  "app/(shop)/privacy/page.tsx",
+  "app/(shop)/returns-policy/page.tsx",
+  "app/(shop)/shipping-delivery/page.tsx",
+  "app/(shop)/terms/page.tsx",
+  "app/not-found.tsx",
+  "components/common/Header.stories.tsx",
+  "components/common/Header.tsx",
+  "components/common/UserButton.tsx",
+  "components/features/auth/LoginPage.tsx",
+  "components/features/contact/ContactForm.tsx",
+  "components/features/homepage/OurStorySection.tsx",
+  "components/features/homepage/PetCareTipsSection.tsx",
+  "components/features/homepage/WhyShopSection.tsx",
+  "components/features/pet-care/ArticlesSection.tsx",
+  "components/features/pet-care/BoardingCtaSection.tsx",
+  "components/features/pet-care/HeroSection.tsx",
+  "components/features/pet-care/MeetDrSupsSection.tsx",
+  "components/features/product-detail/AddOnSelector.tsx",
+  "components/features/product-detail/PetIconsSection.tsx",
+  "components/features/product-detail/ProductDetailContent.tsx",
+  "components/features/product-detail/ProductImageLightbox.tsx",
+  "components/features/product-pet-banner.tsx",
+  "components/features/shop-all/BreadcrumbsNav.tsx",
+  "components/features/shop-all/CategoryFilterBar.tsx",
+  "components/features/shop-all/ProductsSection.tsx",
+  "components/features/shop/BestSellingSection.tsx",
+  "components/features/shop/HeroSection.tsx",
+  "components/features/shop/LimitedEditionBanner.tsx",
+  "components/features/shop/StarterKitsSection.tsx",
+  "components/ui/breadcrumbs.tsx",
+  "components/ui/button.tsx",
+  "components/ui/card.stories.tsx",
+  "components/ui/card.tsx",
+  "components/ui/collapsible.stories.tsx",
+  "components/ui/collapsible.tsx",
+  "components/ui/dialog.tsx",
+  "components/ui/featured-card.tsx",
+  "components/ui/input.tsx",
+  "components/ui/navigation-menu-content.tsx",
+  "components/ui/navigation-menu.tsx",
+  "components/ui/pagination.tsx",
+  "components/ui/product-type-item.stories.tsx",
+  "components/ui/product-type-item.tsx",
+  "components/ui/quantity-selector.tsx",
+  "components/ui/select.tsx",
+  "components/ui/sheet.tsx",
+  "components/ui/tabs.tsx",
+  "components/ui/testimonial-card.tsx",
+  "components/ui/textarea.tsx",
+  "lib/utils.test.ts",
+];
