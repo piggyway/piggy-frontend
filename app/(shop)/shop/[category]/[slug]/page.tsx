@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { draftMode } from "next/headers";
 import { ProductDetailContent } from "@/components/features/product-detail/ProductDetailContent";
 import { ProductInformationSection } from "@/components/features/product-detail/ProductInformationSection";
@@ -12,12 +12,8 @@ import { ServerProductService } from "@/lib/services/products.server";
 import { ServerCategoryService } from "@/lib/services/categories.server";
 import type { Category } from "@/lib/types/models";
 import { ServerConfigService } from "@/lib/services/config.server";
-import {
-  DELIVERY_ZONES,
-  DISPATCH_MAX_BUSINESS_DAYS,
-  RETURN_WINDOW_DAYS,
-} from "@/lib/constants";
 import { getBaseUrl, getProductUrl, getCategoryUrl } from "@/lib/utils/seo";
+import { buildProductJsonLd } from "@/lib/utils/product-json-ld";
 import { FloatingCartButton } from "@/components/features/cart/FloatingCartButton";
 
 interface ProductPageProps {
@@ -90,7 +86,7 @@ export async function generateMetadata({
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params;
+  const { category, slug } = await params;
 
   // Check draft mode and pass to service
   const draftModeResult = await draftMode();
@@ -105,6 +101,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // failed fetch throws and is served as a 5xx instead of a 404.
   if (!product) {
     notFound();
+  }
+
+  const categorySlug = product.category?.slug;
+  if (categorySlug && category !== categorySlug) {
+    permanentRedirect(
+      new URL(getProductUrl(categorySlug, product.slug)).pathname
+    );
   }
 
   // Resolve the full category (care cards, section titles) for the
@@ -133,122 +136,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   );
   const categoryUrl = getCategoryUrl(product.category?.slug, baseUrl);
 
-  // Prepare Product JSON-LD
-  const priceCurrency = product.currency?.slug?.toUpperCase() || "AUD";
-  // `purchaseMode` wins over stock: a made-to-order product is not out of
-  // stock, it is never stocked. Reporting OutOfStock for it contradicts the
-  // "Pre-order only" badge shown on the page and makes Google suppress the
-  // product's rich result.
-  const availability =
-    product.purchaseMode === "preorder"
-      ? "https://schema.org/PreOrder"
-      : product.variants?.some((v) => v.isAvailable && v.stockQuantity > 0)
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock";
-  const variantPrices = (product.variants ?? [])
-    .map((v) => v.discountedPrice ?? v.originalPrice)
-    .filter((price): price is number => price !== null);
-
-  /**
-   * Shipping terms for the merchant listing.
-   *
-   * Omitted entirely when the shop config came from the local fallback: the
-   * rate would then be a guess, and a shipping cost Google shows but the
-   * checkout does not charge is a merchant listing violation.
-   *
-   * The transit window spans every delivery zone (fastest metro lower bound to
-   * slowest WA/NT upper bound) because the destination is unknown at render
-   * time. The rate is always the standard fee - free shipping depends on the
-   * order total, not on this one product, so claiming free delivery here could
-   * overstate what a shopper actually gets.
-   */
-  const shippingDetails = shippingConfig.isFallback
-    ? undefined
-    : {
-        "@type": "OfferShippingDetails",
-        shippingRate: {
-          "@type": "MonetaryAmount",
-          value: shippingConfig.standardShippingFee.toString(),
-          currency: priceCurrency,
-        },
-        shippingDestination: {
-          "@type": "DefinedRegion",
-          addressCountry: "AU",
-        },
-        deliveryTime: {
-          "@type": "ShippingDeliveryTime",
-          handlingTime: {
-            "@type": "QuantitativeValue",
-            minValue: 0,
-            maxValue: DISPATCH_MAX_BUSINESS_DAYS,
-            unitCode: "DAY",
-          },
-          transitTime: {
-            "@type": "QuantitativeValue",
-            minValue: Math.min(...DELIVERY_ZONES.map((z) => z.minDays)),
-            maxValue: Math.max(...DELIVERY_ZONES.map((z) => z.maxDays)),
-            unitCode: "DAY",
-          },
-        },
-      };
-
-  /**
-   * Returns terms, mirroring `/returns-policy`. `returnFees` is deliberately
-   * absent: the policy page says we send a shipping label but never states who
-   * bears the cost, and declaring FreeReturn without that in writing would
-   * promise something the policy does not.
-   */
-  const returnPolicy = {
-    "@type": "MerchantReturnPolicy",
-    applicableCountry: "AU",
-    returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
-    merchantReturnDays: RETURN_WINDOW_DAYS,
-    returnMethod: "https://schema.org/ReturnByMail",
-  };
-
-  const productJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.title,
-    image: product.images?.map((img) =>
-      img.startsWith("http") ? img : `${baseUrl}${img}`
-    ) || [`${baseUrl}/default-product-image.png`],
-    description: product.description || product.subtitle || product.title,
-    sku: product.variants?.[0]?.sku || undefined,
-    brand: product.brand
-      ? {
-          "@type": "Brand",
-          name: product.brand.name || "Piggy Way Crossing",
-        }
-      : {
-          "@type": "Brand",
-          name: "Piggy Way Crossing",
-        },
-    // AggregateOffer covers the price range across variants; fall back to a
-    // single Offer with the base price when no variant prices exist
-    offers:
-      variantPrices.length > 1
-        ? {
-            "@type": "AggregateOffer",
-            url: productUrl,
-            priceCurrency,
-            lowPrice: Math.min(...variantPrices).toString(),
-            highPrice: Math.max(...variantPrices).toString(),
-            offerCount: variantPrices.length,
-            availability,
-            ...(shippingDetails ? { shippingDetails } : {}),
-            hasMerchantReturnPolicy: returnPolicy,
-          }
-        : {
-            "@type": "Offer",
-            url: productUrl,
-            priceCurrency,
-            price: (variantPrices[0] ?? product.basePrice).toString(),
-            availability,
-            ...(shippingDetails ? { shippingDetails } : {}),
-            hasMerchantReturnPolicy: returnPolicy,
-          },
-  };
+  const productJsonLd = buildProductJsonLd(product, {
+    baseUrl,
+    productUrl,
+    shippingConfig,
+  });
 
   // Prepare BreadcrumbList JSON-LD
   const breadcrumbJsonLd = {
