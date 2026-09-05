@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { notFound, permanentRedirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { draftMode } from "next/headers";
 import { ProductDetailContent } from "@/components/features/product-detail/ProductDetailContent";
 import { ProductInformationSection } from "@/components/features/product-detail/ProductInformationSection";
@@ -86,7 +86,7 @@ export async function generateMetadata({
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { category, slug } = await params;
+  const { slug } = await params;
 
   // Check draft mode and pass to service
   const draftModeResult = await draftMode();
@@ -101,13 +101,6 @@ export default async function ProductPage({ params }: ProductPageProps) {
   // failed fetch throws and is served as a 5xx instead of a 404.
   if (!product) {
     notFound();
-  }
-
-  const categorySlug = product.category?.slug;
-  if (categorySlug && category !== categorySlug) {
-    permanentRedirect(
-      new URL(getProductUrl(categorySlug, product.slug)).pathname
-    );
   }
 
   // Resolve the full category (care cards, section titles) for the
