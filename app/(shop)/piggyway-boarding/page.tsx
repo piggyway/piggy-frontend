@@ -73,22 +73,6 @@ export default function BoardingPage() {
       postalCode: "3106",
       addressCountry: "AU",
     },
-    openingHoursSpecification: [
-      {
-        "@type": "OpeningHoursSpecification",
-        dayOfWeek: [
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday",
-        ],
-        opens: "00:00",
-        closes: "23:59",
-      },
-    ],
     sameAs: ["https://www.instagram.com/piggyway_crossing"],
   };
 
