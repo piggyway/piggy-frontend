@@ -390,52 +390,51 @@ export function BookingDetailsStep({
                   )}
                 </div>
               )}
-              {showEnclosures && (
-                <div className="flex flex-col gap-5 sm:flex-row">
-                  <Field
-                    label="Enclosure"
-                    error={errors[`pet-${i}-enclosureGroup`]}
-                  >
-                    <Select
-                      value={pet.enclosureGroup}
-                      onValueChange={(value) =>
-                        setPetField(i, "enclosureGroup", value)
-                      }
-                    >
-                      <SelectTrigger
-                        className={cn(
-                          inputClassName,
-                          "w-full text-slate-600",
-                          errors[`pet-${i}-enclosureGroup`] &&
-                            "border-destructive"
-                        )}
-                      >
-                        <SelectValue placeholder="Select" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {pets.map((_, n) => (
-                          <SelectItem key={n} value={String(n + 1)}>
-                            Enclosure {n + 1}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </Field>
-                  <div className="hidden flex-1 sm:block" />
-                </div>
-              )}
               <div className="flex flex-col gap-5 sm:flex-row">
-                <Field label="Pet name" error={errors[`pet-${i}-name`]}>
-                  <Input
-                    value={pet.name}
-                    onChange={(e) => setPetField(i, "name", e.target.value)}
-                    placeholder="e.g. Mochi"
-                    className={cn(
-                      inputClassName,
-                      errors[`pet-${i}-name`] && "border-destructive"
-                    )}
-                  />
-                </Field>
+                <div className="flex min-w-0 flex-1 flex-col gap-5">
+                  <Field label="Pet name" error={errors[`pet-${i}-name`]}>
+                    <Input
+                      value={pet.name}
+                      onChange={(e) => setPetField(i, "name", e.target.value)}
+                      placeholder="e.g. Mochi"
+                      className={cn(
+                        inputClassName,
+                        errors[`pet-${i}-name`] && "border-destructive"
+                      )}
+                    />
+                  </Field>
+                  {showEnclosures && (
+                    <Field
+                      label="Enclosure"
+                      error={errors[`pet-${i}-enclosureGroup`]}
+                    >
+                      <Select
+                        value={pet.enclosureGroup}
+                        onValueChange={(value) =>
+                          setPetField(i, "enclosureGroup", value)
+                        }
+                      >
+                        <SelectTrigger
+                          className={cn(
+                            inputClassName,
+                            "w-full text-slate-600",
+                            errors[`pet-${i}-enclosureGroup`] &&
+                              "border-destructive"
+                          )}
+                        >
+                          <SelectValue placeholder="Select" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {pets.map((_, n) => (
+                            <SelectItem key={n} value={String(n + 1)}>
+                              Enclosure {n + 1}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Field>
+                  )}
+                </div>
                 <Field label="Type">
                   <Select
                     value={pet.type}
