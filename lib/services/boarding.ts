@@ -5,6 +5,7 @@ import type {
   BoardingBookingList,
   BoardingBookingListMeta,
   BoardingBookingPet,
+  BoardingHousingArrangement,
   BoardingLookupResult,
   BoardingPetDesexed,
   BoardingPetSex,
@@ -62,6 +63,8 @@ interface BoardingBookingResponse {
   emergency_name: string | null;
   emergency_phone: string | null;
   emergency_notes: string | null;
+  housing_arrangement?: BoardingHousingArrangement | null;
+  housing_notes?: string | null;
   date_created: string | null;
   date_updated: string | null;
   pets: BoardingPetResponse[];
@@ -131,6 +134,8 @@ function transformBooking(booking: BoardingBookingResponse): BoardingBooking {
     emergencyName: booking.emergency_name,
     emergencyPhone: booking.emergency_phone,
     emergencyNotes: booking.emergency_notes,
+    housingArrangement: booking.housing_arrangement ?? null,
+    housingNotes: booking.housing_notes ?? null,
     dateCreated: toIsoTimestamp(booking.date_created),
     dateUpdated: toIsoTimestamp(booking.date_updated),
     pets: (booking.pets ?? []).map(transformPet),
@@ -165,6 +170,8 @@ function toBookingPayload(input: CreateBoardingBookingInput) {
     emergency_name: input.emergencyName ?? null,
     emergency_phone: input.emergencyPhone ?? null,
     emergency_notes: input.emergencyNotes ?? null,
+    housing_arrangement: input.housingArrangement ?? null,
+    housing_notes: input.housingNotes ?? null,
     pets: input.pets.map(toPetPayload),
   };
 }
