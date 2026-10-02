@@ -18,6 +18,8 @@ export type BoardingPetSex = "Female" | "Male" | "Unknown";
 
 export type BoardingPetDesexed = "Yes" | "No" | "Not sure";
 
+export type BoardingHousingArrangement = "together" | "separate" | "specified";
+
 export interface BoardingBookingPet {
   id: number;
   name: string;
@@ -50,6 +52,8 @@ export interface BoardingBooking {
   emergencyName: string | null;
   emergencyPhone: string | null;
   emergencyNotes: string | null;
+  housingArrangement: BoardingHousingArrangement | null;
+  housingNotes: string | null;
   dateCreated: string | null;
   dateUpdated: string | null;
   pets: BoardingBookingPet[];
@@ -81,6 +85,8 @@ export interface CreateBoardingBookingInput {
   emergencyName?: string | null;
   emergencyPhone?: string | null;
   emergencyNotes?: string | null;
+  housingArrangement?: BoardingHousingArrangement | null;
+  housingNotes?: string | null;
 }
 
 export interface CreateBoardingBookingResult {

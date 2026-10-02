@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,11 +18,14 @@ import {
   createBoardingBooking,
 } from "@/lib/services/boarding";
 import type {
+  BoardingHousingArrangement,
   BoardingPetDesexed,
   BoardingPetSex,
   BoardingPetType,
 } from "@/lib/types/boarding";
 import { cn } from "@/lib/utils";
+import { toHousingInput } from "@/lib/utils/boarding";
+import { BOARDING_HOUSING_LABELS } from "@/components/features/boarding/constants";
 import { StaySummaryCard } from "./StaySummaryCard";
 
 export interface BookingSubmission {
@@ -61,6 +64,12 @@ const EMPTY_PET: PetForm = {
 const PET_TYPES: BoardingPetType[] = ["Guinea pig", "Rabbit", "Other"];
 const PET_SEXES: BoardingPetSex[] = ["Female", "Male", "Unknown"];
 const DESEXED_OPTIONS: BoardingPetDesexed[] = ["Yes", "No", "Not sure"];
+const HOUSING_QUESTION = "Do your pets live together at home?";
+const HOUSING_OPTIONS: BoardingHousingArrangement[] = [
+  "together",
+  "separate",
+  "specified",
+];
 
 const inputClassName = "text-p h-12 rounded-[12px] px-4";
 const cardClassName =
@@ -141,6 +150,11 @@ export function BookingDetailsStep({
     phone: "",
   });
   const [pets, setPets] = useState<PetForm[]>([{ ...EMPTY_PET }]);
+  const [housing, setHousing] = useState<BoardingHousingArrangement | null>(
+    null
+  );
+  const [housingNotes, setHousingNotes] = useState("");
+  const housingNotesRef = useRef<HTMLTextAreaElement>(null);
   const [emergency, setEmergency] = useState({
     name: "",
     phone: "",
@@ -183,6 +197,25 @@ export function BookingDetailsStep({
     setPets((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const selectHousing = (value: BoardingHousingArrangement) => {
+    setHousing(value);
+    setErrors((prev) => ({
+      ...prev,
+      housing: "",
+      ...(value !== "specified" && { housingNotes: "" }),
+    }));
+  };
+
+  const changeHousingNotes = (value: string) => {
+    setHousingNotes(value);
+    if (errors.housingNotes)
+      setErrors((prev) => ({ ...prev, housingNotes: "" }));
+  };
+
+  useEffect(() => {
+    if (housing === "specified") housingNotesRef.current?.focus();
+  }, [housing]);
+
   const validate = () => {
     const next: Record<string, string> = {};
     if (!contact.firstName.trim()) next.firstName = "First name is required";
@@ -193,6 +226,10 @@ export function BookingDetailsStep({
     pets.forEach((pet, i) => {
       if (!pet.name.trim()) next[`pet-${i}-name`] = "Pet name is required";
     });
+    if (pets.length > 1 && !housing)
+      next.housing = "Please tell us whether your pets live together.";
+    if (pets.length > 1 && housing === "specified" && !housingNotes.trim())
+      next.housingNotes = "Please tell us who lives with whom.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -206,6 +243,8 @@ export function BookingDetailsStep({
       toast.error("Please fill in the required fields.");
       return;
     }
+
+    const housingInput = toHousingInput(pets.length, housing, housingNotes);
 
     setIsSubmitting(true);
     try {
@@ -233,6 +272,7 @@ export function BookingDetailsStep({
         emergencyName: toNullable(emergency.name),
         emergencyPhone: toNullable(emergency.phone),
         emergencyNotes: toNullable(emergency.notes),
+        ...housingInput,
       });
 
       onSubmitted({
@@ -480,6 +520,72 @@ export function BookingDetailsStep({
           >
             + Add another pet
           </Button>
+
+          {pets.length > 1 && (
+            <>
+              <div className="bg-neutral-stroke h-px w-full" />
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-p text-primary-navy font-semibold">
+                    {HOUSING_QUESTION}
+                  </h3>
+                  <p className="text-subtle text-slate-600">
+                    We house pets that live together in the same enclosure.
+                  </p>
+                </div>
+                <fieldset className="flex flex-col gap-3">
+                  <legend className="sr-only">{HOUSING_QUESTION}</legend>
+                  {HOUSING_OPTIONS.map((option) => (
+                    <div
+                      key={option}
+                      className="border-neutral-stroke flex flex-col rounded-[16px] border"
+                    >
+                      <label className="flex cursor-pointer items-start gap-3 px-4 py-3.5">
+                        <input
+                          type="radio"
+                          name="housing"
+                          value={option}
+                          checked={housing === option}
+                          onChange={() => selectHousing(option)}
+                          className="accent-primary-navy mt-px size-[18px] shrink-0"
+                        />
+                        <span className="text-subtle text-slate-700">
+                          {BOARDING_HOUSING_LABELS[option]}
+                        </span>
+                      </label>
+                      {option === "specified" && housing === "specified" && (
+                        <div className="flex px-4 pb-4">
+                          <Field
+                            label="Tell us who lives with whom"
+                            error={errors.housingNotes}
+                          >
+                            <Textarea
+                              ref={housingNotesRef}
+                              value={housingNotes}
+                              onChange={(e) =>
+                                changeHousingNotes(e.target.value)
+                              }
+                              maxLength={2000}
+                              placeholder="e.g. Peanut and Mochi live together, Oreo lives on his own."
+                              className={cn(
+                                "text-p min-h-[84px] rounded-[12px] px-4 py-3.5",
+                                errors.housingNotes && "border-destructive"
+                              )}
+                            />
+                          </Field>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </fieldset>
+                {errors.housing && (
+                  <p className="text-subtle text-destructive font-medium">
+                    {errors.housing}
+                  </p>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Emergency contact & notes */}

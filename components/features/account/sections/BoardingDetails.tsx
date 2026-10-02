@@ -17,6 +17,7 @@ import {
   UNKNOWN_BOARDING_STATUS_PILL,
 } from "@/components/features/boarding/status-pill";
 import { CancelBookingDialog } from "@/components/features/boarding/CancelBookingDialog";
+import { BOARDING_HOUSING_LABELS } from "@/components/features/boarding/constants";
 
 interface BoardingDetailsProps {
   reference: string;
@@ -25,6 +26,19 @@ interface BoardingDetailsProps {
 
 function formatTime(value: string): string {
   return value.length >= 5 ? value.slice(0, 5) : value;
+}
+
+function housingValue(booking: BoardingBooking): React.ReactNode {
+  if (booking.housingArrangement === "specified" && booking.housingNotes) {
+    return <span className="whitespace-pre-line">{booking.housingNotes}</span>;
+  }
+  if (
+    booking.housingArrangement === "together" ||
+    booking.housingArrangement === "separate"
+  ) {
+    return BOARDING_HOUSING_LABELS[booking.housingArrangement];
+  }
+  return "Not provided";
 }
 
 function InfoRow({ label, value }: { label: string; value: React.ReactNode }) {
@@ -320,6 +334,13 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="border-neutral-stroke flex w-full flex-col gap-5 rounded-[20px] border bg-white px-6 py-[26px] sm:px-8">
+        <h3 className="text-primary-navy text-p font-semibold">Housing</h3>
+        <div className="flex flex-col gap-3">
+          <InfoRow label="At home" value={housingValue(booking)} />
         </div>
       </div>
 

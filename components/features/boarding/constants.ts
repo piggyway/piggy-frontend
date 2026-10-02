@@ -1,3 +1,5 @@
+import type { BoardingHousingArrangement } from "@/lib/types/boarding";
+
 export const BOARDING_ASSETS = {
   heroBackground: "/Top Bannner.png",
   heroLogo: "/Boarding Logo.png",
@@ -186,3 +188,12 @@ export const CARE_LEAD_CONTENT = {
   name: "Liv Ye",
   role: "Boarding & Care Lead",
 } as const;
+
+export const BOARDING_HOUSING_LABELS: Record<
+  BoardingHousingArrangement,
+  string
+> = {
+  together: "All together",
+  separate: "Each in their own enclosure",
+  specified: "Something else, I'll explain",
+};

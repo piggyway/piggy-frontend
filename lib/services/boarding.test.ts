@@ -4,6 +4,7 @@ import { fetchWithAuth } from "@/lib/api/client";
 import {
   BoardingApiError,
   cancelBoardingBooking,
+  createBoardingBooking,
   getBoardingBookingByReference,
   lookupBoardingBooking,
 } from "@/lib/services/boarding";
@@ -52,6 +53,8 @@ const snakeCaseDetail = {
   emergency_name: "Bob Lovelace",
   emergency_phone: "0411111111",
   emergency_notes: "Call me first",
+  housing_arrangement: null,
+  housing_notes: null,
   date_created: "2026-08-01T00:00:00.000Z",
   date_updated: "2026-08-02T00:00:00.000Z",
   pets: [
@@ -166,13 +169,138 @@ describe("lookupBoardingBooking", () => {
   });
 });
 
+describe("createBoardingBooking", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
+
+  it("sends a snake_case payload with the housing arrangement and notes", async () => {
+    fetchWithAuthMock.mockResolvedValue(
+      response({
+        success: true,
+        data: {
+          ...snakeCaseDetail,
+          housing_arrangement: "specified",
+          housing_notes: "Nibbles and Mochi live together.",
+          pets: [
+            snakeCaseDetail.pets[0],
+            { ...snakeCaseDetail.pets[0], id: 901, name: "Mochi" },
+          ],
+        },
+        notification_sent: true,
+        user_notification_sent: false,
+      })
+    );
+
+    const result = await createBoardingBooking({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      email: "ada@example.com",
+      phone: "0400000000",
+      dropOffDate: "2026-08-30",
+      dropOffTime: "09:00",
+      pickUpDate: "2026-09-02",
+      pickUpTime: "17:00",
+      pets: [
+        { name: "Nibbles", type: "Guinea pig", breed: "Abyssinian" },
+        { name: "Mochi", type: "Rabbit" },
+      ],
+      emergencyName: "Bob Lovelace",
+      housingArrangement: "specified",
+      housingNotes: "Nibbles and Mochi live together.",
+    });
+
+    const [url, init] = fetchWithAuthMock.mock.calls[0];
+    expect(url).toBe("/api/boarding");
+    expect(init).toMatchObject({
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      redirectOnAuthError: false,
+    });
+    expect(JSON.parse(init!.body as string)).toEqual({
+      first_name: "Ada",
+      last_name: "Lovelace",
+      email: "ada@example.com",
+      phone: "0400000000",
+      drop_off_date: "2026-08-30",
+      drop_off_time: "09:00",
+      pick_up_date: "2026-09-02",
+      pick_up_time: "17:00",
+      emergency_name: "Bob Lovelace",
+      emergency_phone: null,
+      emergency_notes: null,
+      housing_arrangement: "specified",
+      housing_notes: "Nibbles and Mochi live together.",
+      pets: [
+        {
+          name: "Nibbles",
+          type: "Guinea pig",
+          breed: "Abyssinian",
+          age: null,
+          sex: null,
+          weight: null,
+          desexed: null,
+          vet_contact: null,
+          feeding_routine: null,
+          medical_notes: null,
+        },
+        {
+          name: "Mochi",
+          type: "Rabbit",
+          breed: null,
+          age: null,
+          sex: null,
+          weight: null,
+          desexed: null,
+          vet_contact: null,
+          feeding_routine: null,
+          medical_notes: null,
+        },
+      ],
+    });
+
+    expect(result.notificationSent).toBe(true);
+    expect(result.userNotificationSent).toBe(false);
+    expect(result.booking).toMatchObject({
+      reference: "PB-TEST-0001",
+      housingArrangement: "specified",
+      housingNotes: "Nibbles and Mochi live together.",
+    });
+  });
+
+  it("sends null housing fields when the input leaves them out", async () => {
+    fetchWithAuthMock.mockResolvedValue(
+      response({ success: true, data: snakeCaseDetail })
+    );
+
+    await createBoardingBooking({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      email: "ada@example.com",
+      phone: "0400000000",
+      dropOffDate: "2026-08-30",
+      dropOffTime: "09:00",
+      pickUpDate: "2026-09-02",
+      pickUpTime: "17:00",
+      pets: [{ name: "Nibbles", type: "Guinea pig" }],
+    });
+
+    const body = JSON.parse(fetchWithAuthMock.mock.calls[0][1]!.body as string);
+    expect(body).toMatchObject({
+      housing_arrangement: null,
+      housing_notes: null,
+    });
+  });
+});
+
 describe("getBoardingBookingByReference", () => {
   afterEach(() => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
   });
 
-  it("maps snake_case detail DTO fields to camelCase", async () => {
+  it("maps snake_case detail DTO fields to camelCase, keeping null housing", async () => {
     fetchWithAuthMock.mockResolvedValue(
       response({ success: true, data: snakeCaseDetail })
     );
@@ -197,6 +325,8 @@ describe("getBoardingBookingByReference", () => {
       emergencyName: "Bob Lovelace",
       emergencyPhone: "0411111111",
       emergencyNotes: "Call me first",
+      housingArrangement: null,
+      housingNotes: null,
       dateCreated: "2026-08-01T00:00:00.000Z",
       dateUpdated: "2026-08-02T00:00:00.000Z",
       pets: [
@@ -220,6 +350,30 @@ describe("getBoardingBookingByReference", () => {
       expect.stringContaining("PB-TEST-0001"),
       { method: "GET" }
     );
+  });
+
+  it("maps a together arrangement, and missing housing fields to null", async () => {
+    const withoutHousing: Record<string, unknown> = { ...snakeCaseDetail };
+    delete withoutHousing.housing_arrangement;
+    delete withoutHousing.housing_notes;
+    fetchWithAuthMock
+      .mockResolvedValueOnce(
+        response({
+          success: true,
+          data: { ...snakeCaseDetail, housing_arrangement: "together" },
+        })
+      )
+      .mockResolvedValueOnce(response({ success: true, data: withoutHousing }));
+
+    await expect(
+      getBoardingBookingByReference("PB-TEST-0001")
+    ).resolves.toMatchObject({
+      housingArrangement: "together",
+      housingNotes: null,
+    });
+    await expect(
+      getBoardingBookingByReference("PB-TEST-0001")
+    ).resolves.toMatchObject({ housingArrangement: null, housingNotes: null });
   });
 
   it("maps a 404 into BoardingApiError for unknown or non-owned reference", async () => {
