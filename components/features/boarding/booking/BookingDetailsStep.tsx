@@ -23,6 +23,11 @@ import type {
   BoardingPetType,
 } from "@/lib/types/boarding";
 import { cn } from "@/lib/utils";
+import {
+  groupPetsByEnclosure,
+  toEnclosureGroups,
+  type HousingMode,
+} from "@/lib/utils/boarding";
 import { StaySummaryCard } from "./StaySummaryCard";
 
 export interface BookingSubmission {
@@ -43,6 +48,8 @@ interface PetForm {
   vetContact: string;
   feedingRoutine: string;
   medicalNotes: string;
+  /** "1".."N" when the pet is assigned an enclosure in mixed housing, else "". */
+  enclosureGroup: string;
 }
 
 const EMPTY_PET: PetForm = {
@@ -56,11 +63,18 @@ const EMPTY_PET: PetForm = {
   vetContact: "",
   feedingRoutine: "",
   medicalNotes: "",
+  enclosureGroup: "",
 };
 
 const PET_TYPES: BoardingPetType[] = ["Guinea pig", "Rabbit", "Other"];
 const PET_SEXES: BoardingPetSex[] = ["Female", "Male", "Unknown"];
 const DESEXED_OPTIONS: BoardingPetDesexed[] = ["Yes", "No", "Not sure"];
+const HOUSING_QUESTION = "Do your pets live together at home?";
+const HOUSING_OPTIONS: Array<{ value: HousingMode; label: string }> = [
+  { value: "together", label: "All together" },
+  { value: "separate", label: "Each in their own enclosure" },
+  { value: "mixed", label: "Some together, some apart" },
+];
 
 const inputClassName = "text-p h-12 rounded-[12px] px-4";
 const cardClassName =
@@ -69,6 +83,10 @@ const cardClassName =
 /** Optional fields are empty strings in the form; the API expects null. */
 function toNullable(value: string): string | null {
   return value.trim() || null;
+}
+
+function petLabel(pet: PetForm, index: number): string {
+  return pet.name.trim() || `Pet ${index + 1}`;
 }
 
 function buildPetsLabel(pets: PetForm[]): string {
@@ -141,6 +159,7 @@ export function BookingDetailsStep({
     phone: "",
   });
   const [pets, setPets] = useState<PetForm[]>([{ ...EMPTY_PET }]);
+  const [housing, setHousing] = useState<HousingMode | null>(null);
   const [emergency, setEmergency] = useState({
     name: "",
     phone: "",
@@ -180,8 +199,30 @@ export function BookingDetailsStep({
   };
 
   const removePet = (index: number) => {
-    setPets((prev) => prev.filter((_, i) => i !== index));
+    setPets((prev) => {
+      const remaining = prev.filter((_, i) => i !== index);
+      // An enclosure number above the new pet count has no option left to show.
+      return remaining.map((pet) =>
+        Number(pet.enclosureGroup) > remaining.length
+          ? { ...pet, enclosureGroup: "" }
+          : pet
+      );
+    });
   };
+
+  const selectHousing = (value: HousingMode) => {
+    setHousing(value);
+    if (errors.housing) setErrors((prev) => ({ ...prev, housing: "" }));
+  };
+
+  const showEnclosures = pets.length > 1 && housing === "mixed";
+  const enclosureSummary = groupPetsByEnclosure(
+    pets.flatMap((pet, i) =>
+      pet.enclosureGroup
+        ? [{ name: petLabel(pet, i), group: Number(pet.enclosureGroup) }]
+        : []
+    )
+  );
 
   const validate = () => {
     const next: Record<string, string> = {};
@@ -192,7 +233,11 @@ export function BookingDetailsStep({
     if (!contact.phone.trim()) next.phone = "Phone is required";
     pets.forEach((pet, i) => {
       if (!pet.name.trim()) next[`pet-${i}-name`] = "Pet name is required";
+      if (showEnclosures && !pet.enclosureGroup)
+        next[`pet-${i}-enclosureGroup`] = "Choose an enclosure for this pet.";
     });
+    if (pets.length > 1 && !housing)
+      next.housing = "Please tell us whether your pets live together.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -207,6 +252,13 @@ export function BookingDetailsStep({
       return;
     }
 
+    const enclosureGroups = toEnclosureGroups(
+      housing,
+      pets.map((pet) =>
+        pet.enclosureGroup ? Number(pet.enclosureGroup) : null
+      )
+    );
+
     setIsSubmitting(true);
     try {
       const { booking, userNotificationSent } = await createBoardingBooking({
@@ -218,7 +270,7 @@ export function BookingDetailsStep({
         dropOffTime,
         pickUpDate,
         pickUpTime,
-        pets: pets.map((pet) => ({
+        pets: pets.map((pet, i) => ({
           name: pet.name.trim(),
           type: pet.type as BoardingPetType,
           breed: toNullable(pet.breed),
@@ -229,6 +281,7 @@ export function BookingDetailsStep({
           vetContact: toNullable(pet.vetContact),
           feedingRoutine: toNullable(pet.feedingRoutine),
           medicalNotes: toNullable(pet.medicalNotes),
+          enclosureGroup: enclosureGroups[i],
         })),
         emergencyName: toNullable(emergency.name),
         emergencyPhone: toNullable(emergency.phone),
@@ -335,6 +388,40 @@ export function BookingDetailsStep({
                       Remove
                     </button>
                   )}
+                </div>
+              )}
+              {showEnclosures && (
+                <div className="flex flex-col gap-5 sm:flex-row">
+                  <Field
+                    label="Enclosure"
+                    error={errors[`pet-${i}-enclosureGroup`]}
+                  >
+                    <Select
+                      value={pet.enclosureGroup}
+                      onValueChange={(value) =>
+                        setPetField(i, "enclosureGroup", value)
+                      }
+                    >
+                      <SelectTrigger
+                        className={cn(
+                          inputClassName,
+                          "w-full text-slate-600",
+                          errors[`pet-${i}-enclosureGroup`] &&
+                            "border-destructive"
+                        )}
+                      >
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {pets.map((_, n) => (
+                          <SelectItem key={n} value={String(n + 1)}>
+                            Enclosure {n + 1}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </Field>
+                  <div className="hidden flex-1 sm:block" />
                 </div>
               )}
               <div className="flex flex-col gap-5 sm:flex-row">
@@ -480,6 +567,61 @@ export function BookingDetailsStep({
           >
             + Add another pet
           </Button>
+
+          {pets.length > 1 && (
+            <>
+              <div className="bg-neutral-stroke h-px w-full" />
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-p text-primary-navy font-semibold">
+                    {HOUSING_QUESTION}
+                  </h3>
+                  <p className="text-subtle text-slate-600">
+                    We keep pets that live together in one enclosure and house
+                    the others separately, just like at home.
+                  </p>
+                </div>
+                <fieldset className="flex flex-col gap-3">
+                  <legend className="sr-only">{HOUSING_QUESTION}</legend>
+                  {HOUSING_OPTIONS.map((option) => (
+                    <label
+                      key={option.value}
+                      className="border-neutral-stroke flex cursor-pointer items-start gap-3 rounded-[16px] border px-4 py-3.5"
+                    >
+                      <input
+                        type="radio"
+                        name="housing"
+                        value={option.value}
+                        checked={housing === option.value}
+                        onChange={() => selectHousing(option.value)}
+                        className="accent-primary-navy mt-px size-[18px] shrink-0"
+                      />
+                      <span className="text-subtle text-slate-700">
+                        {option.label}
+                      </span>
+                    </label>
+                  ))}
+                </fieldset>
+                {errors.housing && (
+                  <p className="text-subtle text-destructive font-medium">
+                    {errors.housing}
+                  </p>
+                )}
+                {showEnclosures && enclosureSummary.length > 0 && (
+                  <div className="bg-neutral-background flex flex-col gap-1.5 rounded-[16px] px-4 py-3.5">
+                    {enclosureSummary.map(({ group, names }) => (
+                      <p key={group} className="text-subtle text-slate-700">
+                        <span className="text-subtle-semibold text-primary-navy">
+                          Enclosure {group}:
+                        </span>{" "}
+                        {names.join(", ")}
+                      </p>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Emergency contact & notes */}

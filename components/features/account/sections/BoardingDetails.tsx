@@ -6,6 +6,7 @@ import { Check, Copy, Home } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { groupPetsByEnclosure } from "@/lib/utils/boarding";
 import {
   BoardingApiError,
   cancelBoardingBooking,
@@ -191,6 +192,10 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
   const pill =
     BOARDING_STATUS_PILL[booking.status] ?? UNKNOWN_BOARDING_STATUS_PILL;
   const canCancel = booking.status === "pending";
+  const housingGroups = groupPetsByEnclosure(
+    booking.pets.map((pet) => ({ name: pet.name, group: pet.enclosureGroup }))
+  );
+  const housingProvided = housingGroups.some(({ group }) => group !== null);
 
   return (
     <div className="flex flex-col items-start gap-6">
@@ -320,6 +325,23 @@ export function BoardingDetails({ reference, onBack }: BoardingDetailsProps) {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="border-neutral-stroke flex w-full flex-col gap-5 rounded-[20px] border bg-white px-6 py-[26px] sm:px-8">
+        <h3 className="text-primary-navy text-p font-semibold">Housing</h3>
+        <div className="flex flex-col gap-3">
+          {housingProvided ? (
+            housingGroups.map(({ group, names }) => (
+              <InfoRow
+                key={group ?? "none"}
+                label={group === null ? "Not provided" : `Enclosure ${group}`}
+                value={names.join(", ")}
+              />
+            ))
+          ) : (
+            <InfoRow label="Enclosures" value="Not provided" />
+          )}
         </div>
       </div>
 

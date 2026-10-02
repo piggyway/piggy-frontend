@@ -30,6 +30,8 @@ export interface BoardingBookingPet {
   vetContact: string | null;
   feedingRoutine: string | null;
   medicalNotes: string | null;
+  /** Pets sharing a number live in one enclosure. Null on older bookings. */
+  enclosureGroup: number | null;
 }
 
 export interface BoardingBooking {
@@ -66,6 +68,7 @@ export interface CreateBoardingPetInput {
   vetContact?: string | null;
   feedingRoutine?: string | null;
   medicalNotes?: string | null;
+  enclosureGroup: number;
 }
 
 export interface CreateBoardingBookingInput {

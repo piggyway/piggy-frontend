@@ -42,6 +42,7 @@ interface BoardingPetResponse {
   vet_contact: string | null;
   feeding_routine: string | null;
   medical_notes: string | null;
+  enclosure_group?: number | null;
 }
 
 interface BoardingBookingResponse {
@@ -109,6 +110,7 @@ function transformPet(pet: BoardingPetResponse): BoardingBookingPet {
     vetContact: pet.vet_contact,
     feedingRoutine: pet.feeding_routine,
     medicalNotes: pet.medical_notes,
+    enclosureGroup: pet.enclosure_group ?? null,
   };
 }
 
@@ -149,6 +151,7 @@ function toPetPayload(pet: CreateBoardingPetInput) {
     vet_contact: pet.vetContact ?? null,
     feeding_routine: pet.feedingRoutine ?? null,
     medical_notes: pet.medicalNotes ?? null,
+    enclosure_group: pet.enclosureGroup,
   };
 }
 

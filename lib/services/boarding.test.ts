@@ -4,6 +4,7 @@ import { fetchWithAuth } from "@/lib/api/client";
 import {
   BoardingApiError,
   cancelBoardingBooking,
+  createBoardingBooking,
   getBoardingBookingByReference,
   lookupBoardingBooking,
 } from "@/lib/services/boarding";
@@ -67,6 +68,7 @@ const snakeCaseDetail = {
       vet_contact: "Box Hill Vet",
       feeding_routine: "Hay twice a day",
       medical_notes: "None",
+      enclosure_group: null,
     },
   ],
 };
@@ -166,13 +168,124 @@ describe("lookupBoardingBooking", () => {
   });
 });
 
+describe("createBoardingBooking", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.restoreAllMocks();
+  });
+
+  it("sends a snake_case payload with each pet's enclosure group", async () => {
+    fetchWithAuthMock.mockResolvedValue(
+      response({
+        success: true,
+        data: {
+          ...snakeCaseDetail,
+          pets: [
+            { ...snakeCaseDetail.pets[0], enclosure_group: 1 },
+            {
+              ...snakeCaseDetail.pets[0],
+              id: 901,
+              name: "Mochi",
+              enclosure_group: 2,
+            },
+          ],
+        },
+        notification_sent: true,
+        user_notification_sent: false,
+      })
+    );
+
+    const result = await createBoardingBooking({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      email: "ada@example.com",
+      phone: "0400000000",
+      dropOffDate: "2026-08-30",
+      dropOffTime: "09:00",
+      pickUpDate: "2026-09-02",
+      pickUpTime: "17:00",
+      pets: [
+        {
+          name: "Nibbles",
+          type: "Guinea pig",
+          breed: "Abyssinian",
+          sex: "Female",
+          vetContact: "Box Hill Vet",
+          enclosureGroup: 1,
+        },
+        { name: "Mochi", type: "Rabbit", enclosureGroup: 2 },
+      ],
+      emergencyName: "Bob Lovelace",
+    });
+
+    const [url, init] = fetchWithAuthMock.mock.calls[0];
+    expect(url).toBe("/api/boarding");
+    expect(init).toMatchObject({
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      redirectOnAuthError: false,
+    });
+    expect(JSON.parse(init!.body as string)).toEqual({
+      first_name: "Ada",
+      last_name: "Lovelace",
+      email: "ada@example.com",
+      phone: "0400000000",
+      drop_off_date: "2026-08-30",
+      drop_off_time: "09:00",
+      pick_up_date: "2026-09-02",
+      pick_up_time: "17:00",
+      emergency_name: "Bob Lovelace",
+      emergency_phone: null,
+      emergency_notes: null,
+      pets: [
+        {
+          name: "Nibbles",
+          type: "Guinea pig",
+          breed: "Abyssinian",
+          age: null,
+          sex: "Female",
+          weight: null,
+          desexed: null,
+          vet_contact: "Box Hill Vet",
+          feeding_routine: null,
+          medical_notes: null,
+          enclosure_group: 1,
+        },
+        {
+          name: "Mochi",
+          type: "Rabbit",
+          breed: null,
+          age: null,
+          sex: null,
+          weight: null,
+          desexed: null,
+          vet_contact: null,
+          feeding_routine: null,
+          medical_notes: null,
+          enclosure_group: 2,
+        },
+      ],
+    });
+
+    expect(result.notificationSent).toBe(true);
+    expect(result.userNotificationSent).toBe(false);
+    expect(result.booking.reference).toBe("PB-TEST-0001");
+    expect(
+      result.booking.pets.map((pet) => [pet.name, pet.enclosureGroup])
+    ).toEqual([
+      ["Nibbles", 1],
+      ["Mochi", 2],
+    ]);
+  });
+});
+
 describe("getBoardingBookingByReference", () => {
   afterEach(() => {
     vi.clearAllMocks();
     vi.restoreAllMocks();
   });
 
-  it("maps snake_case detail DTO fields to camelCase", async () => {
+  it("maps snake_case detail DTO fields to camelCase, keeping a null enclosure group", async () => {
     fetchWithAuthMock.mockResolvedValue(
       response({ success: true, data: snakeCaseDetail })
     );
@@ -212,6 +325,7 @@ describe("getBoardingBookingByReference", () => {
           vetContact: "Box Hill Vet",
           feedingRoutine: "Hay twice a day",
           medicalNotes: "None",
+          enclosureGroup: null,
         },
       ],
     });
