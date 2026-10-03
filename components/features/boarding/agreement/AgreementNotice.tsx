@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import type { AgreementProvider } from "@/lib/types/agreement";
+import type { TemplateProvider } from "@/lib/types/agreement";
 import {
   boardingWhatsappUrl,
   BOARDING_CONTACT,
@@ -53,7 +53,7 @@ export function AgreementNotice({
   onRetry,
 }: {
   kind: AgreementNoticeKind;
-  provider?: AgreementProvider;
+  provider?: TemplateProvider;
   onRetry?: () => void;
 }) {
   const copy = NOTICE_COPY[kind];
