@@ -41,25 +41,25 @@ For Workers production, set secrets / vars in the dashboard or via wrangler:
 
 `NEXT_PUBLIC_*` must be available at **build** time for `opennextjs-cloudflare build`.
 
-See section 2.1 for the exact command used for production.
+See section 2.1 for how a merge to `production` supplies these values.
 
-## 2.1 Production deploy is manual (no CI)
+## 2.1 Production deploy
 
-There is **no CI for this Worker**. The `piggy-frontend` Worker has zero Workers
-Builds runs, and no GitHub Actions workflow deploys it. Every production release
-so far has been a manual `pnpm deploy` from a developer machine. Merging to
-`production` does not ship anything by itself.
+A merge to `production` starts a Cloudflare Workers Builds run.
+The production trigger runs `npx opennextjs-cloudflare build`.
+The same trigger then runs `npx wrangler deploy`.
+`NEXT_PUBLIC_*` values are build variables on the production trigger.
+The build inlines those values into the client bundle.
 
-### The command
+### Manual local deploy
 
-> **Warning**
-> `pnpm deploy` runs `opennextjs-cloudflare build`, which runs `next build`, and
-> `next build` loads `.env.local` even for a production build. If you run it
-> without the overrides below, the deployed bundle ships whatever is in your
-> `.env.local` - in practice the **TEST** Stripe publishable key and the test
-> Turnstile site key. Those are baked into the client bundle at build time and
-> cannot be fixed from the dashboard afterwards. Always pass the full override
-> list on one line:
+A manual local deploy can leak local test Stripe and Turnstile keys into the bundle.
+`pnpm deploy` runs `opennextjs-cloudflare build`, which runs `next build`.
+`next build` loads `.env.local` for a production build too.
+Without the overrides below, the bundle ships the values from `.env.local`.
+The client bundle keeps those values.
+A dashboard change does not replace them.
+Pass the full override list on one line:
 
 ```bash
 NEXT_PUBLIC_APP_URL=https://piggyway.com.au \
@@ -84,20 +84,18 @@ in this repo.
    mounts with a live key (no "test mode" badge).
 3. Submit the contact form once to confirm Turnstile validates.
 
-### If CI is set up later
+### Workers Builds settings
 
-`pnpm run build` is plain `next build` and does not emit `.open-next/worker.js`,
-so a CI build must use the OpenNext build. Workers Builds ignores a custom
-`build.command` in `wrangler.jsonc`, so the commands have to be set in
-Workers -> piggy-frontend -> Settings -> Build:
+Workers Builds ignores a custom `build.command` in `wrangler.jsonc`.
+Set the commands under Workers, piggy-frontend, Settings, Build.
 
 | Environment                      | Build command                     | Deploy command                 |
 | -------------------------------- | --------------------------------- | ------------------------------ |
 | Production (`production` branch) | `npx opennextjs-cloudflare build` | `npx wrangler deploy`          |
 | Preview (all other branches)     | `npx opennextjs-cloudflare build` | `npx wrangler versions upload` |
 
-CI would also need every `NEXT_PUBLIC_*` value above configured as a build
-variable, for the same build-time-inlining reason.
+`pnpm run build` is plain `next build`.
+That command does not emit `.open-next/worker.js`.
 
 ## 2.2 What a deploy does and does not affect
 
