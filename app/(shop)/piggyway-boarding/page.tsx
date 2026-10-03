@@ -63,11 +63,9 @@ export default function BoardingPage() {
     url: pageUrl,
     image: imageUrl,
     email: "support@piggyway.com.au",
-    telephone: "+61 414 766 727",
     priceRange: "$$",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "14-16 Anderson St",
       addressLocality: "Templestowe",
       addressRegion: "VIC",
       postalCode: "3106",
