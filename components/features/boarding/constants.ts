@@ -93,6 +93,27 @@ export const BOARDING_RATES_CONTENT = {
   ],
 } as const;
 
+export const BOARDING_DEPOSIT_POLICY_CONTENT = {
+  title: "Booking Deposit & Cancellation Policy",
+  items: [
+    {
+      title: "Peak Season – Christmas & Public Holiday Periods",
+      colorClass: "bg-primary-light-gold",
+      paragraphs: [
+        "Peak Season includes Christmas, New Year, Easter, and all Australian public holiday periods.",
+        "A 50% deposit is required to secure a booking during Peak Season. The deposit is non-refundable regardless of when the booking is cancelled.",
+      ],
+    },
+    {
+      title: "Normal Period",
+      colorClass: "bg-primary-purple-light",
+      paragraphs: [
+        "A 15% deposit is required to secure a booking during the Normal Period. At least 1 week’s notice is required for cancellations.",
+      ],
+    },
+  ],
+} as const;
+
 export const BOARDING_INCLUSIONS_CONTENT = {
   title: "What's Included in Your Stay",
   lead: "Our standard boarding fee covers the day-to-day essentials needed to keep your guinea pig comfortable, settled and well monitored throughout their stay.",

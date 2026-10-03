@@ -3,6 +3,7 @@
 import { Check } from "lucide-react";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 import {
+  BOARDING_DEPOSIT_POLICY_CONTENT,
   BOARDING_INCLUSIONS_CONTENT,
   BOARDING_RATES_CONTENT,
 } from "./constants";
@@ -50,6 +51,32 @@ export function RatesAndInclusionsSection() {
                 </li>
               ))}
             </ul>
+          </div>
+
+          <div className="flex flex-col gap-8">
+            <h2 className="text-large sm:text-h4 text-primary-navy-light tracking-[-0.21px]">
+              {BOARDING_DEPOSIT_POLICY_CONTENT.title}
+            </h2>
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+              {BOARDING_DEPOSIT_POLICY_CONTENT.items.map((item) => (
+                <article
+                  key={item.title}
+                  className={`${item.colorClass} flex h-full flex-col gap-4 rounded-[28px] p-6`}
+                >
+                  <h3 className="text-p-ui sm:text-lead text-primary-navy font-semibold">
+                    {item.title}
+                  </h3>
+                  {item.paragraphs.map((paragraph) => (
+                    <p
+                      key={paragraph}
+                      className="text-primary-navy text-p-ui sm:text-lead font-normal"
+                    >
+                      {paragraph}
+                    </p>
+                  ))}
+                </article>
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-col gap-8">
