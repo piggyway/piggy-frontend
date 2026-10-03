@@ -7,8 +7,13 @@ import {
   fireEvent,
   render,
   screen,
+  within,
 } from "@testing-library/react";
 import type { AgreementView } from "@/lib/types/agreement";
+import {
+  agreementTemplateV1,
+  buildAgreementView,
+} from "./__fixtures__/agreement-view";
 
 interface MockPad {
   empty: boolean;
@@ -71,195 +76,15 @@ const { AgreementApiError, signBoardingAgreement } = await import(
 );
 const { AgreementSignForm } = await import("./AgreementSignForm");
 
-const ACKNOWLEDGMENTS = [
-  {
-    key: "legal_owner",
-    column: "ack_legal_owner",
-    text: "I am the legal owner of the guinea pigs.",
-  },
-  {
-    key: "info_accurate",
-    column: "ack_info_accurate",
-    text: "The information I have provided is accurate.",
-  },
-  {
-    key: "health_disclosed",
-    column: "ack_health_disclosed",
-    text: "I have disclosed all known health concerns.",
-  },
-  {
-    key: "fees_agreed",
-    column: "ack_fees_agreed",
-    text: "I agree to the fees recorded in this Agreement.",
-  },
-  {
-    key: "emergency_authority",
-    column: "ack_emergency_authority",
-    text: "I accept the emergency veterinary treatment authority.",
-  },
-  {
-    key: "vet_cost_responsibility",
-    column: "ack_vet_cost_responsibility",
-    text: "I am responsible for reasonable veterinary costs.",
-  },
-  {
-    key: "electronic_signing_consent",
-    column: "electronic_signing_consent",
-    text: "I consent to signing this Agreement electronically.",
-  },
-];
-
-function buildView(overrides: Partial<AgreementView> = {}): AgreementView {
-  return {
-    status: "viewed",
-    template_version: "v1",
-    read_only: false,
-    signed_at: null,
-    pdf_available: false,
-    download_url: null,
-    editable_fields: [
-      "owner_address",
-      "emergency_name",
-      "emergency_relationship",
-      "emergency_phone",
-      "emergency_email",
-      "emergency_spend_limit",
-      "hay_preference",
-      "water_preference",
-      "medication_details",
-      "photo_consent",
-      ...ACKNOWLEDGMENTS.map((item) => item.column),
-    ],
-    editable_pet_fields: [
-      "health_conditions",
-      "behaviour_bonding",
-      "other_notes",
-      "medical_notes",
-    ],
-    booking: {
-      reference: "PB-TEST-0001",
-      first_name: "Ada",
-      last_name: "Lovelace",
-      email: "ada@example.com",
-      phone: "0400 000 000",
-      drop_off_date: "2026-08-30",
-      drop_off_time: "09:00",
-      pick_up_date: "2026-09-02",
-      pick_up_time: "17:00",
-      nights: 3,
-    },
-    admin_fields: {
-      agreed_daily_rate: "95.00",
-      deposit_paid: "50.00",
-      balance_due: "235.00",
-      admin_extra_terms: null,
-    },
-    customer_fields: {
-      owner_address: "1 Anderson St",
-      emergency_name: null,
-      emergency_relationship: null,
-      emergency_phone: null,
-      emergency_email: null,
-      emergency_spend_limit: null,
-      hay_preference: null,
-      water_preference: null,
-      medication_details: null,
-      photo_consent: null,
-      ack_legal_owner: false,
-      ack_info_accurate: false,
-      ack_health_disclosed: false,
-      ack_fees_agreed: false,
-      ack_emergency_authority: false,
-      ack_vet_cost_responsibility: false,
-      electronic_signing_consent: false,
-    },
-    pets: [
-      {
-        id: 7,
-        name: "Nibbles",
-        type: "Guinea pig",
-        breed: "Abyssinian",
-        age: "2",
-        sex: "Female",
-        weight: "900g",
-        desexed: "No",
-        vet_contact: null,
-        feeding_routine: null,
-        medical_notes: null,
-        health_conditions: null,
-        behaviour_bonding: null,
-        other_notes: null,
-      },
-    ],
-    template: {
-      version: "v1",
-      currency: "AUD",
-      rateUnit: "per day",
-      provider: {
-        businessName: "Piggyway Boarding",
-        operatedBy: "Han Ye",
-        phone: "0414 766 727",
-        email: "support@piggyway.com.au",
-        address: "U4, 14-16 Anderson st, Templestowe, Victoria",
-      },
-      header: {
-        documentTitle: "PIGGYWAY GUINEA PIG BOARDING AGREEMENT",
-        title: "GUINEA PIG BOARDING AGREEMENT",
-        subtitle: "Home-based boarding and assisted-care agreement",
-        importantTitle: "Important",
-        importantText: "Please read every section before signing.",
-        ownerBlockTitle: "OWNER",
-        ownerFieldLabels: ["Full name"],
-        serviceProviderBlockTitle: "SERVICE PROVIDER",
-        agreementDateLabel: "Agreement date",
-        footer: "Piggyway Boarding",
-      },
-      sections: [
-        {
-          number: 1,
-          title: "Booking Period and Payment",
-          paragraphs: [
-            "All boarding fees must be paid in full before arriving.",
-          ],
-          bullets: [],
-          fieldLabels: ["Agreed daily rate"],
-          subsections: [],
-        },
-        {
-          number: 2,
-          title: "Care Standards",
-          paragraphs: ["Daily health checks are included."],
-          bullets: ["Unlimited hay"],
-          fieldLabels: [],
-          subsections: [],
-        },
-      ],
-      rateTableColumnLabels: ["Guinea pigs", "Rate"],
-      rateTable: [{ pigs: 1, rate: 25 }],
-      photoConsentOptions: [
-        { value: "public", text: "Piggyway may share photos publicly." },
-        { value: "private_only", text: "Piggyway may send photos privately." },
-        { value: "none", text: "I do not consent to photos." },
-      ],
-      acknowledgmentsSectionNumber: 15,
-      acknowledgmentsSectionTitle: "Owner Acknowledgment and Signatures",
-      acknowledgments: ACKNOWLEDGMENTS,
-      signatureLabels: ["Owner signature"],
-      schedules: [],
-      medicationConfirmationsTitle: "Veterinary confirmation",
-      medicationConfirmations: [],
-      medicationSignatureLabels: [],
-    },
-    html: null,
-    ...overrides,
-  };
-}
+const SPEND_LIMIT_LABEL =
+  "Emergency treatment spending limit authorised without further consent (AUD $)";
 
 function renderForm(
   handlers: {
     onSigned?: () => void;
     onLinkFailure?: (failure: "not_found" | "expired" | "voided") => void;
-  } = {}
+  } = {},
+  view: AgreementView = buildAgreementView()
 ) {
   const onSigned = handlers.onSigned ?? vi.fn();
   const onLinkFailure = handlers.onLinkFailure ?? vi.fn();
@@ -267,13 +92,30 @@ function renderForm(
   render(
     <AgreementSignForm
       token="tok-1"
-      view={buildView()}
+      view={view}
       onSigned={onSigned}
       onLinkFailure={onLinkFailure}
     />
   );
 
   return { onSigned, onLinkFailure };
+}
+
+function petField(petId: number, key: string): HTMLElement {
+  const element = document.getElementById(`pet-${petId}-${key}`);
+  if (!element) throw new Error(`No field pet-${petId}-${key}`);
+  return element;
+}
+
+function describedText(element: HTMLElement): string | null {
+  const id = element.getAttribute("aria-describedby");
+  return id ? (document.getElementById(id)?.textContent ?? null) : null;
+}
+
+function sectionByHeading(name: string): HTMLElement {
+  return screen
+    .getByRole("heading", { name })
+    .closest("section") as HTMLElement;
 }
 
 function submitButton(): HTMLButtonElement {
@@ -283,7 +125,9 @@ function submitButton(): HTMLButtonElement {
 }
 
 function tickAcknowledgments(count: number) {
-  const boxes = screen.getAllByRole("checkbox");
+  const boxes = within(
+    sectionByHeading("15. Owner Acknowledgment and Signatures")
+  ).getAllByRole("checkbox");
   for (let index = 0; index < count; index += 1) {
     fireEvent.click(boxes[index]);
   }
@@ -291,7 +135,7 @@ function tickAcknowledgments(count: number) {
 
 function choosePhotoConsent() {
   fireEvent.click(
-    screen.getByRole("radio", { name: /share photos publicly/i })
+    screen.getByRole("radio", { name: /website and social media/i })
   );
 }
 
@@ -323,13 +167,267 @@ afterEach(() => {
 });
 
 describe("AgreementSignForm", () => {
+  it("derives the v1 field lists the backend publishes", () => {
+    const { fields } = buildAgreementView();
+
+    expect(fields.agreement.map((field) => field.key)).toEqual([
+      "owner_address",
+      "emergency_name",
+      "emergency_relationship",
+      "emergency_phone",
+      "emergency_email",
+      "emergency_spend_limit",
+      "hay_preference",
+      "water_preference",
+      "medication_details",
+    ]);
+    expect(fields.pet.map((field) => field.key)).toEqual([
+      "health_conditions",
+      "behaviour_bonding",
+      "medical_notes",
+      "other_notes",
+    ]);
+    expect(fields.acknowledgments.map((item) => item.key)).toEqual([
+      "legal_owner",
+      "info_accurate",
+      "health_disclosed",
+      "fees_agreed",
+      "emergency_authority",
+      "vet_cost_responsibility",
+      "electronic_signing_consent",
+    ]);
+    expect(fields.photo_consent?.key).toBe("photo_consent");
+  });
+
+  it("renders one input per customer field, in template order, with its input label", () => {
+    const view = buildAgreementView();
+    renderForm({}, view);
+
+    const details = sectionByHeading("Your details");
+    const labels = Array.from(details.querySelectorAll("label")).map(
+      (label) => label.textContent
+    );
+    expect(labels).toEqual(
+      view.fields.agreement.map((field) => field.input_label ?? field.label)
+    );
+    expect(labels).toContain("Relationship to you");
+    expect(labels).not.toContain("Relationship to Owner");
+
+    const control = (label: string) =>
+      within(details).getByLabelText(label) as
+        | HTMLInputElement
+        | HTMLTextAreaElement;
+
+    expect(control("Address").tagName).toBe("TEXTAREA");
+    expect(control("Address").maxLength).toBe(2000);
+    expect(control("Emergency contact name").tagName).toBe("INPUT");
+    expect(control("Emergency contact name").maxLength).toBe(100);
+    expect(control("Emergency contact phone").getAttribute("type")).toBe("tel");
+    expect(control("Emergency contact phone").getAttribute("inputmode")).toBe(
+      "tel"
+    );
+    expect(control("Emergency contact email").getAttribute("type")).toBe(
+      "email"
+    );
+    expect(control(SPEND_LIMIT_LABEL).getAttribute("inputmode")).toBe(
+      "decimal"
+    );
+    expect(control("Hay preferences").tagName).toBe("TEXTAREA");
+    expect(control("Medication and dosage").tagName).toBe("TEXTAREA");
+  });
+
+  it("prefills the customer fields from answers", () => {
+    renderForm();
+
+    expect(
+      (screen.getByLabelText("Address") as HTMLTextAreaElement).value
+    ).toBe("1 Anderson St");
+    expect(
+      (screen.getByLabelText("Emergency contact name") as HTMLInputElement)
+        .value
+    ).toBe("Grace Hopper");
+    expect(
+      (screen.getByLabelText("Emergency contact email") as HTMLInputElement)
+        .value
+    ).toBe("");
+  });
+
+  it("renders the pet fields once per pet, prefilled from that pet's answers", () => {
+    renderForm();
+
+    const petSection = sectionByHeading("Your guinea pigs");
+    expect(within(petSection).getAllByRole("textbox")).toHaveLength(8);
+
+    for (const petId of [7, 9]) {
+      const labels = [
+        "health_conditions",
+        "behaviour_bonding",
+        "medical_notes",
+        "other_notes",
+      ].map(
+        (key) =>
+          petSection.querySelector(`label[for="pet-${petId}-${key}"]`)
+            ?.textContent
+      );
+      expect(labels).toEqual([
+        "Health conditions",
+        "Behaviour / bonding",
+        "Medication(s) (Name and dosage)",
+        "Other notes",
+      ]);
+    }
+
+    const medication = (petId: number) =>
+      document.getElementById(
+        `pet-${petId}-medical_notes`
+      ) as HTMLTextAreaElement | null;
+    expect(medication(7)?.value).toBe("Vitamin C drops");
+    expect(medication(9)?.value).toBe("");
+  });
+
+  it("shows a new customer field from the template with no code change", async () => {
+    vi.mocked(signBoardingAgreement).mockResolvedValue({
+      status: "signed",
+      signed_at: "2026-08-29T02:00:00.000Z",
+      download_url: "/api/v1/boarding/agreements/tok-1/pdf",
+    });
+    const template = agreementTemplateV1();
+    template.sections[0].blocks.push({
+      kind: "field",
+      field: {
+        key: "arrival_window",
+        label: "Preferred arrival date",
+        type: "date",
+        audience: "customer",
+        required_at: null,
+      },
+    });
+    renderForm({}, buildAgreementView({}, template));
+
+    const input = within(sectionByHeading("Your details")).getByLabelText(
+      "Preferred arrival date"
+    ) as HTMLInputElement;
+    expect(input.getAttribute("type")).toBe("date");
+
+    fireEvent.change(input, { target: { value: "2026-08-30" } });
+    tickAcknowledgments(7);
+    choosePhotoConsent();
+    drawStroke();
+    await act(async () => {
+      fireEvent.click(submitButton());
+    });
+
+    const [, payload] = vi.mocked(signBoardingAgreement).mock.calls[0];
+    expect(payload.answers.arrival_window).toBe("2026-08-30");
+  });
+
   it("renders one checkbox per template acknowledgment", () => {
     renderForm();
 
-    expect(screen.getAllByRole("checkbox")).toHaveLength(7);
+    const acks = sectionByHeading("15. Owner Acknowledgment and Signatures");
+    expect(within(acks).getAllByRole("checkbox")).toHaveLength(7);
     expect(
-      screen.getByText("I consent to signing this Agreement electronically.")
+      within(acks).getByText(
+        "I consent to entering into and signing this Agreement electronically."
+      )
     ).toBeTruthy();
+  });
+
+  it("does not gate submit on an acknowledgment the template marks optional", () => {
+    const template = agreementTemplateV1();
+    const ackSection = template.sections.find(
+      (section) => section.key === "acknowledgments_signatures"
+    );
+    const block = ackSection?.blocks.find(
+      (entry) => entry.kind === "acknowledgments"
+    );
+    if (block?.kind !== "acknowledgments") throw new Error("no ack block");
+    block.items[0] = { ...block.items[0], required: false };
+    renderForm({}, buildAgreementView({}, template));
+
+    const boxes = within(
+      sectionByHeading("15. Owner Acknowledgment and Signatures")
+    ).getAllByRole("checkbox");
+    for (const box of boxes.slice(1)) fireEvent.click(box);
+    choosePhotoConsent();
+    drawStroke();
+
+    expect(submitButton().disabled).toBe(false);
+  });
+
+  it("renders the photo consent options from the template", () => {
+    renderForm();
+
+    const radios = within(
+      sectionByHeading("Photo and video consent")
+    ).getAllByRole("radio") as HTMLInputElement[];
+    expect(radios.map((radio) => radio.value)).toEqual([
+      "public",
+      "private_only",
+      "none",
+    ]);
+    expect(
+      screen.getByRole("group", { name: "Public-use preference" })
+    ).toBeTruthy();
+  });
+
+  it("shows the clause sections with document numbers and leaves the form-only sections out", () => {
+    renderForm();
+
+    const clauses = Array.from(document.querySelectorAll("details"));
+    expect(
+      clauses.map((clause) => clause.querySelector("summary")?.textContent)
+    ).toEqual([
+      "1. Booking Period and Payment",
+      "2. Care and Services",
+      "3. Guinea Pig Information",
+      "4. Health and Behaviour Declaration",
+      "5. Bonded Groups and Separation",
+      "6. Medication and Assisted-Care Boarding",
+      "7. Emergency Contact and Veterinary Treatment Authority",
+      "8. Updates, Photographs and Privacy",
+      "9. Drop-off, Collection and Extended Stays",
+      "10. Cancellation, Early Collection and Termination",
+      "11. Entire Agreement and Amendment",
+    ]);
+
+    const labelLines = (clause: Element) =>
+      Array.from(clause.querySelectorAll("li.text-slate-500")).map(
+        (item) => item.textContent
+      );
+    expect(labelLines(clauses[0])).toEqual([
+      "Drop-off date and time",
+      "Collection date and time",
+      "Nights",
+      "Number of guinea pigs",
+      "Agreed daily rate",
+      "Deposit paid",
+      "Balance due",
+    ]);
+    expect(labelLines(clauses[2])).toEqual([
+      "Name",
+      "Age / DOB",
+      "Sex/desexed",
+      "Breed",
+      "Health conditions",
+      "Behaviour / bonding",
+      "Medication(s) (Name and dosage)",
+      "Feeding instructions",
+      "Other notes",
+    ]);
+    expect(labelLines(clauses[6])).toEqual([
+      "Emergency contact name",
+      "Relationship to Owner",
+      "Emergency contact phone",
+      "Emergency contact email",
+      SPEND_LIMIT_LABEL,
+    ]);
+    expect(
+      within(clauses[6] as HTMLElement).getByText("EMERGENCY CONSENT")
+    ).toBeTruthy();
+    expect(screen.queryByText("SCHEDULE A - DAILY CARE PROFILE")).toBeNull();
+    expect(screen.queryByText("Daily rate")).toBeNull();
+    expect(screen.queryByText("Owner signature")).toBeNull();
   });
 
   it("keeps submit disabled and names the missing item when one acknowledgment is unticked", () => {
@@ -439,7 +537,7 @@ describe("AgreementSignForm", () => {
     expect(vi.mocked(signBoardingAgreement)).not.toHaveBeenCalled();
   });
 
-  it("submits the contract payload built from the template columns", async () => {
+  it("submits answers and pets keyed by the template, with no other keys", async () => {
     vi.mocked(signBoardingAgreement).mockResolvedValue({
       status: "signed",
       signed_at: "2026-08-29T02:00:00.000Z",
@@ -447,6 +545,15 @@ describe("AgreementSignForm", () => {
     });
     const { onSigned } = renderForm();
 
+    fireEvent.change(screen.getByLabelText("Emergency contact email"), {
+      target: { value: "  grace@example.com  " },
+    });
+    fireEvent.change(screen.getByLabelText(SPEND_LIMIT_LABEL), {
+      target: { value: "300.5" },
+    });
+    fireEvent.change(petField(9, "health_conditions"), {
+      target: { value: "Sneezes in spring " },
+    });
     tickAcknowledgments(7);
     choosePhotoConsent();
     drawStroke();
@@ -458,35 +565,43 @@ describe("AgreementSignForm", () => {
     const [token, payload] = vi.mocked(signBoardingAgreement).mock.calls[0];
     expect(token).toBe("tok-1");
     expect(payload).toEqual({
-      photo_consent: "public",
-      signature_type: "drawn",
-      signature_data: SIGNATURE_DATA_URL,
-      owner_address: "1 Anderson St",
-      emergency_name: "",
-      emergency_relationship: "",
-      emergency_phone: "",
-      emergency_email: "",
-      emergency_spend_limit: "",
-      hay_preference: "",
-      water_preference: "",
-      medication_details: "",
-      ack_legal_owner: true,
-      ack_info_accurate: true,
-      ack_health_disclosed: true,
-      ack_fees_agreed: true,
-      ack_emergency_authority: true,
-      ack_vet_cost_responsibility: true,
-      electronic_signing_consent: true,
-      pets: [
-        {
-          id: 7,
+      answers: {
+        owner_address: "1 Anderson St",
+        emergency_name: "Grace Hopper",
+        emergency_relationship: "",
+        emergency_phone: "0400 111 222",
+        emergency_email: "grace@example.com",
+        emergency_spend_limit: "300.5",
+        hay_preference: "",
+        water_preference: "",
+        medication_details: "",
+        photo_consent: "public",
+        legal_owner: true,
+        info_accurate: true,
+        health_disclosed: true,
+        fees_agreed: true,
+        emergency_authority: true,
+        vet_cost_responsibility: true,
+        electronic_signing_consent: true,
+      },
+      pets: {
+        "7": {
           health_conditions: "",
           behaviour_bonding: "",
+          medical_notes: "Vitamin C drops",
           other_notes: "",
-          medical_notes: "",
         },
-      ],
+        "9": {
+          health_conditions: "Sneezes in spring",
+          behaviour_bonding: "",
+          medical_notes: "",
+          other_notes: "",
+        },
+      },
+      signature_type: "drawn",
+      signature_data: SIGNATURE_DATA_URL,
     });
+    expect(JSON.parse(JSON.stringify(payload))).toEqual(payload);
     expect(onSigned).toHaveBeenCalledTimes(1);
   });
 
@@ -513,6 +628,40 @@ describe("AgreementSignForm", () => {
 
     expect(
       screen.getByText("Tick every acknowledgment before submitting.")
+    ).toBeTruthy();
+    const feesItem = screen
+      .getByText(
+        "I agree to the fees recorded in the booking confirmation and this Agreement."
+      )
+      .closest("label") as HTMLElement;
+    expect(feesItem.className).toContain("border-destructive/50");
+    const ownerItem = screen
+      .getByText(/I am the legal owner of the guinea pigs/)
+      .closest("label") as HTMLElement;
+    expect(ownerItem.className).not.toContain("border-destructive/50");
+  });
+
+  it("maps a 422 missing_required_fields to inline errors on the named fields", async () => {
+    await submitWithError(
+      new AgreementApiError(422, "missing_required_fields", {
+        missing: ["photo_consent", "pets.7.health_conditions"],
+      })
+    );
+
+    const health = petField(7, "health_conditions");
+    expect(health.getAttribute("aria-invalid")).toBe("true");
+    expect(describedText(health)).toBe("This field is required.");
+    expect(petField(9, "health_conditions").hasAttribute("aria-invalid")).toBe(
+      false
+    );
+
+    const photo = screen.getByRole("group", { name: "Public-use preference" });
+    expect(photo.getAttribute("aria-invalid")).toBe("true");
+    expect(describedText(photo)).toBe("This field is required.");
+    expect(
+      screen.getByText(
+        "Some required details are missing: Public-use preference, Nibbles: Health conditions."
+      )
     ).toBeTruthy();
   });
 
@@ -626,16 +775,43 @@ describe("AgreementSignForm", () => {
     ).toBeTruthy();
   });
 
-  it("names the rejected fields of a validation failure", async () => {
+  it("maps validation_failed paths and rejected keys to inline errors", async () => {
     await submitWithError(
       new AgreementApiError(400, "validation_failed", {
-        issues: [{ path: ["emergency_email"] }, { path: ["owner_address"] }],
+        issues: [
+          {
+            code: "invalid_union",
+            path: ["answers", "emergency_spend_limit"],
+            message: "Invalid input",
+          },
+          {
+            code: "unrecognized_keys",
+            path: ["pets", "9"],
+            message: "Unrecognized key",
+            keys: ["behaviour_bonding"],
+          },
+          {
+            code: "unrecognized_keys",
+            path: ["answers"],
+            message: "Unrecognized key",
+            keys: ["made_up_key"],
+          },
+        ],
       })
     );
 
+    const spendLimit = screen.getByLabelText(SPEND_LIMIT_LABEL);
+    expect(spendLimit.getAttribute("aria-invalid")).toBe("true");
+    expect(describedText(spendLimit)).toBe("This value was not accepted.");
+    const behaviour = petField(9, "behaviour_bonding");
+    expect(behaviour.getAttribute("aria-invalid")).toBe("true");
+    expect(describedText(behaviour)).toBe("This value was not accepted.");
+    expect(petField(7, "behaviour_bonding").hasAttribute("aria-invalid")).toBe(
+      false
+    );
     expect(
       screen.getByText(
-        "Some details were rejected: emergency_email, owner_address."
+        `Some details were rejected: ${SPEND_LIMIT_LABEL}, Pip: Behaviour / bonding, made_up_key.`
       )
     ).toBeTruthy();
   });
@@ -690,9 +866,7 @@ describe("AgreementSignForm", () => {
     choosePhotoConsent();
     drawStroke();
 
-    const input = screen.getByLabelText(
-      "Emergency spending limit (AUD)"
-    ) as HTMLInputElement;
+    const input = screen.getByLabelText(SPEND_LIMIT_LABEL) as HTMLInputElement;
     fireEvent.change(input, { target: { value: "12.345" } });
     fireEvent.click(submitButton());
 
@@ -700,6 +874,46 @@ describe("AgreementSignForm", () => {
     expect(input.getAttribute("aria-invalid")).toBe("true");
     expect(input.getAttribute("aria-describedby")).toBe(message.id);
     expect(vi.mocked(signBoardingAgreement)).not.toHaveBeenCalled();
+  });
+
+  it("rejects a value longer than the field's max_length without calling the api", () => {
+    renderForm();
+    tickAcknowledgments(7);
+    choosePhotoConsent();
+    drawStroke();
+
+    const input = screen.getByLabelText(
+      "Emergency contact name"
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "A".repeat(101) } });
+    fireEvent.click(submitButton());
+
+    const message = screen.getByText("Keep this to 100 characters or fewer.");
+    expect(input.getAttribute("aria-invalid")).toBe("true");
+    expect(input.getAttribute("aria-describedby")).toBe(message.id);
+    expect(vi.mocked(signBoardingAgreement)).not.toHaveBeenCalled();
+  });
+
+  it("accepts a value exactly at the field's max_length", async () => {
+    vi.mocked(signBoardingAgreement).mockResolvedValue({
+      status: "signed",
+      signed_at: "2026-08-29T02:00:00.000Z",
+      download_url: "/api/v1/boarding/agreements/tok-1/pdf",
+    });
+    renderForm();
+    tickAcknowledgments(7);
+    choosePhotoConsent();
+    drawStroke();
+
+    fireEvent.change(screen.getByLabelText("Emergency contact name"), {
+      target: { value: "A".repeat(100) },
+    });
+    await act(async () => {
+      fireEvent.click(submitButton());
+    });
+
+    const [, payload] = vi.mocked(signBoardingAgreement).mock.calls[0];
+    expect(payload.answers.emergency_name).toBe("A".repeat(100));
   });
 
   it("warns before unload once a stroke is drawn and stops after signing", async () => {
