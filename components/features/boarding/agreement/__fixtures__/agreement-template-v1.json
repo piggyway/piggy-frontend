@@ -1,0 +1,703 @@
+{
+  "schema": 1,
+  "meta": {
+    "currency": "AUD",
+    "rate_unit": "per day",
+    "rate_table": [
+      { "pigs": 1, "rate": 25 },
+      { "pigs": 2, "rate": 50 },
+      { "pigs": 3, "rate": 75 },
+      { "pigs": 4, "rate": 95 },
+      { "pigs": 5, "rate": 115 }
+    ],
+    "rate_table_column_labels": ["Number of guinea pigs", "Daily rate"]
+  },
+  "provider": {
+    "business_name": "Piggyway Boarding",
+    "operated_by": "Han Ye",
+    "phone": "0414 766 727",
+    "email": "support@piggyway.com.au",
+    "address": "U4, 14-16 Anderson st, Templestowe, Victoria"
+  },
+  "header": {
+    "document_title": "PIGGYWAY GUINEA PIG BOARDING AGREEMENT",
+    "title": "GUINEA PIG BOARDING AGREEMENT",
+    "subtitle": "Home-based boarding and assisted-care agreement",
+    "important_title": "Important",
+    "important_text": "This Agreement records the boarding arrangements, care instructions and emergency treatment authority between the Owner and Piggyway. Please read every section, complete all required fields and ask questions before signing.",
+    "owner_block_title": "OWNER",
+    "owner_fields": [
+      {
+        "key": "owner_full_name",
+        "label": "Full name",
+        "type": "text",
+        "audience": "computed",
+        "required_at": null,
+        "source": "booking.full_name"
+      },
+      {
+        "key": "owner_phone",
+        "label": "Phone",
+        "type": "text",
+        "audience": "computed",
+        "required_at": null,
+        "source": "booking.phone"
+      },
+      {
+        "key": "owner_email",
+        "label": "Email",
+        "type": "text",
+        "audience": "computed",
+        "required_at": null,
+        "source": "booking.email"
+      },
+      {
+        "key": "owner_address",
+        "label": "Address",
+        "type": "textarea",
+        "audience": "customer",
+        "required_at": "send",
+        "admin_editable": true,
+        "max_length": 2000
+      }
+    ],
+    "provider_block_title": "SERVICE PROVIDER",
+    "agreement_date_label": "Agreement date",
+    "footer": "Piggyway Boarding | Templestowe, Victoria | WhatsApp 0414 766 727"
+  },
+  "sections": [
+    {
+      "key": "booking_payment",
+      "title": "Booking Period and Payment",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "(All boarding fees must be paid in full before arriving.)"
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "drop_off",
+            "label": "Drop-off date and time",
+            "type": "text",
+            "audience": "computed",
+            "required_at": null,
+            "source": "booking.drop_off"
+          }
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "pick_up",
+            "label": "Collection date and time",
+            "type": "text",
+            "audience": "computed",
+            "required_at": null,
+            "source": "booking.pick_up"
+          }
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "nights",
+            "label": "Nights",
+            "type": "text",
+            "audience": "computed",
+            "required_at": null,
+            "source": "booking.nights"
+          }
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "pet_count",
+            "label": "Number of guinea pigs",
+            "type": "text",
+            "audience": "computed",
+            "required_at": null,
+            "source": "booking.pet_count"
+          }
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "agreed_daily_rate",
+            "label": "Agreed daily rate",
+            "type": "decimal",
+            "audience": "admin",
+            "required_at": "send",
+            "format": "money_per_unit"
+          }
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "deposit_paid",
+            "label": "Deposit paid",
+            "type": "decimal",
+            "audience": "admin",
+            "required_at": "send",
+            "format": "money"
+          }
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "balance_due",
+            "label": "Balance due",
+            "type": "decimal",
+            "audience": "admin",
+            "required_at": "send",
+            "format": "money"
+          }
+        },
+        {
+          "kind": "subsection",
+          "title": "Standard boarding rates for bonded guinea pigs from the same household",
+          "blocks": [
+            { "kind": "rate_table" },
+            {
+              "kind": "paragraph",
+              "text": "Any long-stay discount, rescue discount, promotional rate, medical-care charge or customised package applies only if recorded in the written booking confirmation. The agreed booking confirmation prevails if it differs from the standard rate schedule above."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Unless otherwise agreed in writing, boarding is charged by calendar day, including the drop-off and collection dates. Veterinary, medication, emergency transport and other third-party costs are not included in the boarding fee."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "care_services",
+      "title": "Care and Services",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Piggyway will provide reasonable care and supervision appropriate to the information supplied by the Owner. Standard boarding generally includes:"
+        },
+        {
+          "kind": "bullets",
+          "items": [
+            "a clean C&C enclosure appropriate for the booked group size;",
+            "a separate enclosure for each household or family group;",
+            "unlimited oaten hay and fresh drinking water;",
+            "pellets, vegetables, treats and enrichment as agreed in the care instructions;",
+            "daily routine enclosure cleaning and waste removal;",
+            "daily observation of appetite, water intake, toileting, behaviour and general wellbeing;",
+            "reasonable handling, attention and environmental enrichment;",
+            "climate control appropriate to weather conditions; and",
+            "nail trimming during the stay where it is safe and appropriate."
+          ]
+        },
+        {
+          "kind": "subsection",
+          "title": null,
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Piggyway will make reasonable efforts to follow each guinea pig’s usual routine. Diet substitutions or adjustments may be made where reasonably necessary for availability, safety, appetite support or veterinary advice. Significant changes will be discussed with the Owner where practicable."
+            }
+          ]
+        },
+        {
+          "kind": "subsection",
+          "title": "Items and information the Owner must provide",
+          "blocks": [
+            {
+              "kind": "bullets",
+              "items": [
+                "complete and accurate care, health, dietary and behavioural information;",
+                "a secure carrier for drop-off and collection;",
+                "special food where the guinea pig cannot safely use Piggyway’s standard supplies;",
+                "all prescribed medication in its original labelled packaging;",
+                "enough medication and treatment supplies for the full stay, with a reasonable extra allowance;",
+                "current medical records or clear written instructions from an exotics veterinarian where treatment is required; and",
+                "current owner, emergency-contact and veterinary contact details."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "pet_information",
+      "title": "Guinea Pig Information",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Complete one column for each guinea pig. Attach an additional care profile if more space is required."
+        },
+        {
+          "kind": "pet_table",
+          "rows": [
+            { "label": "Name", "source": "pet.name" },
+            { "label": "Age / DOB", "source": "pet.age" },
+            { "label": "Sex/desexed", "source": "pet.sex_desexed" },
+            { "label": "Breed", "source": "pet.breed" },
+            {
+              "label": "Health conditions",
+              "field": {
+                "key": "health_conditions",
+                "label": "Health conditions",
+                "type": "textarea",
+                "audience": "customer",
+                "required_at": null,
+                "max_length": 2000
+              }
+            },
+            {
+              "label": "Behaviour / bonding",
+              "field": {
+                "key": "behaviour_bonding",
+                "label": "Behaviour / bonding",
+                "type": "textarea",
+                "audience": "customer",
+                "required_at": null,
+                "max_length": 2000
+              }
+            },
+            {
+              "label": "Medication(s) (Name and dosage)",
+              "field": {
+                "key": "medical_notes",
+                "label": "Medication(s) (Name and dosage)",
+                "type": "textarea",
+                "audience": "customer",
+                "required_at": null,
+                "default_from": "pet.medical_notes",
+                "max_length": 2000
+              }
+            },
+            {
+              "label": "Feeding instructions",
+              "source": "pet.feeding_routine"
+            },
+            {
+              "label": "Other notes",
+              "field": {
+                "key": "other_notes",
+                "label": "Other notes",
+                "type": "textarea",
+                "audience": "customer",
+                "required_at": null,
+                "max_length": 2000
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "health_declaration",
+      "title": "Health and Behaviour Declaration",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "The Owner confirms that all known health, behavioural and infectious-disease information has been disclosed. In particular, the Owner must disclose any recent or current:"
+        },
+        {
+          "kind": "bullets",
+          "items": [
+            "reduced appetite, weight loss or change in drinking or toileting;",
+            "diarrhoea, breathing difficulty, nasal or eye discharge;",
+            "skin disease, mites, lice, fungal infection or unexplained hair loss;",
+            "dental disease, mobility issue, pain, wound, lump or post-operative condition;",
+            "aggression, bullying, food guarding, escape behaviour or bond instability; and",
+            "known exposure to a contagious animal or disease."
+          ]
+        },
+        {
+          "kind": "subsection",
+          "title": null,
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Piggyway may refuse admission, require veterinary clearance, isolate a guinea pig, seek veterinary advice or request early collection where a guinea pig presents an infection risk."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Where reasonable additional costs arise directly from materially incomplete or inaccurate information supplied by the Owner, the Owner agrees to pay those costs, except to the extent the cost was caused or contributed to by Piggyway’s failure to provide services with due care and skill."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "bonded_groups",
+      "title": "Bonded Groups and Separation",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Guinea pigs from the same household may be housed together where the Owner confirms that they normally live together. Piggyway will not introduce the Owner’s guinea pigs to another household."
+        },
+        {
+          "kind": "paragraph",
+          "text": "The Owner authorises Piggyway to separate guinea pigs from the same family where reasonably necessary because of fighting, bullying, injury, illness, food guarding, recovery needs or veterinary advice. Piggyway may use an additional enclosure and will notify the Owner as soon as reasonably practicable."
+        }
+      ]
+    },
+    {
+      "key": "medication_care",
+      "title": "Medication and Assisted-Care Boarding",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Piggyway may administer medication or treatment only where the medication has been prescribed or approved by a veterinarian, is supplied in its original labelled container, and is accompanied by clear written instructions that Piggyway has accepted before boarding."
+        },
+        {
+          "kind": "bullets",
+          "items": [
+            "Piggyway will not independently change a prescribed dose, frequency or treatment plan without veterinary approval.",
+            "Prescribed injections administered during boarding are charged at $10 per administration unless another rate is confirmed in writing.",
+            "Oral medication, post-operative care, intensive senior care and complex treatment may attract additional fees based on frequency, time and complexity.",
+            "Piggyway is not a veterinary clinic and does not replace examination, diagnosis or treatment by a registered veterinarian."
+          ]
+        }
+      ]
+    },
+    {
+      "key": "emergency_authority",
+      "title": "Emergency Contact and Veterinary Treatment Authority",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "field",
+          "field": {
+            "key": "emergency_name",
+            "label": "Emergency contact name",
+            "type": "text",
+            "audience": "customer",
+            "required_at": null,
+            "default_from": "booking.emergency_name",
+            "max_length": 100
+          }
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "emergency_relationship",
+            "label": "Relationship to Owner",
+            "input_label": "Relationship to you",
+            "type": "text",
+            "audience": "customer",
+            "required_at": null,
+            "max_length": 100
+          }
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "emergency_phone",
+            "label": "Emergency contact phone",
+            "type": "tel",
+            "audience": "customer",
+            "required_at": null,
+            "default_from": "booking.emergency_phone",
+            "max_length": 50
+          }
+        },
+        {
+          "kind": "field",
+          "field": {
+            "key": "emergency_email",
+            "label": "Emergency contact email",
+            "type": "email",
+            "audience": "customer",
+            "required_at": null,
+            "max_length": 255
+          }
+        },
+        {
+          "kind": "subsection",
+          "title": "EMERGENCY CONSENT",
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "In the event of an emergency, if the Owner and emergency contact cannot be reached after reasonable attempts, the Owner gives Piggyway consent to obtain veterinary examination and treatment for the guinea pig and to make reasonable treatment decisions on the Owner’s behalf, based on the attending veterinarian’s advice."
+            }
+          ]
+        },
+        {
+          "kind": "subsection",
+          "title": null,
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "This authority includes consultation, diagnostic testing, medication, fluids, pain relief, oxygen support, injectable treatment, hospitalisation, surgery, transfer to an emergency or specialist provider, and other treatment reasonably necessary to protect the guinea pig’s health or prevent suffering."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Depending on the urgency and availability, Piggyway will either schedule a home visit by Dr. Supanee or transport the guinea pig to a veterinarian, emergency veterinary hospital, or other appropriately qualified medical facility designated by the pet owner."
+            },
+            {
+              "kind": "paragraph",
+              "text": "Access to any particular veterinarian is subject to availability and is not guaranteed."
+            },
+            {
+              "kind": "field",
+              "field": {
+                "key": "emergency_spend_limit",
+                "label": "Emergency treatment spending limit authorised without further consent (AUD $)",
+                "type": "decimal",
+                "audience": "customer",
+                "required_at": null,
+                "format": "money"
+              }
+            }
+          ]
+        },
+        {
+          "kind": "subsection",
+          "title": null,
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "If the likely cost exceeds the limit, Piggyway will continue trying to contact the Owner and emergency contact. Where immediate treatment is reasonably necessary to preserve life or prevent serious suffering, the Owner authorises Piggyway to approve the treatment reasonably recommended by the attending veterinarian."
+            },
+            {
+              "kind": "paragraph",
+              "text": "The Owner is responsible for reasonable veterinary, medication, hospital, treatment and transport costs, except to the extent those costs were caused or contributed to by Piggyway’s breach of this Agreement, negligence or failure to provide services with due care and skill."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "photos_privacy",
+      "title": "Updates, Photographs and Privacy",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Piggyway may use photographs or video for health monitoring, veterinary communication and private owner updates. Please select the public-use preference below:"
+        },
+        {
+          "kind": "photo_consent",
+          "field": {
+            "key": "photo_consent",
+            "label": "Public-use preference",
+            "type": "radio",
+            "audience": "customer",
+            "required_at": "sign",
+            "options": [
+              {
+                "value": "public",
+                "text": "Piggyway may photograph or video my guinea pigs and share the content on Piggyway’s website and social media."
+              },
+              {
+                "value": "private_only",
+                "text": "Piggyway may send photographs or videos privately to me but must not publish them publicly."
+              },
+              {
+                "value": "none",
+                "text": "I do not consent to photographs or videos except where reasonably required for health monitoring or veterinary communication."
+              }
+            ]
+          }
+        },
+        {
+          "kind": "subsection",
+          "title": null,
+          "blocks": [
+            {
+              "kind": "paragraph",
+              "text": "Piggyway will take reasonable steps to protect personal information and will not intentionally publish the Owner’s private contact, address or medical information."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "drop_off_collection",
+      "title": "Drop-off, Collection and Extended Stays",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "Drop-off and collection are by appointment. The Owner must notify Piggyway as early as reasonably possible if an agreed time needs to change. If the Owner cannot collect the guinea pigs, an authorised adult may collect them after the Owner provides that person’s full name and contact details."
+        },
+        {
+          "kind": "paragraph",
+          "text": "Additional boarding fees continue to accrue where collection is delayed. If the guinea pigs remain uncollected and the Owner cannot be reached, Piggyway may, after reasonable attempts to contact the Owner and emergency contact, arrange continued boarding, veterinary care or another lawful form of care. This clause does not automatically transfer ownership to Piggyway."
+        },
+        {
+          "kind": "paragraph",
+          "text": "If the guinea pigs remain uncollected for more than 14 days after the agreed collection date, and the Owner and emergency contact cannot be reached despite reasonable attempts, Piggyway may arrange for the guinea pigs to be transferred to a partner rescue organisation for rehoming. The Owner remains responsible for any boarding, veterinary and other reasonable care costs incurred up to the date of transfer."
+        }
+      ]
+    },
+    {
+      "key": "cancellation_termination",
+      "title": "Cancellation, Early Collection and Termination",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "The deposit, cancellation and refund conditions stated in the written booking confirmation form part of this Agreement. Where the Owner collects the guinea pigs early, any credit or refund will be determined based on the specific circumstances of the early pickup."
+        },
+        {
+          "kind": "paragraph",
+          "text": "Either party may end the arrangement on reasonable written notice. Piggyway may require immediate or early collection where reasonably necessary because of undisclosed infectious diseases, materially inaccurate information, non-payment, a care need outside Piggyway’s agreed capability, or an emergency affecting the boarding premises. Piggyway will provide as much notice as reasonably practicable and will work with the Owner to arrange safe collection or alternative care."
+        }
+      ]
+    },
+    {
+      "key": "entire_agreement",
+      "title": "Entire Agreement and Amendment",
+      "number": "auto",
+      "blocks": [
+        {
+          "kind": "paragraph",
+          "text": "This Agreement, the booking confirmation, the guinea pig care profile, medication instructions and any written special-care plan together form the agreement between the parties. Any change must be agreed in writing. The Owner confirms that they have had the opportunity to read the Agreement, ask questions and request reasonable changes before signing."
+        }
+      ]
+    },
+    {
+      "key": "acknowledgments_signatures",
+      "title": "Owner Acknowledgment and Signatures",
+      "number": 15,
+      "blocks": [
+        {
+          "kind": "acknowledgments",
+          "items": [
+            {
+              "key": "legal_owner",
+              "text": "I am the legal owner of the guinea pigs, or I am authorised by the legal owner to enter this Agreement.",
+              "required": true
+            },
+            {
+              "key": "info_accurate",
+              "text": "The information I have provided is complete and accurate to the best of my knowledge.",
+              "required": true
+            },
+            {
+              "key": "health_disclosed",
+              "text": "I have disclosed all known health, dietary, behavioural and infectious-disease concerns.",
+              "required": true
+            },
+            {
+              "key": "fees_agreed",
+              "text": "I agree to the fees recorded in the booking confirmation and this Agreement.",
+              "required": true
+            },
+            {
+              "key": "emergency_authority",
+              "text": "I understand and accept the emergency veterinary treatment authority in section 7.",
+              "required": true
+            },
+            {
+              "key": "vet_cost_responsibility",
+              "text": "I understand that I am responsible for reasonable veterinary and emergency-care costs, subject to the terms of this Agreement.",
+              "required": true
+            },
+            {
+              "key": "electronic_signing_consent",
+              "text": "I consent to entering into and signing this Agreement electronically.",
+              "required": true
+            }
+          ]
+        },
+        {
+          "kind": "signature",
+          "rows": [
+            { "role": "owner_name", "label": "Owner full name" },
+            { "role": "owner_signature", "label": "Owner signature" },
+            { "role": "signed_at", "label": "Date" },
+            { "role": "provider_name", "label": "Piggyway representative" },
+            { "role": "provider_signature", "label": "Piggyway signature" },
+            { "role": "provider_signed_at", "label": "Date" }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "schedules",
+      "title": null,
+      "number": "none",
+      "blocks": [
+        {
+          "kind": "schedule",
+          "title": "SCHEDULE A - DAILY CARE PROFILE",
+          "intro": [
+            "Complete this schedule for the household. Attach additional pages where different guinea pigs have different routines."
+          ],
+          "lines": [
+            { "paper": "Usual pellet brand and daily amount" },
+            { "paper": "Foods to avoid / allergies" },
+            {
+              "key": "hay_preference",
+              "label": "Hay preferences",
+              "type": "textarea",
+              "audience": "customer",
+              "required_at": null,
+              "max_length": 2000
+            },
+            {
+              "key": "water_preference",
+              "label": "Water bottle / bowl preference",
+              "type": "textarea",
+              "audience": "customer",
+              "required_at": null,
+              "max_length": 2000
+            },
+            { "paper": "Favourite hideys, toys and enrichment (optional)" },
+            {
+              "paper": "Normal temperament and handling preferences (optional)"
+            },
+            { "paper": "Bonding concerns / known triggers (optional)" },
+            { "paper": "Other routine instructions (optional)" }
+          ],
+          "paper_checks": null
+        },
+        {
+          "kind": "schedule",
+          "title": "SCHEDULE B - MEDICATION AND TREATMENT CHART",
+          "intro": [
+            "Use of this schedule",
+            "All medication must be prescribed or approved by a veterinarian. Provide medication in its original labelled packaging and attach the current prescription, medical record or written veterinary instructions.",
+            "If you have no medical conditions, leave this blank."
+          ],
+          "lines": [
+            { "paper": "Guinea pig name" },
+            { "paper": "Usual veterinary clinic" },
+            { "paper": "Veterinarian name" },
+            { "paper": "Diagnosis / condition" },
+            {
+              "key": "medication_details",
+              "label": "Medication and dosage",
+              "type": "textarea",
+              "audience": "customer",
+              "required_at": null,
+              "max_length": 2000
+            },
+            { "paper": "Start date" },
+            { "paper": "End date" },
+            { "paper": "Storage requirements" },
+            { "paper": "Other special monitoring instructions (optional)" }
+          ],
+          "paper_checks": {
+            "title": "Veterinary confirmation / attached instruction (Please check the box)",
+            "note": "Completed on paper at drop-off",
+            "items": [
+              {
+                "key": "prescription_attached",
+                "text": "A current prescription or veterinary instruction is attached."
+              },
+              {
+                "key": "label_matches_instructions",
+                "text": "The medication label and written instructions match."
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

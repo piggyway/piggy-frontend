@@ -10,6 +10,10 @@ import {
   waitFor,
 } from "@testing-library/react";
 import type { AgreementView } from "@/lib/types/agreement";
+import {
+  agreementTemplateV1,
+  buildAgreementView,
+} from "./__fixtures__/agreement-view";
 
 interface MockPad {
   empty: boolean;
@@ -71,121 +75,11 @@ const { AgreementApiError, getBoardingAgreement, signBoardingAgreement } =
   await import("@/lib/services/agreement");
 const { BoardingAgreementPage } = await import("./BoardingAgreementPage");
 
-const ACKNOWLEDGMENTS = [
-  { key: "legal_owner", column: "ack_legal_owner", text: "Legal owner." },
-  { key: "info_accurate", column: "ack_info_accurate", text: "Accurate." },
-  {
-    key: "health_disclosed",
-    column: "ack_health_disclosed",
-    text: "Health disclosed.",
-  },
-  { key: "fees_agreed", column: "ack_fees_agreed", text: "Fees agreed." },
-  {
-    key: "emergency_authority",
-    column: "ack_emergency_authority",
-    text: "Emergency authority.",
-  },
-  {
-    key: "vet_cost_responsibility",
-    column: "ack_vet_cost_responsibility",
-    text: "Vet costs.",
-  },
-  {
-    key: "electronic_signing_consent",
-    column: "electronic_signing_consent",
-    text: "Electronic signing.",
-  },
-];
+const SIGNED_HTML =
+  "<!doctype html><html><body><h1>GUINEA PIG BOARDING AGREEMENT</h1></body></html>";
 
 function buildView(overrides: Partial<AgreementView> = {}): AgreementView {
-  return {
-    status: "viewed",
-    template_version: "v1",
-    read_only: false,
-    signed_at: null,
-    pdf_available: false,
-    download_url: null,
-    editable_fields: [],
-    editable_pet_fields: [],
-    booking: {
-      reference: "PB-TEST-0001",
-      first_name: "Ada",
-      last_name: "Lovelace",
-      email: "ada@example.com",
-      phone: "0400 000 000",
-      drop_off_date: "2026-08-30",
-      drop_off_time: "09:00",
-      pick_up_date: "2026-09-02",
-      pick_up_time: "17:00",
-      nights: 3,
-    },
-    admin_fields: {
-      agreed_daily_rate: "95.00",
-      deposit_paid: "50.00",
-      balance_due: "235.00",
-      admin_extra_terms: null,
-    },
-    customer_fields: {
-      owner_address: null,
-      emergency_name: null,
-      emergency_relationship: null,
-      emergency_phone: null,
-      emergency_email: null,
-      emergency_spend_limit: null,
-      hay_preference: null,
-      water_preference: null,
-      medication_details: null,
-      photo_consent: null,
-      ack_legal_owner: false,
-      ack_info_accurate: false,
-      ack_health_disclosed: false,
-      ack_fees_agreed: false,
-      ack_emergency_authority: false,
-      ack_vet_cost_responsibility: false,
-      electronic_signing_consent: false,
-    },
-    pets: [],
-    template: {
-      version: "v1",
-      currency: "AUD",
-      rateUnit: "per day",
-      provider: {
-        businessName: "Piggyway Boarding",
-        operatedBy: "Han Ye",
-        phone: "0414 766 727",
-        email: "support@piggyway.com.au",
-        address: "U4, 14-16 Anderson st, Templestowe, Victoria",
-      },
-      header: {
-        documentTitle: "PIGGYWAY GUINEA PIG BOARDING AGREEMENT",
-        title: "GUINEA PIG BOARDING AGREEMENT",
-        subtitle: "Home-based boarding and assisted-care agreement",
-        importantTitle: "Important",
-        importantText: "Please read every section before signing.",
-        ownerBlockTitle: "OWNER",
-        ownerFieldLabels: ["Full name"],
-        serviceProviderBlockTitle: "SERVICE PROVIDER",
-        agreementDateLabel: "Agreement date",
-        footer: "Piggyway Boarding",
-      },
-      sections: [],
-      rateTableColumnLabels: ["Guinea pigs", "Rate"],
-      rateTable: [],
-      photoConsentOptions: [
-        { value: "public", text: "Piggyway may share photos publicly." },
-      ],
-      acknowledgmentsSectionNumber: 15,
-      acknowledgmentsSectionTitle: "Owner Acknowledgment and Signatures",
-      acknowledgments: ACKNOWLEDGMENTS,
-      signatureLabels: ["Owner signature"],
-      schedules: [],
-      medicationConfirmationsTitle: "Veterinary confirmation",
-      medicationConfirmations: [],
-      medicationSignatureLabels: [],
-    },
-    html: null,
-    ...overrides,
-  };
+  return buildAgreementView(overrides);
 }
 
 function signedView(): AgreementView {
@@ -194,6 +88,7 @@ function signedView(): AgreementView {
     read_only: true,
     signed_at: "2026-08-29T02:00:00.000Z",
     pdf_available: false,
+    html: SIGNED_HTML,
   });
 }
 
@@ -243,6 +138,37 @@ describe("BoardingAgreementPage", () => {
     ).toBeTruthy();
   });
 
+  it("keeps the template provider for the contact block after a link failure", async () => {
+    const template = agreementTemplateV1();
+    template.provider.email = "frontdesk@example.com";
+    vi.mocked(getBoardingAgreement).mockResolvedValue(
+      buildAgreementView({}, template)
+    );
+
+    render(<BoardingAgreementPage token="tok-1" />);
+    await screen.findByRole("heading", {
+      name: "GUINEA PIG BOARDING AGREEMENT",
+    });
+
+    for (const box of screen.getAllByRole("checkbox")) {
+      fireEvent.click(box);
+    }
+    fireEvent.click(
+      screen.getByRole("radio", { name: /website and social media/i })
+    );
+    drawStroke();
+    vi.mocked(signBoardingAgreement).mockRejectedValue(
+      new AgreementApiError(410, "agreement_link_expired", null)
+    );
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Sign agreement" }));
+    });
+
+    expect(
+      screen.getByRole("link", { name: "frontdesk@example.com" })
+    ).toBeTruthy();
+  });
+
   it("shows the not found notice when the link is unknown", async () => {
     vi.mocked(getBoardingAgreement).mockRejectedValue(
       new AgreementApiError(404, "agreement_not_found", null)
@@ -274,7 +200,7 @@ describe("BoardingAgreementPage", () => {
       fireEvent.click(box);
     }
     fireEvent.click(
-      screen.getByRole("radio", { name: /share photos publicly/i })
+      screen.getByRole("radio", { name: /website and social media/i })
     );
     drawStroke();
 
@@ -283,12 +209,26 @@ describe("BoardingAgreementPage", () => {
     });
 
     expect(vi.mocked(signBoardingAgreement)).toHaveBeenCalledTimes(1);
+    const [, payload] = vi.mocked(signBoardingAgreement).mock.calls[0];
+    expect(Object.keys(payload).sort()).toEqual([
+      "answers",
+      "pets",
+      "signature_data",
+      "signature_type",
+    ]);
+    expect(Object.keys(payload.pets)).toEqual(["7", "9"]);
     await waitFor(() =>
       expect(vi.mocked(getBoardingAgreement)).toHaveBeenCalledTimes(2)
     );
     expect(
       await screen.findByRole("heading", { name: "Agreement signed" })
     ).toBeTruthy();
+
+    const signedDocument = screen.getByTitle(
+      "Signed boarding agreement"
+    ) as HTMLIFrameElement;
+    expect(signedDocument.getAttribute("sandbox")).toBe("");
+    expect(signedDocument.getAttribute("srcdoc")).toBe(SIGNED_HTML);
 
     const checkAgain = screen.getByRole("button", { name: "Check again" });
     expect((checkAgain as HTMLButtonElement).disabled).toBe(false);

@@ -6,7 +6,7 @@ import {
   AgreementApiError,
   getBoardingAgreement,
 } from "@/lib/services/agreement";
-import type { AgreementProvider, AgreementView } from "@/lib/types/agreement";
+import type { AgreementView, TemplateProvider } from "@/lib/types/agreement";
 import { AgreementNotice, type AgreementNoticeKind } from "./AgreementNotice";
 import {
   AgreementSignForm,
@@ -34,7 +34,7 @@ export function BoardingAgreementPage({ token }: { token: string }) {
   const [isLoading, setIsLoading] = useState(true);
   // Kept past a link failure so the contact block can still use the template's
   // own phone and email rather than the hardcoded fallback.
-  const [provider, setProvider] = useState<AgreementProvider | undefined>();
+  const [provider, setProvider] = useState<TemplateProvider | undefined>();
 
   // A refetch that resolves after a newer one must not overwrite its result.
   const requestIdRef = useRef(0);
