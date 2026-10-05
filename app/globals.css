@@ -43,6 +43,9 @@
   --text-p-ui: 20px;
   --text-p-ui--line-height: 24px;
   --text-p-ui--font-weight: 500;
+  --text-body: 20px;
+  --text-body--line-height: 30px;
+  --text-body--font-weight: 400;
   --text-p-ui-medium: 16px;
   --text-p-ui-medium--line-height: 24px;
   --text-p-ui-medium--font-weight: 400;

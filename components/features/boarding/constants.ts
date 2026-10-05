@@ -4,7 +4,6 @@ export const BOARDING_ASSETS = {
   heroBackground: "/Top Bannner.png",
   heroLogo: "/Boarding Logo.png",
   offerFeatureImage: "/pet-care-tips/default1.png",
-  whoItsForIcon: "/homepage-discover/imagesmode.svg",
   careLeadImage: "/boarding/d658827bdd92d72ba8bff22f2b0078ea9560d99a.jpg",
   storyImage: "/shop-with-us/default.png",
   trustedVetImage: "/boarding/Group 466.png",
@@ -60,7 +59,7 @@ export const WHO_ITS_FOR_ITEMS = [
     title: "Boarding with veterinary support",
     description:
       "Our partnership with an experienced pocket-pet vet provides extra peace of mind.",
-    colorClass: "bg-neutral-background-light",
+    colorClass: "bg-primary-light-gold",
   },
   {
     title: "Calm spaces for tiny feet",
@@ -72,7 +71,7 @@ export const WHO_ITS_FOR_ITEMS = [
     title: "First stay? No worries.",
     description:
       "A gentle introduction for guinea pigs boarding away from home.",
-    colorClass: "bg-neutral-grey-background",
+    colorClass: "bg-primary-purple/40",
   },
 ] as const;
 
@@ -108,7 +107,7 @@ export const BOARDING_DEPOSIT_POLICY_CONTENT = {
       title: "Normal Period",
       colorClass: "bg-primary-purple-light",
       paragraphs: [
-        "A 15% deposit is required to secure a booking during the Normal Period. At least 1 week’s notice is required for cancellations.",
+        "A 15% deposit is required to secure a booking during the Normal Period. At least 1 week's notice is required for cancellations.",
       ],
     },
   ],
