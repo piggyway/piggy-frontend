@@ -14,7 +14,7 @@ export function BoardingCtaSection() {
   return (
     <AnimatedSection className="w-full">
       <section className="container mx-auto max-w-[1160px] px-4 py-10 sm:py-12">
-        <div className="flex flex-col items-center gap-10 rounded-[32px] border-[12px] border-white bg-white p-6 sm:p-10 lg:flex-row lg:p-[40px]">
+        <div className="flex flex-col items-center gap-10 rounded-[32px] bg-white p-6 sm:p-10 lg:flex-row lg:p-[40px]">
           <div className="flex flex-1 flex-col justify-between gap-10 self-stretch">
             <h2 className="text-primary-navy text-large sm:text-h4 leading-[40px] font-semibold tracking-[-0.21px] sm:leading-[42px]">
               {BOARDING_CTA_CONTENT.titleLines.map((line) => (
@@ -29,7 +29,7 @@ export function BoardingCtaSection() {
                 <p className="text-primary-navy-light text-p-ui sm:text-lead leading-8 font-semibold">
                   {BOARDING_CTA_CONTENT.eyebrow}
                 </p>
-                <p className="text-primary-navy text-p-ui sm:text-lead leading-8 font-normal">
+                <p className="text-primary-navy text-p sm:text-body font-normal">
                   {BOARDING_CTA_CONTENT.description.map((line) => (
                     <span key={line} className="block">
                       {line}

@@ -38,25 +38,25 @@ const VALUES = [
     title: "Clear Education",
     description:
       "We provide honest, accessible guidance to help owners make informed decisions about their pets' wellbeing.",
-    icon: <HelpCircle className="text-secondary-pink h-6 w-6" />,
+    icon: <HelpCircle className="text-primary-navy-light h-6 w-6" />,
   },
   {
     title: "Real Experience",
     description:
       "Our healthy care habits are built on years of hands-on experience living with and caring for guinea pigs.",
-    icon: <Heart className="text-primary-gold h-6 w-6" />,
+    icon: <Heart className="text-primary-navy-light h-6 w-6" />,
   },
   {
     title: "Thoughtful Products",
     description:
       "We only offer products that genuinely help—carefully selected to support the health and happiness of your animals.",
-    icon: <Sparkles className="text-secondary-blue h-6 w-6" />,
+    icon: <Sparkles className="text-primary-navy-light h-6 w-6" />,
   },
   {
     title: "Compassionate Care",
     description:
       "We believe every guinea pig deserves patience, respect, and love, regardless of their background or health.",
-    icon: <Smile className="text-primary-purple h-6 w-6" />,
+    icon: <Smile className="text-primary-navy-light h-6 w-6" />,
   },
 ];
 
@@ -87,16 +87,16 @@ export default function AboutPage() {
       />
 
       {/* Hero Section */}
-      <section className="container mx-auto px-4 pt-16 pb-12 sm:pt-24 sm:pb-16">
+      <section className="container mx-auto px-4 pt-10 pb-8 sm:pt-16 sm:pb-12">
         <AnimatedSection className="mx-auto max-w-4xl text-center">
-          <h1 className="text-primary-navy mb-6 text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+          <h1 className="text-primary-navy-light text-large sm:text-h2 mb-6">
             Created by people who live alongside guinea pigs
           </h1>
-          <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-600 sm:text-xl">
+          <p className="text-p sm:text-body mx-auto max-w-2xl text-gray-600">
             Not as a hobby, but as family. Every member of our team is a guinea
             pig carer.
           </p>
-          <div className="mx-auto mt-8 max-w-3xl text-gray-600 italic">
+          <div className="text-p sm:text-body mx-auto mt-8 max-w-3xl text-gray-600 italic">
             &quot;In our hardest moments, these small, gentle animals have given
             us comfort, stability, and quiet emotional support. They’ve reminded
             us to slow down, to care deeply, and to show up every day. That
@@ -109,11 +109,11 @@ export default function AboutPage() {
       <section className="container mx-auto px-4 py-12">
         <AnimatedSection className="mx-auto max-w-[1160px]">
           <div className="overflow-hidden rounded-[32px] bg-white shadow-sm ring-1 ring-gray-100">
-            <div className="grid gap-0 md:grid-cols-2">
-              <div className="bg-secondary-mint/30 relative min-h-[300px] p-8 sm:p-12 md:min-h-[500px]">
+            <div className="grid items-start gap-0 md:grid-cols-[2fr_3fr]">
+              <div className="bg-secondary-mint/30 relative min-h-[260px] p-6 sm:p-10 md:aspect-square">
                 {/* Decorative Images */}
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="relative h-64 w-64 md:h-80 md:w-80">
+                  <div className="relative h-56 w-56 sm:h-64 sm:w-64">
                     <Image
                       src="/our-story/default2.png"
                       alt="McFlurry the Guinea Pig"
@@ -124,14 +124,14 @@ export default function AboutPage() {
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col justify-center p-8 sm:p-12 md:p-16">
-                <span className="text-secondary-pink mb-2 font-semibold tracking-wide uppercase">
+              <div className="flex flex-col justify-center p-6 sm:p-10">
+                <span className="text-primary-navy-light text-subtle mb-2 font-semibold tracking-wide uppercase">
                   Our Story
                 </span>
-                <h2 className="text-primary-navy mb-6 text-3xl font-bold sm:text-4xl">
+                <h2 className="text-primary-navy text-large mb-6">
                   It Began With McFlurry
                 </h2>
-                <div className="space-y-4 text-lg text-gray-600">
+                <div className="text-p sm:text-body space-y-4 text-gray-600">
                   <p>
                     He came into our lives unexpectedly, at a time when there
                     was no clear or reliable guidance on how to truly care for
@@ -166,36 +166,36 @@ export default function AboutPage() {
       </section>
 
       {/* Purpose Section */}
-      <section className="bg-white/50 py-24">
+      <section className="bg-white/50 py-12 sm:py-16">
         <div className="container mx-auto px-4">
           <AnimatedSection>
-            <div className="mb-16 text-center">
-              <span className="text-primary-purple mb-2 block font-semibold tracking-wide uppercase">
+            <div className="mb-10 text-center">
+              <span className="text-primary-navy-light text-subtle mb-2 block font-semibold tracking-wide uppercase">
                 Our Purpose
               </span>
-              <h2 className="text-primary-navy text-3xl font-bold sm:text-4xl">
+              <h2 className="text-primary-navy text-large">
                 So Others Don&apos;t Have to Learn Through Fear
               </h2>
-              <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-600">
+              <p className="text-p sm:text-body mx-auto mt-4 max-w-2xl text-gray-600">
                 Our mission is to encourage responsible, informed guinea pig
                 care — to help carers understand not only <strong>what</strong>{" "}
                 to buy, but <strong>how and why</strong> it supports their
                 animals’ wellbeing.
               </p>
             </div>
-            <div className="mx-auto grid max-w-[1160px] gap-8 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="mx-auto grid max-w-[1160px] gap-6 sm:grid-cols-2">
               {VALUES.map((value, index) => (
                 <div
                   key={index}
-                  className="group rounded-3xl border border-gray-100 bg-white p-8 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
+                  className="group rounded-3xl border border-gray-100 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                 >
                   <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50 transition-colors group-hover:bg-gray-100">
                     {value.icon}
                   </div>
-                  <h3 className="text-primary-navy mb-3 text-xl font-bold">
+                  <h3 className="text-primary-navy text-lead mb-3">
                     {value.title}
                   </h3>
-                  <p className="leading-relaxed text-gray-600">
+                  <p className="text-p sm:text-body text-gray-600">
                     {value.description}
                   </p>
                 </div>
@@ -207,14 +207,14 @@ export default function AboutPage() {
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 pt-12 pb-24">
-        <AnimatedSection className="mx-auto max-w-4xl rounded-[3rem] bg-gradient-to-br from-[#E6F4F1] to-[#F0F7FF] px-6 py-16 text-center sm:px-12 sm:py-20">
+        <AnimatedSection className="from-secondary-mint to-secondary-blue/20 mx-auto max-w-4xl rounded-[3rem] bg-gradient-to-br px-6 py-10 text-center sm:px-12 sm:py-12">
           <div className="bg-secondary-mint mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full shadow-sm">
             <CheckCircle2 className="text-primary-navy h-8 w-8" />
           </div>
-          <h2 className="text-primary-navy mb-6 text-3xl font-bold sm:text-4xl">
+          <h2 className="text-primary-navy text-large mb-6">
             A Kinder Future for Guinea Pigs
           </h2>
-          <p className="mx-auto mb-10 max-w-2xl text-lg text-gray-600">
+          <p className="text-p sm:text-body mx-auto mb-10 max-w-2xl text-gray-600">
             We believe guinea pigs deserve patience, respect, and love. And we
             believe carers deserve support they can trust. Piggyway is here to
             help build better care, deeper bonds, and a kinder future for guinea

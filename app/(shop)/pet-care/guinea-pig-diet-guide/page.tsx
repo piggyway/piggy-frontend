@@ -57,18 +57,18 @@ export default function DietGuidePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900">
+    <div className="min-h-screen bg-white text-gray-600">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="mx-auto max-w-[680px] px-6 py-12 md:py-20">
+      <div className="relative mx-auto max-w-3xl px-6 py-10 sm:py-16">
         {/* Navigation */}
-        <nav className="mb-12">
+        <nav className="mb-8">
           <Link
             href="/pet-care"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+            className="hover:text-primary-navy inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Pet Care
@@ -76,12 +76,12 @@ export default function DietGuidePage() {
         </nav>
 
         {/* Header */}
-        <header className="mb-12">
-          <h1 className="mb-8 text-3xl leading-[1.1] font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
+        <header className="mb-8 text-left">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 mb-6">
             Guinea Pig Diet Guide
           </h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-            <span className="font-medium text-gray-900">
+          <div className="text-subtle flex flex-wrap items-center gap-x-4 gap-y-2 text-gray-500">
+            <span className="text-primary-navy font-medium">
               Piggy Way Crossing Team
             </span>
             <span className="text-gray-300">•</span>
@@ -97,8 +97,8 @@ export default function DietGuidePage() {
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
-          <p className="mb-6 text-xl leading-relaxed font-normal text-gray-600">
+        <article className="prose prose-lg prose-headings:text-primary-navy prose-h2:text-lead sm:prose-h2:text-large prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-lead prose-h3:mt-8 prose-h3:mb-4 prose-p:text-gray-600 prose-li:text-gray-600 prose-strong:text-primary-navy prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light max-w-none break-words text-gray-600">
+          <p className="text-body mb-6 text-gray-600">
             <em>
               A clear, practical guide to feeding guinea pigs well — at every
               life stage.
@@ -109,8 +109,8 @@ export default function DietGuidePage() {
             <strong>longer, happier life</strong> for your guinea pigs 🤍
           </p>
 
-          <div className="my-10 rounded-2xl border border-gray-100 bg-gray-50 p-8">
-            <h3 className="mt-0 mb-6 text-xl font-bold text-gray-900">
+          <div className="my-10 rounded-2xl border border-gray-100 bg-gray-50 p-6 sm:p-8">
+            <h3 className="text-lead text-primary-navy mt-0 mb-6">
               Must-Eat Priority List
               <span className="mt-1 block text-base font-normal text-gray-500">
                 (in order of importance)
@@ -124,7 +124,7 @@ export default function DietGuidePage() {
             </ol>
           </div>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             1) Feed by Age First 🐹
           </h2>
           <p>
@@ -153,7 +153,7 @@ export default function DietGuidePage() {
             </li>
           </ul>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             2) Hay — Their Lifelong Staple 🌾
           </h2>
           <p>
@@ -185,7 +185,7 @@ export default function DietGuidePage() {
             for long-term, unlimited feeding.
           </p>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             3) Alfalfa — Only for Young Guinea Pigs 🌱
           </h2>
           <p>
@@ -216,7 +216,7 @@ export default function DietGuidePage() {
           </ul>
 
           <div className="mt-10 mb-6">
-            <h3 className="mb-4 text-xl font-bold text-gray-900">
+            <h3 className="text-lead text-primary-navy mb-4">
               Variety Is a Good Thing 🌾
             </h3>
             <p>
@@ -246,7 +246,7 @@ export default function DietGuidePage() {
             </ul>
           </div>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             4) Vegetables 🥬
           </h2>
           <p>
@@ -262,12 +262,12 @@ export default function DietGuidePage() {
           <div className="grid gap-8">
             {/* Leafy Greens */}
             <div className="rounded-xl border border-green-100 bg-green-50/50 p-6">
-              <h4 className="mt-0 mb-4 text-lg font-bold text-gray-900">
+              <h4 className="text-p-ui text-primary-navy mt-0 mb-4">
                 Leafy Greens (Daily Base)
               </h4>
               <div className="space-y-6">
                 <div>
-                  <p className="mb-1 font-bold text-gray-900">
+                  <p className="text-primary-navy mb-1 font-bold">
                     Cos (Romaine) Lettuce
                   </p>
                   <p className="mb-2 text-sm">
@@ -281,7 +281,7 @@ export default function DietGuidePage() {
                   </p>
                 </div>
                 <div>
-                  <p className="mb-1 font-bold text-gray-900">
+                  <p className="text-primary-navy mb-1 font-bold">
                     Mixed Leaf Salad
                   </p>
                   <p className="text-sm">
@@ -294,12 +294,12 @@ export default function DietGuidePage() {
 
             {/* Vitamin C */}
             <div className="rounded-xl border border-orange-100 bg-orange-50/50 p-6">
-              <h4 className="mt-0 mb-4 text-lg font-bold text-gray-900">
+              <h4 className="text-p-ui text-primary-navy mt-0 mb-4">
                 Vitamin C–Rich Vegetables
               </h4>
               <div className="space-y-6">
                 <div>
-                  <p className="mb-1 font-bold text-gray-900">Capsicum</p>
+                  <p className="text-primary-navy mb-1 font-bold">Capsicum</p>
                   <p className="text-sm">
                     An excellent Vitamin C source. Red and yellow generally
                     contain more Vitamin C than green. Smaller, sweeter ones are
@@ -307,7 +307,7 @@ export default function DietGuidePage() {
                   </p>
                 </div>
                 <div>
-                  <p className="mb-1 font-bold text-gray-900">Tomato</p>
+                  <p className="text-primary-navy mb-1 font-bold">Tomato</p>
                   <p className="text-sm">
                     Another good Vitamin C source. Helpful when guinea pigs
                     refuse capsicum.
@@ -318,11 +318,11 @@ export default function DietGuidePage() {
 
             {/* Hydrating */}
             <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-6">
-              <h4 className="mt-0 mb-4 text-lg font-bold text-gray-900">
+              <h4 className="text-p-ui text-primary-navy mt-0 mb-4">
                 Hydrating Vegetables
               </h4>
               <div>
-                <p className="mb-1 font-bold text-gray-900">Cucumber</p>
+                <p className="text-primary-navy mb-1 font-bold">Cucumber</p>
                 <p className="mb-3 text-sm">
                   Refreshing, especially in summer. Too much can cause bloating,
                   so use to balance higher-calcium greens.
@@ -336,7 +336,7 @@ export default function DietGuidePage() {
 
             {/* Calcium Rich */}
             <div className="rounded-xl border border-gray-100 bg-gray-50 p-6">
-              <h4 className="mt-0 mb-2 text-lg font-bold text-gray-900">
+              <h4 className="text-p-ui text-primary-navy mt-0 mb-2">
                 Calcium-Rich Vegetables
                 <span className="mt-1 block text-sm font-normal text-gray-500">
                   (Feed in Small Amounts - moderation is important)
@@ -344,7 +344,7 @@ export default function DietGuidePage() {
               </h4>
               <div className="mt-4 space-y-6">
                 <div>
-                  <p className="mb-1 font-bold text-gray-900">
+                  <p className="text-primary-navy mb-1 font-bold">
                     Parsley (curly or continental)
                   </p>
                   <p className="text-sm">
@@ -352,7 +352,7 @@ export default function DietGuidePage() {
                   </p>
                 </div>
                 <div>
-                  <p className="mb-1 font-bold text-gray-900">
+                  <p className="text-primary-navy mb-1 font-bold">
                     Kale (including Turkish kale)
                   </p>
                   <p className="mb-2 text-sm">
@@ -364,7 +364,7 @@ export default function DietGuidePage() {
                   </p>
                 </div>
                 <div>
-                  <p className="mb-1 font-bold text-gray-900">
+                  <p className="text-primary-navy mb-1 font-bold">
                     Carrot Tops & Silverbeet
                   </p>
                   <p className="text-sm">
@@ -377,7 +377,7 @@ export default function DietGuidePage() {
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2">
             <div>
-              <h4 className="mb-3 font-bold text-gray-900">
+              <h4 className="text-primary-navy mb-3 font-bold">
                 Vegetables for Variety
               </h4>
               <ul className="list-disc space-y-2 pl-5 text-sm">
@@ -391,7 +391,7 @@ export default function DietGuidePage() {
               </ul>
             </div>
             <div>
-              <h4 className="mb-3 font-bold text-gray-900">
+              <h4 className="text-primary-navy mb-3 font-bold">
                 Herbs to Rotate 🌿
               </h4>
               <ul className="list-disc space-y-2 pl-5 text-sm">
@@ -412,7 +412,7 @@ export default function DietGuidePage() {
             </p>
           </div>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             5) Pellets — How to Choose 🥣
           </h2>
           <p>
@@ -434,7 +434,7 @@ export default function DietGuidePage() {
           </div>
           <p>This is exactly how our own guinea pigs are fed.</p>
 
-          <h3 className="mt-8 mb-4 text-lg font-bold text-gray-900">
+          <h3 className="text-p-ui text-primary-navy mt-8 mb-4">
             Other Pellet Options (for Mixing)
           </h3>
           <ul className="list-none space-y-3 pl-0">
@@ -463,7 +463,7 @@ export default function DietGuidePage() {
             as the main pellet.
           </p>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             6) Vitamin C — Non-Negotiable 🍅
           </h2>
           <p>
@@ -502,10 +502,10 @@ export default function DietGuidePage() {
 
         {/* Read Next Section */}
         <div className="mt-20 border-t border-gray-100 pt-12">
-          <h3 className="mb-6 text-xl font-bold text-gray-900">Read Next</h3>
+          <h3 className="text-lead text-primary-navy mb-6">Read Next</h3>
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="rounded-2xl bg-gray-50 p-8 transition-colors hover:bg-gray-100">
-              <h4 className="mb-2 text-lg font-bold text-gray-900">
+            <div className="rounded-2xl bg-gray-50 p-6 transition-colors hover:bg-gray-100 sm:p-8">
+              <h4 className="text-p-ui text-primary-navy mb-2">
                 Premium Hay & Food
               </h4>
               <p className="mb-6 text-sm text-gray-600">
@@ -513,14 +513,14 @@ export default function DietGuidePage() {
               </p>
               <Link
                 href="/shop-all"
-                className="inline-flex items-center gap-2 font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
+                className="text-primary-navy inline-flex items-center gap-2 font-medium underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
               >
                 Shop Food <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
 
-            <div className="rounded-2xl bg-gray-50 p-8 transition-colors hover:bg-gray-100">
-              <h4 className="mb-2 text-lg font-bold text-gray-900">
+            <div className="rounded-2xl bg-gray-50 p-6 transition-colors hover:bg-gray-100 sm:p-8">
+              <h4 className="text-p-ui text-primary-navy mb-2">
                 Health & Wellness Essentials
               </h4>
               <p className="mb-6 text-sm text-gray-600">
@@ -529,7 +529,7 @@ export default function DietGuidePage() {
               </p>
               <Link
                 href="/pet-care/health-and-wellness"
-                className="inline-flex items-center gap-2 font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
+                className="text-primary-navy inline-flex items-center gap-2 font-medium underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
               >
                 Read Health Guide <ChevronRight className="h-4 w-4" />
               </Link>

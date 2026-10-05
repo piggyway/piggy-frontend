@@ -9,14 +9,16 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="bg-neutral-background-light min-h-screen py-16 sm:py-24">
+    <div className="bg-neutral-background-light min-h-screen py-10 sm:py-16">
       <div className="container mx-auto px-4">
-        <AnimatedSection className="mx-auto max-w-3xl rounded-[32px] bg-white p-8 shadow-sm sm:p-12">
-          <h1 className="text-primary-navy mb-8 text-3xl font-bold sm:text-4xl">
+        <AnimatedSection className="mx-auto max-w-3xl rounded-[32px] bg-white p-6 shadow-sm sm:p-12">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 mb-6 sm:mb-8">
             Terms & Conditions
           </h1>
-          <div className="prose prose-lg prose-headings:text-primary-navy prose-a:text-primary-navy text-gray-600">
-            <p className="text-sm text-gray-400">Last updated: December 2024</p>
+          <div className="prose prose-lg prose-headings:text-primary-navy prose-a:text-primary-navy max-w-none break-words text-gray-600">
+            <p className="text-subtle text-gray-500">
+              Last updated: December 2024
+            </p>
             <h3>1. Introduction</h3>
             <p>
               Welcome to Piggy Way Crossing. By accessing our website and

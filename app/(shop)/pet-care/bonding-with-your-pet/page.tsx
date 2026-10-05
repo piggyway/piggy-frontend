@@ -57,18 +57,18 @@ export default function BondingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900">
+    <div className="min-h-screen bg-white text-gray-600">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="mx-auto max-w-[680px] px-6 py-12 md:py-20">
+      <div className="relative mx-auto max-w-3xl px-6 py-10 sm:py-16">
         {/* Navigation */}
-        <nav className="mb-12">
+        <nav className="mb-8">
           <Link
             href="/pet-care"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+            className="hover:text-primary-navy inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Pet Care
@@ -76,12 +76,12 @@ export default function BondingPage() {
         </nav>
 
         {/* Header */}
-        <header className="mb-12">
-          <h1 className="mb-8 text-3xl leading-[1.1] font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
+        <header className="mb-8 text-left">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 mb-6">
             Bonding & Building Trust with Your Guinea Pig
           </h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-            <span className="font-medium text-gray-900">
+          <div className="text-subtle flex flex-wrap items-center gap-x-4 gap-y-2 text-gray-500">
+            <span className="text-primary-navy font-medium">
               Piggy Way Crossing Team
             </span>
             <span className="text-gray-300">•</span>
@@ -97,8 +97,8 @@ export default function BondingPage() {
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
-          <p className="mb-10 text-xl leading-relaxed font-normal text-gray-600">
+        <article className="prose prose-lg prose-headings:text-primary-navy prose-h2:text-lead sm:prose-h2:text-large prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-lead prose-h3:mt-8 prose-h3:mb-4 prose-p:text-gray-600 prose-li:text-gray-600 prose-strong:text-primary-navy prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light max-w-none break-words text-gray-600">
+          <p className="text-body mb-8 text-gray-600">
             Bonding with a guinea pig is a quiet, emotional process built
             through everyday moments. Trust grows when their world feels safe,
             predictable, and filled with gentle connection.
@@ -108,7 +108,7 @@ export default function BondingPage() {
             follows naturally.
           </p>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             Positive Experiences & Enrichment
           </h2>
           <p>
@@ -123,7 +123,7 @@ export default function BondingPage() {
             trust begins.
           </p>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             Safety in Hideouts
           </h2>
           <p>
@@ -149,7 +149,7 @@ export default function BondingPage() {
             </p>
           </div>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             Daily Interaction
           </h2>
           <p>
@@ -165,7 +165,7 @@ export default function BondingPage() {
 
           <hr className="my-12 border-gray-100" />
 
-          <p className="text-lg font-medium text-gray-900">
+          <p className="text-body text-primary-navy font-medium">
             Over time, your patience becomes safety, your presence becomes
             familiar, and your care becomes trust.
           </p>
@@ -178,27 +178,23 @@ export default function BondingPage() {
 
         {/* Read Next Section */}
         <div className="mt-20 border-t border-gray-100 pt-12">
-          <h3 className="mb-6 text-xl font-bold text-gray-900">
-            Bonding Tools
-          </h3>
+          <h3 className="text-lead text-primary-navy mb-6">Bonding Tools</h3>
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="rounded-2xl bg-gray-50 p-8 transition-colors hover:bg-gray-100">
-              <h4 className="mb-2 text-lg font-bold text-gray-900">
-                Cuddle Sacks
-              </h4>
+            <div className="rounded-2xl bg-gray-50 p-6 transition-colors hover:bg-gray-100 sm:p-8">
+              <h4 className="text-p-ui text-primary-navy mb-2">Cuddle Sacks</h4>
               <p className="mb-6 text-sm text-gray-600">
                 The perfect safe space for lap time snuggles.
               </p>
               <Link
                 href="/shop-all"
-                className="inline-flex items-center gap-2 font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
+                className="text-primary-navy inline-flex items-center gap-2 font-medium underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
               >
                 Shop Comfort <ChevronRight className="h-4 w-4" />
               </Link>
             </div>
 
-            <div className="rounded-2xl bg-gray-50 p-8 transition-colors hover:bg-gray-100">
-              <h4 className="mb-2 text-lg font-bold text-gray-900">
+            <div className="rounded-2xl bg-gray-50 p-6 transition-colors hover:bg-gray-100 sm:p-8">
+              <h4 className="text-p-ui text-primary-navy mb-2">
                 Playpens & Mats
               </h4>
               <p className="mb-6 text-sm text-gray-600">
@@ -206,7 +202,7 @@ export default function BondingPage() {
               </p>
               <Link
                 href="/shop-all"
-                className="inline-flex items-center gap-2 font-medium text-gray-900 underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
+                className="text-primary-navy inline-flex items-center gap-2 font-medium underline decoration-gray-300 underline-offset-4 hover:text-gray-700"
               >
                 Shop Setup <ChevronRight className="h-4 w-4" />
               </Link>

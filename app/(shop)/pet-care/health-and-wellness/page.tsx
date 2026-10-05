@@ -1,8 +1,6 @@
 import { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight } from "lucide-react";
-import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
 /**
  * Dates taken from this file's git history: PUBLISHED_ON is the commit that
@@ -59,14 +57,13 @@ export default function HealthWellnessPage() {
   };
 
   return (
-    <div className="selection:bg-secondary-mint/20 min-h-screen bg-white font-sans text-gray-900">
-      <BackgroundBlobs variant={1} className="opacity-30" />
+    <div className="min-h-screen bg-white text-gray-600">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="relative z-10 container mx-auto max-w-3xl px-6 py-12 sm:py-20">
+      <div className="relative mx-auto max-w-3xl px-6 py-10 sm:py-16">
         {/* Navigation */}
         <nav className="mb-8">
           <Link
@@ -79,12 +76,12 @@ export default function HealthWellnessPage() {
         </nav>
 
         {/* Article Header */}
-        <header className="mb-10 text-center sm:text-left">
-          <h1 className="text-primary-navy mb-6 text-3xl leading-tight font-extrabold tracking-tight sm:text-4xl md:text-5xl">
+        <header className="mb-8 text-left">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 mb-6">
             Health & Wellness Essentials
           </h1>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500 sm:justify-start">
-            <span className="font-medium text-gray-900">
+          <div className="text-subtle flex flex-wrap items-center gap-x-4 gap-y-2 text-gray-500">
+            <span className="text-primary-navy font-medium">
               Piggy Way Crossing Team
             </span>
             <span className="hidden sm:inline">•</span>
@@ -101,20 +98,9 @@ export default function HealthWellnessPage() {
           </div>
         </header>
 
-        {/* Hero Image */}
-        <div className="relative mb-12 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
-          <Image
-            src="/pet-care-tips/default1.png"
-            alt="Healthy guinea pig being groomed"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-
         {/* Article Content */}
-        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-headings:text-primary-navy prose-h2:text-3xl prose-h2:font-bold prose-h2:mt-12 prose-h2:mb-6 prose-h3:text-2xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-4 prose-p:text-lg prose-p:leading-8 prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
-          <p className="lead mb-8 text-xl text-gray-600">
+        <article className="prose prose-lg prose-headings:text-primary-navy prose-h2:text-lead sm:prose-h2:text-large prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-lead prose-h3:mt-8 prose-h3:mb-4 prose-p:text-gray-600 prose-li:text-gray-600 prose-strong:text-primary-navy prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light max-w-none break-words text-gray-600">
+          <p className="text-body mb-8 text-gray-600">
             Prevention is always better than cure. Because small pets like
             guinea pigs and rabbits are prey animals, they are experts at hiding
             illness. Learning to spot subtle signs of health issues is a
@@ -202,7 +188,7 @@ export default function HealthWellnessPage() {
 
         {/* Read Next Section */}
         <div className="mt-16 border-t border-gray-200 pt-10">
-          <h3 className="text-primary-navy mb-6 text-2xl font-bold">
+          <h3 className="text-primary-navy text-lead mb-6">
             Health Essentials
           </h3>
           <div className="grid gap-6 sm:grid-cols-2">
@@ -210,13 +196,13 @@ export default function HealthWellnessPage() {
               href="/shop-all"
               className="group hover:border-secondary-mint block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
-              <h4 className="text-primary-navy group-hover:text-secondary-mint mb-2 text-lg font-bold transition-colors">
+              <h4 className="text-primary-navy group-hover:text-primary-navy-light text-p-ui mb-2 transition-colors">
                 Grooming Kits
               </h4>
               <p className="mb-4 text-sm text-gray-600">
                 Safe nail clippers and soft brushes designed for small animals.
               </p>
-              <span className="text-secondary-mint flex items-center gap-1 text-sm font-semibold">
+              <span className="text-primary-navy-light flex items-center gap-1 text-sm font-semibold">
                 Shop Now <ChevronRight className="h-4 w-4" />
               </span>
             </Link>
@@ -225,13 +211,13 @@ export default function HealthWellnessPage() {
               href="/pet-care/guinea-pig-diet-guide"
               className="group hover:border-primary-gold block rounded-xl border border-gray-200 bg-white p-6 transition-all hover:shadow-md"
             >
-              <h4 className="text-primary-navy group-hover:text-primary-gold mb-2 text-lg font-bold transition-colors">
+              <h4 className="text-primary-navy group-hover:text-primary-navy-light text-p-ui mb-2 transition-colors">
                 Proper Nutrition
               </h4>
               <p className="mb-4 text-sm text-gray-600">
                 Diet is the #1 factor in health. Review our diet guide.
               </p>
-              <span className="text-primary-gold flex items-center gap-1 text-sm font-semibold">
+              <span className="text-primary-navy-light flex items-center gap-1 text-sm font-semibold">
                 Read Guide <ChevronRight className="h-4 w-4" />
               </span>
             </Link>

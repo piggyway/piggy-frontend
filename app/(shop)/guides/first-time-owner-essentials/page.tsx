@@ -1,8 +1,6 @@
 import { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight, CheckCircle2 } from "lucide-react";
-import { BackgroundBlobs } from "@/components/ui/background-blobs";
 
 /**
  * Dates taken from this file's git history: PUBLISHED_ON is the commit that
@@ -59,14 +57,13 @@ export default function FirstTimeOwnerPage() {
   };
 
   return (
-    <div className="selection:bg-primary-gold/20 min-h-screen bg-white font-sans text-gray-900">
-      <BackgroundBlobs variant={1} className="opacity-30" />
+    <div className="min-h-screen bg-white text-gray-600">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="relative z-10 container mx-auto max-w-3xl px-6 py-12 sm:py-20">
+      <div className="relative mx-auto max-w-3xl px-6 py-10 sm:py-16">
         {/* Navigation */}
         <nav className="mb-8">
           <Link
@@ -79,12 +76,12 @@ export default function FirstTimeOwnerPage() {
         </nav>
 
         {/* Article Header */}
-        <header className="mb-10 text-center sm:text-left">
-          <h1 className="text-primary-navy mb-6 text-3xl leading-tight font-extrabold tracking-tight sm:text-4xl md:text-5xl">
+        <header className="mb-8 text-left">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 mb-6">
             First-Time Guinea Pig Owner Checklist
           </h1>
-          <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-500 sm:justify-start">
-            <span className="font-medium text-gray-900">
+          <div className="text-subtle flex flex-wrap items-center gap-x-4 gap-y-2 text-gray-500">
+            <span className="text-primary-navy font-medium">
               Piggy Way Crossing Team
             </span>
             <span className="hidden sm:inline">•</span>
@@ -101,28 +98,17 @@ export default function FirstTimeOwnerPage() {
           </div>
         </header>
 
-        {/* Hero Image */}
-        <div className="relative mb-12 aspect-[16/9] w-full overflow-hidden rounded-2xl bg-gray-100 shadow-sm">
-          <Image
-            src="/shop-with-us/default.png"
-            alt="Guinea pig essentials collection"
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
-
         {/* Article Content */}
-        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-headings:text-primary-navy prose-img:rounded-xl max-w-none leading-relaxed text-gray-700">
-          <p className="lead mb-8 text-xl text-gray-600">
+        <article className="prose prose-lg prose-headings:text-primary-navy prose-h2:text-lead sm:prose-h2:text-large prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-lead prose-h3:mt-8 prose-h3:mb-4 prose-p:text-gray-600 prose-li:text-gray-600 prose-strong:text-primary-navy prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light max-w-none break-words text-gray-600">
+          <p className="text-body mb-8 text-gray-600">
             Congratulations on your new furry family members! To make your
             shopping trip easier, we&apos;ve compiled the definitive list of
             must-haves for day one.
           </p>
 
-          <div className="my-10 rounded-xl border border-gray-200 bg-gray-50 p-8">
-            <h3 className="text-primary-navy mt-0 mb-6 flex items-center gap-2 text-xl font-bold">
-              <CheckCircle2 className="text-primary-gold h-6 w-6" />
+          <div className="not-prose my-8 rounded-xl border border-gray-200 bg-gray-50 p-6 sm:p-8">
+            <h3 className="text-primary-navy text-lead mt-0 mb-6 flex items-start gap-3">
+              <CheckCircle2 className="text-primary-navy-light h-6 w-6 shrink-0" />
               The Essential Checklist
             </h3>
             <ul className="m-0 grid list-none gap-3 pl-0">
@@ -138,8 +124,13 @@ export default function FirstTimeOwnerPage() {
                 "Nail Clippers & Styptic Powder",
                 "Small Animal Carrier",
               ].map((item, i) => (
-                <li key={i} className="m-0 flex items-start gap-3 text-base">
-                  <span className="text-primary-gold mt-1 font-bold">•</span>
+                <li
+                  key={i}
+                  className="text-p sm:text-body m-0 flex items-start gap-3"
+                >
+                  <span className="text-primary-navy-light mt-1 font-bold">
+                    •
+                  </span>
                   <span>{item}</span>
                 </li>
               ))}
@@ -196,15 +187,15 @@ export default function FirstTimeOwnerPage() {
 
         {/* Read Next Section */}
         <div className="mt-16 border-t border-gray-200 pt-10">
-          <h3 className="text-primary-navy mb-6 text-2xl font-bold">
+          <h3 className="text-primary-navy text-lead mb-6">
             Get Started with Our Bundles
           </h3>
           <div className="bg-primary-navy relative overflow-hidden rounded-2xl p-8 text-white sm:p-10">
             <div className="relative z-10 max-w-lg">
-              <h4 className="mb-3 text-2xl font-bold text-white">
+              <h4 className="text-lead mb-3 text-white">
                 New Piggy Parent Starter Kit
               </h4>
-              <p className="mb-6 text-lg text-white/80">
+              <p className="text-p sm:text-body mb-6 text-white/80">
                 We&apos;ve bundled our best-selling liners, a cozy hideout, and
                 a hay bag into one convenient, discounted package.
               </p>
