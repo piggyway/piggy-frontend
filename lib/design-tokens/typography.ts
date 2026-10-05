@@ -56,6 +56,12 @@ export const typography = {
       weight: 500,
       style: "Medium",
     },
+    body: {
+      size: "20px",
+      lineHeight: "30px",
+      weight: 400,
+      style: "Regular",
+    },
     "p-ui-medium": {
       size: "16px",
       lineHeight: "24px",

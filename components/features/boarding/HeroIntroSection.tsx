@@ -14,7 +14,7 @@ export function HeroIntroSection() {
           <h1 className="text-primary-navy-light text-large sm:text-h4 tracking-[-0.21px]">
             Guinea Pig Boarding in Melbourne 🐹
           </h1>
-          <p className="text-primary-navy text-large sm:text-h4 mt-2 tracking-[-0.21px]">
+          <p className="text-primary-navy text-p-ui sm:text-lead mt-2 font-normal">
             Thoughtful guinea pig boarding in Melbourne, designed to feel like
             home.
           </p>
@@ -32,7 +32,7 @@ export function HeroIntroSection() {
           <div className="absolute inset-0 bg-gradient-to-r from-white/48 via-white/18 to-transparent" />
 
           <div className="relative z-10 flex h-full items-center justify-start px-5 sm:px-8 lg:px-10">
-            <div className="flex w-full max-w-[800px] flex-row items-center justify-start gap-5 sm:gap-6 lg:gap-10">
+            <div className="flex w-full max-w-[800px] flex-col items-center justify-center gap-4 sm:flex-row sm:justify-start sm:gap-6 lg:gap-10">
               <Image
                 src={BOARDING_ASSETS.heroLogo}
                 alt="Piggy Way Boarding"
@@ -42,7 +42,7 @@ export function HeroIntroSection() {
                 sizes="(min-width: 1024px) 178px, (min-width: 640px) 158px, 142px"
               />
 
-              <div className="flex max-w-[420px] flex-col items-start text-left">
+              <div className="flex max-w-[420px] flex-col items-center text-center sm:items-start sm:text-left">
                 <p className="text-primary-navy text-p-ui lg:text-lead font-normal">
                   Thoughtful boarding &amp; care for guinea pigs, designed to
                   feel like home.
@@ -51,7 +51,7 @@ export function HeroIntroSection() {
                 <Button
                   asChild
                   variant="secondary"
-                  className="text-p mt-4 h-9 px-4 font-semibold shadow-none"
+                  className="text-p mt-4 h-12 px-6 font-semibold shadow-none"
                 >
                   <Link href={BOARDING_ROUTES.book}>Book with us</Link>
                 </Button>

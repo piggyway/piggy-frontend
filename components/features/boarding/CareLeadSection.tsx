@@ -10,7 +10,7 @@ export function CareLeadSection() {
       <section className="container mx-auto max-w-[1160px] px-4 py-10 sm:py-12">
         <div className="relative overflow-hidden rounded-[32px] bg-white p-6 sm:p-10 lg:p-[40px]">
           <div className="grid items-start gap-[40px] lg:grid-cols-[1fr_350px]">
-            <div className="flex flex-col gap-[40px]">
+            <div className="flex flex-col gap-2">
               <div className="flex flex-col gap-[8px]">
                 <p className="text-lead text-primary-navy font-normal">
                   {CARE_LEAD_CONTENT.eyebrow}
@@ -20,7 +20,7 @@ export function CareLeadSection() {
                 </h2>
               </div>
 
-              <div className="text-p-ui sm:text-lead text-primary-navy space-y-[32px] font-normal">
+              <div className="text-p sm:text-body text-primary-navy space-y-4">
                 {CARE_LEAD_CONTENT.paragraphs.map((paragraph) => (
                   <p key={paragraph}>{paragraph}</p>
                 ))}

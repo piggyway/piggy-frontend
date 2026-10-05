@@ -44,9 +44,9 @@ export function RatesAndInclusionsSection() {
               {BOARDING_RATES_CONTENT.notes.map((note) => (
                 <li
                   key={note}
-                  className="text-primary-navy text-p-ui sm:text-lead flex items-start gap-3"
+                  className="text-primary-navy text-p sm:text-body flex items-start gap-3"
                 >
-                  <span className="bg-primary-gold mt-2 h-2 w-2 shrink-0 rounded-full sm:mt-3" />
+                  <span className="bg-primary-gold mt-2 h-2 w-2 shrink-0 rounded-full sm:mt-2.75" />
                   <span>{note}</span>
                 </li>
               ))}
@@ -69,7 +69,7 @@ export function RatesAndInclusionsSection() {
                   {item.paragraphs.map((paragraph) => (
                     <p
                       key={paragraph}
-                      className="text-primary-navy text-p-ui sm:text-lead font-normal"
+                      className="text-primary-navy text-p sm:text-body"
                     >
                       {paragraph}
                     </p>
@@ -102,9 +102,9 @@ export function RatesAndInclusionsSection() {
                     {group.items.map((item) => (
                       <li
                         key={item}
-                        className="text-primary-navy text-p-ui sm:text-lead flex items-start gap-3"
+                        className="text-primary-navy text-p sm:text-body flex items-start gap-3"
                       >
-                        <Check className="text-primary-navy-light mt-1 h-4 w-4 shrink-0 sm:mt-2" />
+                        <Check className="text-primary-navy-light mt-0.5 h-5 w-5 shrink-0 sm:mt-1.25" />
                         <span>{item}</span>
                       </li>
                     ))}

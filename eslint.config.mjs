@@ -17,7 +17,7 @@ const LEGACY_TYPE_SCALE_MESSAGE = [
   "Legacy Tailwind type-scale class. app/globals.css pins text-xs/sm/base/lg/xl/2xl… to non-standard px values, so these do not mean what they say.",
   "Use a semantic type token instead (defined in the @theme block of app/globals.css, mirrored in lib/design-tokens/typography.ts):",
   "text-h1 64px | text-h2 52px | text-h3 48px | text-h4 42px | text-large 32px | text-lead 24px/600 | text-lead-light 24px/400 |",
-  "text-p-ui 20px/500 | text-p-ui-medium 16px/400 | text-p 16px/400 | text-list 16px | text-body-medium 14px/24 |",
+  "text-p-ui 20px/500 | text-body 20px/30/400 | text-p-ui-medium 16px/400 | text-p 16px/400 | text-list 16px | text-body-medium 14px/24 |",
   "text-subtle 14px/400 | text-subtle-medium 14px/500 | text-subtle-semibold 14px/600 | text-small 14px/300 | text-detail 12px |",
   "text-blockquote 16px | text-inline-code 14px | text-table-head 16px/500 | text-table-item 16px/400.",
   "Each token already carries its font-weight, so font-bold / font-extrabold are not needed; pick the token with the weight you want.",
