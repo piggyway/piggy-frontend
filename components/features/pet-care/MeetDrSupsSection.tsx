@@ -29,7 +29,7 @@ export function MeetDrSupsSection() {
                     />
                   </div>
                   <div className="flex flex-1 flex-col gap-2">
-                    <p className="text-primary-navy text-p-ui sm:text-lead leading-8 font-normal">
+                    <p className="text-primary-navy text-p sm:text-body font-normal">
                       {MEET_DR_SUPS_CONTENT.eyebrow}
                     </p>
                     <h2 className="text-primary-navy-light text-large sm:text-h4 leading-9 font-semibold tracking-[-0.21px] sm:leading-[42px]">
@@ -38,7 +38,7 @@ export function MeetDrSupsSection() {
                   </div>
                 </div>
 
-                <div className="text-primary-navy text-p-ui sm:text-lead flex flex-col gap-6 leading-8 font-normal">
+                <div className="text-primary-navy text-p sm:text-body flex flex-col gap-6 leading-8 font-normal">
                   {MEET_DR_SUPS_CONTENT.paragraphs.map((paragraph) => (
                     <p key={paragraph}>{paragraph}</p>
                   ))}
@@ -80,7 +80,7 @@ export function MeetDrSupsSection() {
                 height={28}
                 className="h-7 w-[31px] shrink-0 object-contain"
               />
-              <p className="text-primary-navy text-p-ui sm:text-lead flex-1 leading-8 font-semibold">
+              <p className="text-primary-navy text-p sm:text-body flex-1 font-semibold">
                 {MEET_DR_SUPS_CONTENT.footerPrompt}
               </p>
               <Link

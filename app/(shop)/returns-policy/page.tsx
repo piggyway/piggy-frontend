@@ -11,23 +11,23 @@ export const metadata: Metadata = {
 
 export default function ReturnsPage() {
   return (
-    <div className="bg-neutral-background-light min-h-screen py-16 sm:py-24">
+    <div className="bg-neutral-background-light min-h-screen py-10 sm:py-16">
       <div className="container mx-auto px-4">
         <AnimatedSection className="mx-auto max-w-3xl">
-          <h1 className="text-primary-navy mb-8 text-center text-4xl font-bold sm:text-5xl">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 mb-8 text-center">
             Returns Policy
           </h1>
 
-          <div className="mb-12 rounded-2xl bg-white p-8 shadow-sm">
+          <div className="mb-12 rounded-2xl bg-white p-6 shadow-sm sm:p-8">
             <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:text-left">
               <div className="bg-secondary-mint flex h-16 w-16 shrink-0 items-center justify-center rounded-full">
                 <RefreshCw className="text-primary-navy h-8 w-8" />
               </div>
               <div>
-                <h3 className="text-primary-navy text-xl font-bold">
+                <h3 className="text-primary-navy text-lead mb-2">
                   {RETURN_WINDOW_DAYS}-Day Hassle-Free Returns
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-p sm:text-body text-gray-600">
                   Not quite right? No problem. Return any unused item in its
                   original packaging within {RETURN_WINDOW_DAYS} days for a full
                   refund or exchange.
@@ -36,10 +36,10 @@ export default function ReturnsPage() {
             </div>
           </div>
 
-          <div className="mx-auto max-w-2xl space-y-12 text-gray-700">
+          <div className="text-p sm:text-body mx-auto max-w-2xl space-y-10 break-words text-gray-600">
             <section>
-              <h2 className="text-primary-navy mb-6 flex items-center gap-2 text-2xl font-bold">
-                <CheckCircle className="h-6 w-6 text-green-500" />
+              <h2 className="text-primary-navy text-lead mb-4 flex items-start gap-3">
+                <CheckCircle className="text-primary-navy-light mt-1 h-6 w-6 shrink-0" />
                 What can be returned?
               </h2>
               <ul className="space-y-4">
@@ -59,8 +59,8 @@ export default function ReturnsPage() {
             </section>
 
             <section>
-              <h2 className="text-primary-navy mb-6 flex items-center gap-2 text-2xl font-bold">
-                <AlertCircle className="text-destructive h-6 w-6" />
+              <h2 className="text-primary-navy text-lead mb-4 flex items-start gap-3">
+                <AlertCircle className="text-destructive mt-1 h-6 w-6 shrink-0" />
                 Non-returnable items
               </h2>
               <p className="mb-4">
@@ -82,8 +82,8 @@ export default function ReturnsPage() {
               </ul>
             </section>
 
-            <section className="rounded-2xl bg-gray-50 p-8">
-              <h2 className="text-primary-navy mb-4 text-2xl font-bold">
+            <section className="rounded-2xl bg-white p-6 sm:p-8">
+              <h2 className="text-primary-navy text-lead mb-4">
                 How to make a return
               </h2>
               <ol className="text-primary-navy list-decimal space-y-4 pl-5 font-medium">

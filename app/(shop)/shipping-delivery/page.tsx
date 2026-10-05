@@ -19,68 +19,74 @@ export default async function ShippingPage() {
     await ServerConfigService.getShippingConfig();
 
   return (
-    <div className="bg-neutral-background-light min-h-screen py-16 sm:py-24">
+    <div className="bg-neutral-background-light min-h-screen py-10 sm:py-16">
       <div className="container mx-auto px-4">
         <AnimatedSection className="mx-auto max-w-3xl">
-          <h1 className="text-primary-navy mb-8 text-center text-4xl font-bold sm:text-5xl">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 mb-8 text-center">
             Shipping & Delivery
           </h1>
 
-          <div className="mb-12 grid gap-6 md:grid-cols-3">
-            <div className="rounded-2xl bg-white p-6 text-center shadow-sm">
-              <div className="bg-primary-purple/20 mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+          <div className="mb-10 grid gap-4 md:grid-cols-3">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 rounded-2xl bg-white p-5 shadow-sm md:block md:p-6 md:text-center">
+              <div className="bg-primary-purple/20 row-span-2 flex h-12 w-12 items-center justify-center rounded-full md:mx-auto md:mb-4">
                 <Truck className="text-primary-navy h-6 w-6" />
               </div>
-              <h3 className="text-primary-navy mb-2 font-bold">
+              <h3 className="text-primary-navy text-p-ui md:mb-2">
                 Free Shipping
               </h3>
-              <p className="text-sm text-gray-600">
+              <p className="text-subtle text-gray-600">
                 On all orders over ${freeShippingThreshold}
               </p>
             </div>
-            <div className="rounded-2xl bg-white p-6 text-center shadow-sm">
-              <div className="bg-secondary-mint mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 rounded-2xl bg-white p-5 shadow-sm md:block md:p-6 md:text-center">
+              <div className="bg-secondary-mint row-span-2 flex h-12 w-12 items-center justify-center rounded-full md:mx-auto md:mb-4">
                 <Clock className="text-primary-navy h-6 w-6" />
               </div>
-              <h3 className="text-primary-navy mb-2 font-bold">
+              <h3 className="text-primary-navy text-p-ui md:mb-2">
                 Fast Dispatch
               </h3>
-              <p className="text-sm text-gray-600">Orders ship within 24h</p>
+              <p className="text-subtle text-gray-600">
+                Orders ship within 24h
+              </p>
             </div>
-            <div className="rounded-2xl bg-white p-6 text-center shadow-sm">
-              <div className="bg-primary-gold mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+            <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-4 rounded-2xl bg-white p-5 shadow-sm md:block md:p-6 md:text-center">
+              <div className="bg-primary-gold row-span-2 flex h-12 w-12 items-center justify-center rounded-full md:mx-auto md:mb-4">
                 <Globe className="text-primary-navy h-6 w-6" />
               </div>
-              <h3 className="text-primary-navy mb-2 font-bold">Nationwide</h3>
-              <p className="text-sm text-gray-600">Shipping across Australia</p>
+              <h3 className="text-primary-navy text-p-ui md:mb-2">
+                Nationwide
+              </h3>
+              <p className="text-subtle text-gray-600">
+                Shipping across Australia
+              </p>
             </div>
           </div>
 
-          <div className="mx-auto max-w-2xl space-y-8 text-gray-700">
-            <section className="rounded-2xl bg-white p-8 shadow-sm">
-              <h2 className="text-primary-navy mb-4 text-2xl font-bold">
+          <div className="text-p sm:text-body mx-auto max-w-2xl space-y-8 text-gray-600">
+            <section className="rounded-2xl bg-white p-6 shadow-sm sm:p-8">
+              <h2 className="text-primary-navy text-lead mb-4">
                 Shipping Rates
               </h2>
               <div className="space-y-4">
-                <div className="flex justify-between border-b pb-2">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-4 border-b pb-3">
                   <span>
                     Standard Shipping (Orders under ${freeShippingThreshold})
                   </span>
-                  <span className="font-semibold">
+                  <span className="font-semibold tabular-nums">
                     ${standardShippingFee.toFixed(2)}
                   </span>
                 </div>
-                <div className="flex justify-between">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-4">
                   <span>
                     Standard Shipping (Orders ${freeShippingThreshold}+)
                   </span>
-                  <span className="font-semibold text-green-600">FREE</span>
+                  <span className="text-primary-navy font-semibold">FREE</span>
                 </div>
               </div>
             </section>
 
             <section>
-              <h2 className="text-primary-navy mb-4 text-2xl font-bold">
+              <h2 className="text-primary-navy text-lead mb-4">
                 Delivery Times
               </h2>
               <p className="mb-4">
@@ -97,7 +103,7 @@ export default async function ShippingPage() {
             </section>
 
             <section>
-              <h2 className="text-primary-navy mb-4 text-2xl font-bold">
+              <h2 className="text-primary-navy text-lead mb-4">
                 Order Tracking
               </h2>
               <p>

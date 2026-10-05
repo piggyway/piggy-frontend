@@ -57,18 +57,18 @@ export default function BeginnerGuidePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-900">
+    <div className="min-h-screen bg-white text-gray-600">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="mx-auto max-w-[680px] px-6 py-12 md:py-20">
+      <div className="relative mx-auto max-w-3xl px-6 py-10 sm:py-16">
         {/* Navigation */}
-        <nav className="mb-12">
+        <nav className="mb-8">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors hover:text-gray-900"
+            className="hover:text-primary-navy inline-flex items-center gap-2 text-sm font-medium text-gray-500 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to Home
@@ -76,12 +76,12 @@ export default function BeginnerGuidePage() {
         </nav>
 
         {/* Header */}
-        <header className="mb-12">
-          <h1 className="mb-8 text-3xl leading-[1.1] font-bold tracking-tight text-gray-900 md:text-4xl lg:text-5xl">
+        <header className="mb-8 text-left">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 mb-6">
             Guinea Pig Care Basics: Everything You Need to Begin
           </h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-            <span className="font-medium text-gray-900">
+          <div className="text-subtle flex flex-wrap items-center gap-x-4 gap-y-2 text-gray-500">
+            <span className="text-primary-navy font-medium">
               Piggy Way Crossing Team
             </span>
             <span className="text-gray-300">•</span>
@@ -97,8 +97,8 @@ export default function BeginnerGuidePage() {
         </header>
 
         {/* Content */}
-        <article className="prose prose-lg prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light prose-gray prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-p:leading-relaxed prose-li:text-gray-600 prose-strong:text-gray-900 max-w-none">
-          <p className="mb-10 text-xl leading-relaxed font-normal text-gray-600">
+        <article className="prose prose-lg prose-headings:text-primary-navy prose-h2:text-lead sm:prose-h2:text-large prose-h2:mt-10 prose-h2:mb-4 prose-h3:text-lead prose-h3:mt-8 prose-h3:mb-4 prose-p:text-gray-600 prose-li:text-gray-600 prose-strong:text-primary-navy prose-a:text-primary-navy prose-a:underline prose-a:underline-offset-4 hover:prose-a:text-primary-navy-light max-w-none break-words text-gray-600">
+          <p className="text-body mb-8 text-gray-600">
             Guinea pigs have a way of stealing hearts — and they deserve
             thoughtful care in return.
           </p>
@@ -120,7 +120,7 @@ export default function BeginnerGuidePage() {
 
           <hr className="my-12 border-gray-100" />
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             A Gentle Nature Comes With Real Responsibility
           </h2>
           <p>
@@ -139,7 +139,7 @@ export default function BeginnerGuidePage() {
             .
           </p>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             What Caring for Guinea Pigs Looks Like Day to Day
           </h2>
           <ul className="list-none space-y-3 pl-0">
@@ -164,7 +164,7 @@ export default function BeginnerGuidePage() {
             with an <strong>annual body check recommended</strong>.
           </p>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             Thinking Ahead Matters
           </h2>
           <p>Life happens — holidays, work, the unexpected.</p>
@@ -184,14 +184,14 @@ export default function BeginnerGuidePage() {
             all the difference.
           </p>
 
-          <h2 className="mt-12 mb-6 text-2xl font-bold text-gray-900">
+          <h2 className="text-primary-navy text-lead sm:text-large mt-10 mb-4">
             Our Philosophy
           </h2>
           <p>
             At <strong>Piggyway_Crossing</strong>, we believe the relationship
             goes both ways.
           </p>
-          <p className="my-8 text-xl font-medium text-gray-900">
+          <p className="text-primary-navy my-8 text-xl font-medium">
             It’s not just that guinea pigs need us —<br />
             we need them too.
           </p>
@@ -219,8 +219,8 @@ export default function BeginnerGuidePage() {
             wholehearted love. 🤍
           </p>
 
-          <div className="mt-12 rounded-2xl bg-gray-50 p-8 text-center">
-            <p className="m-0 text-lg font-medium text-gray-900">
+          <div className="mt-12 rounded-2xl bg-gray-50 p-6 text-center sm:p-8">
+            <p className="text-body text-primary-navy m-0 font-medium">
               If you’re ready to begin,
               <br />
               <span className="font-normal text-gray-600">

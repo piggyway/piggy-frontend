@@ -49,13 +49,13 @@ const FAQS = [
 
 export default function FAQPage() {
   return (
-    <div className="bg-neutral-background-light min-h-screen py-16 sm:py-24">
+    <div className="bg-neutral-background-light min-h-screen py-10 sm:py-16">
       <div className="container mx-auto px-4">
         <AnimatedSection className="mx-auto max-w-3xl">
-          <h1 className="text-primary-navy mb-4 text-center text-4xl font-bold sm:text-5xl">
+          <h1 className="text-primary-navy-light text-large sm:text-h4 mb-4 text-center">
             Frequently Asked Questions
           </h1>
-          <p className="mb-12 text-center text-lg text-gray-600">
+          <p className="text-p sm:text-body mb-12 text-center text-gray-600">
             Have a question? We&apos;re here to help!
           </p>
 
@@ -65,7 +65,7 @@ export default function FAQPage() {
                 key={idx}
                 className="rounded-3xl bg-white p-6 shadow-sm sm:p-8"
               >
-                <h2 className="text-primary-navy mb-6 text-2xl font-bold">
+                <h2 className="text-primary-navy text-lead mb-6">
                   {section.category}
                 </h2>
                 <Accordion type="single" collapsible className="w-full">
@@ -75,10 +75,10 @@ export default function FAQPage() {
                       value={`item-${idx}-${index}`}
                       className="border-neutral-stroke"
                     >
-                      <AccordionTrigger className="data-[state=open]:text-primary-navy text-left text-lg font-medium text-gray-900">
-                        {faq.q}
+                      <AccordionTrigger className="data-[state=open]:text-primary-navy text-p sm:text-body w-full gap-4 text-left font-medium text-gray-900">
+                        <span className="min-w-0 flex-1">{faq.q}</span>
                       </AccordionTrigger>
-                      <AccordionContent className="text-base leading-relaxed text-gray-600">
+                      <AccordionContent className="text-p sm:text-body text-gray-600">
                         {faq.a}
                       </AccordionContent>
                     </AccordionItem>

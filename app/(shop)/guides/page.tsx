@@ -64,7 +64,7 @@ export default function GuidesPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="relative z-10 container mx-auto max-w-[1160px] px-4 py-12 sm:py-16 md:py-20">
+      <div className="relative z-10 container mx-auto max-w-[1160px] px-4 py-10 sm:py-16">
         <header className="max-w-2xl">
           <p className="text-primary-navy text-p-ui sm:text-lead mb-2 font-normal">
             Learn, Love, Care
@@ -72,11 +72,13 @@ export default function GuidesPage() {
           <h1 className="text-primary-navy-light text-large sm:text-h4 font-semibold tracking-[-0.21px]">
             {PAGE_TITLE}
           </h1>
-          <p className="text-primary-navy mt-4 text-base leading-7">
+          <p className="text-p sm:text-body mt-4 text-gray-600">
             Small pets are easy to love and easy to get wrong. These guides
             cover the questions we are asked most in store: what a first cage
             actually needs, how our liners compare with loose bedding and
             fleece, and what daily care looks like once the excitement settles.
+          </p>
+          <p className="text-p sm:text-body mt-4 text-gray-600">
             Every guide is written by the Piggy Way Crossing team and updated as
             our advice changes. For diet, bonding and health articles, plus our
             vet partner, visit{" "}
@@ -90,7 +92,7 @@ export default function GuidesPage() {
           </p>
         </header>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
           {guideArticles.map((article) => (
             <Link
               key={article.slug}
@@ -99,10 +101,12 @@ export default function GuidesPage() {
             >
               <Card className="h-full transition-shadow group-hover:shadow-md">
                 <CardHeader>
-                  <CardTitle className="group-hover:text-primary-navy-light transition-colors">
+                  <CardTitle className="text-lead group-hover:text-primary-navy-light transition-colors">
                     {article.title}
                   </CardTitle>
-                  <CardDescription>{article.description}</CardDescription>
+                  <CardDescription className="text-p sm:text-body">
+                    {article.description}
+                  </CardDescription>
                 </CardHeader>
                 <CardFooter className="mt-auto gap-2">
                   <span className="text-primary-navy text-sm font-semibold">

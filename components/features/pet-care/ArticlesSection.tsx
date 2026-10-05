@@ -18,7 +18,7 @@ export function ArticlesSection() {
           <h2 className="text-primary-navy-light text-large sm:text-h4 leading-9 font-semibold tracking-[-0.21px] sm:leading-[42px]">
             Care Articles
           </h2>
-          <p className="text-primary-navy text-p-ui sm:text-lead leading-8 font-normal">
+          <p className="text-p sm:text-body max-w-3xl text-gray-600">
             Everyday care advice for guinea pigs and rabbits, written by the
             Piggy Way Crossing team. For setup checklists and bedding
             comparisons, read our{" "}
@@ -32,7 +32,7 @@ export function ArticlesSection() {
           </p>
         </div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
           {petCareArticles.map((article) => (
             <Link
               key={article.slug}
@@ -41,10 +41,12 @@ export function ArticlesSection() {
             >
               <Card className="h-full transition-shadow group-hover:shadow-md">
                 <CardHeader>
-                  <CardTitle className="group-hover:text-primary-navy-light transition-colors">
+                  <CardTitle className="text-lead group-hover:text-primary-navy-light transition-colors">
                     {article.title}
                   </CardTitle>
-                  <CardDescription>{article.description}</CardDescription>
+                  <CardDescription className="text-p sm:text-body">
+                    {article.description}
+                  </CardDescription>
                 </CardHeader>
                 <CardFooter className="mt-auto gap-2">
                   <span className="text-primary-navy text-sm font-semibold">

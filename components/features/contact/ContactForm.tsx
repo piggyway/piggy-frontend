@@ -85,10 +85,8 @@ export function ContactForm() {
   };
 
   return (
-    <div className="rounded-[32px] bg-white p-8 shadow-sm sm:p-12">
-      <h2 className="text-primary-navy mb-6 text-2xl font-bold">
-        Send us a Message
-      </h2>
+    <div className="min-w-0 rounded-[32px] bg-white p-6 shadow-sm sm:p-10">
+      <h2 className="text-primary-navy text-lead mb-6">Send us a Message</h2>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid gap-6 sm:grid-cols-2">
           <div className="space-y-2">
@@ -197,6 +195,7 @@ export function ContactForm() {
                 onError={() => setTurnstileToken(null)}
                 options={{
                   action: "contact",
+                  size: "compact",
                   // The widget follows the visitor's browser language by
                   // default; the site is English-only, so pin it.
                   language: "en",

@@ -8,12 +8,12 @@ export function VetExpertiseSection() {
   return (
     <AnimatedSection className="w-full">
       <section className="container mx-auto max-w-[1160px] px-4 py-10 sm:py-12">
-        <div className="flex flex-col gap-16">
+        <div className="flex flex-col gap-10">
           <div className="flex flex-col gap-4">
             <h2 className="text-primary-navy-light text-large sm:text-large leading-9 font-semibold sm:leading-10">
               {VET_EXPERTISE_CONTENT.title}
             </h2>
-            <p className="text-primary-navy text-p-ui sm:text-lead leading-8 font-normal">
+            <p className="text-primary-navy text-p sm:text-body font-normal">
               {VET_EXPERTISE_CONTENT.subtitle}
             </p>
           </div>
@@ -22,7 +22,7 @@ export function VetExpertiseSection() {
             {VET_EXPERTISE_ITEMS.map((item) => (
               <article key={item.title} className="flex items-start gap-5">
                 <div
-                  className={`flex size-[90px] shrink-0 items-center justify-center rounded-[28px] p-6 ${item.iconBgClass}`}
+                  className={`flex size-16 shrink-0 items-center justify-center rounded-2xl p-4 sm:size-[90px] sm:rounded-[28px] sm:p-6 ${item.iconBgClass}`}
                 >
                   <Image
                     src={item.icon}
