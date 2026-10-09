@@ -39,6 +39,7 @@ interface PetForm {
   name: string;
   type: string;
   breed: string;
+  breedOther: string;
   age: string;
   sex: string;
   weight: string;
@@ -52,6 +53,7 @@ const EMPTY_PET: PetForm = {
   name: "",
   type: "Guinea pig",
   breed: "",
+  breedOther: "",
   age: "",
   sex: "",
   weight: "",
@@ -63,6 +65,33 @@ const EMPTY_PET: PetForm = {
 
 const PET_TYPES: BoardingPetType[] = ["Guinea pig", "Rabbit", "Other"];
 const PET_SEXES: BoardingPetSex[] = ["Female", "Male", "Unknown"];
+const PET_BREEDS: Record<BoardingPetType, string[]> = {
+  "Guinea pig": [
+    "Abyssinian",
+    "American (Smooth)",
+    "Peruvian",
+    "Sheltie (Silkie)",
+    "Teddy",
+    "Texel",
+    "Coronet",
+    "Rex",
+    "Skinny pig",
+    "Mixed / Not sure",
+    "Other",
+  ],
+  Rabbit: [
+    "Netherland Dwarf",
+    "Mini Lop",
+    "Holland Lop",
+    "Lionhead",
+    "Dutch",
+    "Flemish Giant",
+    "Rex",
+    "Mixed / Not sure",
+    "Other",
+  ],
+  Other: ["Mixed / Not sure", "Other"],
+};
 const DESEXED_OPTIONS: BoardingPetDesexed[] = ["Yes", "No", "Not sure"];
 const HOUSING_QUESTION = "Do your pets live together at home?";
 const HOUSING_OPTIONS: BoardingHousingArrangement[] = [
@@ -183,7 +212,17 @@ export function BookingDetailsStep({
 
   const setPetField = (index: number, field: keyof PetForm, value: string) => {
     setPets((prev) =>
-      prev.map((pet, i) => (i === index ? { ...pet, [field]: value } : pet))
+      prev.map((pet, i) =>
+        i === index
+          ? {
+              ...pet,
+              [field]: value,
+              ...(field === "type" && pet.type !== value
+                ? { breed: "", breedOther: "" }
+                : {}),
+            }
+          : pet
+      )
     );
     const errorKey = `pet-${index}-${field}`;
     if (errors[errorKey]) setErrors((prev) => ({ ...prev, [errorKey]: "" }));
@@ -260,7 +299,11 @@ export function BookingDetailsStep({
         pets: pets.map((pet) => ({
           name: pet.name.trim(),
           type: pet.type as BoardingPetType,
-          breed: toNullable(pet.breed),
+          breed: toNullable(
+            pet.breed === "Other" && pet.breedOther.trim()
+              ? pet.breedOther
+              : pet.breed
+          ),
           age: toNullable(pet.age),
           sex: toNullable(pet.sex) as BoardingPetSex | null,
           weight: toNullable(pet.weight),
@@ -411,12 +454,33 @@ export function BookingDetailsStep({
               </div>
               <div className="flex flex-col gap-5 sm:flex-row">
                 <Field label="Breed">
-                  <Input
+                  <Select
                     value={pet.breed}
-                    onChange={(e) => setPetField(i, "breed", e.target.value)}
-                    placeholder="e.g. Abyssinian"
-                    className={inputClassName}
-                  />
+                    onValueChange={(value) => setPetField(i, "breed", value)}
+                  >
+                    <SelectTrigger
+                      className={cn(inputClassName, "w-full text-slate-600")}
+                    >
+                      <SelectValue placeholder="Select" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {PET_BREEDS[pet.type as BoardingPetType].map((breed) => (
+                        <SelectItem key={breed} value={breed}>
+                          {breed}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {pet.breed === "Other" && (
+                    <Input
+                      value={pet.breedOther}
+                      onChange={(e) =>
+                        setPetField(i, "breedOther", e.target.value)
+                      }
+                      placeholder="Tell us the breed"
+                      className={inputClassName}
+                    />
+                  )}
                 </Field>
                 <Field label="Age">
                   <Input
