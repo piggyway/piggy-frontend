@@ -4,6 +4,18 @@ import type { JWT } from "next-auth/jwt";
 
 let authOptions: NextAuthOptions;
 
+vi.mock("next-auth", async (importOriginal) => {
+  const nextAuth = await importOriginal<typeof import("next-auth")>();
+
+  return {
+    ...nextAuth,
+    default: (options: NextAuthOptions) => {
+      authOptions = options;
+      return nextAuth.default(options);
+    },
+  };
+});
+
 type JwtCallback = NonNullable<
   NonNullable<NextAuthOptions["callbacks"]>["jwt"]
 >;
@@ -57,11 +69,19 @@ describe("NextAuth authOptions", () => {
   beforeAll(async () => {
     process.env.API_BASE_URL = "https://backend.example";
     process.env.NEXTAUTH_SECRET = "test-secret";
-    ({ authOptions } = await import("./route"));
+    await import("./route");
   });
 
   afterEach(() => {
     vi.restoreAllMocks();
+  });
+
+  it("only exports the shared GET and POST route handlers", async () => {
+    const route = await import("./route");
+
+    expect(Object.keys(route).sort()).toEqual(["GET", "POST"]);
+    expect(route.GET).toBeTypeOf("function");
+    expect(route.POST).toBe(route.GET);
   });
 
   describe("email credentials provider", () => {
