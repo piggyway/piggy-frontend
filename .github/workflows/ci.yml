@@ -2,6 +2,14 @@ name: CI
 
 on:
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+      - edited
+      - labeled
+      - unlabeled
   push:
     branches: [production]
 
@@ -76,3 +84,73 @@ jobs:
       # still exits 0, so CI does not depend on the production API being up.
       - name: Build
         run: pnpm build
+
+  risk:
+    name: Risk tier
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      tier: ${{ steps.risk.outputs.tier }}
+      changed_lines: ${{ steps.risk.outputs.changed_lines }}
+      high_paths: ${{ steps.risk.outputs.high_paths }}
+      author: ${{ steps.risk.outputs.author }}
+      head_sha: ${{ steps.risk.outputs.head_sha }}
+      draft: ${{ steps.risk.outputs.draft }}
+      labels: ${{ steps.risk.outputs.labels }}
+      review_record: ${{ steps.risk.outputs.review_record }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Classify changed files
+        id: risk
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node .github/scripts/auto-merge.mjs risk
+
+  gate:
+    name: Auto-merge gate
+    needs: [checks, build, risk]
+    if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Decide and act
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          NEEDS: ${{ toJSON(needs) }}
+          CI_JOBS: checks,build
+          TIER: ${{ needs.risk.outputs.tier }}
+          CHANGED_LINES: ${{ needs.risk.outputs.changed_lines }}
+          HIGH_PATHS: ${{ needs.risk.outputs.high_paths }}
+          AUTHOR: ${{ needs.risk.outputs.author }}
+          HEAD_SHA: ${{ needs.risk.outputs.head_sha }}
+          DRAFT: ${{ needs.risk.outputs.draft }}
+          LABELS: ${{ needs.risk.outputs.labels }}
+          REVIEW_RECORD: ${{ needs.risk.outputs.review_record }}
+        run: node .github/scripts/auto-merge.mjs gate

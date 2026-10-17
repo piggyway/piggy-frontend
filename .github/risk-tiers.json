@@ -1,0 +1,62 @@
+{
+  "trusted_authors": ["lewiswang0516"],
+  "notify": "lewiswang0516",
+  "max_changed_lines": 800,
+  "circuit_breaker_days": 7,
+  "skip": [
+    "pnpm-lock.yaml",
+    "CHANGELOG.md",
+    "pencil-welcome.pen",
+    "public/**/*.{png,jpg,svg,avif}"
+  ],
+  "low": [
+    "docs/**",
+    "*.md",
+    "stories/**",
+    "**/*.stories.tsx",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    ".storybook/**"
+  ],
+  "high": {
+    "Auth and access": [
+      "middleware.ts",
+      "app/api/auth/**",
+      "types/next-auth.d.ts",
+      "contexts/UserContext.tsx",
+      "lib/api/{client,backend-fetch,server-client}.ts"
+    ],
+    "Money": [
+      "app/api/checkout/**",
+      "lib/stripe.ts",
+      "components/features/checkout/**",
+      "app/(shop)/checkout/**"
+    ],
+    "Boarding and agreements": [
+      "app/api/boarding/**",
+      "components/features/boarding/{agreement,booking,lookup}/**",
+      "app/(shop)/piggyway-boarding/**",
+      "lib/services/{boarding,agreement}.ts",
+      "lib/types/{boarding,agreement}.ts",
+      "lib/utils/{boarding,agreement}.ts"
+    ],
+    "Personal data": ["app/api/users/**", "app/api/contact/**"],
+    "Draft and monitoring": ["app/api/draft/**", "lib/monitoring/**"],
+    "Config and secrets": [
+      "instrumentation-client.ts",
+      "next.config.ts",
+      "open-next.config.ts",
+      "wrangler.jsonc",
+      ".env.example",
+      ".dev.vars.example",
+      ".github/**"
+    ],
+    "Review controls": [
+      "REVIEW.md",
+      "CLAUDE.md",
+      "AGENTS.md",
+      ".claude/**",
+      ".agents/**"
+    ]
+  }
+}

@@ -24,43 +24,38 @@ piggy-frontend is the public Piggyway site and shop, plus the boarding booking a
 
 The change sets the tier, not the author.
 If a PR touches paths from more than one tier, the highest tier applies.
+The path lists for each tier live in `.github/risk-tiers.json`.
 
 **Low**
 
-- Paths: `docs/**`, root `*.md` other than the High files, `stories/**`, `**/*.stories.tsx`, `**/*.test.ts`, `**/*.test.tsx`, `.storybook/**`; copy or class-only edits in `components/**` outside High paths
 - Examples: fix copy on the homepage, add a story, change spacing on a product card
 
 **Medium**
 
-- Paths: Other `app/**`, `components/**`, `lib/**`, `hooks/**`, `contexts/**`, `app/globals.css`, `eslint.config.mjs`, `eslint.type-scale-baseline.mjs`, `public/_headers`, `package.json`
+- Paths: every path that matches no other list.
 - Examples: add a shop filter, change a product service mapper, add a design token
 
 **High**
 
-- Paths:
-  - Auth and access: `middleware.ts`, `app/api/auth/**`, `types/next-auth.d.ts`, `contexts/UserContext.tsx`, `lib/api/{client,backend-fetch,server-client}.ts`
-  - Money: `app/api/checkout/**`, `lib/stripe.ts`, `components/features/checkout/**`, `app/(shop)/checkout/**`
-  - Boarding and agreements: `app/api/boarding/**`, `components/features/boarding/{agreement,booking,lookup}/**`, `app/(shop)/piggyway-boarding/**`, `lib/services/{boarding,agreement}.ts`, `lib/types/{boarding,agreement}.ts`, `lib/utils/{boarding,agreement}.ts`
-  - Personal data: `app/api/users/**`, `app/api/contact/**`
-  - Draft and monitoring: `app/api/draft/**`, `lib/monitoring/**`
-  - Config and secrets: `instrumentation-client.ts`, `next.config.ts`, `open-next.config.ts`, `wrangler.jsonc`, `.env.example`, `.dev.vars.example`, `.github/**`
-  - Review controls: `REVIEW.md`, `CLAUDE.md`, `AGENTS.md`, `.claude/**`, `.agents/**`
+- Groups: Auth and access, Money, Boarding and agreements, Personal data, Draft and monitoring, Config and secrets, Review controls
 - Examples: change the token proxy, the payment form, the booking form, agreement signing, the draft secret check, the Worker config
 
 What each tier needs before merge:
 
-- **Low**: CI is green and the AI review is clean.
-- **Medium**: the owner reads the AI summary and the evidence for each finding.
-- **High**: the owner reads the diff line by line and runs `/security-review`.
+- **Low** and **Medium**: the gate merges the PR automatically when all of these are true:
+  - Every CI job passes.
+  - The local review record in the PR body covers the head commit and reports 0 Important and 0 security findings.
+  - The author is trusted.
+  - The PR changes at most 800 lines outside skip paths.
+  - No revert landed on production in the last 7 days.
+- **High**: the PR never merges automatically.
+  The gate assigns the owner, and the owner reads the diff line by line.
 
 ## Skip
 
-Do not review these paths:
-
-- `pnpm-lock.yaml`
-- `CHANGELOG.md`
-- `pencil-welcome.pen` (design tool file)
-- Image files in `public/` (`*.png`, `*.jpg`, `*.svg`, `*.avif`)
+Do not review the paths in the `skip` list in `.github/risk-tiers.json`.
+The gate also leaves these paths out of the tier and the changed-line count.
+`pencil-welcome.pen` is a design tool file.
 
 Git ignores `.open-next/`, `.next/` and `cloudflare-env.d.ts`.
 If one of them shows up in a diff, report it as a finding.
