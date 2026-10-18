@@ -100,3 +100,43 @@ export function resolveSelectionFromParams(
 
   return selection;
 }
+
+function selectionFromVariant(
+  variant: Pick<ProductVariant, "optionValues">
+): Record<number, number> {
+  const selection: Record<number, number> = {};
+  for (const ov of variant.optionValues) {
+    selection[ov.optionId] = ov.valueId;
+  }
+  return selection;
+}
+
+export function resolveSelectionFromUrl(
+  product: Pick<ProductDetail, "options" | "variants">,
+  searchParams: SearchParamsLike | null
+): Record<number, number> {
+  if (searchParams) {
+    const fromParams = resolveSelectionFromParams(product, searchParams);
+    if (fromParams) return fromParams;
+
+    const variantIdFromUrl = searchParams.get("variant");
+    if (variantIdFromUrl) {
+      const variantId = Number.parseInt(variantIdFromUrl, 10);
+      const variant = product.variants.find((v) => v.id === variantId);
+      if (variant) return selectionFromVariant(variant);
+    }
+  }
+
+  const firstInStock = product.variants.find(
+    (v) => v.isAvailable && v.stockQuantity > 0
+  );
+  if (firstInStock) return selectionFromVariant(firstInStock);
+
+  const initial: Record<number, number> = {};
+  for (const option of product.options) {
+    if (option.values.length > 0) {
+      initial[option.id] = option.values[0].id;
+    }
+  }
+  return initial;
+}

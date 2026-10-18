@@ -22,7 +22,7 @@ import { cn } from "@/lib/utils";
 import type { AddOn, AddOnGroup, ProductDetail } from "@/lib/types/product";
 import {
   buildVariantSearchParams,
-  resolveSelectionFromParams,
+  resolveSelectionFromUrl,
   variantToOptionParamInputs,
 } from "@/lib/utils/variant-search-params";
 import { useCart } from "@/components/features/cart/CartProvider";
@@ -38,37 +38,6 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
 
 interface ProductDetailContentProps {
   product: ProductDetail;
-}
-
-function resolveSelectionFromUrl(
-  product: ProductDetail,
-  searchParams: { get(name: string): string | null } | null
-): Record<number, number> {
-  if (searchParams) {
-    const fromParams = resolveSelectionFromParams(product, searchParams);
-    if (fromParams) return fromParams;
-
-    const variantIdFromUrl = searchParams.get("variant");
-    if (variantIdFromUrl) {
-      const variantId = Number.parseInt(variantIdFromUrl, 10);
-      const variant = product.variants.find((v) => v.id === variantId);
-      if (variant) {
-        const initial: Record<number, number> = {};
-        for (const ov of variant.optionValues) {
-          initial[ov.optionId] = ov.valueId;
-        }
-        return initial;
-      }
-    }
-  }
-
-  const initial: Record<number, number> = {};
-  for (const option of product.options) {
-    if (option.values.length > 0) {
-      initial[option.id] = option.values[0].id;
-    }
-  }
-  return initial;
 }
 
 function selectionsEqual(
