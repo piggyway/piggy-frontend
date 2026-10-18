@@ -9,36 +9,56 @@ interface AnimatedSectionProps {
   delay?: number;
 }
 
+type AnimationState = "static" | "hidden" | "revealed";
+
 export function AnimatedSection({
   children,
   className,
   delay = 0,
 }: AnimatedSectionProps) {
-  const [isVisible, setIsVisible] = useState(false);
+  const [animationState, setAnimationState] =
+    useState<AnimationState>("static");
   const sectionRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let isHidden = false;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
     const observer = new IntersectionObserver(
       ([entry]) => {
+        if (!isHidden) {
+          if (
+            entry.isIntersecting ||
+            entry.boundingClientRect.top < window.innerHeight
+          ) {
+            observer.disconnect();
+            return;
+          }
+          isHidden = true;
+          setAnimationState("hidden");
+          return;
+        }
         if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true);
+          timeoutId = setTimeout(() => {
+            setAnimationState("revealed");
           }, delay);
           observer.disconnect();
         }
       },
       {
-        threshold: 0.1,
+        threshold: 0,
         rootMargin: "0px 0px -50px 0px",
       }
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+    observer.observe(section);
 
     return () => {
       observer.disconnect();
+      clearTimeout(timeoutId);
     };
   }, [delay]);
 
@@ -46,8 +66,9 @@ export function AnimatedSection({
     <div
       ref={sectionRef}
       className={cn(
-        "transition-all duration-700 ease-out",
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0",
+        animationState === "hidden" && "translate-y-8 opacity-0",
+        animationState === "revealed" &&
+          "translate-y-0 opacity-100 transition-all duration-700 ease-out",
         className
       )}
     >
