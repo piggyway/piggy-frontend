@@ -12,13 +12,6 @@ vi.mock("@sentry/nextjs", () => ({
   captureException: sdk.captureException,
 }));
 
-/** Lets the dynamic `import("@sentry/nextjs")` inside the reporter settle. */
-async function flushAsync() {
-  for (let i = 0; i < 5; i += 1) {
-    await new Promise((resolve) => setTimeout(resolve, 0));
-  }
-}
-
 async function loadReporter() {
   vi.resetModules();
   return import("./report");
@@ -159,7 +152,7 @@ describe("monitoring reporter", () => {
         scope: "CartService.getCart",
         extra: { token: "AbCdEfGhIjKlMnOpQrStUvWxYz01", bookingId: 9 },
       });
-      await flushAsync();
+      await vi.waitFor(() => expect(sdk.captureException).toHaveBeenCalled());
 
       expect(sdk.captureException).toHaveBeenCalledTimes(1);
       const [captured, options] = sdk.captureException.mock.calls[0];
@@ -179,7 +172,7 @@ describe("monitoring reporter", () => {
       reportError(new Error("checkout failed"), {
         scope: "CartService.getCart",
       });
-      await flushAsync();
+      await vi.waitFor(() => expect(fetchMock).toHaveBeenCalled());
 
       expect(sdk.captureException).not.toHaveBeenCalled();
       expect(fetchMock).toHaveBeenCalledTimes(1);
