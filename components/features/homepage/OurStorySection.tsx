@@ -17,9 +17,9 @@ export function OurStorySection() {
             <div className="relative flex min-h-[300px] flex-1 flex-col justify-between">
               {/* Title */}
               <div className="mb-8 flex items-center gap-5">
-                <h2 className="text-primary-navy text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
+                <p className="text-primary-navy text-h4 leading-[42px] font-semibold tracking-[-0.21px]">
                   Our Story
-                </h2>
+                </p>
               </div>
 
               {/* Description */}
@@ -97,7 +97,7 @@ export function OurStorySection() {
               >
                 <Image
                   src="https://res.cloudinary.com/davy7cgyi/image/upload/v1780289236/709e9afff06075a1e2577fb7c0eb39ca8ed4ced6_l9smol.png"
-                  alt=""
+                  alt="Our story: a guinea pig resting beside a vase of peonies"
                   fill
                   className="object-cover"
                   sizes="319px"
@@ -134,7 +134,7 @@ export function OurStorySection() {
             >
               <Image
                 src="https://res.cloudinary.com/davy7cgyi/image/upload/v1780289236/709e9afff06075a1e2577fb7c0eb39ca8ed4ced6_l9smol.png"
-                alt=""
+                alt="Our story: a guinea pig resting beside a vase of peonies"
                 fill
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 319px"

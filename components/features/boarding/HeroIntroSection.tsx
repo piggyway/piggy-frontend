@@ -31,7 +31,7 @@ export function HeroIntroSection() {
         <div className="relative mt-10 h-[280px] overflow-hidden rounded-[32px] border-[6px] border-white bg-white sm:h-[320px] lg:h-[310px]">
           <Image
             src={BOARDING_ASSETS.heroBackground}
-            alt=""
+            alt="Photos of guinea pigs in our boarding care"
             fill
             className="object-cover"
             sizes="(min-width: 1024px) 1160px, 100vw"
