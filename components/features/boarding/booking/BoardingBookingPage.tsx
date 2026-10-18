@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { trackEvent } from "@/lib/analytics/track";
 import { StayCalendarCard } from "./StayCalendarCard";
 import { StaySummaryCard } from "./StaySummaryCard";
 import { StepIndicator } from "./StepIndicator";
@@ -32,6 +33,13 @@ export function BoardingBookingPage() {
   const [startTime, setStartTime] = useState<string | null>(null);
   const [endDate, setEndDate] = useState<string | null>(null);
   const [endTime, setEndTime] = useState<string | null>(null);
+  const hasTrackedStart = useRef(false);
+
+  useEffect(() => {
+    if (hasTrackedStart.current) return;
+    hasTrackedStart.current = true;
+    trackEvent("boarding_start");
+  }, []);
 
   const handleSelectStart = (key: string) => {
     setStartDate(key);
@@ -127,7 +135,10 @@ export function BoardingBookingPage() {
               isFromPrice
             >
               <Button
-                onClick={() => goToStep("pickup")}
+                onClick={() => {
+                  trackEvent("boarding_step_1_done");
+                  goToStep("pickup");
+                }}
                 disabled={!canContinueToPickup}
                 className="text-p h-[50px] w-full rounded-full font-semibold"
               >
@@ -171,7 +182,10 @@ export function BoardingBookingPage() {
             >
               <div className="flex flex-col gap-3">
                 <Button
-                  onClick={() => goToStep("details")}
+                  onClick={() => {
+                    trackEvent("boarding_step_2_done");
+                    goToStep("details");
+                  }}
                   disabled={!canContinue}
                   className="text-p h-[50px] w-full rounded-full font-semibold"
                 >

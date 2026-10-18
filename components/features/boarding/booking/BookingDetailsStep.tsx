@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useUser } from "@/contexts/UserContext";
+import { trackEvent } from "@/lib/analytics/track";
 import {
   BoardingApiError,
   createBoardingBooking,
@@ -27,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { toHousingInput } from "@/lib/utils/boarding";
 import { BOARDING_HOUSING_LABELS } from "@/components/features/boarding/constants";
 import { StaySummaryCard } from "./StaySummaryCard";
+import { nightsBetween } from "./stay-dates";
 import { estimateStay } from "./stay-estimate";
 
 export interface BookingSubmission {
@@ -329,6 +331,10 @@ export function BookingDetailsStep({
         ...housingInput,
       });
 
+      trackEvent("booking_submitted", {
+        nights: nightsBetween(dropOffDate, pickUpDate),
+        pet_count: pets.length,
+      });
       onSubmitted({
         reference: booking.reference,
         email: contact.email.trim(),

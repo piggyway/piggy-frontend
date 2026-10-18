@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
 import { CartService } from "@/lib/services/cart";
 import { PromoService } from "@/lib/services/promo";
+import { toEcommerceProduct, trackEcommerce } from "@/lib/analytics/track";
 import type { Cart } from "@/lib/types/cart";
 import { preserveCartItemOrder } from "@/lib/utils/cart";
 import { Button } from "@/components/ui/button";
@@ -203,6 +204,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
               (item) => item.variantRid === variantRid
             );
             const productName = newItem?.productTitle || "Item";
+            trackEcommerce("Product Added", {
+              ...(newItem
+                ? toEcommerceProduct(newItem)
+                : { product_id: String(variantRid) }),
+              quantity,
+              currency: "AUD",
+            });
             toast.success(`${productName} added to cart`, {
               description: `Quantity: ${quantity}`,
             });
