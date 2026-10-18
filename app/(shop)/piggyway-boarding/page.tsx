@@ -8,6 +8,7 @@ import { PoopHappensSection } from "@/components/features/boarding/PoopHappensSe
 import { PickupAndServicesSection } from "@/components/features/boarding/PickupAndServicesSection";
 import { MedicalBoardingSection } from "@/components/features/boarding/MedicalBoardingSection";
 import { TrustedVetSection } from "@/components/features/boarding/TrustedVetSection";
+import { StickyBookingBar } from "@/components/features/boarding/StickyBookingBar";
 import { getBaseUrl } from "@/lib/utils/seo";
 
 const PAGE_TITLE = "Guinea Pig Boarding Melbourne";
@@ -90,6 +91,7 @@ export default function BoardingPage() {
       <PickupAndServicesSection />
       <MedicalBoardingSection />
       <TrustedVetSection />
+      <StickyBookingBar />
     </div>
   );
 }

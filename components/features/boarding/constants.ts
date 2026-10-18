@@ -36,6 +36,8 @@ export const BOARDING_ROUTES = {
   story: "/about-us",
 } as const;
 
+export const BOARDING_HERO_BOOK_BUTTON_ID = "boarding-hero-book";
+
 export const WHO_ITS_FOR_ITEMS = [
   {
     title: "Owners going on holidays or short trips",
