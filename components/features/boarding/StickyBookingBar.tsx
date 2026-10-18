@@ -37,7 +37,7 @@ export function StickyBookingBar() {
       )}
     >
       <p className="text-primary-navy text-p-ui font-semibold">
-        From {BOARDING_RATES_CONTENT.rates[0].price}/day
+        From ${BOARDING_RATES_CONTENT.rates[0].amount}/day
       </p>
       <Button
         asChild
