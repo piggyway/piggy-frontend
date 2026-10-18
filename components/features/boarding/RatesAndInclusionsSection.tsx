@@ -1,11 +1,14 @@
 "use client";
 
+import Link from "next/link";
 import { Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
 import {
   BOARDING_DEPOSIT_POLICY_CONTENT,
   BOARDING_INCLUSIONS_CONTENT,
   BOARDING_RATES_CONTENT,
+  BOARDING_ROUTES,
 } from "./constants";
 
 export function RatesAndInclusionsSection() {
@@ -51,6 +54,14 @@ export function RatesAndInclusionsSection() {
                 </li>
               ))}
             </ul>
+
+            <Button
+              asChild
+              variant="secondary"
+              className="text-p h-12 self-start px-6 font-semibold shadow-none"
+            >
+              <Link href={BOARDING_ROUTES.book}>Book a stay</Link>
+            </Button>
           </div>
 
           <div className="flex flex-col gap-8">
@@ -112,6 +123,14 @@ export function RatesAndInclusionsSection() {
                 </article>
               ))}
             </div>
+
+            <Button
+              asChild
+              variant="secondary"
+              className="text-p h-12 self-start px-6 font-semibold shadow-none"
+            >
+              <Link href={BOARDING_ROUTES.book}>Book a stay</Link>
+            </Button>
           </div>
         </div>
       </section>

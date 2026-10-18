@@ -4,7 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AnimatedSection } from "@/components/features/homepage/AnimatedSection";
-import { BOARDING_ASSETS, BOARDING_ROUTES } from "./constants";
+import {
+  BOARDING_ASSETS,
+  BOARDING_HERO_BOOK_BUTTON_ID,
+  BOARDING_ROUTES,
+} from "./constants";
 
 export function HeroIntroSection() {
   return (
@@ -53,7 +57,12 @@ export function HeroIntroSection() {
                   variant="secondary"
                   className="text-p mt-4 h-12 px-6 font-semibold shadow-none"
                 >
-                  <Link href={BOARDING_ROUTES.book}>Book with us</Link>
+                  <Link
+                    id={BOARDING_HERO_BOOK_BUTTON_ID}
+                    href={BOARDING_ROUTES.book}
+                  >
+                    Book with us
+                  </Link>
                 </Button>
               </div>
             </div>
