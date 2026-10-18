@@ -45,10 +45,11 @@ export function TestimonialsSection() {
             {/* Guinea Pig Icon */}
             <div className="relative hidden h-[84px] w-[70px] shrink-0 sm:block">
               <Image
-                src="/pet-care-tips/default1-2.png"
+                src="/pet-care-tips/default1-2.webp"
                 alt=""
                 fill
                 className="object-contain"
+                sizes="70px"
               />
             </div>
           </div>

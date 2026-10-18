@@ -39,19 +39,21 @@ export function OurStorySection() {
                 {/* Character 1 - smaller, positioned left and slightly down */}
                 <div className="absolute top-[16px] left-0 h-[75px] w-[66px]">
                   <Image
-                    src="/our-story/default1.png"
+                    src="/our-story/default1.webp"
                     alt=""
                     fill
                     className="object-contain"
+                    sizes="66px"
                   />
                 </div>
                 {/* Character 2 - larger, positioned right and at top */}
                 <div className="absolute top-0 left-[67px] h-[93px] w-[103px]">
                   <Image
-                    src="/our-story/default2.png"
+                    src="/our-story/default2.webp"
                     alt=""
                     fill
                     className="object-contain"
+                    sizes="103px"
                   />
                 </div>
               </div>

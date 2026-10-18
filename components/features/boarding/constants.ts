@@ -1,10 +1,10 @@
 import type { BoardingHousingArrangement } from "@/lib/types/boarding";
 
 export const BOARDING_ASSETS = {
-  heroBackground: "/Top Bannner.png",
+  heroBackground: "/top-banner.webp",
   heroLogo: "/Boarding Logo.png",
   offerFeatureImage: "/pet-care-tips/default1.png",
-  careLeadImage: "/boarding/d658827bdd92d72ba8bff22f2b0078ea9560d99a.jpg",
+  careLeadImage: "/boarding/care-lead.webp",
   storyImage: "/shop-with-us/default.png",
   trustedVetImage: "/boarding/Group 466.png",
 } as const;
