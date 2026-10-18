@@ -1,4 +1,5 @@
 import type { MetadataRoute } from "next";
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
 import {
   type GuideArticle,
   guideArticles,
@@ -96,7 +97,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}${path}`,
   }));
 
-  const productEntries = await getProductEntries(baseUrl);
+  // CI builds without API_BASE_URL on purpose, so only the build tolerates a
+  // failed fetch. At runtime the error propagates and ISR keeps the last good
+  // sitemap.
+  const productEntries = await getProductEntries(baseUrl).catch(
+    (error): MetadataRoute.Sitemap => {
+      if (process.env.NEXT_PHASE !== PHASE_PRODUCTION_BUILD) throw error;
+      console.error("[Sitemap] Build-time product fetch failed:", error);
+      return [];
+    }
+  );
 
   return [
     ...staticEntries,
