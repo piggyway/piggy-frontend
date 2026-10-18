@@ -38,7 +38,7 @@ export async function BestSellingSection() {
           <div className="ml-8 hidden lg:block">
             <div className="relative h-20 w-20">
               <Image
-                src="/homepage-essentials/piggy-icon.png"
+                src="/homepage-essentials/piggy-icon.webp"
                 alt="Piggy mascot"
                 width={80}
                 height={80}

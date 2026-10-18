@@ -24,9 +24,9 @@ export const metadata: Metadata = {
     url: "/about-us",
     images: [
       {
-        url: "/our-story/default2.png",
+        url: "/our-story/default2.webp",
         width: 1200,
-        height: 630,
+        height: 800,
         alt: "Piggy Way Crossing Team",
       },
     ],
@@ -115,11 +115,11 @@ export default function AboutPage() {
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="relative h-56 w-56 sm:h-64 sm:w-64">
                     <Image
-                      src="/our-story/default2.png"
+                      src="/our-story/default2.webp"
                       alt="McFlurry the Guinea Pig"
                       fill
                       className="object-contain drop-shadow-md transition-transform duration-700 hover:scale-105"
-                      sizes="(max-width: 768px) 100vw, 50vw"
+                      sizes="(min-width: 640px) 256px, 224px"
                     />
                   </div>
                 </div>

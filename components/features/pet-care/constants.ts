@@ -2,7 +2,7 @@ export const PET_CARE_ASSETS = {
   piggywayLogo: "/pet-care/piggyway-logo.svg",
   cross: "/pet-care/cross.svg",
   doctorSupsLogo: "/pet-care/doctor-sups-logo.jpg",
-  boardingCollage1: "/pet-care/boarding-collage-1.png",
+  boardingCollage1: "/pet-care/boarding-collage-1.webp",
   vetIcon1: "/pet-care/vet-icon-1.svg",
   vetIcon2: "/pet-care/vet-icon-2.png",
   vetIcon3: "/pet-care/vet-icon-3.svg",

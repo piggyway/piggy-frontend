@@ -40,10 +40,11 @@ export function BoardingBannerSection() {
       <div className="container mx-auto max-w-[1160px] px-4 pb-12 sm:pb-16 md:pb-20">
         <section className="relative overflow-hidden rounded-[32px] border-[12px] border-white shadow-[0_18px_48px_rgba(5,4,81,0.08)]">
           <Image
-            src="/Boarding Banner.png"
+            src="/boarding-banner.webp"
             alt="Boarding Banner Background"
             fill
             className="object-cover"
+            sizes="(min-width: 1160px) 1104px, 100vw"
             priority
           />
           <div className="absolute inset-0 bg-white/10" />

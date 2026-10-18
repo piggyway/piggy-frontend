@@ -9,13 +9,14 @@ import { PickupAndServicesSection } from "@/components/features/boarding/PickupA
 import { MedicalBoardingSection } from "@/components/features/boarding/MedicalBoardingSection";
 import { TrustedVetSection } from "@/components/features/boarding/TrustedVetSection";
 import { StickyBookingBar } from "@/components/features/boarding/StickyBookingBar";
+import { BOARDING_RATES_CONTENT } from "@/components/features/boarding/constants";
 import { getBaseUrl } from "@/lib/utils/seo";
 
 const PAGE_TITLE = "Guinea Pig Boarding Melbourne";
 const PAGE_DESCRIPTION =
   "Guinea pig boarding in Melbourne with routine-based care, gentle handling, and personalized support for every piggy.";
 const PAGE_PATH = "/piggyway-boarding";
-const OG_IMAGE_PATH = "/Boarding Banner.png";
+const OG_IMAGE_PATH = "/boarding-banner.webp";
 
 export const metadata: Metadata = {
   title: PAGE_TITLE,
@@ -37,8 +38,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: OG_IMAGE_PATH,
-        width: 1200,
-        height: 630,
+        width: 2208,
+        height: 1005,
         alt: "Guinea pig boarding in Melbourne - Piggy Way Crossing",
       },
     ],
@@ -73,6 +74,25 @@ export default function BoardingPage() {
       addressCountry: "AU",
     },
     sameAs: ["https://www.instagram.com/piggyway_crossing"],
+    areaServed: {
+      "@type": "City",
+      name: "Melbourne",
+    },
+    makesOffer: BOARDING_RATES_CONTENT.rates.map((rate) => ({
+      "@type": "Offer",
+      name: `Guinea pig boarding - ${rate.label}`,
+      priceSpecification: {
+        "@type": "UnitPriceSpecification",
+        price: rate.amount,
+        priceCurrency: "AUD",
+        unitCode: "DAY",
+        unitText: "day",
+      },
+      itemOffered: {
+        "@type": "Service",
+        name: `Guinea pig boarding for ${rate.label}`,
+      },
+    })),
   };
 
   return (

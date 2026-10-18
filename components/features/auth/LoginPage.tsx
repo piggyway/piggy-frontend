@@ -269,7 +269,7 @@ export function LoginPage({ error, callbackUrl = "/" }: LoginPageProps) {
       <div className="relative hidden w-1/2 lg:block">
         <Link href="/" className="absolute inset-0">
           <Image
-            src="/login-brand-panel.png"
+            src="/login-brand-panel.webp"
             alt="Piggy Way Crossing — Just for Small Paws!"
             fill
             sizes="50vw"
