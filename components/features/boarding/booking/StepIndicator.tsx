@@ -3,10 +3,9 @@ import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const STEPS = [
-  { number: 1, label: "Drop-off" },
-  { number: 2, label: "Pick-up" },
-  { number: 3, label: "Details" },
-  { number: 4, label: "Confirm" },
+  { number: 1, label: "Dates" },
+  { number: 2, label: "Details" },
+  { number: 3, label: "Confirm" },
 ];
 
 interface StepIndicatorProps {

@@ -74,7 +74,7 @@ export function BookingSubmittedStep({
 
   return (
     <div className="container mx-auto flex flex-col items-center gap-7 px-4 pt-16 pb-24 sm:px-6 lg:px-8">
-      <StepIndicator currentStep={4} />
+      <StepIndicator currentStep={3} />
 
       {/* Celebration */}
       <div className="relative flex h-[120px] w-[220px] items-center justify-center">

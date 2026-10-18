@@ -4,7 +4,6 @@ import type { CartItem } from "@/lib/types/cart";
 export type TrackEventName =
   | "boarding_start"
   | "boarding_step_1_done"
-  | "boarding_step_2_done"
   | "booking_submitted";
 
 export type TrackEventProperties = {

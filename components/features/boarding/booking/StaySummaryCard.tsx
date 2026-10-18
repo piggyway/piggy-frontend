@@ -12,7 +12,7 @@ function formatDollars(amount: number): string {
   return formatCents(amount * 100);
 }
 
-function describeEstimate(
+export function describeEstimate(
   estimate: StayEstimate,
   isFromPrice: boolean
 ): { amount: string; detail: string } {
