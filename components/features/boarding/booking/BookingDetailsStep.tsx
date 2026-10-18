@@ -121,14 +121,17 @@ function buildPetsLabel(pets: PetForm[]): string {
 
 interface FieldProps {
   label: string;
+  htmlFor: string;
   error?: string;
   children: React.ReactNode;
 }
 
-function Field({ label, error, children }: FieldProps) {
+function Field({ label, htmlFor, error, children }: FieldProps) {
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-2">
-      <label className="text-subtle-medium text-primary-navy">{label}</label>
+      <label htmlFor={htmlFor} className="text-subtle-medium text-primary-navy">
+        {label}
+      </label>
       {children}
       {error && (
         <p className="text-subtle text-destructive font-medium">{error}</p>
@@ -363,8 +366,16 @@ export function BookingDetailsStep({
         <div className={cardClassName}>
           <h2 className="text-primary-navy text-lead">Your details</h2>
           <div className="flex flex-col gap-5 sm:flex-row">
-            <Field label="First name" error={errors.firstName}>
+            <Field
+              label="First name"
+              htmlFor="firstName"
+              error={errors.firstName}
+            >
               <Input
+                id="firstName"
+                name="firstName"
+                autoComplete="given-name"
+                aria-required="true"
                 value={contact.firstName}
                 onChange={(e) => setContactField("firstName", e.target.value)}
                 placeholder="Jane"
@@ -374,8 +385,12 @@ export function BookingDetailsStep({
                 )}
               />
             </Field>
-            <Field label="Last name" error={errors.lastName}>
+            <Field label="Last name" htmlFor="lastName" error={errors.lastName}>
               <Input
+                id="lastName"
+                name="lastName"
+                autoComplete="family-name"
+                aria-required="true"
                 value={contact.lastName}
                 onChange={(e) => setContactField("lastName", e.target.value)}
                 placeholder="Doe"
@@ -387,8 +402,12 @@ export function BookingDetailsStep({
             </Field>
           </div>
           <div className="flex flex-col gap-5 sm:flex-row">
-            <Field label="Email" error={errors.email}>
+            <Field label="Email" htmlFor="email" error={errors.email}>
               <Input
+                id="email"
+                name="email"
+                autoComplete="email"
+                aria-required="true"
                 type="email"
                 value={contact.email}
                 onChange={(e) => setContactField("email", e.target.value)}
@@ -399,8 +418,12 @@ export function BookingDetailsStep({
                 )}
               />
             </Field>
-            <Field label="Phone" error={errors.phone}>
+            <Field label="Phone" htmlFor="phone" error={errors.phone}>
               <Input
+                id="phone"
+                name="phone"
+                autoComplete="tel"
+                aria-required="true"
                 type="tel"
                 value={contact.phone}
                 onChange={(e) => setContactField("phone", e.target.value)}
@@ -438,8 +461,16 @@ export function BookingDetailsStep({
                 </div>
               )}
               <div className="flex flex-col gap-5 sm:flex-row">
-                <Field label="Pet name" error={errors[`pet-${i}-name`]}>
+                <Field
+                  label="Pet name"
+                  htmlFor={`pet-${i}-name`}
+                  error={errors[`pet-${i}-name`]}
+                >
                   <Input
+                    id={`pet-${i}-name`}
+                    name={`pet-${i}-name`}
+                    autoComplete="off"
+                    aria-required="true"
                     value={pet.name}
                     onChange={(e) => setPetField(i, "name", e.target.value)}
                     placeholder="e.g. Mochi"
@@ -449,12 +480,14 @@ export function BookingDetailsStep({
                     )}
                   />
                 </Field>
-                <Field label="Type">
+                <Field label="Type" htmlFor={`pet-${i}-type`}>
                   <Select
+                    name={`pet-${i}-type`}
                     value={pet.type}
                     onValueChange={(value) => setPetField(i, "type", value)}
                   >
                     <SelectTrigger
+                      id={`pet-${i}-type`}
                       className={cn(inputClassName, "w-full text-slate-600")}
                     >
                       <SelectValue />
@@ -470,12 +503,14 @@ export function BookingDetailsStep({
                 </Field>
               </div>
               <div className="flex flex-col gap-5 sm:flex-row">
-                <Field label="Breed">
+                <Field label="Breed" htmlFor={`pet-${i}-breed`}>
                   <Select
+                    name={`pet-${i}-breed`}
                     value={pet.breed}
                     onValueChange={(value) => setPetField(i, "breed", value)}
                   >
                     <SelectTrigger
+                      id={`pet-${i}-breed`}
                       className={cn(inputClassName, "w-full text-slate-600")}
                     >
                       <SelectValue placeholder="Select" />
@@ -490,6 +525,9 @@ export function BookingDetailsStep({
                   </Select>
                   {pet.breed === "Other" && (
                     <Input
+                      id={`pet-${i}-breedOther`}
+                      name={`pet-${i}-breedOther`}
+                      aria-label="Other breed"
                       value={pet.breedOther}
                       onChange={(e) =>
                         setPetField(i, "breedOther", e.target.value)
@@ -499,8 +537,10 @@ export function BookingDetailsStep({
                     />
                   )}
                 </Field>
-                <Field label="Age">
+                <Field label="Age" htmlFor={`pet-${i}-age`}>
                   <Input
+                    id={`pet-${i}-age`}
+                    name={`pet-${i}-age`}
                     value={pet.age}
                     onChange={(e) => setPetField(i, "age", e.target.value)}
                     placeholder="e.g. 2 years"
@@ -509,12 +549,14 @@ export function BookingDetailsStep({
                 </Field>
               </div>
               <div className="flex flex-col gap-5 sm:flex-row">
-                <Field label="Sex">
+                <Field label="Sex" htmlFor={`pet-${i}-sex`}>
                   <Select
+                    name={`pet-${i}-sex`}
                     value={pet.sex}
                     onValueChange={(value) => setPetField(i, "sex", value)}
                   >
                     <SelectTrigger
+                      id={`pet-${i}-sex`}
                       className={cn(inputClassName, "w-full text-slate-600")}
                     >
                       <SelectValue placeholder="Select" />
@@ -528,8 +570,10 @@ export function BookingDetailsStep({
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Weight">
+                <Field label="Weight" htmlFor={`pet-${i}-weight`}>
                   <Input
+                    id={`pet-${i}-weight`}
+                    name={`pet-${i}-weight`}
                     value={pet.weight}
                     onChange={(e) => setPetField(i, "weight", e.target.value)}
                     placeholder="e.g. 950 g"
@@ -538,12 +582,14 @@ export function BookingDetailsStep({
                 </Field>
               </div>
               <div className="flex flex-col gap-5 sm:flex-row">
-                <Field label="Desexed?">
+                <Field label="Desexed?" htmlFor={`pet-${i}-desexed`}>
                   <Select
+                    name={`pet-${i}-desexed`}
                     value={pet.desexed}
                     onValueChange={(value) => setPetField(i, "desexed", value)}
                   >
                     <SelectTrigger
+                      id={`pet-${i}-desexed`}
                       className={cn(inputClassName, "w-full text-slate-600")}
                     >
                       <SelectValue placeholder="Select" />
@@ -557,8 +603,14 @@ export function BookingDetailsStep({
                     </SelectContent>
                   </Select>
                 </Field>
-                <Field label="Vet contact (optional)">
+                <Field
+                  label="Vet contact (optional)"
+                  htmlFor={`pet-${i}-vetContact`}
+                >
                   <Input
+                    id={`pet-${i}-vetContact`}
+                    name={`pet-${i}-vetContact`}
+                    autoComplete="off"
                     value={pet.vetContact}
                     onChange={(e) =>
                       setPetField(i, "vetContact", e.target.value)
@@ -568,8 +620,13 @@ export function BookingDetailsStep({
                   />
                 </Field>
               </div>
-              <Field label="Feeding routine">
+              <Field
+                label="Feeding routine"
+                htmlFor={`pet-${i}-feedingRoutine`}
+              >
                 <Textarea
+                  id={`pet-${i}-feedingRoutine`}
+                  name={`pet-${i}-feedingRoutine`}
                   value={pet.feedingRoutine}
                   onChange={(e) =>
                     setPetField(i, "feedingRoutine", e.target.value)
@@ -578,8 +635,13 @@ export function BookingDetailsStep({
                   className="text-p min-h-[84px] rounded-[12px] px-4 py-3.5"
                 />
               </Field>
-              <Field label="Medical / special needs">
+              <Field
+                label="Medical / special needs"
+                htmlFor={`pet-${i}-medicalNotes`}
+              >
                 <Textarea
+                  id={`pet-${i}-medicalNotes`}
+                  name={`pet-${i}-medicalNotes`}
                   value={pet.medicalNotes}
                   onChange={(e) =>
                     setPetField(i, "medicalNotes", e.target.value)
@@ -638,9 +700,13 @@ export function BookingDetailsStep({
                         <div className="flex px-4 pb-4">
                           <Field
                             label="Tell us who lives with whom"
+                            htmlFor="housingNotes"
                             error={errors.housingNotes}
                           >
                             <Textarea
+                              id="housingNotes"
+                              name="housingNotes"
+                              aria-required="true"
                               ref={housingNotesRef}
                               value={housingNotes}
                               onChange={(e) =>
@@ -675,8 +741,11 @@ export function BookingDetailsStep({
             Emergency contact &amp; notes
           </h2>
           <div className="flex flex-col gap-5 sm:flex-row">
-            <Field label="Contact name (optional)">
+            <Field label="Contact name (optional)" htmlFor="emergencyName">
               <Input
+                id="emergencyName"
+                name="emergencyName"
+                autoComplete="off"
                 value={emergency.name}
                 onChange={(e) =>
                   setEmergency((prev) => ({ ...prev, name: e.target.value }))
@@ -685,8 +754,11 @@ export function BookingDetailsStep({
                 className={inputClassName}
               />
             </Field>
-            <Field label="Phone">
+            <Field label="Phone" htmlFor="emergencyPhone">
               <Input
+                id="emergencyPhone"
+                name="emergencyPhone"
+                autoComplete="off"
                 type="tel"
                 value={emergency.phone}
                 onChange={(e) =>
@@ -697,8 +769,10 @@ export function BookingDetailsStep({
               />
             </Field>
           </div>
-          <Field label="Additional notes">
+          <Field label="Additional notes" htmlFor="emergencyNotes">
             <Textarea
+              id="emergencyNotes"
+              name="emergencyNotes"
               value={emergency.notes}
               onChange={(e) =>
                 setEmergency((prev) => ({ ...prev, notes: e.target.value }))
