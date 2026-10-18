@@ -3,9 +3,14 @@ import {
   DISPATCH_MAX_BUSINESS_DAYS,
   RETURN_WINDOW_DAYS,
 } from "@/lib/constants";
-import type { ProductDetail, ProductVariant } from "@/lib/types/product";
+import type {
+  ProductDetail,
+  ProductOption,
+  ProductVariant,
+} from "@/lib/types/product";
 import {
   buildVariantSearchParams,
+  getOptionParamKey,
   variantToOptionParamInputs,
 } from "@/lib/utils/variant-search-params";
 
@@ -38,6 +43,27 @@ type ProductJsonLdOptions = {
 const IN_STOCK = "https://schema.org/InStock";
 const OUT_OF_STOCK = "https://schema.org/OutOfStock";
 const PRE_ORDER = "https://schema.org/PreOrder";
+
+/**
+ * CMS option keys (option slug, or the slugified name) that have a schema.org
+ * Product property. Google Merchant listings require each variant to carry the
+ * property for every entry in `variesBy`, so options without a match here are
+ * left out of both.
+ */
+type SchemaVariantProperty = "color" | "size";
+
+const SCHEMA_VARIANT_PROPERTIES: Record<string, SchemaVariantProperty> = {
+  color: "color",
+  colour: "color",
+  size: "size",
+};
+
+function schemaVariantProperty(
+  option: ProductOption | undefined
+): SchemaVariantProperty | null {
+  const key = getOptionParamKey(option?.slug, option?.name);
+  return key ? (SCHEMA_VARIANT_PROPERTIES[key] ?? null) : null;
+}
 
 function toAbsoluteImages(
   urls: string[] | undefined,
@@ -171,12 +197,29 @@ function variantUrl(
   return query ? `${productUrl}?${query}` : productUrl;
 }
 
+function variantAttributes(
+  product: ProductJsonLdProduct,
+  variant: ProductVariant
+): Partial<Record<SchemaVariantProperty, string>> {
+  const attributes: Partial<Record<SchemaVariantProperty, string>> = {};
+  for (const ov of variant.optionValues) {
+    const property = schemaVariantProperty(
+      product.options.find((o) => o.id === ov.optionId)
+    );
+    if (property && ov.value) {
+      attributes[property] = ov.value;
+    }
+  }
+  return attributes;
+}
+
 function variantProductJsonLd(
   product: ProductJsonLdProduct,
   variant: ProductVariant,
   args: {
     baseUrl: string;
     productUrl: string;
+    description: string;
     priceCurrency: string;
     shippingDetails: Record<string, unknown> | undefined;
     returnPolicy: ReturnType<typeof returnPolicyJsonLd>;
@@ -194,6 +237,8 @@ function variantProductJsonLd(
     "@type": "Product",
     sku: variant.sku || undefined,
     name: variantName(product.title, variant),
+    description: args.description,
+    ...variantAttributes(product, variant),
     image: toAbsoluteImages(images, args.baseUrl),
     offers: offerJsonLd({
       url: variantUrl(product, variant, args.productUrl),
@@ -207,13 +252,15 @@ function variantProductJsonLd(
 }
 
 function variesBy(product: ProductJsonLdProduct): string[] {
-  const names: string[] = [];
+  const properties: string[] = [];
   for (const option of product.options) {
-    if (option.name && !names.includes(option.name)) {
-      names.push(option.name);
+    const property = schemaVariantProperty(option);
+    const url = property ? `https://schema.org/${property}` : null;
+    if (url && !properties.includes(url)) {
+      properties.push(url);
     }
   }
-  return names;
+  return properties;
 }
 
 export function buildProductJsonLd(
@@ -235,7 +282,7 @@ export function buildProductJsonLd(
     : [`${baseUrl}/default-product-image.png`];
 
   if (product.variants.length > 1) {
-    const optionNames = variesBy(product);
+    const variesByProperties = variesBy(product);
     return {
       "@context": "https://schema.org",
       "@type": "ProductGroup",
@@ -245,11 +292,14 @@ export function buildProductJsonLd(
       brand: brandJsonLd(product),
       url: productUrl,
       productGroupID: product.slug,
-      ...(optionNames.length > 0 ? { variesBy: optionNames } : {}),
+      ...(variesByProperties.length > 0
+        ? { variesBy: variesByProperties }
+        : {}),
       hasVariant: product.variants.map((variant) =>
         variantProductJsonLd(product, variant, {
           baseUrl,
           productUrl,
+          description,
           priceCurrency,
           shippingDetails,
           returnPolicy,

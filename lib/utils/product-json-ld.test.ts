@@ -197,13 +197,19 @@ describe("buildProductJsonLd", () => {
 
     expect(jsonLd["@type"]).toBe("ProductGroup");
     expect(jsonLd.productGroupID).toBe("cool-breeze-liner");
-    expect(jsonLd.variesBy).toEqual(["Colour", "Size"]);
+    expect(jsonLd.variesBy).toEqual([
+      "https://schema.org/color",
+      "https://schema.org/size",
+    ]);
     expect(jsonLd).not.toHaveProperty("offers");
     expect(jsonLd.hasVariant).toEqual([
       {
         "@type": "Product",
         sku: "CBL-BLUE-S",
         name: "Cool Breeze Liner - Ocean Blue / Small",
+        description: "A liner for guinea pig cages.",
+        color: "Ocean Blue",
+        size: "Small",
         image: ["https://cdn.example.test/blue.jpg"],
         offers: {
           "@type": "Offer",
@@ -223,6 +229,9 @@ describe("buildProductJsonLd", () => {
         "@type": "Product",
         sku: "CBL-GREY-L",
         name: "Cool Breeze Liner - Warm Grey / Large",
+        description: "A liner for guinea pig cages.",
+        color: "Warm Grey",
+        size: "Large",
         image: ["https://cdn.example.test/product.jpg"],
         offers: {
           "@type": "Offer",

@@ -1,10 +1,12 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import { getArticleUpdatedOn } from "@/lib/guides";
 
 /**
  * Dates taken from this file's git history: PUBLISHED_ON is the commit that
  * created the article, UPDATED_ON the last one that changed its copy.
+ * UPDATED_ON lives in lib/guides.ts so the sitemap reads the same date.
  *
  * The previous values claimed March 2024, which is before this repository
  * existed (first commit 2025-10-27), so they were placeholders rather than
@@ -12,7 +14,7 @@ import { ArrowLeft, ChevronRight, CheckCircle2 } from "lucide-react";
  * these constants so they cannot disagree.
  */
 const PUBLISHED_ON = "2025-12-20";
-const UPDATED_ON = "2026-08-06";
+const UPDATED_ON = getArticleUpdatedOn("first-time-owner-essentials");
 
 export const metadata: Metadata = {
   title: "First-Time Guinea Pig Owner: Complete Essentials Checklist",

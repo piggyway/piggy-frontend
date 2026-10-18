@@ -1,5 +1,10 @@
 import type { MetadataRoute } from "next";
-import { guideArticles, petCareArticles } from "@/lib/guides";
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
+import {
+  type GuideArticle,
+  guideArticles,
+  petCareArticles,
+} from "@/lib/guides";
 import { ServerProductService } from "@/lib/services/products.server";
 import { getBaseUrl, getProductUrl } from "@/lib/utils/seo";
 
@@ -30,10 +35,19 @@ const STATIC_PATHS = [
   "/terms",
   "/privacy",
   "/pet-care",
-  ...petCareArticles.map((article) => `/pet-care/${article.slug}`),
   "/guides",
-  ...guideArticles.map((article) => `/guides/${article.slug}`),
 ];
+
+function articleEntries(
+  baseUrl: string,
+  section: string,
+  articles: GuideArticle[]
+): MetadataRoute.Sitemap {
+  return articles.map((article) => ({
+    url: `${baseUrl}/${section}/${article.slug}`,
+    lastModified: new Date(article.updatedOn),
+  }));
+}
 
 async function getProductEntries(
   baseUrl: string
@@ -48,9 +62,9 @@ async function getProductEntries(
       page_size: PRODUCTS_PAGE_SIZE,
     });
 
-    // getProducts now throws on a failed request, so an empty first page is a
-    // genuinely empty store and the guessing heuristic is gone. Failures are
-    // caught by the caller below.
+    // getProducts throws on a failed request, so an empty first page is a
+    // genuinely empty store. A failure propagates out of sitemap() so ISR
+    // keeps the last good sitemap instead of caching one without products.
     for (const product of response.data) {
       const lastModified = product.dateUpdated
         ? new Date(product.dateUpdated)
@@ -83,12 +97,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${baseUrl}${path}`,
   }));
 
+  // CI builds without API_BASE_URL on purpose, so only the build tolerates a
+  // failed fetch. At runtime the error propagates and ISR keeps the last good
+  // sitemap.
   const productEntries = await getProductEntries(baseUrl).catch(
     (error): MetadataRoute.Sitemap => {
-      console.error("[Sitemap] Failed to build product entries:", error);
+      if (process.env.NEXT_PHASE !== PHASE_PRODUCTION_BUILD) throw error;
+      console.error("[Sitemap] Build-time product fetch failed:", error);
       return [];
     }
   );
 
-  return [...staticEntries, ...productEntries];
+  return [
+    ...staticEntries,
+    ...articleEntries(baseUrl, "pet-care", petCareArticles),
+    ...articleEntries(baseUrl, "guides", guideArticles),
+    ...productEntries,
+  ];
 }
