@@ -27,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { toHousingInput } from "@/lib/utils/boarding";
 import { BOARDING_HOUSING_LABELS } from "@/components/features/boarding/constants";
 import { StaySummaryCard } from "./StaySummaryCard";
+import { estimateStay } from "./stay-estimate";
 
 export interface BookingSubmission {
   reference: string;
@@ -151,6 +152,7 @@ interface BookingDetailsStepProps {
   dropOffLabel: string;
   pickUpLabel: string;
   nightsLabel: string;
+  nights: number | null;
   dropOffDate: string | null;
   dropOffTime: string | null;
   pickUpDate: string | null;
@@ -163,6 +165,7 @@ export function BookingDetailsStep({
   dropOffLabel,
   pickUpLabel,
   nightsLabel,
+  nights,
   dropOffDate,
   dropOffTime,
   pickUpDate,
@@ -191,6 +194,14 @@ export function BookingDetailsStep({
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const estimate =
+    nights !== null
+      ? estimateStay(
+          nights,
+          pets.map((pet) => pet.type as BoardingPetType)
+        )
+      : null;
 
   // Prefill contact details once the signed-in profile loads (adjust state
   // during render — only empty fields are filled, user edits are kept).
@@ -718,6 +729,8 @@ export function BookingDetailsStep({
           pickUp={pickUpLabel}
           nights={nightsLabel}
           pets={`${pets.length} ${pets.length === 1 ? "pet" : "pets"}`}
+          estimate={estimate}
+          isFromPrice={false}
         >
           <button
             type="button"

@@ -16,6 +16,7 @@ import {
   nightsBetween,
   todayKey,
 } from "./stay-dates";
+import { estimateStay } from "./stay-estimate";
 
 type BookingStep = "dropoff" | "pickup" | "details" | "submitted";
 
@@ -42,6 +43,8 @@ export function BoardingBookingPage() {
     startDate && endDate ? nightsBetween(startDate, endDate) : null;
   const nightsLabel =
     nights !== null ? `${nights} ${nights === 1 ? "night" : "nights"}` : "—";
+  const fromEstimate =
+    nights !== null ? estimateStay(nights, ["Guinea pig"]) : null;
   const dropOffLabel = startDate ? formatStayLabel(startDate, startTime) : "—";
   const pickUpLabel = endDate ? formatStayLabel(endDate, endTime) : "—";
   const canContinueToPickup = Boolean(startDate && startTime);
@@ -120,6 +123,8 @@ export function BoardingBookingPage() {
               pickUp={pickUpLabel}
               nights={nightsLabel}
               pets="Added next step"
+              estimate={fromEstimate}
+              isFromPrice
             >
               <Button
                 onClick={() => goToStep("pickup")}
@@ -161,6 +166,8 @@ export function BoardingBookingPage() {
               pickUp={pickUpLabel}
               nights={nightsLabel}
               pets="Added next step"
+              estimate={fromEstimate}
+              isFromPrice
             >
               <div className="flex flex-col gap-3">
                 <Button
@@ -189,6 +196,7 @@ export function BoardingBookingPage() {
               dropOffLabel={dropOffLabel}
               pickUpLabel={pickUpLabel}
               nightsLabel={nightsLabel}
+              nights={nights}
               dropOffDate={startDate}
               dropOffTime={startTime}
               pickUpDate={endDate}

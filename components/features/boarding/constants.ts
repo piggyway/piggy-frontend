@@ -81,17 +81,22 @@ export const BOARDING_RATES_CONTENT = {
   title: "Boarding Rates",
   intro: "Our standard daily boarding rates (within 2 weeks) are:",
   rates: [
-    { label: "1 guinea pig", price: "$25", unit: "/ day" },
-    { label: "2 guinea pigs", price: "$50", unit: "/ day" },
-    { label: "3 guinea pigs", price: "$75", unit: "/ day" },
-    { label: "4 guinea pigs", price: "$95", unit: "/ day" },
-    { label: "5 guinea pigs", price: "$115", unit: "/ day" },
+    { pets: 1, label: "1 guinea pig", amount: 25, unit: "/ day" },
+    { pets: 2, label: "2 guinea pigs", amount: 50, unit: "/ day" },
+    { pets: 3, label: "3 guinea pigs", amount: 75, unit: "/ day" },
+    { pets: 4, label: "4 guinea pigs", amount: 95, unit: "/ day" },
+    { pets: 5, label: "5 guinea pigs", amount: 115, unit: "/ day" },
   ],
   notes: [
     "Lifetime boarding is available at $15 per guinea pig, per day.",
     "For longer term stays (more than 14 days) and larger groups or individual care arrangements, please contact us to discuss the most suitable option.",
     "If your guinea pig requires medical boarding, please speak with us before making a booking so we can review their care requirements in advance.",
   ],
+} as const;
+
+export const BOARDING_DEPOSIT_PERCENT = {
+  normal: 15,
+  peak: 50,
 } as const;
 
 export const BOARDING_DEPOSIT_POLICY_CONTENT = {
@@ -102,14 +107,14 @@ export const BOARDING_DEPOSIT_POLICY_CONTENT = {
       colorClass: "bg-primary-light-gold",
       paragraphs: [
         "Peak Season includes Christmas, New Year, Easter, and all Australian public holiday periods.",
-        "A 50% deposit is required to secure a booking during Peak Season. The deposit is non-refundable regardless of when the booking is cancelled.",
+        `A ${BOARDING_DEPOSIT_PERCENT.peak}% deposit is required to secure a booking during Peak Season. The deposit is non-refundable regardless of when the booking is cancelled.`,
       ],
     },
     {
       title: "Normal Period",
       colorClass: "bg-primary-purple-light",
       paragraphs: [
-        "A 15% deposit is required to secure a booking during the Normal Period. At least 1 week's notice is required for cancellations.",
+        `A ${BOARDING_DEPOSIT_PERCENT.normal}% deposit is required to secure a booking during the Normal Period. At least 1 week's notice is required for cancellations.`,
       ],
     },
   ],

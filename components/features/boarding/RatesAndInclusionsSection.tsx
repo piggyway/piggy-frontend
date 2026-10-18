@@ -36,7 +36,7 @@ export function RatesAndInclusionsSection() {
                     {rate.label}
                   </p>
                   <p className="text-primary-navy text-large">
-                    {rate.price}
+                    {`$${rate.amount}`}
                     <span className="text-p ml-1 font-normal">{rate.unit}</span>
                   </p>
                 </div>
