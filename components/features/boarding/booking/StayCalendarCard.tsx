@@ -30,47 +30,71 @@ interface DayCell {
 }
 
 interface StayCalendarCardProps {
-  title: string;
-  timeLabel: string;
-  iconClassName: string;
-  selectedDate: string | null;
-  selectedTime: string | null;
+  startDate: string | null;
+  endDate: string | null;
+  startTime: string | null;
+  endTime: string | null;
   minDate: string;
-  rangeStart: string | null;
-  rangeEnd: string | null;
   onSelectDate: (key: string) => void;
+  onSelectStartTime: (time: string) => void;
+  onSelectEndTime: (time: string) => void;
+}
+
+interface TimeSlotGridProps {
+  label: string;
+  selectedTime: string | null;
   onSelectTime: (time: string) => void;
 }
 
-export function StayCalendarCard({
-  title,
-  timeLabel,
-  iconClassName,
-  selectedDate,
+function TimeSlotGrid({
+  label,
   selectedTime,
-  minDate,
-  rangeStart,
-  rangeEnd,
-  onSelectDate,
   onSelectTime,
+}: TimeSlotGridProps) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-baseline justify-between">
+        <p className="text-primary-navy text-p-ui font-semibold">{label}</p>
+        <p className="text-detail text-muted-foreground">1-hour blocks</p>
+      </div>
+      <div className="grid grid-cols-4 gap-2">
+        {TIME_SLOTS.map((slot) => {
+          const isSelected = slot === selectedTime;
+          return (
+            <button
+              key={slot}
+              type="button"
+              onClick={() => onSelectTime(slot)}
+              className={cn(
+                "text-p flex h-9 items-center justify-center rounded-full transition-colors",
+                isSelected
+                  ? "bg-primary-navy font-semibold text-white"
+                  : "border-neutral-stroke border bg-white text-slate-600 hover:border-slate-300"
+              )}
+            >
+              {slot}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function StayCalendarCard({
+  startDate,
+  endDate,
+  startTime,
+  endTime,
+  minDate,
+  onSelectDate,
+  onSelectStartTime,
+  onSelectEndTime,
 }: StayCalendarCardProps) {
   const [view, setView] = useState(() => {
-    const base = selectedDate ? keyToDate(selectedDate) : new Date();
+    const base = startDate ? keyToDate(startDate) : new Date();
     return { year: base.getFullYear(), month: base.getMonth() };
   });
-
-  // Both calendars stay mounted, so the pick-up view can be left behind on an
-  // earlier month once a later drop-off date pushes minDate forward. Adjust the
-  // view during render (React's recommended pattern) instead of in an effect,
-  // and only when minDate actually changes so manual paging still works.
-  const [prevMinDate, setPrevMinDate] = useState(minDate);
-  if (minDate !== prevMinDate) {
-    setPrevMinDate(minDate);
-    const min = keyToDate(minDate);
-    if (min.getFullYear() * 12 + min.getMonth() > view.year * 12 + view.month) {
-      setView({ year: min.getFullYear(), month: min.getMonth() });
-    }
-  }
 
   const changeMonth = (offset: number) => {
     setView((prev) => {
@@ -115,25 +139,22 @@ export function StayCalendarCard({
     };
   });
 
+  const summary = !startDate
+    ? "Select your drop-off date"
+    : !endDate
+      ? "Now select your pick-up date"
+      : `${formatStayLabel(startDate)} → ${formatStayLabel(endDate)}`;
+
   return (
     <div className="border-neutral-stroke flex min-w-0 flex-1 flex-col gap-4 rounded-[24px] border bg-white px-7 py-[26px]">
       {/* Head */}
       <div className="flex items-center gap-3">
-        <div
-          className={cn(
-            "flex size-9 shrink-0 items-center justify-center rounded-full",
-            iconClassName
-          )}
-        >
+        <div className="bg-secondary-mint flex size-9 shrink-0 items-center justify-center rounded-full">
           <CalendarDays className="text-primary-navy size-[17px]" />
         </div>
         <div className="flex flex-col gap-0.5">
-          <h2 className="text-primary-navy text-lead">{title}</h2>
-          <p className="text-subtle text-muted-foreground">
-            {selectedDate
-              ? formatStayLabel(selectedDate, selectedTime)
-              : "Select a date & time"}
-          </p>
+          <h2 className="text-primary-navy text-lead">Stay dates</h2>
+          <p className="text-subtle text-muted-foreground">{summary}</p>
         </div>
       </div>
 
@@ -174,14 +195,14 @@ export function StayCalendarCard({
         </div>
         <div className="grid grid-cols-7 gap-1">
           {cells.map((cell) => {
-            const isSelected = cell.inMonth && cell.key === selectedDate;
+            const isSelected =
+              cell.inMonth && (cell.key === startDate || cell.key === endDate);
             const isInRange =
               cell.inMonth &&
-              !isSelected &&
-              rangeStart !== null &&
-              rangeEnd !== null &&
-              cell.key >= rangeStart &&
-              cell.key <= rangeEnd;
+              startDate !== null &&
+              endDate !== null &&
+              cell.key > startDate &&
+              cell.key < endDate;
             const isDisabled = !cell.inMonth || cell.key < minDate;
 
             return (
@@ -210,31 +231,19 @@ export function StayCalendarCard({
 
       <div className="bg-neutral-stroke h-px w-full" />
 
-      {/* Time slots */}
-      <div className="flex items-baseline justify-between">
-        <p className="text-primary-navy text-p-ui font-semibold">{timeLabel}</p>
-        <p className="text-detail text-muted-foreground">1-hour blocks</p>
-      </div>
-      <div className="grid grid-cols-4 gap-2">
-        {TIME_SLOTS.map((slot) => {
-          const isSelected = slot === selectedTime;
-          return (
-            <button
-              key={slot}
-              type="button"
-              onClick={() => onSelectTime(slot)}
-              className={cn(
-                "text-p flex h-9 items-center justify-center rounded-full transition-colors",
-                isSelected
-                  ? "bg-primary-navy font-semibold text-white"
-                  : "border-neutral-stroke border bg-white text-slate-600 hover:border-slate-300"
-              )}
-            >
-              {slot}
-            </button>
-          );
-        })}
-      </div>
+      <TimeSlotGrid
+        label="Drop-off time"
+        selectedTime={startTime}
+        onSelectTime={onSelectStartTime}
+      />
+
+      <div className="bg-neutral-stroke h-px w-full" />
+
+      <TimeSlotGrid
+        label="Pick-up time"
+        selectedTime={endTime}
+        onSelectTime={onSelectEndTime}
+      />
     </div>
   );
 }

@@ -31,12 +31,14 @@ The privacy page (`app/(shop)/privacy/page.tsx`, section 5) already says that th
 | Event                  | Where it fires                                                   | Properties            |
 | ---------------------- | ---------------------------------------------------------------- | --------------------- |
 | `boarding_start`       | `BoardingBookingPage.tsx`, once when the booking page mounts     | none                  |
-| `boarding_step_1_done` | `BoardingBookingPage.tsx`, on "Continue to Pick-up"              | none                  |
-| `boarding_step_2_done` | `BoardingBookingPage.tsx`, on "Continue to Details"              | none                  |
+| `boarding_step_1_done` | `BoardingBookingPage.tsx`, on "Continue to Details"              | none                  |
 | `booking_submitted`    | `BookingDetailsStep.tsx`, after `createBoardingBooking` succeeds | `nights`, `pet_count` |
 
 A ref guards `boarding_start`, so React Strict Mode does not send it twice.
-The two step events fire each time the user clicks Continue on that step.
+The dates step is one step: one calendar picks both the drop-off and the pick-up date.
+`boarding_step_1_done` fires each time the user clicks Continue on the dates step, on the summary card or on the mobile bar.
+The site no longer sends `boarding_step_2_done`.
+Older GA4 data can still contain it.
 
 ### E-commerce events (`trackEcommerce`)
 
@@ -88,7 +90,7 @@ These events need no trigger.
 
 ### 4. Map the custom events
 
-Do these steps once for each custom event name: `boarding_start`, `boarding_step_1_done`, `boarding_step_2_done` and `booking_submitted`.
+Do these steps once for each custom event name: `boarding_start`, `boarding_step_1_done` and `booking_submitted`.
 
 1. In Zaraz, go to **Tools Configuration** > **Triggers**.
 2. Create a trigger with the event name as its name.
