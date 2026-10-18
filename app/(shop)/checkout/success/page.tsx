@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClearCartOnSuccess } from "@/components/features/cart/ClearCartOnSuccess";
+import { TrackOrderCompleted } from "@/components/features/checkout/TrackOrderCompleted";
 import { formatCents } from "@/lib/utils/format";
 
 const THUMB_COLORS = [
@@ -177,6 +178,7 @@ export default async function SuccessPage({
     receipt?.order_number ||
     null;
   const totalCents = session?.amount_total ?? paymentIntent?.amount ?? 0;
+  const paymentReference = session?.id ?? paymentIntent?.id;
 
   const receiptRows = session
     ? (session.line_items?.data ?? []).map((item) => ({
@@ -223,6 +225,23 @@ export default async function SuccessPage({
   return (
     <div className="container mx-auto px-4 pt-12 pb-24 sm:px-6 lg:px-8">
       {isPaid && <ClearCartOnSuccess />}
+      {isPaid && paymentReference && (
+        <TrackOrderCompleted
+          paymentReference={paymentReference}
+          parameters={{
+            order_id: orderRef ?? paymentReference,
+            total: totalCents / 100,
+            value: totalCents / 100,
+            currency: currency.toUpperCase(),
+            products: receipt?.items.map((item) => ({
+              name: item.product_title,
+              sku: item.variant_sku ?? undefined,
+              price: item.unit_price_cents / 100,
+              quantity: item.quantity,
+            })),
+          }}
+        />
+      )}
       <div className="flex flex-col items-center gap-7">
         {/* Celebration */}
         <div className="relative flex h-[120px] w-[220px] items-center justify-center">

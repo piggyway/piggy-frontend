@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { fetchWithAuth } from "@/lib/api/client";
+import { toEcommerceProduct, trackEcommerce } from "@/lib/analytics/track";
 import type {
   CheckoutShippingAddress,
   PaymentIntentAmounts,
@@ -72,6 +73,19 @@ export function CheckoutPage() {
     // Let's wrap it to handle errors gracefully.
     ensureLoaded().catch(() => null);
   }, [ensureLoaded]);
+
+  const hasTrackedCheckoutStart = React.useRef(false);
+
+  React.useEffect(() => {
+    if (hasTrackedCheckoutStart.current) return;
+    if (!cart || cart.items.length === 0) return;
+    hasTrackedCheckoutStart.current = true;
+    trackEcommerce("Checkout Started", {
+      value: cart.totals.grandTotalCents / 100,
+      currency: cart.currency ? cart.currency.toUpperCase() : "AUD",
+      products: cart.items.map(toEcommerceProduct),
+    });
+  }, [cart]);
 
   async function handleProceedToPayment() {
     if (!cart) return;
