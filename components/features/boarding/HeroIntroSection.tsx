@@ -22,6 +22,10 @@ export function HeroIntroSection() {
             Thoughtful guinea pig boarding in Melbourne, designed to feel like
             home.
           </p>
+          <p className="text-primary-navy text-p-ui mt-2 font-medium">
+            Templestowe, VIC 3106 - exact address sent once your booking is
+            confirmed.
+          </p>
         </div>
 
         <div className="relative mt-10 h-[280px] overflow-hidden rounded-[32px] border-[6px] border-white bg-white sm:h-[320px] lg:h-[310px]">

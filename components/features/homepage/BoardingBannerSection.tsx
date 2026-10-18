@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { AnimatedSection } from "./AnimatedSection";
 import { Button } from "@/components/ui/button";
+import { BOARDING_ROUTES } from "@/components/features/boarding/constants";
 
 const BOARDING_LOGO_IMAGE = "/Boarding Logo.png";
 const BOARDING_PAGE_HREF = "/piggyway-boarding";
@@ -73,13 +74,22 @@ export function BoardingBannerSection() {
               like home.
             </p>
 
-            <Button
-              asChild
-              variant="secondary"
-              className="text-subtle bg-primary-purple text-primary-navy hover:bg-primary-purple/80 h-[40px] rounded-full px-6 leading-6 font-medium shadow-none transition-colors"
-            >
-              <Link href={BOARDING_PAGE_HREF}>Book with us</Link>
-            </Button>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <Button
+                asChild
+                variant="secondary"
+                className="text-subtle bg-primary-purple text-primary-navy hover:bg-primary-purple/80 h-[40px] rounded-full px-6 leading-6 font-medium shadow-none transition-colors"
+              >
+                <Link href={BOARDING_ROUTES.book}>Book now</Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="text-subtle h-[40px] px-6 leading-6 font-medium shadow-none transition-colors"
+              >
+                <Link href={BOARDING_PAGE_HREF}>Learn more</Link>
+              </Button>
+            </div>
           </div>
 
           {/* Decorative Images */}
