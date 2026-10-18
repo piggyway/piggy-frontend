@@ -12,6 +12,8 @@ export interface GuideArticle {
   slug: string;
   title: string;
   description: string;
+  /** Last copy change (YYYY-MM-DD); the article page and the sitemap read it. */
+  updatedOn: string;
 }
 
 export const guideArticles: GuideArticle[] = [
@@ -20,12 +22,14 @@ export const guideArticles: GuideArticle[] = [
     title: "First-Time Guinea Pig Owner: Complete Essentials Checklist",
     description:
       "Bringing home your first guinea pigs? Work through the checklist of everything you need for a happy, healthy start.",
+    updatedOn: "2026-08-06",
   },
   {
     slug: "guinea-pig-care-basics",
     title: "Guinea Pig Care Basics: Everything You Need to Begin",
     description:
       "The real commitment, the daily routine and the thinking behind keeping small pets, written for anyone still deciding.",
+    updatedOn: "2026-08-06",
   },
 ];
 
@@ -35,23 +39,37 @@ export const petCareArticles: GuideArticle[] = [
     title: "Guinea Pig Diet Guide",
     description:
       "What to feed a guinea pig at every life stage: hay, fresh vegetables, pellets and the vitamin C they cannot make themselves.",
+    updatedOn: "2026-01-15",
   },
   {
     slug: "habitat-setup-tips",
     title: "Setting Up the Perfect Habitat for Small Pets",
     description:
       "Cage size, bedding, hides and enrichment for guinea pigs and rabbits, plus the layout mistakes that make daily cleaning harder.",
+    updatedOn: "2026-08-06",
   },
   {
     slug: "bonding-with-your-pet",
     title: "Bonding & Building Trust with Your Guinea Pig",
     description:
       "How trust is built with a prey animal: reading body language, hand feeding and the pace that makes a nervous piggy settle.",
+    updatedOn: "2026-08-06",
   },
   {
     slug: "health-and-wellness",
     title: "Small Pet Health & Wellness Guide",
     description:
       "Spot the early warning signs of common guinea pig and rabbit ailments, keep up with grooming, and know when to call an exotic vet.",
+    updatedOn: "2025-12-24",
   },
 ];
+
+export function getArticleUpdatedOn(slug: string): string {
+  const article = [...guideArticles, ...petCareArticles].find(
+    (a) => a.slug === slug
+  );
+  if (!article) {
+    throw new Error(`Unknown guide article slug: ${slug}`);
+  }
+  return article.updatedOn;
+}
