@@ -155,7 +155,7 @@ export default async function ShopAllPage({ searchParams }: ShopAllPageProps) {
   return (
     <div className="bg-neutral-background-light relative min-h-screen">
       <BackgroundBlobs variant={3} />
-      <div className="container mx-auto max-w-[1160px] px-4 py-8">
+      <div className="container mx-auto max-w-[1160px] px-4 pt-8 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:pb-8">
         {/* Breadcrumbs */}
         <BreadcrumbsNav />
 

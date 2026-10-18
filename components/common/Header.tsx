@@ -113,7 +113,7 @@ export function Header() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="text-primary-navy hover:bg-primary-purple/20 flex h-10 w-10 items-center justify-center rounded-full transition-colors lg:hidden"
+            className="text-primary-navy hover:bg-primary-purple/20 -m-0.5 flex h-11 w-11 items-center justify-center rounded-full transition-colors lg:hidden"
             aria-label="Toggle menu"
           >
             <AnimatePresence mode="wait" initial={false}>

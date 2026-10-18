@@ -189,7 +189,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       />
 
       {/* Sections stack with a uniform 80px gap (design spec; root font-size is 20px, so gap-16 = 4rem = 80px) */}
-      <div className="flex flex-col gap-16 pb-16">
+      <div className="flex flex-col gap-16 pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:pb-16">
         {/* Main Product Section */}
         <div className="container mx-auto max-w-[1160px] px-4 pt-6 sm:pt-8">
           <ProductDetailContent product={product} />

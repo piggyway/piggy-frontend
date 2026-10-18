@@ -29,8 +29,8 @@ export const footerLinks: FooterLinkGroup[] = [
       { label: "SALE", href: "/shop-all" },
       // Species filtering is not supported by the variants API yet,
       // so these land on the full catalogue instead of a dead filter
-      { label: "for Guinea pigs", href: "/shop-all" },
-      { label: "for Rabbit", href: "/shop-all" },
+      { label: "Guinea pigs", href: "/shop-all" },
+      { label: "Rabbits", href: "/shop-all" },
     ],
   },
   {
@@ -44,7 +44,7 @@ export const footerLinks: FooterLinkGroup[] = [
     links: [],
   },
   {
-    title: "Helps",
+    title: "Help",
     links: [
       { label: "My account", href: "/account" },
       { label: "Shipping & Delivery", href: "/shipping-delivery" },

@@ -4,13 +4,30 @@ import Image from "next/image";
 import { AnimatedSection } from "./AnimatedSection";
 
 const heroTileImages = {
-  mint: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072025/Hompage_Banner_image_-_4_2x_mqnzbg.png",
-  pink: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072025/Hompage_Banner_image_-_1_2x_d1erga.png",
-  gold: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072025/Hompage_Banner_image_-_2_2x_ilpoyf.png",
-  navy: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072026/Hompage_Banner_image_-_5_2x_pjrqz2.png",
-  grey: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072026/Hompage_Banner_image_-_6_2x_skfpd4.png",
-  purple:
-    "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072026/Hompage_Banner_image_-_3_2x_niu6lg.png",
+  mint: {
+    src: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072025/Hompage_Banner_image_-_4_2x_mqnzbg.png",
+    alt: "Cream guinea pig resting on a liner beside a stack of folded liners",
+  },
+  pink: {
+    src: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072025/Hompage_Banner_image_-_1_2x_d1erga.png",
+    alt: "Stack of navy and beige quilted cage liners",
+  },
+  gold: {
+    src: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072025/Hompage_Banner_image_-_2_2x_ilpoyf.png",
+    alt: "Guinea pig in a pen set up with fleece hideys, hay and a liner",
+  },
+  navy: {
+    src: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072026/Hompage_Banner_image_-_5_2x_pjrqz2.png",
+    alt: "Bowl of dried carrot treats",
+  },
+  grey: {
+    src: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072026/Hompage_Banner_image_-_6_2x_skfpd4.png",
+    alt: "Guinea pig wearing a green turtle hat",
+  },
+  purple: {
+    src: "https://res.cloudinary.com/davy7cgyi/image/upload/v1769072026/Hompage_Banner_image_-_3_2x_niu6lg.png",
+    alt: "Three guinea pigs sitting together on a soft liner",
+  },
 };
 
 export function HeroSection() {
@@ -33,8 +50,8 @@ export function HeroSection() {
             {/* Bottom Left - Mint (Large) */}
             <div className="bg-secondary-mint absolute top-[175px] left-0 h-[175px] w-[248px] overflow-hidden rounded-[33px] opacity-70">
               <Image
-                src={heroTileImages.gold}
-                alt=""
+                src={heroTileImages.gold.src}
+                alt={heroTileImages.gold.alt}
                 fill
                 className="object-cover"
                 sizes="(min-width: 1024px) 248px, 50vw"
@@ -44,8 +61,8 @@ export function HeroSection() {
             {/* Top Left - Pink (Tall) */}
             <div className="bg-secondary-pink absolute top-0 left-[248px] h-[350px] w-[432px] overflow-hidden rounded-[33px]">
               <Image
-                src={heroTileImages.purple}
-                alt=""
+                src={heroTileImages.purple.src}
+                alt={heroTileImages.purple.alt}
                 fill
                 className="object-cover"
                 sizes="(min-width: 1024px) 432px, 60vw"
@@ -54,8 +71,8 @@ export function HeroSection() {
 
             <div className="absolute top-0 left-0 h-[175px] w-[248px] overflow-hidden rounded-[33px]">
               <Image
-                src={heroTileImages.pink}
-                alt=""
+                src={heroTileImages.pink.src}
+                alt={heroTileImages.pink.alt}
                 fill
                 className="object-cover"
                 sizes="(min-width: 1024px) 248px, 50vw"
@@ -65,8 +82,8 @@ export function HeroSection() {
             {/* Middle Top - Gold */}
             <div className="bg-primary-gold absolute top-0 left-[680px] h-[175px] w-[165px] overflow-hidden rounded-[33px]">
               <Image
-                src={heroTileImages.mint}
-                alt=""
+                src={heroTileImages.mint.src}
+                alt={heroTileImages.mint.alt}
                 fill
                 className="object-cover"
                 sizes="(min-width: 1024px) 165px, 33vw"
@@ -76,8 +93,8 @@ export function HeroSection() {
             {/* Middle Bottom - Navy */}
             <div className="bg-primary-navy absolute top-[175px] left-[680px] h-[175px] w-[165px] overflow-hidden rounded-[33px]">
               <Image
-                src={heroTileImages.navy}
-                alt=""
+                src={heroTileImages.navy.src}
+                alt={heroTileImages.navy.alt}
                 fill
                 className="object-cover"
                 sizes="(min-width: 1024px) 165px, 33vw"
@@ -87,8 +104,8 @@ export function HeroSection() {
             {/* Right Top - Grey */}
             <div className="bg-neutral-grey-background absolute top-0 left-[845px] h-[350px] w-[298px] overflow-hidden rounded-[33px]">
               <Image
-                src={heroTileImages.grey}
-                alt=""
+                src={heroTileImages.grey.src}
+                alt={heroTileImages.grey.alt}
                 fill
                 className="object-cover"
                 sizes="(min-width: 1024px) 298px, 33vw"
@@ -101,8 +118,8 @@ export function HeroSection() {
         <div className="mb-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:hidden">
           <div className="bg-secondary-mint relative flex aspect-square items-center justify-center overflow-hidden rounded-[28px]">
             <Image
-              src={heroTileImages.mint}
-              alt=""
+              src={heroTileImages.mint.src}
+              alt={heroTileImages.mint.alt}
               fill
               className="object-cover"
               sizes="(min-width: 640px) 33vw, 50vw"
@@ -110,8 +127,8 @@ export function HeroSection() {
           </div>
           <div className="bg-secondary-pink relative flex aspect-square items-center justify-center overflow-hidden rounded-[28px]">
             <Image
-              src={heroTileImages.pink}
-              alt=""
+              src={heroTileImages.pink.src}
+              alt={heroTileImages.pink.alt}
               fill
               className="object-cover"
               sizes="(min-width: 640px) 33vw, 50vw"
@@ -119,8 +136,8 @@ export function HeroSection() {
           </div>
           <div className="bg-primary-gold relative flex aspect-square items-center justify-center overflow-hidden rounded-[28px]">
             <Image
-              src={heroTileImages.gold}
-              alt=""
+              src={heroTileImages.gold.src}
+              alt={heroTileImages.gold.alt}
               fill
               className="object-cover"
               sizes="(min-width: 640px) 33vw, 50vw"
@@ -128,8 +145,8 @@ export function HeroSection() {
           </div>
           <div className="bg-primary-navy relative flex aspect-square items-center justify-center overflow-hidden rounded-[28px]">
             <Image
-              src={heroTileImages.navy}
-              alt=""
+              src={heroTileImages.navy.src}
+              alt={heroTileImages.navy.alt}
               fill
               className="object-cover"
               sizes="(min-width: 640px) 33vw, 50vw"
@@ -137,8 +154,8 @@ export function HeroSection() {
           </div>
           <div className="bg-neutral-grey-background relative flex aspect-square items-center justify-center overflow-hidden rounded-[28px]">
             <Image
-              src={heroTileImages.grey}
-              alt=""
+              src={heroTileImages.grey.src}
+              alt={heroTileImages.grey.alt}
               fill
               className="object-cover"
               sizes="(min-width: 640px) 33vw, 50vw"
@@ -146,8 +163,8 @@ export function HeroSection() {
           </div>
           <div className="bg-primary-purple relative flex aspect-square items-center justify-center overflow-hidden rounded-[28px]">
             <Image
-              src={heroTileImages.purple}
-              alt=""
+              src={heroTileImages.purple.src}
+              alt={heroTileImages.purple.alt}
               fill
               className="object-cover"
               sizes="(min-width: 640px) 33vw, 50vw"
