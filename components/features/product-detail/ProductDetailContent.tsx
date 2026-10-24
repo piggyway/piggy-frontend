@@ -12,12 +12,6 @@ import { ProductColorSelector } from "@/components/ui/product-color-selector";
 import { ProductSizeSelector } from "@/components/ui/product-size-selector";
 import { QuantitySelector } from "@/components/ui/quantity-selector";
 import { clampQuantity, getColorSwatchColor } from "@/lib/utils/cart";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import type { AddOn, AddOnGroup, ProductDetail } from "@/lib/types/product";
 import {
@@ -91,7 +85,6 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
   });
 
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [sizeGuideOpen, setSizeGuideOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
 
   // Track previous variant to only auto-switch images when the variant actually changes
@@ -599,9 +592,6 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
               option.slug === "color" ||
               option.name?.toLowerCase().includes("color") ||
               option.name?.toLowerCase().includes("colour");
-            const isSize =
-              option.slug === "size" ||
-              option.name?.toLowerCase().includes("size");
 
             const selectedValueId = selectedOptions[option.id];
             const selectedValue =
@@ -643,10 +633,6 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
                 }))}
                 selectedSize={selectedValue}
                 disabledValues={disabledValues}
-                sizeGuideLink={isSize ? "#" : undefined}
-                onSizeGuideClick={
-                  isSize ? () => setSizeGuideOpen(true) : undefined
-                }
                 onSizeChange={(val) =>
                   handleOptionSelect(option.id, Number(val))
                 }
@@ -715,59 +701,6 @@ export function ProductDetailContent({ product }: ProductDetailContentProps) {
           )}
         </section>
       </div>
-
-      {/* Size Guide Dialog */}
-      <Dialog open={sizeGuideOpen} onOpenChange={setSizeGuideOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Size Guide</DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <div className="space-y-4">
-              <p className="text-sm text-gray-500">
-                Please refer to the size chart below to find your perfect fit.
-              </p>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="px-4 py-2 text-left font-medium">Size</th>
-                      <th className="px-4 py-2 text-left font-medium">
-                        Chest (cm)
-                      </th>
-                      <th className="px-4 py-2 text-left font-medium">
-                        Length (cm)
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr className="border-b">
-                      <td className="px-4 py-2">XS</td>
-                      <td className="px-4 py-2">30-35</td>
-                      <td className="px-4 py-2">20</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="px-4 py-2">S</td>
-                      <td className="px-4 py-2">35-40</td>
-                      <td className="px-4 py-2">25</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="px-4 py-2">M</td>
-                      <td className="px-4 py-2">40-45</td>
-                      <td className="px-4 py-2">30</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="px-4 py-2">L</td>
-                      <td className="px-4 py-2">45-50</td>
-                      <td className="px-4 py-2">35</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </article>
   );
 }
