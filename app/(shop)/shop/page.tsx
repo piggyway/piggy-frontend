@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import type { Metadata } from "next";
 import { HeroSection } from "@/components/features/shop/HeroSection";
 import { BestSellingSection } from "@/components/features/shop/BestSellingSection";
-import { LimitedEditionBanner } from "@/components/features/shop/LimitedEditionBanner";
 import { FeaturedPicksSection } from "@/components/features/shop/FeaturedPicksSection";
 import { TestimonialsSection } from "@/components/features/shop/TestimonialsSection";
 import { StarterKitsSection } from "@/components/features/shop/StarterKitsSection";
@@ -24,7 +23,6 @@ export default function ShopPage() {
       <BackgroundBlobs variant={2} />
       <HeroSection />
       <BestSellingSection />
-      <LimitedEditionBanner />
       <FeaturedPicksSection />
       <div className="py-12 sm:py-16 md:py-20">
         <TestimonialsSection />
