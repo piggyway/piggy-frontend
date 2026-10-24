@@ -488,14 +488,14 @@ export function LoginPage({ error, callbackUrl = "/" }: LoginPageProps) {
           <p className="text-muted-foreground text-center text-[12px]">
             By continuing, you agree to our{" "}
             <Link
-              href="#"
+              href="/terms"
               className="hover:text-primary-navy underline [text-underline-position:from-font]"
             >
               Terms of Service
             </Link>{" "}
             and{" "}
             <Link
-              href="#"
+              href="/privacy"
               className="hover:text-primary-navy underline [text-underline-position:from-font]"
             >
               Privacy Policy
