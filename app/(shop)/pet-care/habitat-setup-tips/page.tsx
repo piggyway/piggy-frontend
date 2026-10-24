@@ -204,7 +204,7 @@ export default function HabitatSetupPage() {
             <p className="mb-0 text-sm text-yellow-800">
               <strong>Temperature Warning:</strong> Keep away from direct
               sunlight, drafts, and radiators. Guinea pigs are prone to
-              heatstroke above 75°F (24°C).
+              heatstroke above 24°C.
             </p>
           </div>
           <p>
