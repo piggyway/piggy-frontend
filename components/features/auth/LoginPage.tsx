@@ -19,6 +19,10 @@ interface LoginPageProps {
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Shown when a NEXT_PUBLIC_* setting is missing from the build; the real cause goes to the console
+const EMAIL_SIGN_IN_UNAVAILABLE =
+  "Email sign-in is unavailable right now. Please continue with Google or try again later.";
+
 function GoogleIcon() {
   return (
     <svg viewBox="0 0 24 24" className="size-[18px]" aria-hidden="true">
@@ -127,12 +131,14 @@ export function LoginPage({ error, callbackUrl = "/" }: LoginPageProps) {
     }
 
     if (!apiBase) {
-      setFormError("API base URL is not configured.");
+      console.error("NEXT_PUBLIC_API_BASE_URL is not set");
+      setFormError(EMAIL_SIGN_IN_UNAVAILABLE);
       return;
     }
 
     if (!turnstileSiteKey) {
-      setFormError("Turnstile site key is not configured.");
+      console.error("NEXT_PUBLIC_TURNSTILE_SITE_KEY is not set");
+      setFormError(EMAIL_SIGN_IN_UNAVAILABLE);
       return;
     }
 
@@ -209,7 +215,8 @@ export function LoginPage({ error, callbackUrl = "/" }: LoginPageProps) {
     }
 
     if (!apiBase) {
-      setFormError("API base URL is not configured.");
+      console.error("NEXT_PUBLIC_API_BASE_URL is not set");
+      setFormError(EMAIL_SIGN_IN_UNAVAILABLE);
       return;
     }
 
@@ -388,8 +395,7 @@ export function LoginPage({ error, callbackUrl = "/" }: LoginPageProps) {
                   </div>
                 ) : (
                   <div className="rounded-[12px] border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] text-amber-800">
-                    Turnstile is not configured. Please set
-                    NEXT_PUBLIC_TURNSTILE_SITE_KEY.
+                    {EMAIL_SIGN_IN_UNAVAILABLE}
                   </div>
                 ))}
 
