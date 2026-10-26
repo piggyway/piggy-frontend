@@ -28,6 +28,7 @@ import { cn } from "@/lib/utils";
 import { toHousingInput } from "@/lib/utils/boarding";
 import { BOARDING_HOUSING_LABELS } from "@/components/features/boarding/constants";
 import { StaySummaryCard } from "./StaySummaryCard";
+import { bookingDraftStorage } from "./booking-draft";
 import { nightsBetween } from "./stay-dates";
 import { estimateStay } from "./stay-estimate";
 
@@ -38,7 +39,7 @@ export interface BookingSubmission {
   userNotificationSent: boolean;
 }
 
-interface PetForm {
+export interface PetForm {
   name: string;
   type: string;
   breed: string;
@@ -180,23 +181,33 @@ export function BookingDetailsStep({
 }: BookingDetailsStepProps) {
   const { user } = useUser();
 
-  const [contact, setContact] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-  const [pets, setPets] = useState<PetForm[]>([{ ...EMPTY_PET }]);
-  const [housing, setHousing] = useState<BoardingHousingArrangement | null>(
-    null
+  // This step only mounts on the client, so the saved draft can be read
+  // straight into the initial state.
+  const [draft] = useState(() => bookingDraftStorage.load().details);
+
+  const [contact, setContact] = useState(
+    draft?.contact ?? {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+    }
   );
-  const [housingNotes, setHousingNotes] = useState("");
+  const [pets, setPets] = useState<PetForm[]>(
+    draft?.pets ?? [{ ...EMPTY_PET }]
+  );
+  const [housing, setHousing] = useState<BoardingHousingArrangement | null>(
+    draft?.housing ?? null
+  );
+  const [housingNotes, setHousingNotes] = useState(draft?.housingNotes ?? "");
   const housingNotesRef = useRef<HTMLTextAreaElement>(null);
-  const [emergency, setEmergency] = useState({
-    name: "",
-    phone: "",
-    notes: "",
-  });
+  const [emergency, setEmergency] = useState(
+    draft?.emergency ?? {
+      name: "",
+      phone: "",
+      notes: "",
+    }
+  );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -267,9 +278,24 @@ export function BookingDetailsStep({
       setErrors((prev) => ({ ...prev, housingNotes: "" }));
   };
 
+  // Focus the notes box only when the user picks "specified", not when a
+  // restored draft already has it selected.
+  const previousHousingRef = useRef(housing);
   useEffect(() => {
+    if (housing === previousHousingRef.current) return;
+    previousHousingRef.current = housing;
     if (housing === "specified") housingNotesRef.current?.focus();
   }, [housing]);
+
+  useEffect(() => {
+    bookingDraftStorage.saveDetails({
+      contact,
+      pets,
+      housing,
+      housingNotes,
+      emergency,
+    });
+  }, [contact, pets, housing, housingNotes, emergency]);
 
   const validate = () => {
     const next: Record<string, string> = {};
