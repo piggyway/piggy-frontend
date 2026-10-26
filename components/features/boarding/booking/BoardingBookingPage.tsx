@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { trackEvent } from "@/lib/analytics/track";
 import { StayCalendarCard } from "./StayCalendarCard";
@@ -11,10 +11,15 @@ import {
   type BookingSubmission,
 } from "./BookingDetailsStep";
 import { BookingSubmittedStep } from "./BookingSubmittedStep";
+import { bookingDraftStorage, restoreDates } from "./booking-draft";
 import { formatStayLabel, nightsBetween, todayKey } from "./stay-dates";
 import { estimateStay } from "./stay-estimate";
 
 type BookingStep = "dates" | "details" | "submitted";
+
+function subscribeNoop() {
+  return () => {};
+}
 
 export function BoardingBookingPage() {
   const [today] = useState(() => todayKey());
@@ -29,6 +34,37 @@ export function BoardingBookingPage() {
   const [endDate, setEndDate] = useState<string | null>(null);
   const [endTime, setEndTime] = useState<string | null>(null);
   const hasTrackedStart = useRef(false);
+
+  // The saved draft lives in localStorage, which the server cannot read.
+  // Restore it on the first client render (adjust state during render) so
+  // server and client markup still match during hydration.
+  const isClient = useSyncExternalStore(
+    subscribeNoop,
+    () => true,
+    () => false
+  );
+  const [draftRestored, setDraftRestored] = useState(false);
+  if (isClient && !draftRestored) {
+    setDraftRestored(true);
+    const dates = restoreDates(bookingDraftStorage.load().dates, today);
+    setStep(dates.step);
+    setDetailsMounted(dates.step === "details");
+    setStartDate(dates.startDate);
+    setStartTime(dates.startTime);
+    setEndDate(dates.endDate);
+    setEndTime(dates.endTime);
+  }
+
+  useEffect(() => {
+    if (!draftRestored || step === "submitted") return;
+    bookingDraftStorage.saveDates({
+      step,
+      startDate,
+      startTime,
+      endDate,
+      endTime,
+    });
+  }, [draftRestored, step, startDate, startTime, endDate, endTime]);
 
   useEffect(() => {
     if (hasTrackedStart.current) return;
@@ -70,6 +106,7 @@ export function BoardingBookingPage() {
   };
 
   const handleSubmitted = (result: BookingSubmission) => {
+    bookingDraftStorage.clear();
     setSubmission(result);
     setStep("submitted");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -114,6 +151,9 @@ export function BoardingBookingPage() {
           >
             <div className="min-w-0 flex-1">
               <StayCalendarCard
+                // Remount after the draft restore so the calendar opens on
+                // the restored drop-off month.
+                key={draftRestored ? "restored" : "initial"}
                 startDate={startDate}
                 endDate={endDate}
                 startTime={startTime}
