@@ -94,6 +94,7 @@ beforeEach(() => {
 
 afterEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 describe("backendFetch client ip", () => {
@@ -283,6 +284,24 @@ describe("backendFetch transport", () => {
     expect(other.fetch).not.toHaveBeenCalled();
   });
 
+  it("uses global fetch under next dev even when BACKEND is bound", async () => {
+    vi.stubEnv("NODE_ENV", "development");
+    const fetchMock = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValue(okResponse());
+    const binding = useBinding();
+
+    await backendFetch("https://backend.example/api/v1/ping", {
+      cache: "no-store",
+    });
+
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      "https://backend.example/api/v1/ping"
+    );
+    expect(binding.fetch).not.toHaveBeenCalled();
+  });
+
   it("serves a cacheable read from the data cache on the second call", async () => {
     const fetchMock = vi.spyOn(globalThis, "fetch");
     const binding = useBinding();
@@ -294,22 +313,16 @@ describe("backendFetch transport", () => {
         })
     );
 
-    const first = await backendFetch(
-      "https://backend.example/api/v1/config",
-      {
-        method: "GET",
-        forwardClientIp: false,
-        next: { revalidate: 300, tags: ["config"] },
-      }
-    );
-    const second = await backendFetch(
-      "https://backend.example/api/v1/config",
-      {
-        method: "GET",
-        forwardClientIp: false,
-        next: { revalidate: 300, tags: ["config"] },
-      }
-    );
+    const first = await backendFetch("https://backend.example/api/v1/config", {
+      method: "GET",
+      forwardClientIp: false,
+      next: { revalidate: 300, tags: ["config"] },
+    });
+    const second = await backendFetch("https://backend.example/api/v1/config", {
+      method: "GET",
+      forwardClientIp: false,
+      next: { revalidate: 300, tags: ["config"] },
+    });
 
     expect(binding.fetch).toHaveBeenCalledTimes(1);
     expect(fetchMock).not.toHaveBeenCalled();
@@ -349,13 +362,10 @@ describe("backendFetch transport", () => {
       forwardClientIp: false,
       next: { revalidate: 300 },
     });
-    const second = await backendFetch(
-      "https://backend.example/api/v1/config",
-      {
-        forwardClientIp: false,
-        next: { revalidate: 300 },
-      }
-    );
+    const second = await backendFetch("https://backend.example/api/v1/config", {
+      forwardClientIp: false,
+      next: { revalidate: 300 },
+    });
 
     expect(binding.fetch).toHaveBeenCalledTimes(2);
     expect(first.status).toBe(429);

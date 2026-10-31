@@ -274,10 +274,16 @@ type BackendBinding = { fetch: typeof fetch };
 
 /**
  * The `BACKEND` service binding, or null when there is no Cloudflare context
- * (local `next dev` without bindings, tests, build-time prerender). The sync
- * form never starts wrangler; it only reads the context the Worker set.
+ * (tests, build-time prerender) or under `next dev`. In dev,
+ * `initOpenNextCloudflareForDev` exposes the binding too, but it points at a
+ * local piggy-backend that is usually not running, so dev keeps calling
+ * `API_BASE_URL`. The sync form never starts wrangler; it only reads the
+ * context the Worker set.
  */
 function backendBinding(): BackendBinding | null {
+  if (process.env.NODE_ENV === "development") {
+    return null;
+  }
   try {
     const { env } = getCloudflareContext();
     return (env as { BACKEND?: BackendBinding }).BACKEND ?? null;
