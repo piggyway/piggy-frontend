@@ -7,14 +7,16 @@ import "server-only";
  * public URL. That hop cost a second Worker invocation per read and, worse,
  * arrived at the backend with the Worker egress IP as `cf-connecting-ip`, so
  * the whole site shared one rate-limit bucket and SSR renders threw 429. This
- * client skips the hop and talks to `API_BASE_URL/api/v1` directly.
+ * client skips the hop and calls `API_BASE_URL/api/v1` through `backendFetch`,
+ * which uses the `BACKEND` service binding on Workers.
  *
  * Two request shapes, chosen by the caller, never guessed here:
  *
  * - Cacheable (`revalidate` set): anonymous catalog reads. They carry
- *   `next: { revalidate }` and no client IP, because Next keys its fetch cache
- *   on request headers and a per-visitor header would give every visitor a
- *   private entry. One request per cache window reaches the backend.
+ *   `next: { revalidate }` and no client IP, because the cache (Next's fetch
+ *   cache, or its data cache on the binding path) is keyed on request headers
+ *   and a per-visitor header would give every visitor a private entry. One
+ *   request per cache window reaches the backend.
  * - Uncacheable (no `revalidate`): searches, and anything carrying a token.
  *   They are `no-store` and forward the visitor IP, so the backend still
  *   rate-limits them per visitor rather than per site.
