@@ -2,6 +2,12 @@
  * Shared server-side fetch to the external backend (BFF → API_BASE_URL).
  * Applies a hard 10s timeout so stalled backend/DB cannot hang Workers forever.
  *
+ * On Workers the request goes through the `BACKEND` service binding, not the
+ * public API hostname. Subrequests to that hostname pass the zone's Bot Fight
+ * Mode, which answers some of them with a 403 challenge page the backend never
+ * sees. Without a Cloudflare context or binding (local dev, tests, build-time
+ * prerender) it falls back to global `fetch` on the same URL.
+ *
  * Every call also forwards the real client IP as `x-forwarded-for`. Without it
  * the backend sees only this Worker's egress IP and buckets the whole site into
  * a single rate-limit key, so one busy visitor throttles everyone. The backend
@@ -20,8 +26,14 @@
  * exists to use. Such a request carries no client IP and is rate-limited
  * against the Worker egress IP - which is correct, because at most one of them
  * per cache window ever reaches the backend.
+ *
+ * Next's fetch cache only patches global `fetch`, so a binding call with
+ * `next.revalidate` is cached through `unstable_cache` instead, with the same
+ * key inputs (method, URL, request headers). Only 2xx responses are stored.
  */
 
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
 const BACKEND_FETCH_TIMEOUT_MS = 10_000;
@@ -258,8 +270,90 @@ type BackendFetchInit = RequestInit & {
   forwardClientIp?: boolean;
 };
 
+type BackendBinding = { fetch: typeof fetch };
+
 /**
- * Fetch the backend with AbortSignal.timeout(10000).
+ * The `BACKEND` service binding, or null when there is no Cloudflare context
+ * (local `next dev` without bindings, tests, build-time prerender). The sync
+ * form never starts wrangler; it only reads the context the Worker set.
+ */
+function backendBinding(): BackendBinding | null {
+  try {
+    const { env } = getCloudflareContext();
+    return (env as { BACKEND?: BackendBinding }).BACKEND ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Serialisable form of a 2xx response, as stored in the data cache. */
+type CachedResponse = {
+  status: number;
+  statusText: string;
+  contentType: string | null;
+  body: string;
+};
+
+/** Carries a non-2xx response out of the cached loader so it is not stored. */
+class UncacheableResponse extends Error {
+  readonly response: Response;
+
+  constructor(response: Response) {
+    super(`Backend returned ${response.status}`);
+    this.response = response;
+  }
+}
+
+function toResponse(cached: CachedResponse): Response {
+  return new Response(cached.body || null, {
+    status: cached.status,
+    statusText: cached.statusText,
+    headers: cached.contentType
+      ? { "content-type": cached.contentType }
+      : undefined,
+  });
+}
+
+async function cachedBindingFetch(
+  binding: BackendBinding,
+  input: RequestInfo | URL,
+  init: RequestInit,
+  next: { revalidate: number; tags?: string[] }
+): Promise<Response> {
+  const url = input instanceof Request ? input.url : String(input);
+  const method = (init.method ?? "GET").toUpperCase();
+  const headerKey = JSON.stringify([...new Headers(init.headers)]);
+
+  const load = unstable_cache(
+    async (): Promise<CachedResponse> => {
+      const res = await binding.fetch(input, init);
+      if (!res.ok) {
+        throw new UncacheableResponse(res);
+      }
+      return {
+        status: res.status,
+        statusText: res.statusText,
+        contentType: res.headers.get("content-type"),
+        body: await res.text(),
+      };
+    },
+    ["backend-fetch", method, url, headerKey],
+    { revalidate: next.revalidate, tags: next.tags }
+  );
+
+  try {
+    return toResponse(await load());
+  } catch (error) {
+    if (error instanceof UncacheableResponse) {
+      return error.response;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Fetch the backend with AbortSignal.timeout(10000), through the `BACKEND`
+ * binding when it is bound and global `fetch` otherwise.
  * On timeout returns a 504 JSON Response instead of throwing/hanging.
  */
 export async function backendFetch(
@@ -269,13 +363,26 @@ export async function backendFetch(
   const headers = await withClientIpHeaders(init);
   const fetchInit: BackendFetchInit = { ...init };
   delete fetchInit.forwardClientIp;
+  const signal = AbortSignal.timeout(BACKEND_FETCH_TIMEOUT_MS);
+  const binding = backendBinding();
 
   try {
-    return await fetch(input, {
-      ...fetchInit,
-      headers,
-      signal: AbortSignal.timeout(BACKEND_FETCH_TIMEOUT_MS),
-    });
+    if (!binding) {
+      return await fetch(input, { ...fetchInit, headers, signal });
+    }
+
+    const { next } = fetchInit;
+    const bindingInit: BackendFetchInit = { ...fetchInit, headers, signal };
+    delete bindingInit.next;
+    delete bindingInit.cache;
+
+    if (typeof next?.revalidate === "number") {
+      return await cachedBindingFetch(binding, input, bindingInit, {
+        revalidate: next.revalidate,
+        tags: next.tags,
+      });
+    }
+    return await binding.fetch(input, bindingInit);
   } catch (error) {
     if (isTimeoutError(error)) {
       return gatewayTimeoutResponse();

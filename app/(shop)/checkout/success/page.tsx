@@ -4,6 +4,7 @@ import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClearCartOnSuccess } from "@/components/features/cart/ClearCartOnSuccess";
 import { TrackOrderCompleted } from "@/components/features/checkout/TrackOrderCompleted";
+import { backendFetch } from "@/lib/api/backend-fetch";
 import { formatCents } from "@/lib/utils/format";
 
 const THUMB_COLORS = [
@@ -109,7 +110,7 @@ async function getReceipt(
   const RETRY_DELAY_MS = 1200;
   for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
-      const res = await fetch(url.toString(), { cache: "no-store" });
+      const res = await backendFetch(url.toString(), { cache: "no-store" });
       if (res.ok) {
         const body = await res.json();
         return (body?.data as OrderReceipt) ?? null;

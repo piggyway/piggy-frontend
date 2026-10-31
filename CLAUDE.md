@@ -36,7 +36,7 @@ The layering is: Pages/components → `lib/services/` → `lib/api/client.ts` �
 
 ### The API routes are a BFF proxy to an EXTERNAL backend
 
-`app/api/**/route.ts` do **not** contain business logic — they forward to a separate backend service at `${API_BASE_URL}/api/v1/...` (e.g. `app/api/products/route.ts` → `${API_BASE_URL}/api/v1/products`), attaching server-side credentials and hiding the backend URL from the browser. snake_case → camelCase mapping happens in `lib/services/` (e.g. `ProductService.transformProductDetail`), not in the route handlers. `lib/api/endpoints.ts` is the single registry of internal `/api/*` paths; `lib/services/index.ts` only re-exports a few services, so import service files directly.
+`app/api/**/route.ts` do **not** contain business logic — they forward to a separate backend service at `${API_BASE_URL}/api/v1/...` (e.g. `app/api/products/route.ts` → `${API_BASE_URL}/api/v1/products`) through `backendFetch` (`lib/api/backend-fetch.ts`), which uses the `BACKEND` service binding to the `piggy-backend` Worker in production and global `fetch` elsewhere, attaching server-side credentials and hiding the backend URL from the browser. snake_case → camelCase mapping happens in `lib/services/` (e.g. `ProductService.transformProductDetail`), not in the route handlers. `lib/api/endpoints.ts` is the single registry of internal `/api/*` paths; `lib/services/index.ts` only re-exports a few services, so import service files directly.
 
 There is **no Directus SDK in the frontend** and no `lib/directus/`. Directus is the upstream CMS behind that external backend; it only touches the frontend through draft/preview mode (below).
 
