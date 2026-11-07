@@ -14,7 +14,7 @@ import { stripePromise } from "@/lib/stripe";
 import { colors } from "@/lib/design-tokens/colors";
 
 /**
- * Card details are collected inside Stripe-hosted iframes (Payment Element),
+ * Payment details are collected inside Stripe-hosted iframes (Payment Element),
  * so raw card numbers never touch our DOM or servers (PCI SAQ A).
  */
 
@@ -109,7 +109,8 @@ function PaymentFormInner({
     // rest here to avoid a duplicated message.
     if (error.type !== "card_error" && error.type !== "validation_error") {
       setErrorMessage(
-        error.message || "Payment failed. Please try again or use another card."
+        error.message ||
+          "Payment failed. Please try again or use another payment method."
       );
     }
     setIsSubmitting(false);
@@ -123,8 +124,8 @@ function PaymentFormInner({
       <div className="flex flex-col gap-1.5">
         <h2 className="text-primary-navy text-lead">Payment</h2>
         <p className="text-subtle text-slate-600">
-          All transactions are secure and encrypted. Card details go directly to
-          Stripe and never touch our servers.
+          All transactions are secure and encrypted. Payment details go directly
+          to Stripe and never touch our servers.
         </p>
       </div>
 
