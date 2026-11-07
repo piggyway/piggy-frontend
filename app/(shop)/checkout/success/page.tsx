@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Stripe from "stripe";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ClearCartOnSuccess } from "@/components/features/cart/ClearCartOnSuccess";
@@ -37,47 +36,49 @@ interface OrderReceipt {
   }>;
 }
 
-/**
- * Retrieves the Stripe Checkout session so the receipt can be rendered.
- * Returns null when the secret key is not configured or retrieval fails —
- * the page then falls back to a receipt-less confirmation.
- */
-async function getCheckoutSession(sessionId: string) {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  if (!secretKey) {
-    console.error(
-      "[Checkout Success] STRIPE_SECRET_KEY is not set; skipping receipt."
-    );
-    return null;
-  }
-  try {
-    const stripe = new Stripe(secretKey);
-    return await stripe.checkout.sessions.retrieve(sessionId, {
-      expand: ["line_items"],
-    });
-  } catch (error) {
-    console.error("[Checkout Success] Failed to retrieve session:", error);
-    return null;
-  }
+interface PaymentStatus {
+  status: string;
+  amount_cents: number;
+  currency: string;
+  email: string | null;
 }
 
 /**
- * Retrieves the PaymentIntent for the on-site Payment Element flow.
- * Returns null when the secret key is not configured or retrieval fails.
+ * Reads the live PaymentIntent status from the backend, which holds the Stripe
+ * secret key. Redirect-based methods (WeChat Pay, Alipay) return to this page
+ * even when the customer abandons the payment, so the return URL alone never
+ * proves payment. Returns null when the status cannot be confirmed; the page
+ * then shows an "unable to confirm" state instead of a success message.
  */
-async function getPaymentIntent(paymentIntentId: string) {
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  if (!secretKey) {
+async function getPaymentStatus(
+  paymentIntentId: string,
+  clientSecret: string
+): Promise<PaymentStatus | null> {
+  const apiBaseUrl =
+    process.env.API_BASE_URL || process.env.NEXT_PUBLIC_API_BASE_URL;
+  if (!apiBaseUrl) {
     console.error(
-      "[Checkout Success] STRIPE_SECRET_KEY is not set; skipping receipt."
+      "[Checkout Success] API_BASE_URL is not set; cannot confirm payment."
     );
     return null;
   }
+
+  const url = new URL(`${apiBaseUrl}/api/v1/checkout/payment-status`);
+  url.searchParams.set("payment_intent_id", paymentIntentId);
+  url.searchParams.set("client_secret", clientSecret);
+
   try {
-    const stripe = new Stripe(secretKey);
-    return await stripe.paymentIntents.retrieve(paymentIntentId);
+    const res = await backendFetch(url.toString(), { cache: "no-store" });
+    if (!res.ok) {
+      console.error(
+        `[Checkout Success] Payment status lookup failed with status ${res.status}`
+      );
+      return null;
+    }
+    const body = await res.json();
+    return (body?.data as PaymentStatus) ?? null;
   } catch (error) {
-    console.error("[Checkout Success] Failed to retrieve intent:", error);
+    console.error("[Checkout Success] Payment status lookup failed:", error);
     return null;
   }
 }
@@ -139,69 +140,73 @@ export default async function SuccessPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    session_id?: string;
     payment_intent?: string;
     payment_intent_client_secret?: string;
   }>;
 }) {
   const params = await searchParams;
-  const sessionId = params.session_id;
   const paymentIntentId = params.payment_intent;
   const paymentIntentClientSecret = params.payment_intent_client_secret;
 
-  const session = sessionId ? await getCheckoutSession(sessionId) : null;
-  const paymentIntent =
-    !session && paymentIntentId
-      ? await getPaymentIntent(paymentIntentId)
+  const paymentStatus =
+    paymentIntentId && paymentIntentClientSecret
+      ? await getPaymentStatus(paymentIntentId, paymentIntentClientSecret)
       : null;
 
-  const isPaid = session
-    ? session.payment_status === "paid"
-    : paymentIntent?.status === "succeeded";
-  const isProcessing = !session && paymentIntent?.status === "processing";
-  const paymentFailed = paymentIntent ? !isPaid && !isProcessing : false;
+  const isPaid = paymentStatus?.status === "succeeded";
+  const isProcessing = paymentStatus?.status === "processing";
 
   const receipt =
-    isPaid && !session && paymentIntentId && paymentIntentClientSecret
+    isPaid && paymentIntentId && paymentIntentClientSecret
       ? await getReceipt(paymentIntentId, paymentIntentClientSecret)
       : null;
 
-  const currency =
-    session?.currency ?? receipt?.currency ?? paymentIntent?.currency ?? "aud";
-  const email =
-    session?.customer_details?.email ??
-    paymentIntent?.receipt_email ??
-    paymentIntent?.metadata?.email ??
-    receipt?.email;
-  const orderRef =
-    session?.metadata?.order_number ||
-    session?.metadata?.order_id ||
-    receipt?.order_number ||
-    null;
-  const totalCents = session?.amount_total ?? paymentIntent?.amount ?? 0;
-  const paymentReference = session?.id ?? paymentIntent?.id;
+  const currency = receipt?.currency ?? paymentStatus?.currency ?? "aud";
+  const email = paymentStatus?.email ?? receipt?.email;
+  const orderRef = receipt?.order_number || null;
+  const totalCents = paymentStatus?.amount_cents ?? 0;
 
-  const receiptRows = session
-    ? (session.line_items?.data ?? []).map((item) => ({
-        key: item.id,
-        title: item.description ?? "",
-        quantity: item.quantity ?? 0,
-        amountCents: item.amount_total,
-        addOns: [] as Array<{
-          add_on_rid: number | null;
-          name: string;
-          unit_price_cents: number;
-        }>,
-      }))
-    : (receipt?.items ?? []).map((item, index) => ({
-        key: `${item.variant_sku ?? item.product_title}-${index}`,
-        title: item.product_title,
-        quantity: item.quantity,
-        amountCents: item.line_total_cents,
-        addOns: item.add_ons ?? [],
-      }));
+  const receiptRows = (receipt?.items ?? []).map((item, index) => ({
+    key: `${item.variant_sku ?? item.product_title}-${index}`,
+    title: item.product_title,
+    quantity: item.quantity,
+    amountCents: item.line_total_cents,
+    addOns: item.add_ons ?? [],
+  }));
 
-  if (paymentFailed) {
+  if (!paymentStatus) {
+    return (
+      <div className="container mx-auto px-4 pt-12 pb-24 sm:px-6 lg:px-8">
+        <div className="flex flex-col items-center gap-7 text-center">
+          <h1 className="text-primary-navy text-large">
+            We couldn&apos;t confirm your payment
+          </h1>
+          <p className="text-p max-w-[480px] text-slate-600">
+            If you completed the payment, a confirmation email is on its way and
+            the order will appear in your account. Otherwise, return to checkout
+            and try again.
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3.5">
+            <Button
+              asChild
+              className="text-p h-[50px] rounded-full px-9 font-semibold"
+            >
+              <Link href="/checkout">Back to Checkout</Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="border-primary-navy text-primary-navy text-p h-[50px] rounded-full border-[1.5px] px-9 font-semibold"
+            >
+              <Link href="/account">View My Orders</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isPaid && !isProcessing) {
     return (
       <div className="container mx-auto px-4 pt-12 pb-24 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center gap-7 text-center">
@@ -209,8 +214,8 @@ export default async function SuccessPage({
             Payment not completed
           </h1>
           <p className="text-p max-w-[480px] text-slate-600">
-            Your card was not charged. You can return to checkout and try again
-            with the same or a different payment method.
+            You were not charged. You can return to checkout and try again with
+            the same or a different payment method.
           </p>
           <Button
             asChild
@@ -226,11 +231,11 @@ export default async function SuccessPage({
   return (
     <div className="container mx-auto px-4 pt-12 pb-24 sm:px-6 lg:px-8">
       {isPaid && <ClearCartOnSuccess />}
-      {isPaid && paymentReference && (
+      {isPaid && paymentIntentId && (
         <TrackOrderCompleted
-          paymentReference={paymentReference}
+          paymentReference={paymentIntentId}
           parameters={{
-            order_id: orderRef ?? paymentReference,
+            order_id: orderRef ?? paymentIntentId,
             total: totalCents / 100,
             value: totalCents / 100,
             currency: currency.toUpperCase(),
@@ -269,77 +274,75 @@ export default async function SuccessPage({
         </div>
 
         {/* Receipt */}
-        {(session || paymentIntent) && (
-          <div className="border-neutral-stroke flex w-full max-w-[600px] flex-col gap-[18px] rounded-[24px] border bg-white px-8 py-7">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-0.5">
-                <span className="text-subtle text-muted-foreground">Order</span>
-                <span className="text-primary-navy text-p font-semibold">
-                  {orderRef ? `#${orderRef}` : "Being finalised..."}
-                </span>
-              </div>
-              {isPaid && (
-                <span className="bg-secondary-mint text-detail text-primary-navy rounded-full px-3.5 py-1.5 font-semibold">
-                  Paid
-                </span>
-              )}
-            </div>
-
-            {receiptRows.length > 0 && (
-              <>
-                <div className="bg-neutral-stroke h-px w-full" />
-
-                {receiptRows.map((row, index) => (
-                  <div key={row.key} className="flex flex-col gap-1">
-                    <div className="flex items-center gap-3">
-                      <span
-                        className={`size-10 shrink-0 rounded-[10px] ${THUMB_COLORS[index % THUMB_COLORS.length]}`}
-                      />
-                      <span className="text-primary-navy text-subtle min-w-0 flex-1 truncate">
-                        {row.title}
-                      </span>
-                      <span className="text-subtle text-muted-foreground">
-                        ×{row.quantity}
-                      </span>
-                      <span className="text-primary-navy text-subtle font-medium">
-                        {formatCents(row.amountCents, currency)}
-                      </span>
-                    </div>
-                    {row.addOns.length > 0 && (
-                      <div className="flex flex-col gap-0.5 pl-[52px]">
-                        {row.addOns.map((addOn, addOnIndex) => (
-                          <span
-                            key={`${addOn.add_on_rid ?? addOn.name}-${addOnIndex}`}
-                            className="text-detail text-muted-foreground"
-                          >
-                            + {addOn.name} (
-                            {formatCents(addOn.unit_price_cents, currency)})
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </>
-            )}
-
-            <div className="bg-neutral-stroke h-px w-full" />
-
-            <div className="flex items-center justify-between">
-              <span className="text-primary-navy text-p font-medium">
-                Total paid
+        <div className="border-neutral-stroke flex w-full max-w-[600px] flex-col gap-[18px] rounded-[24px] border bg-white px-8 py-7">
+          <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-subtle text-muted-foreground">Order</span>
+              <span className="text-primary-navy text-p font-semibold">
+                {orderRef ? `#${orderRef}` : "Being finalised..."}
               </span>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-detail text-muted-foreground">
-                  {currency.toUpperCase()}
-                </span>
-                <span className="text-primary-navy text-lead">
-                  {formatCents(totalCents, currency)}
-                </span>
-              </div>
+            </div>
+            {isPaid && (
+              <span className="bg-secondary-mint text-detail text-primary-navy rounded-full px-3.5 py-1.5 font-semibold">
+                Paid
+              </span>
+            )}
+          </div>
+
+          {receiptRows.length > 0 && (
+            <>
+              <div className="bg-neutral-stroke h-px w-full" />
+
+              {receiptRows.map((row, index) => (
+                <div key={row.key} className="flex flex-col gap-1">
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`size-10 shrink-0 rounded-[10px] ${THUMB_COLORS[index % THUMB_COLORS.length]}`}
+                    />
+                    <span className="text-primary-navy text-subtle min-w-0 flex-1 truncate">
+                      {row.title}
+                    </span>
+                    <span className="text-subtle text-muted-foreground">
+                      ×{row.quantity}
+                    </span>
+                    <span className="text-primary-navy text-subtle font-medium">
+                      {formatCents(row.amountCents, currency)}
+                    </span>
+                  </div>
+                  {row.addOns.length > 0 && (
+                    <div className="flex flex-col gap-0.5 pl-[52px]">
+                      {row.addOns.map((addOn, addOnIndex) => (
+                        <span
+                          key={`${addOn.add_on_rid ?? addOn.name}-${addOnIndex}`}
+                          className="text-detail text-muted-foreground"
+                        >
+                          + {addOn.name} (
+                          {formatCents(addOn.unit_price_cents, currency)})
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </>
+          )}
+
+          <div className="bg-neutral-stroke h-px w-full" />
+
+          <div className="flex items-center justify-between">
+            <span className="text-primary-navy text-p font-medium">
+              Total paid
+            </span>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-detail text-muted-foreground">
+                {currency.toUpperCase()}
+              </span>
+              <span className="text-primary-navy text-lead">
+                {formatCents(totalCents, currency)}
+              </span>
             </div>
           </div>
-        )}
+        </div>
 
         {/* CTAs */}
         <div className="flex flex-wrap items-center justify-center gap-3.5">

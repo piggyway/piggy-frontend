@@ -26,8 +26,8 @@
   "observability": {
     "enabled": true,
   },
-  // Non-secret runtime vars. Secrets (API_BASE_URL, NEXTAUTH_*, GOOGLE_*,
-  // STRIPE_SECRET_KEY) are managed in the dashboard and survive deploys.
+  // Non-secret runtime vars. Secrets (API_BASE_URL, NEXTAUTH_*, GOOGLE_*)
+  // are managed in the dashboard and survive deploys.
   // NEXT_PUBLIC_* values must also be set as build variables in the
   // Workers Builds settings so `next build` can inline them.
   "vars": {
